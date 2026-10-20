@@ -32,12 +32,12 @@ PROFILE_SERVICES := $(if $(filter monitoring,$(PROFILES_LIST)),$(MONITORING_SERV
 DISABLE_LIST := $(strip $(subst $(comma),$(space),$(DISABLE)))
 RUN_SERVICES := $(filter-out $(DISABLE_LIST),$(CORE_APP_SERVICES) $(PROFILE_SERVICES))
 
-CYAN := \033[36m
-YELLOW := \033[33m
-RED := \033[31m
-RESET := \033[0m
+CYAN := $(shell printf '\033[36m')
+YELLOW := $(shell printf '\033[33m')
+RED := $(shell printf '\033[31m')
+RESET := $(shell printf '\033[0m')
 
-.PHONY: help check-env dev down logs ps restart clean
+.PHONY: help check-env check-conflicts dev down logs ps restart clean
 
 help:
 	@echo ""
@@ -64,7 +64,18 @@ check-env:
 		exit 1; \
 	fi
 
-dev: check-env
+# docker-compose.yml pins container names (tgo-postgres, tgo-redis, ...), so the
+# dev stack cannot start while another compose project (e.g. tgo-suite) owns them.
+check-conflicts:
+	@conflicts=$$(docker ps -a --format '{{.Names}} {{.Label "com.docker.compose.project"}}' \
+		| awk '$$1 ~ /^tgo-/ && $$2 != "tgo-dev" && $$2 != "" {print $$2}' | sort -u); \
+	if [ -n "$$conflicts" ]; then \
+		echo "$(RED)Error: tgo containers from another compose project are present: $$conflicts$(RESET)"; \
+		for p in $$conflicts; do echo "$(YELLOW)Run: docker compose -p $$p down$(RESET)"; done; \
+		exit 1; \
+	fi
+
+dev: check-env check-conflicts
 	@echo "$(CYAN)Building local backend images...$(RESET)"
 	@COMPOSE_PARALLEL_LIMIT=1 BUILDKIT_PROGRESS=$(BUILDKIT_PROGRESS) $(COMPOSE) build $(BUILD_SERVICES)
 	@echo "$(CYAN)Starting infrastructure...$(RESET)"

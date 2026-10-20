@@ -65,7 +65,7 @@ run_migration() {
   (cd "$PROJECT_ROOT" && "${COMPOSE[@]}" run --rm --no-deps "$service")
 }
 
-wait_step tcp localhost "${POSTGRES_PORT:-5432}"
+wait_step tcp localhost "${POSTGRES_HOST_PORT:-5432}"
 wait_step tcp localhost "${REDIS_PORT:-6379}"
 wait_step http "http://localhost:5001/health"
 

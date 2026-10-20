@@ -336,6 +336,7 @@ const SetupWizard: React.FC = () => {
             api_key: llmData.apiKey,
             api_base_url: llmData.apiBaseUrl || undefined,
             default_model: llmData.defaultModel || undefined,
+            available_models: llmData.defaultModel ? [llmData.defaultModel] : undefined,
             is_active: llmData.isActive,
           });
         }
