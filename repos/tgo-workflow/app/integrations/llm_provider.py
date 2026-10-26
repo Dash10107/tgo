@@ -18,7 +18,10 @@ class LLMProvider:
         max_tool_rounds: int = 5
     ) -> str:
         logger.info(f"LLM Chat Completion via AI Service: provider_id={provider_id} model={model}")
-        
+
+        if not provider_id or not model:
+            raise ValueError("No LLM model selected for this node. Open the node settings and choose a model.")
+
         # Use a default project_id if not provided
         active_project_id = project_id or "00000000-0000-0000-0000-000000000000"
         

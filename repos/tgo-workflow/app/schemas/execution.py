@@ -132,6 +132,7 @@ class WorkflowSyncResponseMetadata(BaseModel):
 class WorkflowSyncResponse(BaseModel):
     success: bool = Field(..., description="Whether the execution was successful")
     output: JsonValue = Field(..., description="Workflow output results")
+    error: Optional[str] = Field(None, description="Error message when the execution failed")
     metadata: WorkflowSyncResponseMetadata
 
 class WorkflowExecutionCancelResponse(BaseModel):

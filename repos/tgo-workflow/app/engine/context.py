@@ -2,16 +2,37 @@ import re
 from typing import Any, Dict, Optional
 
 class ExecutionContext:
-    def __init__(self, initial_inputs: Optional[Dict[str, Any]] = None, project_id: Optional[str] = None):
+    def __init__(
+        self,
+        initial_inputs: Optional[Dict[str, Any]] = None,
+        project_id: Optional[str] = None,
+        trigger_key: Optional[str] = None,
+    ):
         self.data: Dict[str, Any] = initial_inputs or {}
         self.project_id = project_id
+        self.trigger_key = trigger_key
 
     def get_variable(self, path: str) -> Any:
         """
         Get variable value by path like 'start_1.user_input'
         """
+        if not path or not isinstance(path, str):
+            return None
+        # The editor inserts references as '{{node.var}}'; accept both forms
+        path = path.strip()
+        if path.startswith("{{") and path.endswith("}}"):
+            path = path[2:-2].strip()
         # For now, it's a flat dict of 'reference_key.var_name'
         return self.data.get(path)
+
+    def get_trigger_inputs(self) -> Dict[str, Any]:
+        """
+        Get the variables provided to the trigger node, keyed by variable name
+        """
+        if not self.trigger_key:
+            return {}
+        prefix = f"{self.trigger_key}."
+        return {k[len(prefix):]: v for k, v in self.data.items() if k.startswith(prefix)}
 
     def set_variable(self, reference_key: str, var_name: str, value: Any):
         """

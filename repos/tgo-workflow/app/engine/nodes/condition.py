@@ -44,8 +44,8 @@ class ConditionNodeExecutor(BaseNodeExecutor):
                 
         elif condition_type == "llm":
             prompt = self.config.get("llm_prompt", "")
-            model = self.config.get("model_id", "gpt-4o")
-            provider = self.config.get("provider_id", "openai")
+            model = self.config.get("model_id")
+            provider = self.config.get("provider_id")
             
             # Resolve prompt with variables
             full_prompt = f"Given the context, determine if this condition is true: {prompt}. Return only 'true' or 'false'."

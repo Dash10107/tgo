@@ -1502,6 +1502,46 @@
     "store": "应用市场"
   },
   "workflow": {
+    "templates": {
+      "title": "从模板开始",
+      "subtitle": "开箱即用的工作流。一键创建，可按需调整智能体、模型或提示词，即可直接使用。",
+      "use": "使用模板",
+      "creating": "创建中...",
+      "nodesCount": "{{count}} 个节点",
+      "created": "已从模板创建工作流",
+      "createdDesc": "可按需调整，然后发布并绑定到智能体。",
+      "noModelTitle": "请选择模型",
+      "noModelDesc": "未找到可用的对话模型。请先添加模型提供商，然后在每个 AI 节点中选择模型。",
+      "support_triage": {
+        "name": "客服工单分流",
+        "description": "识别每条客户消息的主题（订单、账单、技术或一般问题），并生成针对该主题的回复，返回主题和回复内容。将其绑定到客服智能体，使每个请求都能被一致地分流和回答。"
+      },
+      "lead_qualification": {
+        "name": "销售线索评估",
+        "description": "从消息中提取潜在客户的姓名、公司、需求、预算和时间线，将线索评为热、温或冷，并给出下一步销售建议。将其绑定到销售或售前智能体。"
+      },
+      "agent_escalation": {
+        "name": "智能体回复与升级",
+        "description": "检查每条消息是否带有不满情绪或要求人工服务。情绪激动的客户会收到安抚回复并被标记为需要升级；其余消息由你在智能体节点中选择的 AI 智能体回答（未选择时使用项目默认智能体）。请勿选择已绑定此工作流的智能体。"
+      },
+      "nodes": {
+        "customer_message": "客户消息",
+        "prospect_message": "潜在客户消息",
+        "detect_topic": "识别主题",
+        "general_reply": "一般问题回复",
+        "order_reply": "订单与物流回复",
+        "billing_reply": "账单回复",
+        "technical_reply": "技术支持回复",
+        "return_reply": "返回回复",
+        "extract_details": "提取线索信息",
+        "score_lead": "线索评分",
+        "return_lead": "返回线索结果",
+        "check_sentiment": "情绪检测",
+        "agent_answer": "智能体回答",
+        "empathetic_reply": "安抚回复",
+        "return_escalation": "返回升级结果"
+      }
+    },
     "title": "工作流",
     "management": {
       "title": "工作流管理",

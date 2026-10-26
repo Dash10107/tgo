@@ -359,7 +359,8 @@ class WorkflowSyncResponseMetadata(BaseSchema):
 
 class WorkflowSyncResponse(BaseSchema):
     success: bool
-    output: dict[str, JsonValue]
+    output: JsonValue = Field(..., description="Workflow output (object, string, or other JSON value)")
+    error: Optional[str] = Field(None, description="Error message when the execution failed")
     metadata: WorkflowSyncResponseMetadata
 
 

@@ -1179,6 +1179,46 @@
     "store": "App Store"
   },
   "workflow": {
+    "templates": {
+      "title": "Start from a template",
+      "subtitle": "Ready-to-run workflows. Create one, adjust the agent, model or prompts if you like, and it is ready to go.",
+      "use": "Use Template",
+      "creating": "Creating...",
+      "nodesCount": "{{count}} nodes",
+      "created": "Workflow created from template",
+      "createdDesc": "Adjust anything you like, then publish it and bind it to an agent.",
+      "noModelTitle": "Select a model",
+      "noModelDesc": "No active chat model was found. Add a model provider, then pick a model in each AI node.",
+      "support_triage": {
+        "name": "Customer Support Triage",
+        "description": "Detects the topic of each customer message (orders, billing, technical or general) and drafts a reply tailored to it. Returns the topic and the reply. Bind it to your support agent so every request is routed and answered consistently."
+      },
+      "lead_qualification": {
+        "name": "Lead Qualification",
+        "description": "Extracts the prospect's name, company, need, budget and timeline from a message, scores the lead as hot, warm or cold, and suggests the next sales step. Bind it to your sales or pre-sales agent."
+      },
+      "agent_escalation": {
+        "name": "Agent Reply with Escalation",
+        "description": "Checks each message for frustration or a request for a human. Upset customers get an empathetic reply and are flagged for escalation; everything else is answered by the AI agent you pick in the agent node (the project's default agent if none is picked). Do not pick an agent that has this workflow bound to it."
+      },
+      "nodes": {
+        "customer_message": "Customer Message",
+        "prospect_message": "Prospect Message",
+        "detect_topic": "Detect Topic",
+        "general_reply": "General Reply",
+        "order_reply": "Orders & Shipping Reply",
+        "billing_reply": "Billing Reply",
+        "technical_reply": "Technical Support Reply",
+        "return_reply": "Return Reply",
+        "extract_details": "Extract Lead Details",
+        "score_lead": "Score Lead",
+        "return_lead": "Return Lead Result",
+        "check_sentiment": "Check Sentiment",
+        "agent_answer": "Answer with Agent",
+        "empathetic_reply": "Empathetic Reply",
+        "return_escalation": "Return Escalation"
+      }
+    },
     "title": "Workflows",
     "management": {
       "title": "Workflow Management",

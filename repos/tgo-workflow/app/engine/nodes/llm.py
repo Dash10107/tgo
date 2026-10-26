@@ -10,8 +10,8 @@ class LLMNodeExecutor(BaseNodeExecutor):
         user_prompt = context.resolve_template(self.config.get("user_prompt", ""))
         system_prompt = context.resolve_template(self.config.get("system_prompt", ""))
         
-        provider = self.config.get("provider_id", "openai")
-        model = self.config.get("model_id", "gpt-4o")
+        provider = self.config.get("provider_id")
+        model = self.config.get("model_id")
         
         tool_ids = self.config.get("tool_ids", [])
         collection_ids = self.config.get("collection_ids", [])

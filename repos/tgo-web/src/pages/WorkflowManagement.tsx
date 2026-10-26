@@ -18,12 +18,77 @@ import {
   Search,
   ChevronLeft,
   ChevronRight,
+  Sparkles,
+  Headphones,
+  Target,
+  ShieldAlert,
+  Loader2,
+  type LucideIcon,
 } from 'lucide-react';
 import { useWorkflowStore } from '@/stores/workflowStore';
 import { useToast } from '@/hooks/useToast';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
-import type { WorkflowSummary, WorkflowStatus } from '@/types/workflow';
+import { WORKFLOW_TEMPLATES } from '@/utils/workflowTemplates';
+import type { WorkflowSummary, WorkflowStatus, WorkflowTemplate, WorkflowTemplateId } from '@/types/workflow';
+
+const TEMPLATE_ICONS: Record<WorkflowTemplateId, LucideIcon> = {
+  support_triage: Headphones,
+  lead_qualification: Target,
+  agent_escalation: ShieldAlert,
+};
+
+/**
+ * Workflow Template Card Component
+ */
+interface WorkflowTemplateCardProps {
+  template: WorkflowTemplate;
+  isCreating: boolean;
+  disabled: boolean;
+  onUse: (id: WorkflowTemplateId) => void;
+}
+
+const WorkflowTemplateCard: React.FC<WorkflowTemplateCardProps> = ({
+  template,
+  isCreating,
+  disabled,
+  onUse,
+}) => {
+  const { t } = useTranslation();
+  const Icon = TEMPLATE_ICONS[template.id];
+
+  return (
+    <div className="group relative bg-white dark:bg-gray-800 rounded-2xl p-5 flex flex-col justify-between shadow-sm hover:shadow-lg transition-all duration-300 border border-dashed border-purple-200 dark:border-purple-800/60">
+      <div>
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400 shrink-0">
+            <Icon className="w-5 h-5" />
+          </div>
+          <div className="min-w-0">
+            <h4 className="font-bold text-gray-900 dark:text-gray-100 truncate" title={t(template.name)}>
+              {t(template.name)}
+            </h4>
+            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+              {t('workflow.templates.nodesCount', '{{count}} nodes', { count: template.nodes.length })}
+            </span>
+          </div>
+        </div>
+        <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-4">
+          {t(template.description)}
+        </p>
+      </div>
+
+      <button
+        onClick={() => onUse(template.id)}
+        disabled={disabled}
+        className="mt-4 w-full flex items-center justify-center gap-2 py-2 px-4 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-600 hover:text-white text-purple-700 dark:text-purple-300 text-xs font-bold rounded-xl border border-purple-100 dark:border-purple-800 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
+      >
+        {isCreating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
+        {isCreating ? t('workflow.templates.creating', 'Creating...') : t('workflow.templates.use', 'Use Template')}
+      </button>
+    </div>
+  );
+};
 
 /**
  * Workflow Card Component
@@ -218,6 +283,7 @@ const WorkflowManagement: React.FC = () => {
     workflowsError,
     loadWorkflows,
     createWorkflow,
+    createWorkflowFromTemplate,
     deleteWorkflow,
     duplicateWorkflow,
   } = useWorkflowStore();
@@ -236,6 +302,7 @@ const WorkflowManagement: React.FC = () => {
   }, []);
 
   const [isCreating, setIsCreating] = useState(false);
+  const [creatingTemplateId, setCreatingTemplateId] = useState<WorkflowTemplateId | null>(null);
 
   // Filter workflows
   const { filteredWorkflows, totalPages, currentPage } = React.useMemo(() => {
@@ -280,6 +347,33 @@ const WorkflowManagement: React.FC = () => {
       showToast('error', t('workflow.messages.createFailed', 'Create Failed'), '');
     } finally {
       setIsCreating(false);
+    }
+  };
+
+  const handleUseTemplate = async (templateId: WorkflowTemplateId) => {
+    if (creatingTemplateId || isCreating) return;
+    setCreatingTemplateId(templateId);
+    try {
+      const { workflow, modelAssigned } = await createWorkflowFromTemplate(templateId);
+      if (modelAssigned) {
+        showToast(
+          'success',
+          t('workflow.templates.created', 'Workflow created from template'),
+          t('workflow.templates.createdDesc', 'Adjust anything you like, then publish it and bind it to an agent.')
+        );
+      } else {
+        showToast(
+          'warning',
+          t('workflow.templates.noModelTitle', 'Select a model'),
+          t('workflow.templates.noModelDesc', 'No active chat model was found. Add a model provider, then pick a model in each AI node.')
+        );
+      }
+      navigate(`/ai/workflows/${workflow.id}/edit`);
+    } catch (error) {
+      console.error('Failed to create workflow from template:', error);
+      showToast('error', t('workflow.messages.createFailed', 'Create Failed'), '');
+    } finally {
+      setCreatingTemplateId(null);
     }
   };
 
@@ -396,6 +490,30 @@ const WorkflowManagement: React.FC = () => {
                    status === 'draft' ? t('workflow.status.draft', 'Draft') :
                    t('workflow.status.archived', 'Archived')}
                 </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Templates */}
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-purple-600" />
+                {t('workflow.templates.title', 'Start from a template')}
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                {t('workflow.templates.subtitle', 'Ready-to-run workflows. Create one, adjust the agent, model or prompts if you like, and it is ready to go.')}
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {WORKFLOW_TEMPLATES.map((template) => (
+                <WorkflowTemplateCard
+                  key={template.id}
+                  template={template}
+                  isCreating={creatingTemplateId === template.id}
+                  disabled={creatingTemplateId !== null || isCreating}
+                  onUse={handleUseTemplate}
+                />
               ))}
             </div>
           </div>

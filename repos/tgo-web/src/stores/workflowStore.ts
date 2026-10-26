@@ -6,22 +6,60 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import { applyNodeChanges, applyEdgeChanges, type NodeChange, type EdgeChange } from 'reactflow';
-import type {
-  Workflow,
-  WorkflowSummary,
-  WorkflowNode,
-  WorkflowEdge,
-  WorkflowNodeType,
-  WorkflowNodeData,
-  ValidationError,
-  WorkflowQueryParams,
-  WorkflowExecution,
-  NodeExecution,
+import {
+  DEFAULT_NODE_DATA,
+  type Workflow,
+  type WorkflowSummary,
+  type WorkflowNode,
+  type WorkflowEdge,
+  type WorkflowNodeType,
+  type WorkflowNodeData,
+  type ValidationError,
+  type WorkflowQueryParams,
+  type WorkflowExecution,
+  type NodeExecution,
+  type WorkflowTemplateId,
+  type WorkflowTemplateModel,
 } from '@/types/workflow';
-import { DEFAULT_NODE_DATA } from '@/types/workflow';
 import { WorkflowApiService } from '@/services/workflowApi';
+import AIProvidersApiService from '@/services/aiProvidersApi';
+import ProjectConfigApiService from '@/services/projectConfigApi';
 import { migrateNodes, migrateNodeData } from '@/utils/workflowTransforms';
+import { buildTemplateGraph, getWorkflowTemplate } from '@/utils/workflowTemplates';
+import { useAuthStore } from './authStore';
 import i18n from '@/i18n';
+
+/**
+ * Pick the chat model for template AI nodes: the project default when it is still
+ * an active model, otherwise the first active chat model. Null when none is available.
+ */
+const resolveTemplateModel = async (): Promise<WorkflowTemplateModel | null> => {
+  const projectId = useAuthStore.getState().user?.project_id;
+  const [configResult, modelsResult] = await Promise.allSettled([
+    projectId ? new ProjectConfigApiService().getAIConfig(projectId) : Promise.reject(new Error('No project')),
+    new AIProvidersApiService().listProjectModels({ model_type: 'chat', is_active: true }),
+  ]);
+
+  const models = modelsResult.status === 'fulfilled' ? modelsResult.value.data || [] : null;
+  const config = configResult.status === 'fulfilled' ? configResult.value : null;
+
+  if (config?.default_chat_provider_id && config.default_chat_model) {
+    const match = models?.find(
+      m => m.provider_id === config.default_chat_provider_id && m.model_id === config.default_chat_model,
+    );
+    // Trust the configured default if the model list could not be loaded
+    if (match || models === null) {
+      return {
+        provider_id: config.default_chat_provider_id,
+        model_id: config.default_chat_model,
+        model_name: match?.model_name || config.default_chat_model,
+      };
+    }
+  }
+
+  const first = models?.[0];
+  return first ? { provider_id: first.provider_id, model_id: first.model_id, model_name: first.model_name } : null;
+};
 
 interface WorkflowState {
   // Workflow list
@@ -65,6 +103,7 @@ interface WorkflowState {
   // Actions - CRUD
   loadWorkflow: (id: string) => Promise<void>;
   createWorkflow: (name?: string) => Promise<Workflow>;
+  createWorkflowFromTemplate: (templateId: WorkflowTemplateId) => Promise<{ workflow: Workflow; modelAssigned: boolean }>;
   saveWorkflow: () => Promise<void>;
   deleteWorkflow: (id: string) => Promise<void>;
   duplicateWorkflow: (id: string) => Promise<Workflow>;
@@ -219,6 +258,32 @@ export const useWorkflowStore = create<WorkflowState>()(
         }, false, 'createWorkflow');
         await get().refreshWorkflows();
         return workflow;
+      },
+
+      // Create a new workflow from a built-in template
+      createWorkflowFromTemplate: async (templateId) => {
+        const template = getWorkflowTemplate(templateId);
+        if (!template) {
+          throw new Error(`Unknown workflow template: ${templateId}`);
+        }
+
+        const model = await resolveTemplateModel();
+        const { nodes, edges } = buildTemplateGraph(template, key => i18n.t(key), model);
+        const workflow = await WorkflowApiService.createWorkflow({
+          name: i18n.t(template.name),
+          description: i18n.t(template.description),
+          tags: template.tags,
+          nodes,
+          edges,
+        });
+        set({
+          currentWorkflow: workflow,
+          isDirty: false,
+          history: [{ nodes: workflow.definition.nodes, edges: workflow.definition.edges }],
+          historyIndex: 0,
+        }, false, 'createWorkflowFromTemplate');
+        await get().refreshWorkflows();
+        return { workflow, modelAssigned: model !== null };
       },
 
       // Save current workflow

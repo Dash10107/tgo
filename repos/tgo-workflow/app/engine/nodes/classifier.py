@@ -3,6 +3,7 @@ from app.engine.nodes.base import BaseNodeExecutor
 from app.engine.context import ExecutionContext
 from app.integrations.llm_provider import LLMProvider
 import json
+import re
 from app.core.logging import logger
 from app.engine.nodes.registry import register_node
 
@@ -26,28 +27,35 @@ Return the category ID in JSON format: {{"category_id": "..."}}
 """
         
         response = await LLMProvider.chat_completion(
-            provider_id=self.config.get("provider_id", "openai"),
-            model=self.config.get("model_id", "gpt-4o"),
+            provider_id=self.config.get("provider_id"),
+            model=self.config.get("model_id"),
             user_prompt=prompt,
+            temperature=0,
             project_id=context.project_id
         )
-        
+
         # Simple extraction logic
+        category_id = None
         try:
             # Look for JSON in response
-            import re
-            match = re.search(r'\{.*\}', response, re.DOTALL)
+            match = re.search(r'\{.*\}', response or "", re.DOTALL)
             if match:
                 data = json.loads(match.group(0))
                 category_id = data.get("category_id")
-            else:
-                # Fallback to simple matching if JSON not found
-                category_id = categories[0]["id"]
-        except (json.JSONDecodeError, KeyError, IndexError) as e:
+        except (json.JSONDecodeError, AttributeError) as e:
             logger.error(f"Error parsing classifier response: {e}")
-            category_id = categories[0]["id"]
-            
-        matched_category = next((c for c in categories if c["id"] == category_id), categories[0])
+
+        # Models sometimes answer with the bare id or the category name instead of JSON
+        candidate = str(category_id if category_id is not None else (response or "")).strip().strip('"\'`').lower()
+        matched_category = next(
+            (c for c in categories if candidate in (str(c["id"]).lower(), str(c["name"]).lower())),
+            None
+        )
+        if matched_category is None:
+            matched_category = next(
+                (c for c in categories if re.search(rf"\b{re.escape(str(c['id']).lower())}\b", candidate)),
+                categories[0]
+            )
         
         outputs = {
             "category_id": matched_category["id"],

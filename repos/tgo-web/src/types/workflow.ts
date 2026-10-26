@@ -365,6 +365,37 @@ export interface WorkflowQueryParams {
 }
 
 // ============================================================================
+// Template Types
+// ============================================================================
+
+/**
+ * Built-in workflow template identifiers
+ */
+export type WorkflowTemplateId = 'support_triage' | 'lead_qualification' | 'agent_escalation';
+
+/**
+ * Ready-made workflow graph. `name`, `description` and node labels are i18n keys,
+ * resolved when a workflow is created from the template.
+ */
+export interface WorkflowTemplate {
+  id: WorkflowTemplateId;
+  name: string;
+  description: string;
+  tags: string[];
+  nodes: WorkflowNode[];
+  edges: WorkflowEdge[];
+}
+
+/**
+ * Model applied to AI nodes (llm / classifier) that have none selected
+ */
+export interface WorkflowTemplateModel {
+  provider_id: string;
+  model_id: string;
+  model_name: string;
+}
+
+// ============================================================================
 // Editor Types
 // ============================================================================
 

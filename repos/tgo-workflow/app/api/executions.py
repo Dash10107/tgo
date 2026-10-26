@@ -259,6 +259,7 @@ async def _run_sync_execution(
     return {
         "success": success,
         "output": final_output if final_output is not None else {},
+        "error": error_msg,
         "metadata": {
             "duration": round(perf_duration, 3),
             "startTime": started_at.isoformat() + "Z",

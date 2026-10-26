@@ -43,7 +43,7 @@ class WorkflowExecutor:
         
         # Use provided project_id or extract from inputs
         project_id = self.project_id or inputs.get("project_id")
-        context = ExecutionContext(mapped_inputs, project_id=project_id)
+        context = ExecutionContext(mapped_inputs, project_id=project_id, trigger_key=ref_key)
         
         # 2. Get execution order
         topo_order = self.graph.get_topo_sort()
@@ -116,11 +116,15 @@ class WorkflowExecutor:
                     )
                 
                 executed_nodes.add(node_id)
-                
-                if status == "completed":
-                    # Get next nodes based on handle (for branching)
-                    targets = self.graph.get_next_nodes(node_id, next_handle)
-                    next_node_ids.extend(targets)
+
+                if status == "failed":
+                    # Surface the failure instead of ending the run as completed with no output
+                    label = node.get("data", {}).get("label") or node_id
+                    raise RuntimeError(f"Node '{label}' failed: {error}")
+
+                # Get next nodes based on handle (for branching)
+                targets = self.graph.get_next_nodes(node_id, next_handle)
+                next_node_ids.extend(targets)
             
             curr_node_ids = list(set(next_node_ids)) # De-duplicate
             
