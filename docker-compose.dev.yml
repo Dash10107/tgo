@@ -253,8 +253,11 @@ services:
           corepack enable
           corepack prepare yarn@1.22.22 --activate
         fi
-        if [ ! -d node_modules/vite ]; then
+        # node_modules lives in a named volume, so reinstall whenever deps change
+        DEPS_HASH=$$(cat package.json yarn.lock | sha256sum | cut -d' ' -f1)
+        if [ ! -d node_modules/vite ] || [ "$$(cat node_modules/.deps-hash 2>/dev/null)" != "$$DEPS_HASH" ]; then
           yarn install --frozen-lockfile --non-interactive --network-timeout 600000
+          echo "$$DEPS_HASH" > node_modules/.deps-hash
         fi
         yarn dev --host 0.0.0.0 --port 5173
     healthcheck:
@@ -285,8 +288,11 @@ services:
           corepack enable
           corepack prepare yarn@1.22.22 --activate
         fi
-        if [ ! -d node_modules/vite ]; then
+        # node_modules lives in a named volume, so reinstall whenever deps change
+        DEPS_HASH=$$(cat package.json yarn.lock | sha256sum | cut -d' ' -f1)
+        if [ ! -d node_modules/vite ] || [ "$$(cat node_modules/.deps-hash 2>/dev/null)" != "$$DEPS_HASH" ]; then
           yarn install --frozen-lockfile --non-interactive --network-timeout 600000
+          echo "$$DEPS_HASH" > node_modules/.deps-hash
         fi
         yarn dev --host 0.0.0.0 --port 5174
     healthcheck:
