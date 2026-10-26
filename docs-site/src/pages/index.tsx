@@ -141,9 +141,9 @@ function OrbitIntegrations() {
         {/* 已移除 <line> 虚线元素 */}
       </svg>
 
-      {/* 中心 Tgo Logo */}
+      {/* 中心 Pelatis Logo */}
       <div className={styles.centerLogo}>
-        <img src="img/logo.svg" alt="Tgo Logo" className={styles.logoImg} />
+        <img src="img/logo.svg" alt="Pelatis Logo" className={styles.logoImg} />
         {/* 呼吸光晕 */}
         <div className={styles.pulseRing}></div>
         <div className={styles.pulseRing} style={{animationDelay: '1s'}}></div>
@@ -229,7 +229,7 @@ function HomepageHeader() {
               src={productImage} 
               alt={translate({
                 id: 'homepage.hero.productImage.alt',
-                message: 'Tgo 产品截图',
+                message: 'Pelatis 产品截图',
               })}
               className={styles.productImage}
             />

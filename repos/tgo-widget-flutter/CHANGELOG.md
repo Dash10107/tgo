@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- Initial release of TGO Widget for Flutter
+- Initial release of Pelatis Widget for Flutter
 - Real-time messaging via WuKongIM
 - Support for text, image, and file messages
 - Streaming message support for AI responses

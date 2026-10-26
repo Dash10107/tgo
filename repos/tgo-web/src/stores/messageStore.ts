@@ -5,6 +5,7 @@ import { WuKongIMApiService, WuKongIMUtils } from '@/services/wukongimApi';
 import { getChannelKey } from '@/utils/channelUtils';
 import { MESSAGE_SENDER_TYPE, STORAGE_KEYS } from '@/constants';
 
+import i18n from '@/i18n';
 // Track channels currently loading history to prevent duplicate requests
 const loadingHistoryChannels = new Set<string>();
 
@@ -37,33 +38,33 @@ export type StreamEndReasonType = (typeof StreamEndReason)[keyof typeof StreamEn
  * Manages real-time messages, historical messages, and streaming
  */
 interface MessageState {
-  // 实时消息
+  // Realtime messages
   messages: Message[];
   isLoading: boolean;
   isSending: boolean;
 
-  // 历史消息
+  // History messages
   historicalMessages: Record<string, WuKongIMMessage[]>; // channelKey -> messages
   isLoadingHistory: boolean;
   historyError: string | null;
-  hasMoreHistory: Record<string, boolean>; // channelKey -> hasMore（更旧方向）
-  nextHistorySeq: Record<string, number>; // channelKey -> nextSeq（更旧方向）
-  hasMoreNewerHistory: Record<string, boolean>; // channelKey -> hasMore（更新方向）
-  nextNewerSeq: Record<string, number>; // channelKey -> nextSeq（更新方向）
+  hasMoreHistory: Record<string, boolean>; // channelKey -> hasMore (older direction)
+  nextHistorySeq: Record<string, number>; // channelKey -> nextSeq (older direction)
+  hasMoreNewerHistory: Record<string, boolean>; // channelKey -> hasMore (newer direction)
+  nextNewerSeq: Record<string, number>; // channelKey -> nextSeq (newer direction)
 
-  // 流式消息
+  // Streaming messages
   isStreamingInProgress: boolean;
   streamingClientMsgNo: string | null;
   /**
-   * 追踪所有正在进行的流式消息（clientMsgNo -> 频道信息与实时内容）
-   * 即使该消息不在当前 active 消息列表中（例如在侧边栏其他会话中产生），也能同步更新会话预览。
+   * Tracks all in-progress streaming messages (clientMsgNo -> channel info and live content)
+   * Even if the message is not in the currently active message list (e.g. generated in another conversation in the sidebar), the conversation preview can still be updated in sync.
    */
   activeStreamingChannels: Record<string, { channelId: string; channelType: number; content: string }>;
 
-  // 目标消息定位（从搜索跳转）
+  // Target message location (jumping from search)
   targetMessageLocation: { channelId: string; channelType: number; messageSeq: number } | null;
 
-  // Actions - 实时消息
+  // Actions - realtime messages
   addMessage: (message: Message) => void;
   updateMessageByClientMsgNo: (clientMsgNo: string, patch: Partial<Message>) => void;
   loadMessages: (chatId: string) => Promise<void>;
@@ -71,7 +72,7 @@ interface MessageState {
   setLoading: (loading: boolean) => void;
   setSending: (sending: boolean) => void;
 
-  // Actions - 历史消息
+  // Actions - history messages
   loadHistoricalMessages: (channelId: string, channelType: number) => Promise<void>;
   loadMoreHistory: (channelId: string, channelType: number) => Promise<void>;
   loadNewerHistory: (channelId: string, channelType: number) => Promise<void>;
@@ -81,7 +82,7 @@ interface MessageState {
   setHistoryError: (error: string | null) => void;
   getChannelMessages: (channelId: string, channelType: number) => WuKongIMMessage[];
 
-  // Actions - 流式消息
+  // Actions - streaming messages
   appendStreamMessageContent: (clientMsgNo: string, content: string) => void;
   appendMixedPart: (clientMsgNo: string, part: { type: string; text?: string; data?: unknown }) => void;
   markStreamMessageEnd: (clientMsgNo: string, error?: string) => void;
@@ -91,17 +92,17 @@ interface MessageState {
   registerStreamingChannel: (clientMsgNo: string, channelId: string, channelType: number) => void;
   attachJSONRenderPatches: (clientMsgNo: string, patches: Record<string, unknown>[]) => void;
 
-  // Actions - 目标消息
+  // Actions - target message
   setTargetMessageLocation: (loc: { channelId: string; channelType: number; messageSeq: number } | null) => void;
 
-  // Actions - Channel 信息应用（仅消息部分）
+  // Actions - applying channel info (message part only)
   applyChannelInfoToMessages: (channelId: string, channelType: number, info: ChannelInfo) => void;
 
-  // Actions - 更新会话预览（供流式消息使用）
-  // 注意：这个方法需要调用 conversationStore，在跨 store 通信中实现
+  // Actions - update conversation preview (used by streaming messages)
+  // Note: this method must call conversationStore and is implemented in cross-store communication
   onConversationPreviewUpdate?: (channelId: string, channelType: number, content: string) => void;
 
-  // Actions - 清理
+  // Actions - cleanup
   clearMessageStore: () => void;
 }
 
@@ -173,7 +174,7 @@ export const useMessageStore = create<MessageState>()(
       loadHistoricalMessages: async (channelId: string, channelType: number) => {
         const key = getChannelKey(channelId, channelType);
 
-        // 防止重复请求：如果该频道正在加载中，直接返回
+        // Prevent duplicate requests: if this channel is already loading, return directly
         if (loadingHistoryChannels.has(key)) {
           console.log('loadHistoricalMessages: Already loading for', key, ', skipping');
           return;
@@ -204,13 +205,13 @@ export const useMessageStore = create<MessageState>()(
             isLoadingHistory: false,
           }));
 
-          // 加载完成，清除跟踪
+          // Loading finished; clear the tracking
           loadingHistoryChannels.delete(key);
         } catch (error) {
           console.error('Failed to load historical messages:', error);
           loadingHistoryChannels.delete(key);
           set({
-            historyError: error instanceof Error ? error.message : '加载历史消息失败',
+            historyError: error instanceof Error ? error.message : i18n.t('messages.loadHistoryFailed', 'Failed to load message history'),
             isLoadingHistory: false,
           });
         }
@@ -255,7 +256,7 @@ export const useMessageStore = create<MessageState>()(
         } catch (error) {
           console.error('Failed to load more historical messages:', error);
           set({
-            historyError: error instanceof Error ? error.message : '加载更多消息失败',
+            historyError: error instanceof Error ? error.message : i18n.t('messages.loadMoreFailed', 'Failed to load more messages'),
             isLoadingHistory: false,
           });
         }
@@ -268,7 +269,7 @@ export const useMessageStore = create<MessageState>()(
         const current = state.historicalMessages[key] || [];
         const currentMaxSeq = current.length > 0 ? current[current.length - 1].message_seq : 0;
 
-        // 无更多较新历史且已到最新
+        // No more newer history and already at the latest
         if (state.hasMoreNewerHistory?.[key] === false) {
           return;
         }
@@ -279,7 +280,7 @@ export const useMessageStore = create<MessageState>()(
             channel_type: channelType,
             start_message_seq: currentMaxSeq,
             end_message_seq: 0,
-            pull_mode: 1, // 向上/较新
+            pull_mode: 1, // Upward / newer
             limit: 50,
           } as any);
 
@@ -305,7 +306,7 @@ export const useMessageStore = create<MessageState>()(
           );
         } catch (error) {
           console.error('Failed to load newer messages:', error);
-          set({ historyError: error instanceof Error ? error.message : '加载更新消息失败' }, false, 'loadNewerHistoryError');
+          set({ historyError: error instanceof Error ? error.message : i18n.t('messages.loadNewerFailed', 'Failed to load newer messages') }, false, 'loadNewerHistoryError');
         }
       },
 
@@ -317,19 +318,19 @@ export const useMessageStore = create<MessageState>()(
         try {
           const reqBase = { channel_id: channelId, channel_type: channelType, start_message_seq: targetSeq, end_message_seq: 0 } as any;
           const [downResp, upResp] = await Promise.all([
-            WuKongIMApiService.syncChannelMessages({ ...reqBase, pull_mode: 0, limit: half }), // 向下/更旧，包含目标
-            WuKongIMApiService.syncChannelMessages({ ...reqBase, pull_mode: 1, limit: half }), // 向上/更新，包含目标
+            WuKongIMApiService.syncChannelMessages({ ...reqBase, pull_mode: 0, limit: half }), // Downward / older, includes the target
+            WuKongIMApiService.syncChannelMessages({ ...reqBase, pull_mode: 1, limit: half }), // Upward / newer, includes the target
           ]);
           const mergedArr = [...(downResp?.messages || []), ...(upResp?.messages || [])];
-          // 去重，避免目标消息（start_message_seq）在双向结果中重复
+          // De-duplicate so the target message (start_message_seq) is not repeated in the two-way results
           const deduped = WuKongIMUtils.deduplicateMessages(mergedArr);
           const sorted = WuKongIMUtils.sortMessages(deduped, 'asc');
           set((state) => ({
             historicalMessages: {
               ...state.historicalMessages,
-              [key]: sorted, // 直接替换，确保连续上下文
+              [key]: sorted, // Replace directly to ensure continuous context
             },
-            // "更旧方向"翻页信息（用于顶部继续加载更早）
+            // "Older direction" paging info (for continuing to load earlier messages at the top)
             hasMoreHistory: {
               ...state.hasMoreHistory,
               [key]: Boolean(downResp?.more),
@@ -338,7 +339,7 @@ export const useMessageStore = create<MessageState>()(
               ...state.nextHistorySeq,
               [key]: downResp?.next_start_seq || 0,
             },
-            // "更新方向"翻页信息（用于底部继续加载较新）
+            // "Newer direction" paging info (for continuing to load newer messages at the bottom)
             hasMoreNewerHistory: {
               ...state.hasMoreNewerHistory,
               [key]: Boolean(upResp?.more),
@@ -352,7 +353,7 @@ export const useMessageStore = create<MessageState>()(
         } catch (error) {
           console.error('Failed to load message context by seq:', error);
           set(
-            { historyError: error instanceof Error ? error.message : '加载消息上下文失败', isLoadingHistory: false },
+            { historyError: error instanceof Error ? error.message : i18n.t('messages.loadContextFailed', 'Failed to load message context'), isLoadingHistory: false },
             false,
             'loadMessageContextError'
           );
@@ -403,8 +404,8 @@ export const useMessageStore = create<MessageState>()(
       appendStreamMessageContent: (clientMsgNo: string, content: string) => {
         const state = get();
 
-        // 1. 更新追踪列表（activeStreamingChannels）并触发预览更新
-        // 这一步非常重要，因为它保证了即使会话不在当前激活的消息列表中，侧边栏也能更新预览。
+        // 1. Update the tracking list (activeStreamingChannels) and trigger the preview update
+        // This step is very important because it guarantees that the sidebar can update the preview even if the conversation is not in the currently active message list.
         const tracked = state.activeStreamingChannels[clientMsgNo];
         let newTrackedContent = content;
         if (tracked) {
@@ -420,14 +421,14 @@ export const useMessageStore = create<MessageState>()(
             'appendStreamMessageContent:tracked'
           );
 
-          // 触发跨 Store 的会话列表预览更新
+          // Trigger the cross-store conversation list preview update
           const onUpdate = get().onConversationPreviewUpdate;
           if (onUpdate) {
             onUpdate(tracked.channelId, tracked.channelType, newTrackedContent);
           }
         }
 
-        // 2. 尝试在当前 active 消息列表中查找并更新
+        // 2. Try to find and update it in the current active message list
         const messageIndex = state.messages.findIndex((msg) => msg.clientMsgNo === clientMsgNo);
 
         if (messageIndex === -1) {
@@ -451,7 +452,7 @@ export const useMessageStore = create<MessageState>()(
             return;
           }
 
-          // 如果还没被追踪，警告但继续
+          // If it is not yet tracked, warn but continue
           if (!tracked) {
             console.warn('🤖 Message Store: STREAM CHUNK IGNORED (message not found or tracked)', {
               clientMsgNo,
@@ -572,7 +573,7 @@ export const useMessageStore = create<MessageState>()(
       markStreamMessageEnd: (clientMsgNo: string, error?: string) => {
         const state = get();
 
-        // 清理追踪列表
+        // Clean up the tracking list
         const nextActiveStreamingChannels = { ...state.activeStreamingChannels };
         delete nextActiveStreamingChannels[clientMsgNo];
 

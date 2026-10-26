@@ -28,7 +28,7 @@ class AIServiceClient:
         """Get headers for AI service requests (no auth required by downstream)."""
         headers = {
             "Content-Type": "application/json",
-            "User-Agent": "TGO-API-Service/0.1.0",
+            "User-Agent": "Pelatis-API-Service/0.1.0",
         }
         # Authentication headers have been removed per latest AI service API spec
         return headers

@@ -3,14 +3,14 @@ import type { Platform, PlatformStatusConfig, PlatformTypeConfig } from '@/types
 export const mockPlatforms: Platform[] = [
   {
     id: 'website',
-    name: '官网客服',
+    name: 'Website Support',
     icon: 'Globe',
     iconColor: 'text-blue-600',
     status: 'connected',
-    statusText: '已连接',
+    statusText: 'Connected',
     statusColor: 'bg-green-500',
     type: 'website',
-    description: '官方网站客服接入平台',
+    description: 'Official website customer service platform',
     config: {
       domain: 'https://example.com',
       embedCode: '<script>...</script>'
@@ -18,14 +18,14 @@ export const mockPlatforms: Platform[] = [
   },
   {
     id: 'wechat',
-    name: '微信公众号',
+    name: 'WeChat Official Account',
     icon: 'MessageSquare',
     iconColor: 'text-green-600',
     status: 'connected',
-    statusText: '已连接',
+    statusText: 'Connected',
     statusColor: 'bg-green-500',
     type: 'wechat',
-    description: '微信公众号消息接入',
+    description: 'WeChat Official Account message integration',
     config: {
       appId: 'wx1234567890',
       appSecret: '***hidden***',
@@ -34,26 +34,26 @@ export const mockPlatforms: Platform[] = [
   },
   {
     id: 'tiktok',
-    name: '抖音',
+    name: 'Douyin',
     icon: 'Video',
     iconColor: 'text-black',
     status: 'unconfigured',
-    statusText: '未配置',
+    statusText: 'Not configured',
     statusColor: 'bg-gray-400',
     type: 'tiktok',
-    description: '抖音私信接入平台',
+    description: 'Douyin direct message integration platform',
     config: {}
   },
   {
     id: 'email',
-    name: '邮件接入',
+    name: 'Email Integration',
     icon: 'Mail',
     iconColor: 'text-red-600',
     status: 'error',
-    statusText: '连接失败',
+    statusText: 'Connection failed',
     statusColor: 'bg-red-500',
     type: 'email',
-    description: '邮件客服接入平台',
+    description: 'Email customer service integration platform',
     config: {
       smtpHost: 'smtp.example.com',
       smtpPort: 587,
@@ -63,26 +63,26 @@ export const mockPlatforms: Platform[] = [
   },
   {
     id: 'phone',
-    name: '电话呼叫中心',
+    name: 'Phone Call Center',
     icon: 'Phone',
     iconColor: 'text-gray-500',
     status: 'disabled',
-    statusText: '未启用',
+    statusText: 'Disabled',
     statusColor: 'bg-gray-400',
     type: 'phone',
-    description: '电话客服接入平台',
+    description: 'Phone customer service integration platform',
     config: {}
   },
   {
     id: 'custom',
-    name: '自定义平台 (Webhook/API)',
+    name: 'Custom Platform (Webhook/API)',
     icon: 'Webhook',
     iconColor: 'text-purple-600',
     status: 'pending',
-    statusText: '待配置',
+    statusText: 'Pending setup',
     statusColor: 'bg-yellow-400',
     type: 'custom',
-    description: '通过Webhook和API接入的自定义平台',
+    description: 'Custom platform integrated through Webhook and API',
     config: {
       webhookUrl: 'https://api.example.com/webhook/ch_abc123xyz',
       secretKey: 'sk_test_1234567890abcdef',
@@ -92,64 +92,64 @@ export const mockPlatforms: Platform[] = [
   }
 ];
 
-// 平台状态配置
+// Platform status config
 export const PLATFORM_STATUS: Record<string, PlatformStatusConfig> = {
   connected: {
-    label: '已连接',
+    label: 'Connected',
     bgColor: 'bg-green-500',
     textColor: 'text-green-600'
   },
   pending: {
-    label: '待配置',
+    label: 'Pending setup',
     bgColor: 'bg-yellow-400',
     textColor: 'text-yellow-600'
   },
   unconfigured: {
-    label: '未配置',
+    label: 'Not configured',
     bgColor: 'bg-gray-400',
     textColor: 'text-gray-500'
   },
   disabled: {
-    label: '未启用',
+    label: 'Disabled',
     bgColor: 'bg-gray-400',
     textColor: 'text-gray-500'
   },
   error: {
-    label: '连接失败',
+    label: 'Connection failed',
     bgColor: 'bg-red-500',
     textColor: 'text-red-600'
   }
 };
 
-// 平台类型配置
+// Platform type config
 export const PLATFORM_TYPES: Record<string, PlatformTypeConfig> = {
   website: {
-    label: '官网客服',
+    label: 'Website Support',
     color: 'text-blue-600'
   },
   wechat: {
-    label: '微信公众号',
+    label: 'WeChat Official Account',
     color: 'text-green-600'
   },
   tiktok: {
-    label: '抖音',
+    label: 'Douyin',
     color: 'text-black'
   },
   email: {
-    label: '邮件接入',
+    label: 'Email Integration',
     color: 'text-red-600'
   },
   phone: {
-    label: '电话呼叫中心',
+    label: 'Phone Call Center',
     color: 'text-gray-500'
   },
   custom: {
-    label: '自定义平台',
+    label: 'Custom Platform',
     color: 'text-purple-600'
   }
 };
 
-// 默认的自定义平台配置
+// Default custom platform config
 export const DEFAULT_CUSTOM_CONFIG = {
   webhookUrl: '',
   secretKey: '',

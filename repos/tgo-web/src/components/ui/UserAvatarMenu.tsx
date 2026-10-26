@@ -69,7 +69,7 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({ size = 40, onSettingsCl
             >
               <div className="px-4 py-3 border-b border-gray-100">
                 <div className="text-sm font-medium text-gray-800 truncate">
-                  {user?.nickname || user?.username || t('auth.notLoggedIn', '未登录')}
+                  {user?.nickname || user?.username || t('auth.notLoggedIn', 'Not logged in')}
                 </div>
                 {isAuthenticated && (
                   <div className="text-xs text-gray-500 truncate">
@@ -83,14 +83,14 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({ size = 40, onSettingsCl
                   className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                 >
                   <Cog className="w-4 h-4" />
-                  <span>{t('common.settings', '设置')}</span>
+                  <span>{t('common.settings', 'Settings')}</span>
                 </button>
                 <button
                   onClick={() => { setOpen(false); onAboutClick?.(); }}
                   className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                 >
                   <Info className="w-4 h-4" />
-                  <span>{t('common.about', '关于')}</span>
+                  <span>{t('common.about', 'About')}</span>
                 </button>
                 {isAuthenticated && (
                   <button
@@ -105,7 +105,7 @@ const UserAvatarMenu: React.FC<UserAvatarMenuProps> = ({ size = 40, onSettingsCl
                     className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                   >
                     <LogOut className="w-4 h-4" />
-                    <span>{t('auth.logout', '退出登录')}</span>
+                    <span>{t('auth.logout', 'Logout')}</span>
                   </button>
                 )}
               </div>

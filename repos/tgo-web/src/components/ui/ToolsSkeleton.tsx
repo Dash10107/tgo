@@ -5,6 +5,7 @@
 
 import React from 'react';
 
+import { useTranslation } from 'react-i18next';
 /**
  * Single tool card skeleton
  */
@@ -176,6 +177,7 @@ export const AiToolsErrorState: React.FC<AiToolsErrorStateProps> = ({
   error, 
   onRetry 
 }) => {
+  const { t } = useTranslation();
   return (
     <div className="text-center py-12">
       <div className="text-red-400 mb-4">
@@ -183,7 +185,7 @@ export const AiToolsErrorState: React.FC<AiToolsErrorStateProps> = ({
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
         </svg>
       </div>
-      <h3 className="text-lg font-medium text-gray-900 mb-2">加载失败</h3>
+      <h3 className="text-lg font-medium text-gray-900 mb-2">{t('toolsSkeleton.loadFailed', 'Failed to load')}</h3>
       <p className="text-gray-500 max-w-md mx-auto mb-4">
         {error}
       </p>
@@ -192,7 +194,7 @@ export const AiToolsErrorState: React.FC<AiToolsErrorStateProps> = ({
           onClick={onRetry}
           className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
         >
-          重试
+          {t('common.retry', 'Retry')}
         </button>
       )}
     </div>
@@ -209,8 +211,8 @@ interface AiToolsEmptyStateProps {
 }
 
 export const AiToolsEmptyState: React.FC<AiToolsEmptyStateProps> = ({ 
-  title = "未找到相关工具",
-  description = "尝试调整搜索关键词或选择不同的分类",
+  title = "No matching tools found",
+  description = "Try adjusting your search keywords or choosing a different category",
   showSearchIcon = true
 }) => {
   return (

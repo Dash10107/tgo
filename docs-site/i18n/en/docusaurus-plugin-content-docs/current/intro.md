@@ -4,11 +4,11 @@ title: Introduction
 sidebar_position: 1
 ---
 
-# Introduction to TGO
+# Introduction to Pelatis
 
-**TGO** is an open-source AI agent customer service platform. We are dedicated to helping enterprises build smarter and more efficient customer service systems through the **Multi-Agents** collaboration model.
+**Pelatis** is an open-source AI agent customer service platform. We are dedicated to helping enterprises build smarter and more efficient customer service systems through the **Multi-Agents** collaboration model.
 
-Unlike traditional chatbots, TGO emphasizes collaboration between agents. You can assemble a team composed of agents with different capabilities to collaboratively handle complex customer inquiries, after-sales support, and business lead generation.
+Unlike traditional chatbots, Pelatis emphasizes collaboration between agents. You can assemble a team composed of agents with different capabilities to collaboratively handle complex customer inquiries, after-sales support, and business lead generation.
 
 ## Key Highlights
 
@@ -20,9 +20,9 @@ Unlike traditional chatbots, TGO emphasizes collaboration between agents. You ca
 
 ## Technical Architecture
 
-TGO adopts a modern microservices architecture to ensure system stability and scalability.
+Pelatis adopts a modern microservices architecture to ensure system stability and scalability.
 
-![TGO Architecture](/img/architecture_en.svg)
+![Pelatis Architecture](/img/architecture_en.svg)
 
 | Service | Description |
 | :--- | :--- |
@@ -36,7 +36,7 @@ TGO adopts a modern microservices architecture to ensure system stability and sc
 
 ## System Requirements
 
-Before deploying TGO, please ensure your environment meets the following requirements:
+Before deploying Pelatis, please ensure your environment meets the following requirements:
 
 | Item | Minimum | Recommended |
 | :--- | :--- | :--- |
@@ -48,5 +48,5 @@ Before deploying TGO, please ensure your environment meets the following require
 ## Next Steps
 
 - [🚀 Quick Start](/en/quick-start/deploy) - Complete system deployment in 5 minutes
-- [🔧 Environment Variables](/en/config/env-vars) - Deeply customize your TGO
+- [🔧 Environment Variables](/en/config/env-vars) - Deeply customize your Pelatis
 - [👨‍💻 Developer Guide](/en/development/source-deploy) - Learn how to perform secondary development

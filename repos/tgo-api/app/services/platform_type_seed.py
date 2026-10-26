@@ -19,50 +19,50 @@ SEED_PLATFORM_TYPES: List[Dict[str, object]] = [
     # Supported platform types
      {
         "type": "website",
-        "name": "网站小部件",
+        "name": "Website Widget",
         "name_en": "Website",
         "is_supported": True,
     },
     {
         "type": "wecom",
-        "name": "微信客服",
+        "name": "WeChat Customer Service",
         "name_en": "WeCom",
         "is_supported": True,
     },
     {
         "type": "email",
-        "name": "邮件",
+        "name": "Email",
         "name_en": "Email",
         "is_supported": True,
     },
     {
         "type": "custom",
-        "name": "自定义",
+        "name": "Custom",
         "name_en": "Custom",
         "is_supported": True,
     },
     {
         "type": "wecom_bot",
-        "name": "企业微信机器人",
+        "name": "WeCom Bot",
         "name_en": "WeCom Bot",
         "is_supported": True,
     },
     {
         "type": "feishu_bot",
-        "name": "飞书机器人",
+        "name": "Feishu Bot",
         "name_en": "Feishu Bot",
         "is_supported": True,
     },
     {
         "type": "dingtalk_bot",
-        "name": "钉钉机器人",
+        "name": "DingTalk Bot",
         "name_en": "DingTalk Bot",
         "is_supported": True,
     },
     # Other platform types from PlatformType enum (currently not supported)
     {
         "type": "wechat",
-        "name": "微信公众号",
+        "name": "WeChat Official Account",
         "name_en": "WeChat Official Account",
         "is_supported": False,
     },
@@ -80,7 +80,7 @@ SEED_PLATFORM_TYPES: List[Dict[str, object]] = [
     },
     {
         "type": "sms",
-        "name": "短信",
+        "name": "SMS",
         "name_en": "SMS",
         "is_supported": False,
     },
@@ -128,13 +128,13 @@ SEED_PLATFORM_TYPES: List[Dict[str, object]] = [
     },
     {
         "type": "phone",
-        "name": "电话",
+        "name": "Phone",
         "name_en": "Phone",
         "is_supported": False,
     },
     {
         "type": "douyin",
-        "name": "抖音",
+        "name": "Douyin",
         "name_en": "Douyin",
         "is_supported": False,
     },

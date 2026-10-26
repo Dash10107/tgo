@@ -5,7 +5,7 @@ from typing import Any, Dict, Optional
 
 
 class TGOAIServiceException(Exception):
-    """Base exception for TGO AI Service."""
+    """Base exception for Pelatis AI Service."""
 
     def __init__(
         self,

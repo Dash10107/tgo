@@ -56,7 +56,7 @@ class ChatScreen extends StatelessWidget {
                 : const BorderRadius.vertical(top: Radius.circular(16)),
             child: Scaffold(
               backgroundColor: theme.bgPrimary,
-              resizeToAvoidBottomInset: false, // 必须为 false 才能实现无缝切换
+              resizeToAvoidBottomInset: false, // Must be false for seamless switching
               body: GestureDetector(
                 onTap: () {
                   FocusScope.of(context).unfocus();

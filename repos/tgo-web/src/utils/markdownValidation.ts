@@ -1,6 +1,6 @@
 /**
- * Markdown 渲染功能验证工具
- * 自动化测试和验证 Markdown 渲染是否正常工作
+ * Markdown rendering validation tool
+ * Automatically tests and validates that Markdown rendering works correctly
  */
 
 interface ValidationResult {
@@ -21,7 +21,7 @@ interface ValidationReport {
 }
 
 /**
- * 验证 Markdown 组件是否已加载
+ * Validate that the Markdown component has been loaded
  */
 export const validateMarkdownComponentLoaded = (): ValidationResult => {
   try {
@@ -30,7 +30,7 @@ export const validateMarkdownComponentLoaded = (): ValidationResult => {
     if (markdownElements.length > 0) {
       return {
         passed: true,
-        message: `找到 ${markdownElements.length} 个 Markdown 内容元素`,
+        message: `Found ${markdownElements.length} Markdown content elements`,
         details: {
           count: markdownElements.length,
           elements: Array.from(markdownElements).map((el, i) => ({
@@ -43,25 +43,25 @@ export const validateMarkdownComponentLoaded = (): ValidationResult => {
     } else {
       return {
         passed: false,
-        message: '未找到 Markdown 内容元素，可能没有包含 stream_data 的消息',
-        details: { hint: '请确保有包含 stream_data 的消息在页面上' }
+        message: 'No Markdown content elements found; there may be no messages containing stream_data',
+        details: { hint: 'Make sure there are messages containing stream_data on the page' }
       };
     }
   } catch (error) {
     return {
       passed: false,
-      message: `验证失败: ${error instanceof Error ? error.message : '未知错误'}`,
+      message: `Validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       details: { error }
     };
   }
 };
 
 /**
- * 验证 Markdown 样式是否正确加载
+ * Validate that the Markdown styles are loaded correctly
  */
 export const validateMarkdownStyles = (): ValidationResult => {
   try {
-    // 检查是否有 markdown.css 的样式规则
+    // Check whether there are style rules from markdown.css
     const styleSheets = Array.from(document.styleSheets);
     let hasMarkdownStyles = false;
     
@@ -78,7 +78,7 @@ export const validateMarkdownStyles = (): ValidationResult => {
           break;
         }
       } catch (e) {
-        // CORS 限制，跳过外部样式表
+    // CORS restriction; skip external stylesheets
         continue;
       }
     }
@@ -86,15 +86,15 @@ export const validateMarkdownStyles = (): ValidationResult => {
     if (hasMarkdownStyles) {
       return {
         passed: true,
-        message: 'Markdown 样式已正确加载',
+        message: 'Markdown styles loaded correctly',
         details: { stylesFound: true }
       };
     } else {
       return {
         passed: false,
-        message: 'Markdown 样式可能未正确加载',
+        message: 'Markdown styles may not be loaded correctly',
         details: { 
-          hint: '检查 src/styles/markdown.css 是否在 src/index.css 中导入',
+          hint: 'Check whether src/styles/markdown.css is imported in src/index.css',
           stylesFound: false
         }
       };
@@ -102,14 +102,14 @@ export const validateMarkdownStyles = (): ValidationResult => {
   } catch (error) {
     return {
       passed: false,
-      message: `样式验证失败: ${error instanceof Error ? error.message : '未知错误'}`,
+      message: `Style validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       details: { error }
     };
   }
 };
 
 /**
- * 验证 Markdown 元素是否正确渲染
+ * Validate that Markdown elements are rendered correctly
  */
 export const validateMarkdownElements = (): ValidationResult => {
   try {
@@ -118,8 +118,8 @@ export const validateMarkdownElements = (): ValidationResult => {
     if (markdownContainers.length === 0) {
       return {
         passed: false,
-        message: '没有找到 Markdown 容器',
-        details: { hint: '请确保页面上有包含 stream_data 的消息' }
+        message: 'No Markdown container found',
+        details: { hint: 'Make sure there are messages containing stream_data on the page' }
       };
     }
     
@@ -153,15 +153,15 @@ export const validateMarkdownElements = (): ValidationResult => {
     if (foundCount > 0) {
       return {
         passed: true,
-        message: `找到 ${foundCount} 个 Markdown 元素`,
+        message: `Found ${foundCount} Markdown elements`,
         details: { elements: foundElements }
       };
     } else {
       return {
         passed: false,
-        message: 'Markdown 容器中没有找到任何元素',
+        message: 'No elements found in the Markdown container',
         details: { 
-          hint: '可能 Markdown 内容为空或渲染失败',
+          hint: 'The Markdown content may be empty or rendering may have failed',
           foundElements
         }
       };
@@ -169,14 +169,14 @@ export const validateMarkdownElements = (): ValidationResult => {
   } catch (error) {
     return {
       passed: false,
-      message: `元素验证失败: ${error instanceof Error ? error.message : '未知错误'}`,
+      message: `Element validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       details: { error }
     };
   }
 };
 
 /**
- * 验证链接是否有正确的安全属性
+ * Validate that links have the correct security attributes
  */
 export const validateLinkSecurity = (): ValidationResult => {
   try {
@@ -185,7 +185,7 @@ export const validateLinkSecurity = (): ValidationResult => {
     if (markdownLinks.length === 0) {
       return {
         passed: true,
-        message: '没有找到链接（可能当前内容不包含链接）',
+        message: 'No links found (the current content may not contain links)',
         details: { linksCount: 0 }
       };
     }
@@ -211,31 +211,31 @@ export const validateLinkSecurity = (): ValidationResult => {
     if (allLinksSecure) {
       return {
         passed: true,
-        message: `所有 ${markdownLinks.length} 个链接都有正确的安全属性`,
+        message: `All ${markdownLinks.length} links have the correct security attributes`,
         details: { linksCount: markdownLinks.length, links: linkDetails }
       };
     } else {
       return {
         passed: false,
-        message: '部分链接缺少安全属性',
+        message: 'Some links are missing security attributes',
         details: { 
           linksCount: markdownLinks.length,
           links: linkDetails,
-          hint: '链接应该有 target="_blank" 和 rel="noopener noreferrer"'
+          hint: 'Links should have target="_blank" and rel="noopener noreferrer"'
         }
       };
     }
   } catch (error) {
     return {
       passed: false,
-      message: `链接安全验证失败: ${error instanceof Error ? error.message : '未知错误'}`,
+      message: `Link security validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       details: { error }
     };
   }
 };
 
 /**
- * 验证代码块是否有语言标签
+ * Validate that code blocks have a language label
  */
 export const validateCodeBlocks = (): ValidationResult => {
   try {
@@ -244,7 +244,7 @@ export const validateCodeBlocks = (): ValidationResult => {
     if (codeBlocks.length === 0) {
       return {
         passed: true,
-        message: '没有找到代码块（可能当前内容不包含代码块）',
+        message: 'No code blocks found (the current content may not contain code blocks)',
         details: { codeBlocksCount: 0 }
       };
     }
@@ -264,7 +264,7 @@ export const validateCodeBlocks = (): ValidationResult => {
     
     return {
       passed: true,
-      message: `找到 ${codeBlocks.length} 个代码块`,
+      message: `Found ${codeBlocks.length} code blocks`,
       details: { 
         codeBlocksCount: codeBlocks.length,
         blocks: codeBlockDetails
@@ -273,14 +273,14 @@ export const validateCodeBlocks = (): ValidationResult => {
   } catch (error) {
     return {
       passed: false,
-      message: `代码块验证失败: ${error instanceof Error ? error.message : '未知错误'}`,
+      message: `Code block validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       details: { error }
     };
   }
 };
 
 /**
- * 验证白色文本样式（蓝色背景消息）
+ * Validate white text styling (messages on a blue background)
  */
 export const validateWhiteTextStyle = (): ValidationResult => {
   try {
@@ -289,7 +289,7 @@ export const validateWhiteTextStyle = (): ValidationResult => {
     if (whiteMarkdown.length === 0) {
       return {
         passed: true,
-        message: '没有找到白色文本的 Markdown（可能没有 AI 助手消息）',
+        message: 'No white-text Markdown found (there may be no AI assistant messages)',
         details: { whiteMarkdownCount: 0 }
       };
     }
@@ -306,7 +306,7 @@ export const validateWhiteTextStyle = (): ValidationResult => {
     
     return {
       passed: true,
-      message: `找到 ${whiteMarkdown.length} 个白色文本的 Markdown 元素`,
+      message: `Found ${whiteMarkdown.length} white-text Markdown elements`,
       details: { 
         whiteMarkdownCount: whiteMarkdown.length,
         styles: styleDetails
@@ -315,26 +315,26 @@ export const validateWhiteTextStyle = (): ValidationResult => {
   } catch (error) {
     return {
       passed: false,
-      message: `白色文本样式验证失败: ${error instanceof Error ? error.message : '未知错误'}`,
+      message: `White-text style validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       details: { error }
     };
   }
 };
 
 /**
- * 运行所有验证测试
+ * Run all validation tests
  */
 export const runAllValidations = (): ValidationReport => {
-  console.log('🔍 开始运行 Markdown 渲染功能验证...');
+  console.log('🔍 Running Markdown rendering validation...');
   console.log('');
   
   const tests = [
-    { category: '组件加载', test: 'Markdown 组件加载', fn: validateMarkdownComponentLoaded },
-    { category: '样式加载', test: 'Markdown 样式加载', fn: validateMarkdownStyles },
-    { category: '元素渲染', test: 'Markdown 元素渲染', fn: validateMarkdownElements },
-    { category: '安全性', test: '链接安全属性', fn: validateLinkSecurity },
-    { category: '代码块', test: '代码块渲染', fn: validateCodeBlocks },
-    { category: '样式', test: '白色文本样式', fn: validateWhiteTextStyle }
+    { category: 'Component loading', test: 'Markdown component loading', fn: validateMarkdownComponentLoaded },
+    { category: 'Style loading', test: 'Markdown style loading', fn: validateMarkdownStyles },
+    { category: 'Element rendering', test: 'Markdown element rendering', fn: validateMarkdownElements },
+    { category: 'Security', test: 'Link security attributes', fn: validateLinkSecurity },
+    { category: 'Code blocks', test: 'Code block rendering', fn: validateCodeBlocks },
+    { category: 'Styles', test: 'White text styling', fn: validateWhiteTextStyle }
   ];
   
   const results: ValidationReport['results'] = [];
@@ -342,7 +342,7 @@ export const runAllValidations = (): ValidationReport => {
   let failedTests = 0;
   
   tests.forEach(({ category, test, fn }) => {
-    console.log(`📋 测试: ${category} - ${test}`);
+    console.log(`📋 Test: ${category} - ${test}`);
     const result = fn();
     
     results.push({ category, test, result });
@@ -356,7 +356,7 @@ export const runAllValidations = (): ValidationReport => {
     }
     
     if (result.details) {
-      console.log('  详情:', result.details);
+      console.log('  Details:', result.details);
     }
     console.log('');
   });
@@ -369,19 +369,19 @@ export const runAllValidations = (): ValidationReport => {
   };
   
   console.log('='.repeat(60));
-  console.log(`📊 验证报告: ${passedTests}/${tests.length} 测试通过`);
+  console.log(`📊 Validation report: ${passedTests}/${tests.length} tests passed`);
   console.log('='.repeat(60));
   
   if (failedTests === 0) {
-    console.log('🎉 所有测试通过！Markdown 渲染功能正常工作。');
+    console.log('🎉 All tests passed! Markdown rendering is working.');
   } else {
-    console.log(`⚠️ ${failedTests} 个测试失败，请检查上述详情。`);
+    console.log(`⚠️ ${failedTests} tests failed; please check the details above.`);
   }
   
   return report;
 };
 
-// 在开发环境中将验证函数添加到全局对象
+// Add the validation functions to the global object in development
 if (typeof window !== 'undefined' && import.meta.env.DEV) {
   (window as any).validateMarkdownComponentLoaded = validateMarkdownComponentLoaded;
   (window as any).validateMarkdownStyles = validateMarkdownStyles;
@@ -391,6 +391,6 @@ if (typeof window !== 'undefined' && import.meta.env.DEV) {
   (window as any).validateWhiteTextStyle = validateWhiteTextStyle;
   (window as any).runAllValidations = runAllValidations;
   
-  console.log('🔍 Markdown 验证工具已加载');
-  console.log('🔍 使用 runAllValidations() 运行所有验证测试');
+  console.log('🔍 Markdown validation tool loaded');
+  console.log('🔍 Use runAllValidations() to run all validation tests');
 }

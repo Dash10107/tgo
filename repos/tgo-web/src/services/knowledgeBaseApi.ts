@@ -7,6 +7,7 @@ import { apiClient } from './api';
 import BaseApiService from './base/BaseApiService';
 
 
+import i18n from '@/i18n';
 // Helper function to check if user is authenticated
 export const isAuthenticated = (): boolean => {
   const token = apiClient.getToken();
@@ -34,51 +35,51 @@ export const handleApiError = (error: unknown): string => {
 
     // Network errors
     if (message.includes('network') || message.includes('fetch')) {
-      return '网络连接失败，请检查网络连接后重试';
+      return i18n.t('errors.networkFailed', 'Network connection failed, please check your network and try again');
     }
 
     // Timeout errors
     if (message.includes('timeout')) {
-      return '请求超时，请稍后重试';
+      return i18n.t('errors.timeout', 'Request timed out, please try again later');
     }
 
     // HTTP status errors
     if (message.includes('400')) {
-      return '请求参数错误，请检查输入内容';
+      return i18n.t('errors.badRequest', 'Invalid request parameters, please check your input');
     }
     if (message.includes('401')) {
-      return '身份验证失败，请重新登录';
+      return i18n.t('errors.unauthorized', 'Authentication failed, please log in again');
     }
     if (message.includes('403')) {
-      return '权限不足，无法执行此操作';
+      return i18n.t('errors.forbidden', 'Insufficient permissions, unable to perform this action');
     }
     if (message.includes('404')) {
-      return '请求的资源不存在';
+      return i18n.t('errors.notFound', 'The requested resource does not exist');
     }
     if (message.includes('409')) {
-      return '资源冲突，请刷新页面后重试';
+      return i18n.t('errors.conflict', 'Resource conflict, please refresh the page and try again');
     }
     if (message.includes('413')) {
-      return '文件过大，请选择较小的文件';
+      return i18n.t('errors.fileTooLarge', 'File is too large, please choose a smaller file');
     }
     if (message.includes('415')) {
-      return '不支持的文件类型';
+      return i18n.t('errors.unsupportedFileType', 'Unsupported file type');
     }
     if (message.includes('429')) {
-      return '请求过于频繁，请稍后重试';
+      return i18n.t('errors.tooManyRequests', 'Too many requests, please try again later');
     }
     if (message.includes('500')) {
-      return '服务器内部错误，请稍后重试';
+      return i18n.t('errors.internalServerError', 'Internal server error, please try again later');
     }
     if (message.includes('502') || message.includes('503') || message.includes('504')) {
-      return '服务暂时不可用，请稍后重试';
+      return i18n.t('errors.serviceUnavailable', 'Service temporarily unavailable, please try again later');
     }
 
     // Return original message if no specific pattern matches
     return error.message;
   }
 
-  return '发生未知错误，请稍后重试';
+  return i18n.t('errors.unknown', 'An unknown error occurred, please try again later');
 };
 
 // API Response Types based on OpenAPI specification

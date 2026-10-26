@@ -98,10 +98,10 @@ const DebugPanel: React.FC = () => {
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'running': return t('workflow.debug.running', '正在运行...');
-      case 'completed': return t('workflow.debug.success', '执行成功');
-      case 'failed': return t('workflow.debug.failed', '执行失败');
-      case 'pending': return t('workflow.debug.pending', '等待中');
+      case 'running': return t('workflow.debug.running', 'Running...');
+      case 'completed': return t('workflow.debug.success', 'Success');
+      case 'failed': return t('workflow.debug.failed', 'Failed');
+      case 'pending': return t('workflow.debug.pending', 'Pending');
       default: return status;
     }
   };
@@ -134,7 +134,7 @@ const DebugPanel: React.FC = () => {
             <Terminal className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="font-bold text-gray-900 dark:text-gray-100 text-sm tracking-tight">{t('workflow.debug.title', '在线调试')}</h3>
+            <h3 className="font-bold text-gray-900 dark:text-gray-100 text-sm tracking-tight">{t('workflow.debug.title', 'Online Debug')}</h3>
             <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.15em]">{t('common.debug_mode', 'DEBUG MODE')}</p>
           </div>
         </div>
@@ -153,14 +153,14 @@ const DebugPanel: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Terminal className="w-4 h-4 text-gray-400" />
-                <h4 className="text-[11px] uppercase font-bold text-gray-400 tracking-[0.15em]">{t('workflow.debug.input_variables', '输入参数')}</h4>
+                <h4 className="text-[11px] uppercase font-bold text-gray-400 tracking-[0.15em]">{t('workflow.debug.input_variables', 'Input Variables')}</h4>
               </div>
               {inputVariables.length > 0 && (
                 <button 
                   onClick={() => setDebugInput({})}
                   className="text-[10px] font-bold text-gray-400 hover:text-blue-500 uppercase tracking-widest transition-colors"
                 >
-                  {t('workflow.debug.reset', '重置')}
+                  {t('workflow.debug.reset', 'Reset')}
                 </button>
               )}
             </div>
@@ -196,7 +196,7 @@ const DebugPanel: React.FC = () => {
                         value={debugInput[v.name] ?? ''}
                         onChange={(e) => handleInputChange(v.name, e.target.value, v.type)}
                         className="w-full px-4 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-bold dark:text-gray-100 shadow-sm focus:bg-white dark:focus:bg-gray-800"
-                        placeholder={t('common.please_input', '请输入') + ` ${v.name}...`}
+                        placeholder={t('common.please_input', 'Please input') + ` ${v.name}...`}
                         disabled={isExecuting}
                       />
                     )}
@@ -208,7 +208,7 @@ const DebugPanel: React.FC = () => {
                 <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center text-gray-300 dark:text-gray-600">
                   <Terminal className="w-6 h-6" />
                 </div>
-                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{t('workflow.debug.no_input_variables', '无输入参数')}</p>
+                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{t('workflow.debug.no_input_variables', 'No input variables')}</p>
               </div>
             )}
 
@@ -219,7 +219,7 @@ const DebugPanel: React.FC = () => {
                   className="flex-1 flex items-center justify-center gap-3 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-sm transition-all shadow-lg shadow-blue-500/30 active:scale-95"
                 >
                   <Play className="w-4 h-4 fill-current" />
-                  {t('workflow.debug.run', '运行工作流')}
+                  {t('workflow.debug.run', 'Run Workflow')}
                 </button>
               ) : (
                 <button
@@ -227,7 +227,7 @@ const DebugPanel: React.FC = () => {
                   className="flex-1 flex items-center justify-center gap-3 px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-2xl font-bold text-sm transition-all shadow-lg shadow-red-500/30 active:scale-95"
                 >
                   <StopCircle className="w-4 h-4" />
-                  {t('workflow.debug.stop', '停止运行')}
+                  {t('workflow.debug.stop', 'Stop')}
                 </button>
               )}
             </div>
@@ -239,7 +239,7 @@ const DebugPanel: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <History className="w-4 h-4 text-gray-400" />
-                  <h4 className="text-[11px] uppercase font-bold text-gray-400 tracking-[0.15em]">{t('workflow.debug.execution_status', '运行历史')}</h4>
+                  <h4 className="text-[11px] uppercase font-bold text-gray-400 tracking-[0.15em]">{t('workflow.debug.execution_status', 'Execution Status')}</h4>
                 </div>
                 {!isExecuting && (
                   <button 
@@ -256,7 +256,7 @@ const DebugPanel: React.FC = () => {
                   <div className="flex items-center gap-2.5">
                     {currentExecution ? getStatusIcon(currentExecution.status) : <Loader2 className="w-4 h-4 animate-spin text-blue-500" />}
                     <span className="text-[11px] font-bold text-gray-700 dark:text-gray-200 uppercase tracking-widest">
-                      {currentExecution ? getStatusText(currentExecution.status) : t('workflow.debug.starting', '启动中...')}
+                      {currentExecution ? getStatusText(currentExecution.status) : t('workflow.debug.starting', 'Starting...')}
                     </span>
                   </div>
                   {currentExecution?.duration && (
@@ -270,7 +270,7 @@ const DebugPanel: React.FC = () => {
                   <div className="p-4 bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 text-[11px] leading-relaxed">
                     <p className="font-bold mb-1 flex items-center gap-1">
                       <XCircle className="w-3 h-3" />
-                      {t('workflow.debug.error', '执行错误')}
+                      {t('workflow.debug.error', 'Execution Error')}
                     </p>
                     {executionError}
                   </div>
@@ -341,7 +341,7 @@ const DebugPanel: React.FC = () => {
                   ) : (
                     <div className="flex flex-col items-center justify-center py-8 opacity-50">
                       <Terminal className="w-8 h-8 text-gray-300 mb-2" />
-                      <p className="text-[10px] text-gray-400 font-medium">{t('workflow.debug.waiting', '等待执行...')}</p>
+                      <p className="text-[10px] text-gray-400 font-medium">{t('workflow.debug.waiting', 'Waiting for execution...')}</p>
                     </div>
                   )}
                 </div>
@@ -354,7 +354,7 @@ const DebugPanel: React.FC = () => {
             <section className="space-y-4">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-green-500" />
-                <h4 className="text-[11px] uppercase font-bold text-gray-400 tracking-wider">{t('workflow.debug.final_output', '最终输出')}</h4>
+                <h4 className="text-[11px] uppercase font-bold text-gray-400 tracking-wider">{t('workflow.debug.final_output', 'Final Output')}</h4>
               </div>
               <div className="p-4 bg-green-50/50 dark:bg-green-900/10 rounded-2xl border border-green-100 dark:border-green-900/30">
                 <pre className="text-xs text-green-700 dark:text-green-400 whitespace-pre-wrap font-mono leading-relaxed">
@@ -371,7 +371,7 @@ const DebugPanel: React.FC = () => {
         <div className="flex items-start gap-2">
           <Info className="w-3 h-3 text-blue-500 mt-0.5" />
           <p className="text-[9px] text-gray-400 leading-relaxed">
-            {t('workflow.debug.persistence_note', '调试模式下的执行结果仅供预览，不会影响线上运行的工作流版本。')}
+            {t('workflow.debug.persistence_note', 'Execution results in debug mode are for preview only and will not affect the online workflow version.')}
           </p>
         </div>
       </div>

@@ -28,10 +28,10 @@ from app.api.feishu_utils import feishu_get_user_info, feishu_extract_sender_inf
 class FeishuPlatformConfig(BaseModel):
     """Per-platform Feishu Bot configuration stored in Platform.config when type='feishu_bot'."""
 
-    app_id: str = ""          # 应用ID
-    app_secret: str = ""      # 应用密钥
-    verification_token: str = ""  # 回调验证 Token
-    encrypt_key: str | None = None  # 消息加密密钥（可选）
+    app_id: str = ""          # App ID
+    app_secret: str = ""      # App secret
+    verification_token: str = ""  # Callback verification token
+    encrypt_key: str | None = None  # Message encryption key (optional)
 
     # Consumer processing configuration
     processing_batch_size: int = 10

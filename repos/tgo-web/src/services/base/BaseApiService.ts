@@ -5,6 +5,7 @@
 
 import { apiClient, APIError } from '../api';
 
+import i18n from '@/i18n';
 // Common query parameters interface
 export interface BaseQueryParams {
   page?: number;
@@ -60,23 +61,23 @@ export abstract class BaseApiService {
       
       // Network errors
       if (message.includes('network') || message.includes('fetch')) {
-        return '网络连接失败，请检查网络连接后重试';
+        return i18n.t('errors.networkFailed', 'Network connection failed, please check your network and try again');
       }
       
       // Timeout errors
       if (message.includes('timeout')) {
-        return '请求超时，请稍后重试';
+        return i18n.t('errors.timeout', 'Request timed out, please try again later');
       }
       
       // HTTP status errors
-      if (message.includes('400')) return '请求参数错误，请检查输入内容';
-      if (message.includes('401')) return '身份验证失败，请重新登录';
-      if (message.includes('403')) return '权限不足，无法执行此操作';
-      if (message.includes('404')) return '请求的资源不存在';
-      if (message.includes('409')) return '资源冲突，请刷新页面后重试';
-      if (message.includes('413')) return '文件过大，请选择较小的文件';
-      if (message.includes('415')) return '不支持的文件类型';
-      if (message.includes('500')) return '服务器错误，请稍后重试';
+      if (message.includes('400')) return i18n.t('errors.badRequest', 'Invalid request parameters, please check your input');
+      if (message.includes('401')) return i18n.t('errors.unauthorized', 'Authentication failed, please log in again');
+      if (message.includes('403')) return i18n.t('errors.forbidden', 'Insufficient permissions, unable to perform this action');
+      if (message.includes('404')) return i18n.t('errors.notFound', 'The requested resource does not exist');
+      if (message.includes('409')) return i18n.t('errors.conflict', 'Resource conflict, please refresh the page and try again');
+      if (message.includes('413')) return i18n.t('errors.fileTooLarge', 'File is too large, please choose a smaller file');
+      if (message.includes('415')) return i18n.t('errors.unsupportedFileType', 'Unsupported file type');
+      if (message.includes('500')) return i18n.t('errors.serverError', 'Server error, please try again later');
       
       return error.message;
     }

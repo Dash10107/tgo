@@ -10,11 +10,11 @@ import type { Workflow, WorkflowSummary } from '@/types/workflow';
  */
 export const customerServiceWorkflow: Workflow = {
   id: 'wf-001',
-  name: '客户咨询处理流程',
-  description: '自动处理客户咨询，根据问题类型分配给相应的AI员工或人工客服',
+  name: 'Customer Inquiry Handling Flow',
+  description: 'Automatically handles customer inquiries and assigns them to the right AI agent or human agent based on the question type',
   status: 'active',
   version: 1,
-  tags: ['客服', '自动化'],
+  tags: ['Support', 'Automation'],
   created_at: '2024-01-15T10:00:00Z',
   updated_at: '2024-01-20T14:30:00Z',
   definition: {
@@ -25,9 +25,9 @@ export const customerServiceWorkflow: Workflow = {
         position: { x: 250, y: 50 },
         data: {
           type: 'input',
-          label: '用户输入',
-          description: '客户发起咨询',
-          input_variables: [{ name: 'query', type: 'string', description: '客户输入的消息内容' }],
+          label: 'User Input',
+          description: 'Customer starts an inquiry',
+          input_variables: [{ name: 'query', type: 'string', description: 'Message content entered by the customer' }],
           reference_key: 'input_1',
         },
       },
@@ -37,9 +37,9 @@ export const customerServiceWorkflow: Workflow = {
         position: { x: 250, y: 150 },
         data: {
           type: 'llm',
-          label: '问题分类',
-          description: '使用LLM对客户问题进行分类',
-          user_prompt: '请分析以下客户问题并分类：{{input_1.query}}。分类包括：技术支持、销售咨询、投诉建议、其他。',
+          label: 'Question Classification',
+          description: 'Use an LLM to classify the customer question',
+          user_prompt: 'Analyze the following customer question and classify it: {{input_1.query}}. Categories: Technical support, Sales inquiry, Complaint or suggestion, Other.',
           reference_key: 'classify_1',
         },
       },
@@ -49,11 +49,11 @@ export const customerServiceWorkflow: Workflow = {
         position: { x: 250, y: 280 },
         data: {
           type: 'condition',
-          label: '判断问题类型',
+          label: 'Determine Question Type',
           condition_type: 'variable',
           variable: 'classify_1.text',
           operator: 'equals',
-          compare_value: '技术支持',
+          compare_value: 'Technical support',
           reference_key: 'condition_1',
         },
       },
@@ -63,9 +63,9 @@ export const customerServiceWorkflow: Workflow = {
         position: { x: 100, y: 400 },
         data: {
           type: 'agent',
-          label: '技术支持Agent',
+          label: 'Technical Support Agent',
           agent_id: 'agent-tech-001',
-          agent_name: '技术支持专员',
+          agent_name: 'Technical Support Specialist',
           reference_key: 'tech_agent_1',
         },
       },
@@ -75,9 +75,9 @@ export const customerServiceWorkflow: Workflow = {
         position: { x: 400, y: 400 },
         data: {
           type: 'agent',
-          label: '销售咨询Agent',
+          label: 'Sales Inquiry Agent',
           agent_id: 'agent-sales-001',
-          agent_name: '销售顾问',
+          agent_name: 'Sales Consultant',
           reference_key: 'sales_agent_1',
         },
       },
@@ -87,7 +87,7 @@ export const customerServiceWorkflow: Workflow = {
         position: { x: 250, y: 520 },
         data: {
           type: 'answer',
-          label: '回复',
+          label: 'Reply',
           output_type: 'variable',
           output_variable: 'tech_agent_1.text',
           reference_key: 'answer_1',
@@ -142,11 +142,11 @@ export const customerServiceWorkflow: Workflow = {
  */
 export const dataProcessingWorkflow: Workflow = {
   id: 'wf-002',
-  name: '数据分析流程',
-  description: '并行执行多个数据分析任务，汇总结果后生成报告',
+  name: 'Data Analysis Flow',
+  description: 'Runs multiple data analysis tasks in parallel and generates a report from the combined results',
   status: 'active',
   version: 2,
-  tags: ['数据分析', '报告'],
+  tags: ['Data analysis', 'Report'],
   created_at: '2024-01-10T09:00:00Z',
   updated_at: '2024-01-25T16:00:00Z',
   definition: {
@@ -157,8 +157,8 @@ export const dataProcessingWorkflow: Workflow = {
         position: { x: 250, y: 50 },
         data: {
           type: 'input',
-          label: '用户输入',
-          input_variables: [{ name: 'query', type: 'string', description: '分析指令' }],
+          label: 'User Input',
+          input_variables: [{ name: 'query', type: 'string', description: 'Analysis instruction' }],
           reference_key: 'input_1',
         },
       },
@@ -168,7 +168,7 @@ export const dataProcessingWorkflow: Workflow = {
         position: { x: 250, y: 150 },
         data: {
           type: 'parallel',
-          label: '并行分析',
+          label: 'Parallel Analysis',
           branches: 3,
           wait_for_all: true,
           reference_key: 'parallel_1',
@@ -180,7 +180,7 @@ export const dataProcessingWorkflow: Workflow = {
         position: { x: 50, y: 280 },
         data: {
           type: 'tool',
-          label: '数据查询',
+          label: 'Data Query',
           tool_id: 'tool-db-query',
           tool_name: 'Database Query',
           reference_key: 'db_query_1',
@@ -192,7 +192,7 @@ export const dataProcessingWorkflow: Workflow = {
         position: { x: 250, y: 280 },
         data: {
           type: 'tool',
-          label: 'API调用',
+          label: 'API Call',
           tool_id: 'tool-api-call',
           tool_name: 'External API',
           reference_key: 'api_call_1',
@@ -204,7 +204,7 @@ export const dataProcessingWorkflow: Workflow = {
         position: { x: 450, y: 280 },
         data: {
           type: 'tool',
-          label: '文件处理',
+          label: 'File Processing',
           tool_id: 'tool-file-process',
           tool_name: 'File Processor',
           reference_key: 'file_process_1',
@@ -216,8 +216,8 @@ export const dataProcessingWorkflow: Workflow = {
         position: { x: 250, y: 400 },
         data: {
           type: 'llm',
-          label: '汇总分析',
-          user_prompt: '请根据以下数据生成 analysis 报告：\n指令：{{input_1.query}}\n查询结果：{{db_query_1.result}}\nAPI结果：{{api_call_1.result}}\n文件结果：{{file_process_1.result}}',
+          label: 'Summary Analysis',
+          user_prompt: 'Generate an analysis report from the following data:\nInstruction: {{input_1.query}}\nQuery result: {{db_query_1.result}}\nAPI result: {{api_call_1.result}}\nFile result: {{file_process_1.result}}',
           reference_key: 'summary_1',
         },
       },
@@ -227,7 +227,7 @@ export const dataProcessingWorkflow: Workflow = {
         position: { x: 250, y: 520 },
         data: {
           type: 'answer',
-          label: '回复',
+          label: 'Reply',
           output_type: 'variable',
           output_variable: 'summary_1.text',
           reference_key: 'answer_1',
@@ -292,11 +292,11 @@ export const dataProcessingWorkflow: Workflow = {
  */
 export const simpleGreetingWorkflow: Workflow = {
   id: 'wf-003',
-  name: '简单问候流程',
-  description: '简单的自动问候回复流程',
+  name: 'Simple Greeting Flow',
+  description: 'A simple automatic greeting reply flow',
   status: 'draft',
   version: 1,
-  tags: ['简单', '问候'],
+  tags: ['Simple', 'Greeting'],
   created_at: '2024-01-28T11:00:00Z',
   updated_at: '2024-01-28T11:00:00Z',
   definition: {
@@ -307,8 +307,8 @@ export const simpleGreetingWorkflow: Workflow = {
         position: { x: 250, y: 50 },
         data: {
           type: 'input',
-          label: '用户输入',
-          input_variables: [{ name: 'query', type: 'string', description: '用户输入的消息内容' }],
+          label: 'User Input',
+          input_variables: [{ name: 'query', type: 'string', description: 'Message content entered by the user' }],
           reference_key: 'input_1',
         },
       },
@@ -318,8 +318,8 @@ export const simpleGreetingWorkflow: Workflow = {
         position: { x: 250, y: 150 },
         data: {
           type: 'llm',
-          label: '生成问候',
-          user_prompt: '请根据用户的问候语生成一个友好的回复：{{input_1.query}}',
+          label: 'Generate Greeting',
+          user_prompt: 'Generate a friendly reply to the user\'s greeting: {{input_1.query}}',
           reference_key: 'llm_1',
         },
       },
@@ -329,7 +329,7 @@ export const simpleGreetingWorkflow: Workflow = {
         position: { x: 250, y: 280 },
         data: {
           type: 'answer',
-          label: '回复',
+          label: 'Reply',
           output_type: 'variable',
           output_variable: 'llm_1.text',
           reference_key: 'answer_1',
@@ -394,7 +394,7 @@ export function generateWorkflowId(): string {
 /**
  * Create an empty workflow template
  */
-export function createEmptyWorkflow(name: string = '新建工作流'): Workflow {
+export function createEmptyWorkflow(name: string = 'New Workflow'): Workflow {
   const now = new Date().toISOString();
   return {
     id: generateWorkflowId(),
@@ -413,8 +413,8 @@ export function createEmptyWorkflow(name: string = '新建工作流'): Workflow 
           position: { x: 250, y: 50 },
           data: {
             type: 'input',
-            label: '用户输入',
-            input_variables: [{ name: 'query', type: 'string', description: '用户输入的消息内容' }],
+            label: 'User Input',
+            input_variables: [{ name: 'query', type: 'string', description: 'Message content entered by the user' }],
             reference_key: 'input_1',
           },
         },
@@ -424,7 +424,7 @@ export function createEmptyWorkflow(name: string = '新建工作流'): Workflow 
           position: { x: 250, y: 200 },
           data: {
             type: 'answer',
-            label: '回复',
+            label: 'Reply',
             output_type: 'template',
             output_template: '',
             reference_key: 'answer_1',

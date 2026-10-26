@@ -108,7 +108,7 @@ async def test_main_api_requires_auth():
 async def main():
     """Run all tests."""
     print("=" * 60)
-    print("TGO-Tech Internal Service Test Suite")
+    print("Pelatis Internal Service Test Suite")
     print("=" * 60)
     print()
     

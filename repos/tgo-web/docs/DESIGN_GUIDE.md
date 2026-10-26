@@ -1,6 +1,6 @@
-# Tgo AI 界面设计规范指南 (Modern AI-Centric Design)
+# Pelatis AI 界面设计规范指南 (Modern AI-Centric Design)
 
-本指南旨在定义 Tgo Web 端 AI 管理模块（AI 员工、工具、工作流）的设计语言，确保后续开发能保持视觉一致性与交互的一致性。
+本指南旨在定义 Pelatis Web 端 AI 管理模块（AI 员工、工具、工作流）的设计语言，确保后续开发能保持视觉一致性与交互的一致性。
 
 ## 1. 设计风格定位
 **风格类型**：现代简约 SaaS 风格 + 科技未来感 (Modern Minimalist SaaS with Tech-Future Accents)

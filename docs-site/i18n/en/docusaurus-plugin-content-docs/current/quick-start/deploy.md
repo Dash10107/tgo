@@ -6,7 +6,7 @@ sidebar_position: 1
 
 # Quick Deploy
 
-This page explains how to quickly install TGO using the one-click deployment script.
+This page explains how to quickly install Pelatis using the one-click deployment script.
 
 ## International (GitHub)
 
@@ -33,7 +33,7 @@ The `REF` environment variable specifies the version to deploy:
 
 ## Port Configuration
 
-TGO uses the following default ports:
+Pelatis uses the following default ports:
 
 | Port | Purpose |
 |------|---------|
@@ -44,7 +44,7 @@ If ports are occupied, the installation script will automatically assign availab
 
 ## Access After Installation
 
-After installation, you can access TGO via:
+After installation, you can access Pelatis via:
 
 - **Local browser**: `http://localhost`
 - **Remote access**: `http://<server-ip>` or your configured domain

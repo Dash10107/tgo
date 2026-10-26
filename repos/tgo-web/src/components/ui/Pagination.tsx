@@ -136,7 +136,7 @@ const Pagination: React.FC<PaginationProps> = ({
         disabled={currentPage === 1}
         className="relative inline-flex items-center px-2 py-2 border-r border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
-        <span className="sr-only">{t('visitor.pagination.previous', '上一页')}</span>
+        <span className="sr-only">{t('visitor.pagination.previous', 'Previous')}</span>
         <Icon name="ChevronLeft" size={20} />
       </button>
 
@@ -149,7 +149,7 @@ const Pagination: React.FC<PaginationProps> = ({
         disabled={currentPage === totalPages}
         className="relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
-        <span className="sr-only">{t('visitor.pagination.next', '下一页')}</span>
+        <span className="sr-only">{t('visitor.pagination.next', 'Next')}</span>
         <Icon name="ChevronRight" size={20} />
       </button>
     </nav>

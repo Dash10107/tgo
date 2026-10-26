@@ -27,7 +27,7 @@ interface BasicInfoSectionProps {
 
 
 /**
- * 基本信息模块组件
+ * Basic info module component
  */
 const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
   basicInfo,
@@ -57,7 +57,7 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
   };
   return (
     <CollapsibleSection
-      title={t('visitor.sections.basicInfo', '基本信息')}
+      title={t('visitor.sections.basicInfo', 'Basic Info')}
       className={className}
       defaultExpanded={true}
       expanded={expanded}
@@ -70,19 +70,19 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
     >
       <div className="space-y-1.5 text-[13px] leading-5">
         <EditableField
-          label={t('visitor.fields.name', '姓名')}
+          label={t('visitor.fields.name', 'Name')}
           value={basicInfo.name}
           onSave={(value) => onUpdateBasicInfo('name', value)}
           placeholder="-"
         />
         <EditableField
-          label={t('visitor.fields.nickname', '昵称')}
+          label={t('visitor.fields.nickname', 'Nickname')}
           value={basicInfo.nickname || ''}
           onSave={(value) => onUpdateBasicInfo('nickname', value)}
           placeholder="-"
         />
         <EditableField
-          label={t('visitor.fields.email', '邮箱')}
+          label={t('visitor.fields.email', 'Email')}
           value={basicInfo.email}
           onSave={(value) => onUpdateBasicInfo('email', value)}
           placeholder="-"
@@ -90,7 +90,7 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
           validate={validateEmail}
         />
         <EditableField
-          label={t('visitor.fields.phone', '电话')}
+          label={t('visitor.fields.phone', 'Phone')}
           value={basicInfo.phone}
           onSave={(value) => onUpdateBasicInfo('phone', value)}
           placeholder="-"
@@ -98,13 +98,13 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
           validate={validatePhone}
         />
         <EditableField
-          label={t('visitor.fields.note', '备注')}
+          label={t('visitor.fields.note', 'Note')}
           value={basicInfo.note || ''}
           onSave={(value) => onUpdateBasicInfo('note', value)}
           placeholder="-"
         />
 
-        {/* 自定义属性 */}
+        {/* Custom attributes */}
         <CustomAttributeManager
           attributes={basicInfo.customAttributes || []}
           onAdd={onAddCustomAttribute}

@@ -1,4 +1,4 @@
-"""FastAPI application entry point for TGO Device Control Service."""
+"""FastAPI application entry point for Pelatis Device Control Service."""
 
 import asyncio
 import json
@@ -23,7 +23,7 @@ async def lifespan(application: FastAPI):
     from app.services.tcp_rpc_server import tcp_rpc_server
 
     startup_log("=" * 64)
-    startup_log("  TGO Device Control Service Starting...")
+    startup_log("  Pelatis Device Control Service Starting...")
     startup_log("=" * 64)
 
     # Debug: Log configuration
@@ -67,7 +67,7 @@ async def lifespan(application: FastAPI):
 
 app = FastAPI(
     title=settings.SERVICE_NAME,
-    description="Device Control Service for TGO - MCP transparent proxy for remote devices",
+    description="Device Control Service for Pelatis - MCP transparent proxy for remote devices",
     version=settings.SERVICE_VERSION,
     docs_url="/docs",
     redoc_url="/redoc",

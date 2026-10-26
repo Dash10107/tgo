@@ -25,7 +25,7 @@ const KeyValueTemplate: React.FC<KeyValueTemplateProps> = ({ title, items }) => 
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
-    showToast('success', t('common.copySuccess', '复制成功'), text);
+    showToast('success', t('common.copySuccess', 'Copied successfully'), text);
   };
 
   const renderIcon = (iconName?: string, color?: string) => {
@@ -95,7 +95,7 @@ const KeyValueTemplate: React.FC<KeyValueTemplateProps> = ({ title, items }) => 
                   <button
                     onClick={() => handleCopy(String(item.value))}
                     className="ml-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
-                    title={t('common.copy', '复制')}
+                    title={t('common.copy', 'Copy')}
                   >
                     <Copy size={12} />
                   </button>

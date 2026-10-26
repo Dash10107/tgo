@@ -84,7 +84,7 @@ const FormTemplate: React.FC<FormTemplateProps> = ({
                 onChange={(e) => handleChange(field.name, e.target.value)}
                 required={field.required}
               >
-                <option value="">{field.placeholder || t('common.select', '请选择')}</option>
+                <option value="">{field.placeholder || t('common.select', 'Select')}</option>
                 {field.options?.map((opt) => (
                   <option key={opt.value} value={opt.value}>
                     {opt.label}
@@ -112,7 +112,7 @@ const FormTemplate: React.FC<FormTemplateProps> = ({
             onClick={onCancel}
             className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
           >
-            {cancel_text || t('common.cancel', '取消')}
+            {cancel_text || t('common.cancel', 'Cancel')}
           </button>
         )}
         <button
@@ -121,7 +121,7 @@ const FormTemplate: React.FC<FormTemplateProps> = ({
           className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors flex items-center"
         >
           {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-          {submit_text || t('common.submit', '提交')}
+          {submit_text || t('common.submit', 'Submit')}
         </button>
       </div>
     </form>

@@ -7,6 +7,7 @@ export { getChannelKey } from '@/utils/channelUtils';
 import { DEFAULT_CHANNEL_TYPE } from '@/constants';
 
 
+import i18n from '@/i18n';
 interface ChannelStoreState {
   channels: Record<string, ChannelInfo>;
   inFlight: Partial<Record<string, Promise<ChannelInfo | null>>>;
@@ -95,7 +96,7 @@ export const useChannelStore = create<ChannelStoreState>((set, get) => ({
         return info;
       })
       .catch((error) => {
-        const message = error instanceof Error ? error.message : '获取频道信息失败';
+        const message = error instanceof Error ? error.message : i18n.t('channel.loadFailed', 'Failed to load channel info');
         set((state) => ({
           channels: {
             ...state.channels,

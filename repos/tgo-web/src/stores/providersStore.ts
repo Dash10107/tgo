@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import AIProvidersApiService, { type AIProviderResponseDTO } from '@/services/aiProvidersApi';
 
+import i18n from '@/i18n';
 export type ProviderKind = 'openai' | 'azure' | 'qwen' | 'moonshot' | 'deepseek' | 'baichuan' | 'ollama' | 'custom';
 
 export interface AzureExtra {
@@ -90,7 +91,7 @@ export const useProvidersStore = create<ProvidersState>()(
           const list = (res.data || []).map(mapDtoToConfig);
           set({ providers: list, isLoading: false });
         } catch (e: any) {
-          set({ isLoading: false, error: e?.message || '加载失败' });
+          set({ isLoading: false, error: e?.message || i18n.t('common.loadFailed', 'Failed to load') });
         }
       },
 

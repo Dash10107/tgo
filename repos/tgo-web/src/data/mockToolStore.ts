@@ -4,12 +4,12 @@ import type { ToolStoreItem, ToolStoreCategory } from '@/types';
  * Tool Store Categories
  */
 export const TOOL_STORE_CATEGORIES: ToolStoreCategory[] = [
-  { id: 'all', slug: 'all', name_zh: '全部', name_en: 'All', icon: 'Grid3X3', label: '全部' },
-  { id: 'model', slug: 'model', name_zh: '模型', name_en: 'Models', icon: 'Brain', label: '模型' },
-  { id: 'tool', slug: 'tool', name_zh: '工具', name_en: 'Tools', icon: 'Wrench', label: '工具' },
-  { id: 'agent', slug: 'agent', name_zh: 'Agent 策略', name_en: 'Agent Strategies', icon: 'Bot', label: 'Agent 策略' },
-  { id: 'extension', slug: 'extension', name_zh: '扩展', name_en: 'Extensions', icon: 'Puzzle', label: '扩展' },
-  { id: 'plugin', slug: 'plugin', name_zh: '插件库', name_en: 'Plugins', icon: 'Package', label: '插件库' },
+  { id: 'all', slug: 'all', name_zh: 'All', name_en: 'All', icon: 'Grid3X3', label: 'All' },
+  { id: 'model', slug: 'model', name_zh: 'Models', name_en: 'Models', icon: 'Brain', label: 'Models' },
+  { id: 'tool', slug: 'tool', name_zh: 'Tools', name_en: 'Tools', icon: 'Wrench', label: 'Tools' },
+  { id: 'agent', slug: 'agent', name_zh: 'Agent Strategies', name_en: 'Agent Strategies', icon: 'Bot', label: 'Agent Strategies' },
+  { id: 'extension', slug: 'extension', name_zh: 'Extensions', name_en: 'Extensions', icon: 'Puzzle', label: 'Extensions' },
+  { id: 'plugin', slug: 'plugin', name_zh: 'Plugin Library', name_en: 'Plugins', icon: 'Package', label: 'Plugin Library' },
 ];
 
 /**
@@ -19,11 +19,11 @@ export const mockToolStoreItems: ToolStoreItem[] = [
   {
     id: 'mcp-sse-streamable-http',
     name: 'Tool SSE / StreamableHTTP',
-    description: '通过 HTTP with SSE 或 Streamable HTTP 传输方式使用 Tool 协议来连接和管理工具。',
+    description: 'Uses the Tool protocol over HTTP with SSE or Streamable HTTP transport to connect to and manage tools.',
     author: 'langgenius',
     authorHandle: 'mcp_sse',
     category: 'tool',
-    categories: [TOOL_STORE_CATEGORIES[2]], // 工具
+    categories: [TOOL_STORE_CATEGORIES[2]], // Tools
     tags: ['HTTP', 'SSE', 'Streamable', 'Tool'],
     downloads: 71652,
     rating: 4.8,
@@ -36,44 +36,44 @@ export const mockToolStoreItems: ToolStoreItem[] = [
     screenshots: [],
     longDescription: `# Tool SSE / StreamableHTTP
 
-这是一个强大的 **工具**，支持通过 HTTP with SSE 或 Streamable HTTP 传输方式来连接和管理各种工具和服务。
+This is a powerful **tool** that connects to and manages various tools and services over HTTP with SSE or Streamable HTTP transport.
 
-## 主要特性
+## Key Features
 
-- **高性能连接**: 支持 Server-Sent Events (SSE) 实时通信
-- **流式传输**: 优化的 Streamable HTTP 协议支持
-- **自动重连**: 内置连接断线重连机制
-- **错误处理**: 完善的错误处理和日志记录
+- **High-performance connection**: supports Server-Sent Events (SSE) real-time communication
+- **Streaming transport**: optimized Streamable HTTP protocol support
+- **Auto-reconnect**: built-in reconnection when the connection drops
+- **Error handling**: thorough error handling and logging
 
-## 使用场景
+## Use Cases
 
-1. **实时数据同步**: 适用于需要实时数据更新的应用场景
-2. **长连接通信**: 支持长时间保持连接的服务
-3. **流式数据处理**: 处理大量数据流的场景
+1. **Real-time data sync**: for applications that need real-time data updates
+2. **Long-lived connections**: services that keep connections open for long periods
+3. **Streaming data processing**: scenarios that process large data streams
 
-> **注意**: 使用前请确保服务器支持 SSE 或 Streamable HTTP 协议。
+> **Note**: make sure the server supports SSE or Streamable HTTP before use.
 
-更多信息请访问 [官方文档](https://example.com/docs)。`,
+More information: [Official docs](https://example.com/docs).`,
     requirements: ['Node.js >= 16', 'HTTP Server'],
-    changelog: '修复了连接稳定性问题，增加了错误重试机制。',
+    changelog: 'Fixed connection stability issues and added an error retry mechanism.',
     methods: [
       {
         id: 'connect',
         name: 'connect',
-        description: '建立与 Tool 服务器的连接',
+        description: 'Establish a connection to the Tool server',
         parameters: [
           {
             name: 'url',
             type: 'string',
             required: true,
-            description: 'Tool 服务器的 URL 地址',
+            description: 'URL of the Tool server',
             example: 'http://localhost:3000/mcp'
           },
           {
             name: 'options',
             type: 'object',
             required: false,
-            description: '连接选项配置',
+            description: 'Connection options',
             example: '{ timeout: 5000, retries: 3 }'
           }
         ],
@@ -83,13 +83,13 @@ export const mockToolStoreItems: ToolStoreItem[] = [
       {
         id: 'send',
         name: 'send',
-        description: '向 Tool 服务器发送消息',
+        description: 'Send a message to the Tool server',
         parameters: [
           {
             name: 'message',
             type: 'object',
             required: true,
-            description: '要发送的消息对象',
+            description: 'Message object to send',
             example: '{ type: "request", method: "tools/list" }'
           }
         ],
@@ -99,7 +99,7 @@ export const mockToolStoreItems: ToolStoreItem[] = [
       {
         id: 'disconnect',
         name: 'disconnect',
-        description: '断开与 Tool 服务器的连接',
+        description: 'Disconnect from the Tool server',
         parameters: [],
         returnType: 'Promise<void>',
         example: 'await mcp.disconnect()'
@@ -109,11 +109,11 @@ export const mockToolStoreItems: ToolStoreItem[] = [
   {
     id: 'tavily-search',
     name: 'Tavily',
-    description: '一个强大的搜索AI搜索引擎，为AI代理提供实时网络搜索功能，提供准确和相关的搜索结果。',
+    description: 'A powerful AI search engine that gives AI agents real-time web search and returns accurate, relevant results.',
     author: 'langgenius',
     authorHandle: 'tavily',
     category: 'tool',
-    categories: [TOOL_STORE_CATEGORIES[2]], // 工具
+    categories: [TOOL_STORE_CATEGORIES[2]], // Tools
     tags: ['Search', 'AI', 'Web', 'Real-time'],
     downloads: 69261,
     rating: 4.9,
@@ -124,83 +124,83 @@ export const mockToolStoreItems: ToolStoreItem[] = [
     verified: true,
     icon: '🔍',
     screenshots: [],
-    longDescription: `# Tavily AI 搜索引擎
+    longDescription: `# Tavily AI Search Engine
 
-**Tavily** 是专为 AI 代理设计的搜索引擎，提供实时、准确的网络搜索结果。
+**Tavily** is a search engine designed for AI agents that provides real-time, accurate web search results.
 
-## 核心优势
+## Core Strengths
 
-- **AI 优化**: 专门为 AI 代理和自动化系统设计
-- **实时搜索**: 提供最新的网络信息和数据
-- **高准确性**: 智能过滤和排序搜索结果
-- **快速响应**: 平均响应时间 < 200ms
+- **AI-optimized**: designed specifically for AI agents and automation systems
+- **Real-time search**: provides the latest web information and data
+- **High accuracy**: intelligent filtering and ranking of search results
+- **Fast response**: average response time < 200ms
 
-## 支持的搜索类型
+## Supported Search Types
 
-1. **网页搜索**: 全网内容搜索
-2. **新闻搜索**: 实时新闻和资讯
-3. **学术搜索**: 学术论文和研究资料
+1. **Web search**: search across all web content
+2. **News search**: real-time news and information
+3. **Academic search**: academic papers and research material
 
-### API 特性
+### API Features
 
-- RESTful API 接口
-- JSON 格式返回
-- 支持批量查询
-- 内置缓存机制
+- RESTful API interface
+- JSON responses
+- Batch queries supported
+- Built-in caching
 
-*适用于各种 AI 应用场景，提供可靠的信息检索服务。*`,
+*Suitable for all kinds of AI application scenarios, providing a reliable information retrieval service.*`,
     requirements: ['API Key', 'Internet Connection'],
-    changelog: '增加了搜索结果过滤功能，提升了搜索准确性。',
+    changelog: 'Added search result filtering and improved search accuracy.',
     methods: [
       {
         id: 'search',
         name: 'search',
-        description: '执行网络搜索查询',
+        description: 'Run a web search query',
         parameters: [
           {
             name: 'query',
             type: 'string',
             required: true,
-            description: '搜索查询字符串',
-            example: 'AI 人工智能最新发展'
+            description: 'Search query string',
+            example: 'Latest developments in AI'
           },
           {
             name: 'maxResults',
             type: 'number',
             required: false,
-            description: '最大返回结果数量',
+            description: 'Maximum number of results to return',
             example: '10'
           }
         ],
         returnType: 'Promise<SearchResult[]>',
-        example: 'await tavily.search("AI 人工智能最新发展", 10)'
+        example: 'await tavily.search("Latest developments in AI", 10)'
       },
       {
         id: 'searchNews',
         name: 'searchNews',
-        description: '搜索最新新闻',
+        description: 'Search the latest news',
         parameters: [
           {
             name: 'query',
             type: 'string',
             required: true,
-            description: '新闻搜索查询',
-            example: '科技新闻'
+            description: 'News search query',
+            example: 'Tech news'
           }
         ],
         returnType: 'Promise<NewsResult[]>',
-        example: 'await tavily.searchNews("科技新闻")'
+        example: 'await tavily.searchNews("Tech news")'
       }
     ]
   },
   {
     id: 'json-processor',
-    name: 'JSON 处理',
-    description: '利用 jsonpath_ng 处理 JSON 内容的工具',
+    name: 'JSON Processing',
+    description: 'A tool that processes JSON content using jsonpath_ng',
     author: 'langgenius',
     authorHandle: 'json_process',
     category: 'tool',
-    categories: [TOOL_STORE_CATEGORIES[2]], // 工具
+    categories: [TOOL_STORE_CATEGORIES[2]], // Tools
     tags: ['JSON', 'Processing', 'Data'],
     downloads: 65407,
     rating: 4.7,
@@ -211,18 +211,18 @@ export const mockToolStoreItems: ToolStoreItem[] = [
     verified: true,
     icon: '📄',
     screenshots: [],
-    longDescription: '强大的 JSON 处理工具，支持复杂的 JSON 路径查询和数据转换。',
+    longDescription: 'A powerful JSON processing tool that supports complex JSON path queries and data transformations.',
     requirements: ['Python >= 3.8'],
-    changelog: '优化了大文件处理性能，修复了路径解析bug。'
+    changelog: 'Improved large-file processing performance and fixed a path parsing bug.'
   },
   {
     id: 'markdown-exporter',
-    name: 'Markdown 导出器',
-    description: '导出 Markdown 为 DOCX, PPTX, XLSX, PDF, PNG, HTML, MD, CSV, JSON, JSONL, XML等格式',
+    name: 'Markdown Exporter',
+    description: 'Exports Markdown to DOCX, PPTX, XLSX, PDF, PNG, HTML, MD, CSV, JSON, JSONL, XML and other formats',
     author: 'bowenliang123',
     authorHandle: 'md_exporter',
     category: 'tool',
-    categories: [TOOL_STORE_CATEGORIES[2]], // 工具
+    categories: [TOOL_STORE_CATEGORIES[2]], // Tools
     tags: ['Markdown', 'Export', 'Document'],
     downloads: 62648,
     rating: 4.6,
@@ -233,18 +233,18 @@ export const mockToolStoreItems: ToolStoreItem[] = [
     verified: true,
     icon: '📝',
     screenshots: [],
-    longDescription: '全能的 Markdown 导出工具，支持多种格式输出，满足各种文档需求。',
+    longDescription: 'An all-purpose Markdown export tool that supports many output formats to meet a wide range of document needs.',
     requirements: ['Pandoc', 'LibreOffice'],
-    changelog: '新增 XML 格式支持，优化了 PDF 导出质量。'
+    changelog: 'Added XML format support and improved PDF export quality.'
   },
   {
     id: 'google-search',
     name: 'Google',
-    description: '一个用于获取 Google SERP 搜索结果的AI代理工具，为AI提供实时的网络搜索能力。',
+    description: 'An AI agent tool for fetching Google SERP search results, giving AI real-time web search capability.',
     author: 'langgenius',
     authorHandle: 'google',
     category: 'tool',
-    categories: [TOOL_STORE_CATEGORIES[2]], // 工具
+    categories: [TOOL_STORE_CATEGORIES[2]], // Tools
     tags: ['Google', 'Search', 'SERP'],
     downloads: 53954,
     rating: 4.5,
@@ -255,18 +255,18 @@ export const mockToolStoreItems: ToolStoreItem[] = [
     verified: true,
     icon: '🔍',
     screenshots: [],
-    longDescription: '集成 Google 搜索功能的 AI 代理工具，提供准确的搜索结果。',
+    longDescription: 'An AI agent tool that integrates Google search and returns accurate search results.',
     requirements: ['Google API Key'],
-    changelog: '增加了搜索结果缓存，提升了响应速度。'
+    changelog: 'Added search result caching and improved response speed.'
   },
   {
     id: 'firecrawl-api',
     name: 'Firecrawl',
-    description: 'Firecrawl API 集成，用于网页内容抓取和数据提取。',
+    description: 'Firecrawl API integration for web content scraping and data extraction.',
     author: 'langgenius',
     authorHandle: 'firecrawl',
     category: 'tool',
-    categories: [TOOL_STORE_CATEGORIES[2]], // 工具
+    categories: [TOOL_STORE_CATEGORIES[2]], // Tools
     tags: ['Web Scraping', 'API', 'Data'],
     downloads: 39930,
     rating: 4.4,
@@ -277,9 +277,9 @@ export const mockToolStoreItems: ToolStoreItem[] = [
     verified: true,
     icon: '🔥',
     screenshots: [],
-    longDescription: '强大的网页抓取工具，支持动态内容提取和数据清洗。',
+    longDescription: 'A powerful web scraping tool that supports dynamic content extraction and data cleaning.',
     requirements: ['Firecrawl API Key'],
-    changelog: '支持更多网站类型，增加了反爬虫检测。'
+    changelog: 'Supports more website types and adds anti-bot detection.'
   }
 ];
 

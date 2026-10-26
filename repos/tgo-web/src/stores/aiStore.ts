@@ -6,7 +6,7 @@ import { useOnboardingStore } from './onboardingStore';
 import i18n from '@/i18n';
 
 interface AIState {
-  // AI员工相关
+  // AI agent related
   agents: Agent[];
   selectedAgent: Agent | null;
   agentSearchQuery: string;
@@ -14,7 +14,7 @@ interface AIState {
   agentCurrentPage: number;
   agentPageSize: number;
   
-  // 工具相关
+  // Tool related
   tools: AiTool[];
   selectedTool: AiTool | null;
   toolSearchQuery: string;
@@ -22,21 +22,21 @@ interface AIState {
   toolCurrentPage: number;
   toolPageSize: number;
   
-  // 加载状态
+  // Loading state
   isLoadingAgents: boolean;
   isLoadingTools: boolean;
 
-  // 错误状态
+  // Error state
   agentsError: string | null;
   toolsError: string | null;
 
-  // AI员工创建相关
+  // AI agent creation related
   isCreatingAgent: boolean;
   createAgentFormData: CreateAgentFormData;
   createAgentErrors: FormValidationErrors;
   showCreateAgentModal: boolean;
   
-  // Actions - AI员工
+  // Actions - AI agents
   setAgents: (agents: Agent[]) => void;
   setSelectedAgent: (agent: Agent | null) => void;
   setAgentSearchQuery: (query: string) => void;
@@ -47,21 +47,21 @@ interface AIState {
   deleteAgent: (agentId: string) => Promise<void>;
   toggleAgentStatus: (agentId: string) => void;
 
-  // API Actions - AI员工
+  // API Actions - AI agents
   loadAgents: (params?: AgentQueryParams) => Promise<void>;
   loadAgentById: (id: string) => Promise<void>;
   refreshAgents: () => Promise<void>;
   setAgentsError: (error: string | null) => void;
   setToolsError: (error: string | null) => void;
 
-  // AI员工创建相关actions
+  // AI agent creation related actions
   setShowCreateAgentModal: (show: boolean) => void;
   setCreateAgentFormData: (data: Partial<CreateAgentFormData>) => void;
   setCreateAgentErrors: (errors: FormValidationErrors) => void;
   resetCreateAgentForm: () => void;
   validateCreateAgentForm: () => boolean;
   
-  // Actions - 工具
+  // Actions - Tools
   setTools: (tools: AiTool[]) => void;
   setSelectedTool: (tool: AiTool | null) => void;
   setToolSearchQuery: (query: string) => void;
@@ -72,7 +72,7 @@ interface AIState {
   deleteTool: (toolId: string) => void;
   toggleToolStatus: (toolId: string) => void;
   
-  // 计算属性
+  // Computed properties
   getFilteredAgents: () => Agent[];
   getFilteredTools: () => AiTool[];
   getAgentsPaginated: () => { agents: Agent[]; totalPages: number };
@@ -83,7 +83,7 @@ export const useAIStore = create<AIState>()(
   devtools(
     persist(
       (set, get) => ({
-        // 初始状态
+        // Initial state
         agents: [],
         selectedAgent: null,
         agentSearchQuery: '',
@@ -104,7 +104,7 @@ export const useAIStore = create<AIState>()(
         agentsError: null,
         toolsError: null,
 
-        // AI员工创建相关初始状态
+        // Initial state for AI agent creation
         isCreatingAgent: false,
         showCreateAgentModal: false,
         createAgentFormData: {
@@ -125,7 +125,7 @@ export const useAIStore = create<AIState>()(
         },
         createAgentErrors: {},
 
-        // AI员工Actions
+        // AI agent actions
         setAgents: (agents) => set({ agents }, false, 'setAgents'),
         setSelectedAgent: (agent) => set({ selectedAgent: agent }, false, 'setSelectedAgent'),
         setAgentSearchQuery: (query) => set({ 
@@ -191,7 +191,7 @@ export const useAIStore = create<AIState>()(
               console.error('Failed to mark onboarding task completed:', error);
             }
 
-            // 重置表单
+            // Reset the form
             get().resetCreateAgentForm();
           } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Failed to create agent';
@@ -291,7 +291,7 @@ export const useAIStore = create<AIState>()(
           'toggleAgentStatus'
         ),
 
-        // AI员工创建相关Actions
+        // AI agent creation actions
         setShowCreateAgentModal: (show) => set({ showCreateAgentModal: show }, false, 'setShowCreateAgentModal'),
 
         setCreateAgentFormData: (data) => set(
@@ -329,19 +329,19 @@ export const useAIStore = create<AIState>()(
           const errors: FormValidationErrors = {};
 
           if (!createAgentFormData.name.trim()) {
-            errors.name = i18n.t('agents.validation.nameRequired', 'AI员工名称不能为空');
+            errors.name = i18n.t('agents.validation.nameRequired', 'Agent name is required');
           }
 
           if (!createAgentFormData.profession.trim()) {
-            errors.profession = i18n.t('agents.validation.professionRequired', '职业/角色不能为空');
+            errors.profession = i18n.t('agents.validation.professionRequired', 'Profession/Role is required');
           }
 
           if (!createAgentFormData.description.trim()) {
-            errors.description = i18n.t('agents.validation.descriptionRequired', 'AI员工描述不能为空');
+            errors.description = i18n.t('agents.validation.descriptionRequired', 'Agent description is required');
           }
 
           if (!createAgentFormData.llmModel) {
-            errors.llmModel = i18n.t('agents.validation.modelRequired', '请选择LLM模型');
+            errors.llmModel = i18n.t('agents.validation.modelRequired', 'Please select an LLM model');
           }
 
           set({ createAgentErrors: errors }, false, 'validateCreateAgentForm');
@@ -349,7 +349,7 @@ export const useAIStore = create<AIState>()(
           return Object.keys(errors).length === 0;
         },
 
-        // 工具Actions
+        // Tool actions
         setTools: (tools) => set({ tools: tools }, false, 'setTools'),
         setSelectedTool: (tool) => set({ selectedTool: tool }, false, 'setSelectedTool'),
         setToolSearchQuery: (query) => set({ 
@@ -365,13 +365,13 @@ export const useAIStore = create<AIState>()(
         createTool: (toolData) => {
           const newTool: AiTool = {
             id: Date.now().toString(),
-            name: toolData.name || i18n.t('tools.newTool', '新工具'),
+            name: toolData.name || i18n.t('tools.newTool', 'New Tool'),
             description: toolData.description || '',
             category: toolData.category || 'productivity',
             status: 'inactive',
             version: toolData.version || 'v1.0.0',
             endpoint: toolData.endpoint || 'localhost:3000',
-            author: toolData.author || i18n.t('common.unknown', '未知'),
+            author: toolData.author || i18n.t('common.unknown', 'Unknown'),
             lastUpdated: new Date().toISOString().split('T')[0],
             usageCount: 0,
             rating: 0,
@@ -416,12 +416,12 @@ export const useAIStore = create<AIState>()(
           'toggleToolStatus'
         ),
 
-        // 计算属性
+        // Computed properties
         getFilteredAgents: () => {
           const { agents, agentSearchQuery, agentFilter } = get();
           let filtered = agents;
           
-          // 搜索过滤
+          // Search filtering
           if (agentSearchQuery.trim()) {
             filtered = filtered.filter(agent =>
               agent.name.toLowerCase().includes(agentSearchQuery.toLowerCase()) ||
@@ -429,7 +429,7 @@ export const useAIStore = create<AIState>()(
             );
           }
           
-          // 状态过滤
+          // Status filtering
           if (agentFilter !== 'all') {
             filtered = filtered.filter(agent => agent.status === agentFilter);
           }
@@ -441,7 +441,7 @@ export const useAIStore = create<AIState>()(
           const { tools, toolSearchQuery, toolCategory } = get();
           let filtered = tools;
           
-          // 搜索过滤
+          // Search filtering
           if (toolSearchQuery.trim()) {
             filtered = filtered.filter(tool =>
               tool.name.toLowerCase().includes(toolSearchQuery.toLowerCase()) ||
@@ -449,7 +449,7 @@ export const useAIStore = create<AIState>()(
             );
           }
           
-          // 分类过滤
+          // Category filtering
           if (toolCategory !== 'all') {
             filtered = filtered.filter(tool => tool.category === toolCategory);
           }
@@ -477,7 +477,7 @@ export const useAIStore = create<AIState>()(
           return { tools, totalPages };
         },
 
-        // API Actions - AI员工
+        // API Actions - AI agents
         loadAgents: async (params) => {
           // Prevent multiple concurrent API calls
           const currentState = get();
@@ -498,7 +498,7 @@ export const useAIStore = create<AIState>()(
               agentsError: null
             }, false, 'loadAgents:success');
           } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : i18n.t('agents.messages.loadFailedDesc', '无法加载AI员工列表');
+            const errorMessage = error instanceof Error ? error.message : i18n.t('agents.messages.loadFailedDesc', 'Unable to load agent list, please try again later');
             set({
               isLoadingAgents: false,
               agentsError: errorMessage
@@ -555,7 +555,7 @@ export const useAIStore = create<AIState>()(
       {
         name: 'ai-store',
         partialize: (state) => ({
-          // 持久化用户偏好
+          // Persist user preferences
           agentSearchQuery: state.agentSearchQuery,
           agentFilter: state.agentFilter,
           toolSearchQuery: state.toolSearchQuery,

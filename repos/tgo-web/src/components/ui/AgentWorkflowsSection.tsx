@@ -32,9 +32,9 @@ const AgentWorkflowsSection: React.FC<AgentWorkflowsSectionProps> = ({
       archived: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400',
     };
     const labels: Record<string, string> = {
-      active: t('workflow.status.active', '已启用'),
-      draft: t('workflow.status.draft', '草稿'),
-      archived: t('workflow.status.archived', '已归档'),
+      active: t('workflow.status.active', 'Active'),
+      draft: t('workflow.status.draft', 'Draft'),
+      archived: t('workflow.status.archived', 'Archived'),
     };
     return (
       <span className={`px-1.5 py-0.5 text-xs rounded ${styles[status] || styles.draft}`}>
@@ -65,7 +65,7 @@ const AgentWorkflowsSection: React.FC<AgentWorkflowsSectionProps> = ({
                     {getStatusBadge(workflow.status)}
                   </div>
                   <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">
-                    {workflow.description || t('workflow.noDescription', '暂无描述')}
+                    {workflow.description || t('workflow.noDescription', 'No description')}
                   </div>
                 </div>
               </div>
@@ -77,7 +77,7 @@ const AgentWorkflowsSection: React.FC<AgentWorkflowsSectionProps> = ({
                     onClick={() => onEdit(workflow.id)}
                     disabled={disabled}
                     className="p-1.5 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded transition-colors disabled:opacity-50"
-                    title={t('workflow.actions.edit', '编辑')}
+                    title={t('workflow.actions.edit', 'Edit')}
                   >
                     <ExternalLink className="w-4 h-4" />
                   </button>
@@ -87,7 +87,7 @@ const AgentWorkflowsSection: React.FC<AgentWorkflowsSectionProps> = ({
                   onClick={() => onRemove(workflow.id)}
                   disabled={disabled}
                   className="p-1.5 text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors disabled:opacity-50"
-                  title={t('common.remove', '移除')}
+                  title={t('common.remove', 'Remove')}
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -99,7 +99,7 @@ const AgentWorkflowsSection: React.FC<AgentWorkflowsSectionProps> = ({
         <div className="text-center py-6 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-600">
           <GitBranch className="w-8 h-8 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            {t('workflow.empty.title', '暂未关联工作流')}
+            {t('workflow.empty.title', 'No Workflows')}
           </p>
         </div>
       )}
@@ -112,7 +112,7 @@ const AgentWorkflowsSection: React.FC<AgentWorkflowsSectionProps> = ({
         className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/40 border border-purple-200 dark:border-purple-800 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <Plus className="w-4 h-4" />
-        <span>{t('workflow.addWorkflow', '添加工作流')}</span>
+        <span>{t('workflow.addWorkflow', 'Add Workflow')}</span>
       </button>
     </div>
   );

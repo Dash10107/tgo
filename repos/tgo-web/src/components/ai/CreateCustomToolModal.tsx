@@ -7,6 +7,7 @@ import AuthMethodModal, { type AuthConfig } from './AuthMethodModal';
 import ApiTestModal from './ApiTestModal';
 import type { ToolCategory } from '@/types';
 
+import { useTranslation } from 'react-i18next';
 interface CreateCustomToolModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -34,10 +35,10 @@ interface SchemaTemplate {
   content: string;
 }
 
-// 预定义的Schema模板
+// Predefined Schema templates
 const SCHEMA_TEMPLATES: SchemaTemplate[] = [
   {
-    name: '天气(JSON)',
+    name: 'Weather (JSON)',
     content: `{
   "openapi": "3.1.0",
   "info": {
@@ -76,7 +77,7 @@ const SCHEMA_TEMPLATES: SchemaTemplate[] = [
 }`
   },
   {
-    name: '宠物商店(YAML)',
+    name: 'Pet Store (YAML)',
     content: `# Taken from https://github.com/OAI/OpenAPI-Specification/blob/main/examples/v3.0/petstore.yaml
 
 openapi: "3.0.0"
@@ -194,7 +195,7 @@ components:
           type: string`
   },
   {
-    name: '用户管理API (复杂示例)',
+    name: 'User Management API (complex example)',
     content: `{
   "openapi": "3.0.3",
   "info": {
@@ -382,7 +383,7 @@ components:
 }`
   },
   {
-    name: 'API鉴权示例 (自动检测)',
+    name: 'API Authentication Example (auto-detect)',
     content: `{
   "openapi": "3.0.3",
   "info": {
@@ -484,7 +485,7 @@ components:
 }`
   },
   {
-    name: '空白模版',
+    name: 'Blank Template',
     content: `{
   "openapi": "3.1.0",
   "info": {
@@ -506,12 +507,13 @@ components:
 ];
 
 /**
- * 创建自定义工具弹窗组件
+ * Create custom tool modal component
  */
 const CreateCustomToolModal: React.FC<CreateCustomToolModalProps> = ({
   isOpen,
   onClose
 }) => {
+  const { t } = useTranslation();
   const { createTool } = useAIStore();
   const { showToast } = useToast();
   
@@ -537,7 +539,7 @@ const CreateCustomToolModal: React.FC<CreateCustomToolModalProps> = ({
 
   const examplesDropdownRef = useRef<HTMLDivElement>(null);
 
-  // 点击外部关闭下拉菜单
+  // Close the dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (examplesDropdownRef.current && !examplesDropdownRef.current.contains(event.target as Node)) {
@@ -553,12 +555,12 @@ const CreateCustomToolModal: React.FC<CreateCustomToolModalProps> = ({
     return undefined;
   }, [showExamplesDropdown]);
 
-  // 解析Schema内容
+  // Parse the Schema content
   useEffect(() => {
     const parseSchema = async () => {
       if (!formData.schema.trim()) {
         setParsedEndpoints([]);
-        // 重置鉴权配置当schema为空时
+        // Reset the authentication config when the schema is empty
         if (authConfig.type !== 'none') {
           setAuthConfig({ type: 'none' });
         }
@@ -572,29 +574,29 @@ const CreateCustomToolModal: React.FC<CreateCustomToolModalProps> = ({
         const endpoints = await parseOpenAPISchema(formData.schema);
         setParsedEndpoints(endpoints);
 
-        // 自动检测并配置鉴权
+        // Auto-detect and configure authentication
         if (endpoints.length > 0) {
-          // 查找第一个有自动检测鉴权的端点
+          // Find the first endpoint that has auto-detected authentication
           const endpointWithAuth = endpoints.find(endpoint => endpoint.autoDetectedAuth);
 
           if (endpointWithAuth?.autoDetectedAuth && authConfig.type === 'none') {
             const autoAuthConfig = convertAutoDetectedAuth(endpointWithAuth.autoDetectedAuth);
             setAuthConfig(autoAuthConfig);
 
-            // 显示自动检测成功的提示
-            const authTypeText = endpointWithAuth.autoDetectedAuth.type === 'header' ? '请求头' : '查询参数';
-            const sourceText = endpointWithAuth.autoDetectedAuth.source === 'operation' ? '操作级别' : '全局级别';
+            // Show the auto-detection success notice
+            const authTypeText = endpointWithAuth.autoDetectedAuth.type === 'header' ? t('authMethod.header', 'Request Header') : t('authMethod.query', 'Query Parameter');
+            const sourceText = endpointWithAuth.autoDetectedAuth.source === 'operation' ? t('customTool.authSourceOperation', 'operation level') : t('customTool.authSourceGlobal', 'global level');
 
             setTimeout(() => {
               showToast(
                 'success',
-                '鉴权自动配置',
-                `已从OpenAPI规范检测到${authTypeText}鉴权 (${sourceText})`
+                t('customTool.authAutoConfigured', 'Authentication auto-configured'),
+                t('customTool.authDetectedFromSpec', { authType: authTypeText, source: sourceText, defaultValue: 'Detected {{authType}} authentication from the OpenAPI spec ({{source}})' })
               );
-            }, 500); // 延迟显示，避免与解析成功提示冲突
+            }, 500); // Delay the display to avoid conflicting with the parse success notice
           }
         } else {
-          // 如果没有找到端点，重置鉴权配置
+          // If no endpoint was found, reset the authentication config
           if (authConfig.type !== 'none') {
             setAuthConfig({ type: 'none' });
           }
@@ -602,7 +604,7 @@ const CreateCustomToolModal: React.FC<CreateCustomToolModalProps> = ({
       } catch (error) {
         console.error('Schema parsing error:', error);
         setParsedEndpoints([]);
-        // 解析失败时重置鉴权配置
+        // Reset the authentication config when parsing fails
         if (authConfig.type !== 'none') {
           setAuthConfig({ type: 'none' });
         }
@@ -614,25 +616,25 @@ const CreateCustomToolModal: React.FC<CreateCustomToolModalProps> = ({
     parseSchema();
   }, [formData.schema]);
 
-  // 表单验证
+  // Form validation
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
     
     if (!formData.name.trim()) {
-      newErrors.name = '请输入工具名称';
+      newErrors.name = t('customTool.errors.nameRequired', 'Please enter a tool name');
     } else if (formData.name.length > 50) {
-      newErrors.name = '工具名称不能超过50个字符';
+      newErrors.name = t('customTool.errors.nameTooLong', 'Tool name cannot exceed 50 characters');
     }
     
     if (!formData.schema.trim()) {
-      newErrors.schema = '请输入Schema配置';
+      newErrors.schema = t('customTool.errors.schemaRequired', 'Please enter the Schema configuration');
     }
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // 处理表单提交
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -643,31 +645,31 @@ const CreateCustomToolModal: React.FC<CreateCustomToolModalProps> = ({
     try {
       setIsCreating(true);
       
-      // 模拟API调用
+      // Simulate an API call
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // 使用store创建工具
+      // Create the tool using the store
       createTool({
         name: formData.name,
         description: formData.description,
         category: formData.category,
         endpoint: formData.endpoint,
-        author: '自定义',
+        author: 'Custom',
         tags: formData.tags,
         version: 'v1.0.0'
       });
       
-      showToast('success', '创建成功', `自定义工具 "${formData.name}" 已创建`);
+      showToast('success', t('customTool.createSuccess', 'Created successfully'), t('customTool.createSuccessMessage', { name: formData.name, defaultValue: 'Custom tool "{{name}}" has been created' }));
       handleClose();
     } catch (error) {
-      console.error('创建自定义工具失败:', error);
-      showToast('error', '创建失败', '创建自定义工具时发生错误，请重试');
+      console.error('Failed to create custom tool:', error);
+      showToast('error', t('customTool.createFailed', 'Creation failed'), t('customTool.createFailedMessage', 'An error occurred while creating the custom tool, please try again'));
     } finally {
       setIsCreating(false);
     }
   };
 
-  // 处理弹窗关闭
+  // Handle modal close
   const handleClose = () => {
     if (isCreating) return;
     
@@ -684,33 +686,33 @@ const CreateCustomToolModal: React.FC<CreateCustomToolModalProps> = ({
     onClose();
   };
 
-  // 处理输入变化
+  // Handle input changes
   const handleInputChange = (field: keyof CustomToolFormData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
 
-    // 清除错误
+    // Clear errors
     if (errors[field as keyof FormErrors]) {
       setErrors(prev => ({ ...prev, [field]: undefined }));
     }
   };
 
-  // 处理模板选择
+  // Handle template selection
   const handleTemplateSelect = (template: SchemaTemplate) => {
     handleInputChange('schema', template.content);
     setShowExamplesDropdown(false);
   };
 
-  // 切换例子下拉菜单
+  // Toggle the examples dropdown
   const toggleExamplesDropdown = () => {
     setShowExamplesDropdown(!showExamplesDropdown);
   };
 
-  // 处理鉴权配置保存
+  // Handle saving the authentication config
   const handleAuthSave = (config: AuthConfig) => {
     setAuthConfig(config);
   };
 
-  // 检查是否为自动检测的鉴权
+  // Check whether the authentication was auto-detected
   const isAutoDetectedAuth = () => {
     if (parsedEndpoints.length === 0) return false;
 
@@ -723,35 +725,35 @@ const CreateCustomToolModal: React.FC<CreateCustomToolModalProps> = ({
     );
   };
 
-  // 获取鉴权显示文本
+  // Get the authentication display text
   const getAuthDisplayText = () => {
     const endpointWithAuth = parsedEndpoints.find(endpoint => endpoint.autoDetectedAuth);
     const autoAuth = endpointWithAuth?.autoDetectedAuth;
 
     if (authConfig.type === 'none') {
       if (autoAuth && autoAuth.type !== 'none') {
-        return `自动检测: ${autoAuth.type === 'header' ? '请求头' : '查询参数'}`;
+        return `${t('authMethod.autoDetected', 'Auto-detected')}: ${autoAuth.type === 'header' ? t('authMethod.header', 'Request Header') : t('authMethod.query', 'Query Parameter')}`;
       }
-      return '无';
+      return t('authMethod.none', 'None');
     } else if (authConfig.type === 'header') {
-      return `请求头 (${authConfig.headerPrefix?.toUpperCase()})`;
+      return `${t('authMethod.header', 'Request Header')} (${authConfig.headerPrefix?.toUpperCase()})`;
     } else if (authConfig.type === 'query') {
-      return '查询参数';
+      return t('authMethod.query', 'Query Parameter');
     }
-    return '无';
+    return t('authMethod.none', 'None');
   };
 
-  // 将自动检测的鉴权转换为AuthConfig
+  // Convert the auto-detected authentication to an AuthConfig
   const convertAutoDetectedAuth = (autoAuth: AutoDetectedAuth): AuthConfig => {
     return {
       type: autoAuth.type,
       headerPrefix: autoAuth.headerPrefix,
       key: autoAuth.key,
-      value: '', // 用户需要填入实际的API密钥
+      value: '', // The user must enter the real API key
     };
   };
 
-  // 处理测试按钮点击
+  // Handle test button click
   const handleTestEndpoint = (endpoint: ParsedEndpoint, e?: React.MouseEvent) => {
     // Prevent any form submission or event bubbling
     if (e) {
@@ -759,7 +761,7 @@ const CreateCustomToolModal: React.FC<CreateCustomToolModalProps> = ({
       e.stopPropagation();
     }
 
-    // 如果端点有自动检测的鉴权配置，且当前鉴权为默认状态，则应用自动检测的配置
+    // If the endpoint has auto-detected authentication and the current auth is in its default state, apply the auto-detected config
     if (endpoint.autoDetectedAuth && authConfig.type === 'none') {
       const autoAuthConfig = convertAutoDetectedAuth(endpoint.autoDetectedAuth);
       setAuthConfig(autoAuthConfig);
@@ -776,7 +778,7 @@ const CreateCustomToolModal: React.FC<CreateCustomToolModalProps> = ({
       <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">创建自定义工具</h2>
+          <h2 className="text-xl font-semibold text-gray-900">{t('customTool.title', 'Create Custom Tool')}</h2>
           <button
             type="button"
             onClick={handleClose}
@@ -790,11 +792,11 @@ const CreateCustomToolModal: React.FC<CreateCustomToolModalProps> = ({
         {/* Content */}
         <form onSubmit={handleSubmit} className="overflow-y-auto max-h-[calc(90vh-140px)]">
           <div className="p-6 space-y-6">
-            {/* 工具名称 */}
+            {/* Tool name */}
             <div>
               <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
                 <Wrench className="w-4 h-4 text-yellow-600" />
-                <span>名称 <span className="text-red-500">*</span></span>
+                <span>{t('customTool.name', 'Name')} <span className="text-red-500">*</span></span>
               </label>
               <input
                 type="text"
@@ -803,7 +805,7 @@ const CreateCustomToolModal: React.FC<CreateCustomToolModalProps> = ({
                 className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
                   errors.name ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-gray-400'
                 }`}
-                placeholder="输入工具名称"
+                placeholder={t('customTool.namePlaceholder', 'Enter tool name')}
                 disabled={isCreating}
                 maxLength={50}
               />
@@ -815,7 +817,7 @@ const CreateCustomToolModal: React.FC<CreateCustomToolModalProps> = ({
               )}
             </div>
 
-            {/* Schema配置 */}
+            {/* Schema configuration */}
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label className="flex items-center space-x-2 text-sm font-medium text-gray-700">
@@ -827,7 +829,7 @@ const CreateCustomToolModal: React.FC<CreateCustomToolModalProps> = ({
                     className="flex items-center space-x-1 px-3 py-1 text-sm text-blue-600 hover:text-blue-700 transition-colors"
                     onClick={() => window.open('https://swagger.io/specification/', '_blank')}
                   >
-                    <span>查看 OpenAPI-Swagger 规范</span>
+                    <span>{t('customTool.viewOpenApiSpec', 'View OpenAPI-Swagger specification')}</span>
                     <ExternalLink className="w-3 h-3" />
                   </button>
                   <div className="relative" ref={examplesDropdownRef}>
@@ -836,11 +838,11 @@ const CreateCustomToolModal: React.FC<CreateCustomToolModalProps> = ({
                       className="flex items-center space-x-1 px-3 py-1 text-sm text-gray-600 hover:text-gray-700 transition-colors"
                       onClick={toggleExamplesDropdown}
                     >
-                      <span>例子</span>
+                      <span>{t('customTool.examples', 'Examples')}</span>
                       <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${showExamplesDropdown ? 'rotate-180' : ''}`} />
                     </button>
 
-                    {/* 下拉菜单 */}
+                    {/* Dropdown menu */}
                     {showExamplesDropdown && (
                       <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
                         <div className="py-1">
@@ -867,7 +869,7 @@ const CreateCustomToolModal: React.FC<CreateCustomToolModalProps> = ({
                 className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 resize-none font-mono text-sm ${
                   errors.schema ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-gray-400'
                 }`}
-                placeholder="输入OpenAPI Schema配置..."
+                placeholder={t('customTool.schemaPlaceholder', 'Enter OpenAPI Schema configuration...')}
                 disabled={isCreating}
               />
               {errors.schema && (
@@ -878,14 +880,14 @@ const CreateCustomToolModal: React.FC<CreateCustomToolModalProps> = ({
               )}
             </div>
 
-            {/* 可用工具表格 */}
+            {/* Available tools table */}
             <div>
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-medium text-gray-700">可用工具</h3>
+                <h3 className="text-sm font-medium text-gray-700">{t('customTool.availableTools', 'Available tools')}</h3>
                 {isParsingSchema && (
                   <div className="flex items-center space-x-2 text-xs text-gray-500">
                     <div className="animate-spin w-3 h-3 border border-gray-300 border-t-blue-500 rounded-full"></div>
-                    <span>解析中...</span>
+                    <span>{t('customTool.parsing', 'Parsing...')}</span>
                   </div>
                 )}
               </div>
@@ -893,11 +895,11 @@ const CreateCustomToolModal: React.FC<CreateCustomToolModalProps> = ({
                 <table className="w-full">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">名称</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">描述</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">方法</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">路径</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('customTool.table.name', 'Name')}</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('customTool.table.description', 'Description')}</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('customTool.table.method', 'Method')}</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('customTool.table.path', 'Path')}</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('customTool.table.actions', 'Actions')}</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -920,7 +922,7 @@ const CreateCustomToolModal: React.FC<CreateCustomToolModalProps> = ({
                               }}
                               className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
                             >
-                              测试
+                              {t('customTool.test', 'Test')}
                             </button>
                           </td>
                         </tr>
@@ -928,7 +930,7 @@ const CreateCustomToolModal: React.FC<CreateCustomToolModalProps> = ({
                     ) : (
                       <tr>
                         <td colSpan={5} className="px-4 py-8 text-center text-sm text-gray-500">
-                          {formData.schema.trim() ? '未找到有效的API端点' : '请输入OpenAPI Schema以查看可用工具'}
+                          {formData.schema.trim() ? t('customTool.noValidEndpoints', 'No valid API endpoints found') : t('customTool.enterSchemaToView', 'Enter an OpenAPI Schema to view available tools')}
                         </td>
                       </tr>
                     )}
@@ -937,17 +939,17 @@ const CreateCustomToolModal: React.FC<CreateCustomToolModalProps> = ({
               </div>
             </div>
 
-            {/* 鉴权方法 */}
+            {/* Authentication method */}
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-2">
-                  <h3 className="text-sm font-medium text-gray-700">鉴权方法</h3>
+                  <h3 className="text-sm font-medium text-gray-700">{t('authMethod.title', 'Authentication Method')}</h3>
                   {isAutoDetectedAuth() && (
                     <span
                       className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full"
-                      title="从OpenAPI规范自动检测的鉴权配置"
+                      title={t('customTool.autoDetectedAuthTitle', 'Authentication configuration auto-detected from the OpenAPI spec')}
                     >
-                      自动检测
+                      {t('authMethod.autoDetectedShort', 'Auto-detect')}
                     </span>
                   )}
                 </div>
@@ -992,19 +994,19 @@ const CreateCustomToolModal: React.FC<CreateCustomToolModalProps> = ({
               className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               disabled={isCreating}
             >
-              取消
+              {t('common.cancel', 'Cancel')}
             </button>
             <button
               type="submit"
               className="flex items-center space-x-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               disabled={isCreating}
             >
-              <span>{isCreating ? '保存中...' : '保存'}</span>
+              <span>{isCreating ? t('common.saving', 'Saving...') : t('common.save', 'Save')}</span>
             </button>
           </div>
         </form>
 
-        {/* 鉴权方法设置弹窗 */}
+        {/* Authentication method settings modal */}
         <AuthMethodModal
           isOpen={showAuthModal}
           onClose={() => setShowAuthModal(false)}
@@ -1012,7 +1014,7 @@ const CreateCustomToolModal: React.FC<CreateCustomToolModalProps> = ({
           initialConfig={authConfig}
         />
 
-        {/* API测试弹窗 */}
+        {/* API test modal */}
         <ApiTestModal
           isOpen={showTestModal}
           onClose={() => setShowTestModal(false)}

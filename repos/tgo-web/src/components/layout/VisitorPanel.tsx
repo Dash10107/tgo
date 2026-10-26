@@ -13,7 +13,7 @@ const MAX_WIDTH = 600;
 const DEFAULT_WIDTH = 320;
 
 /**
- * 标准化 channel_type 字段，兼容字符串/数字
+ * Normalize the channel_type field; compatible with string/number
  */
 const normalizeChannelType = (value: unknown): number | null => {
   if (typeof value === 'number') {
@@ -34,7 +34,7 @@ interface VisitorContext {
 }
 
 /**
- * 从聊天信息中提取访客上下文
+ * Extract the visitor context from chat info
  */
 const deriveVisitorContext = (chat?: Chat | null): VisitorContext => {
   if (!chat) {
@@ -82,8 +82,8 @@ const VisitorPanel: React.FC<VisitorPanelProps> = ({ activeChat }) => {
 
   const resize = useCallback((e: MouseEvent) => {
     if (isResizing) {
-      // 访客面板在右侧，向左拖拽（减少 clientX）增加宽度
-      // 宽度 = window.innerWidth - e.clientX
+      // The visitor panel is on the right; dragging left (decreasing clientX) increases the width
+      // Width = window.innerWidth - e.clientX
       const newWidth = window.innerWidth - e.clientX;
       if (newWidth >= MIN_WIDTH && newWidth <= MAX_WIDTH) {
         setWidth(newWidth);
@@ -110,7 +110,7 @@ const VisitorPanel: React.FC<VisitorPanelProps> = ({ activeChat }) => {
     };
   }, [isResizing, resize, stopResizing, width]);
 
-  // 没有选中聊天时显示空状态
+  // Show the empty state when no chat is selected
   if (!activeChat) {
     return (
       <aside 
@@ -125,7 +125,7 @@ const VisitorPanel: React.FC<VisitorPanelProps> = ({ activeChat }) => {
         </div>
         <div className="text-center text-gray-500 dark:text-gray-400 px-4">
           <User size={48} className="mx-auto mb-4 text-gray-300 dark:text-gray-600" />
-          <p className="text-sm leading-5">{t('visitor.ui.selectConversation', '选择聊天查看访客信息')}</p>
+          <p className="text-sm leading-5">{t('visitor.ui.selectConversation', 'Select a chat to view visitor information')}</p>
         </div>
       </aside>
     );
@@ -133,7 +133,7 @@ const VisitorPanel: React.FC<VisitorPanelProps> = ({ activeChat }) => {
 
   return (
     <div className="relative flex shrink-0 h-full" style={{ width: `${width}px` }}>
-      {/* 拖拽手柄：增加命中区域 */}
+      {/* Drag handle: increases the hit area */}
       <div
         className={`absolute left-0 top-0 bottom-0 w-1.5 cursor-col-resize z-[60] group/resize flex items-center justify-center`}
         onMouseDown={startResizing}

@@ -1,8 +1,8 @@
-# TGO-Tech RAG Service Deployment Guide
+# Pelatis RAG Service Deployment Guide
 
 ## Overview
 
-This guide provides comprehensive instructions for deploying and operating the TGO-Tech RAG Service in various environments, from local development to production-scale deployments.
+This guide provides comprehensive instructions for deploying and operating the Pelatis RAG Service in various environments, from local development to production-scale deployments.
 
 ## Environment Setup
 

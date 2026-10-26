@@ -11,8 +11,8 @@ interface AgentToolTagProps {
 }
 
 /**
- * Agent工具标签组件
- * 用于显示AI员工关联的工具（基于API响应的工具对象）
+ * Agent tool tag component
+ * Shows the tools linked to an AI agent (based on the tool object from the API response)
  */
 const AgentToolTag: React.FC<AgentToolTagProps> = ({
   tool,
@@ -21,7 +21,7 @@ const AgentToolTag: React.FC<AgentToolTagProps> = ({
   showIcon = true,
   className = ''
 }) => {
-  // 根据工具启用状态确定颜色主题
+  // Determine the color theme from the tool's enabled state
   const getColorTheme = (enabled: boolean) => {
     if (enabled) {
       return 'bg-green-100 text-green-800 border-green-200 hover:bg-green-200';
@@ -30,7 +30,7 @@ const AgentToolTag: React.FC<AgentToolTagProps> = ({
     }
   };
 
-  // 根据工具启用状态确定图标颜色
+  // Determine the icon color from the tool's enabled state
   const getIconColor = (enabled: boolean) => {
     if (enabled) {
       return 'text-green-600';
@@ -39,13 +39,13 @@ const AgentToolTag: React.FC<AgentToolTagProps> = ({
     }
   };
 
-  // 格式化工具名称显示（容错 undefined）
+  // Format the tool name for display (tolerates undefined)
   const formatToolName = (toolName?: string) => {
     const safe = typeof toolName === 'string' ? toolName : '';
     if (!safe) {
-      return { provider: '', name: '', displayName: '工具' };
+      return { provider: '', name: '', displayName: 'Tool' };
     }
-    // 如果工具名称包含冒号，显示冒号后的部分作为主要名称
+    // If the tool name contains a colon, show the part after the colon as the main name
     if (safe.includes(':')) {
       const parts = safe.split(':');
       const provider = parts[0];
@@ -72,8 +72,8 @@ const AgentToolTag: React.FC<AgentToolTagProps> = ({
   const { provider, displayName } = formatToolName(tool?.tool_name);
   // Prefer API title/name over generic fallback label when tool_name is missing
   const titleFromApi = (tool as any)?.title || (tool as any)?.name;
-  const baseFromToolName = displayName && displayName !== '工具' ? displayName : undefined;
-  const finalDisplayName = titleFromApi || baseFromToolName || (tool as any)?.id || '工具';
+  const baseFromToolName = displayName && displayName !== 'Tool' ? displayName : undefined;
+  const finalDisplayName = titleFromApi || baseFromToolName || (tool as any)?.id || 'Tool';
   const providerDisplay = (tool as any)?.tool_server?.short_no || (tool as any)?.tool_source_type || provider;
 
   const handleClick = () => {
@@ -92,7 +92,7 @@ const AgentToolTag: React.FC<AgentToolTagProps> = ({
         ${className}
       `}
       onClick={handleClick}
-      title={`${tool?.tool_name || '工具'}${tool?.enabled ? ' (已启用)' : ' (已禁用)'}`}
+      title={`${tool?.tool_name || 'Tool'}${tool?.enabled ? ' (Enabled)' : ' (Disabled)'}`}
     >
       {showIcon && (
         <Wrench className={`${iconSizeClasses[size]} mr-1 ${iconColor}`} />

@@ -74,7 +74,7 @@ _completions_success_responses = {
             "text/event-stream": {
                 "schema": {
                     "type": "string",
-                    "description": "Server-Sent Events (SSE) stream in OpenAI format with TGO-AI tool extensions.",
+                    "description": "Server-Sent Events (SSE) stream in OpenAI format with Pelatis-AI tool extensions.",
                 },
                 "examples": {
                     "streaming_response": {
@@ -96,61 +96,61 @@ _completions_success_responses = {
         **build_error_responses(
             [400, 404, 500],
             {
-                400: "请求参数错误或模型不支持该操作",
-                404: "未找到指定的 LLM 供应商 (LLM Provider)",
-                500: "后端 LLM 供应商调用失败或系统内部错误",
+                400: "Invalid request parameters or the model does not support this operation",
+                404: "The specified LLM provider was not found",
+                500: "Backend LLM provider call failed or internal system error",
             },
         ),
     },
-    summary="创建聊天补全 (Chat Completion)",
+    summary="Create chat completion",
     description="""
-创建一个聊天补全请求。该接口完全兼容 OpenAI 的 Chat Completions API 格式，并扩展了对多供应商、动态工具加载和自动 RAG 搜索的支持。
+Creates a chat completion request. This endpoint is fully compatible with the OpenAI Chat Completions API format and adds support for multiple providers, dynamic tool loading and automatic RAG search.
 
-### 1. 核心请求参数 (Request Parameters)
+### 1. Request Parameters
 
-| 参数名 | 类型 | 是否必填 | 描述 |
+| Parameter | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
-| `provider_id` | UUID | 是 | 对应 `ai_llm_providers` 表中的供应商 ID。决定了使用哪组 API 密钥和厂商。 |
-| `model` | String | 是 | 模型标识符 (如 "gpt-4o", "claude-3-5-sonnet", "gemini-1.5-pro")。 |
-| `messages` | Array | 是 | 会话消息列表。支持 role 为 `system`, `user`, `assistant`, `tool`。 |
-| `stream` | Boolean | 否 | 是否开启流式输出。默认 `false`。 |
-| `temperature` | Float | 否 | 采样温度 (0-2)。 |
-| `max_tokens` | Integer | 否 | 最大生成 Token 数。 |
+| `provider_id` | UUID | Yes | Provider ID in the `ai_llm_providers` table. Determines which API keys and vendor are used. |
+| `model` | String | Yes | Model identifier (e.g. "gpt-4o", "claude-3-5-sonnet", "gemini-1.5-pro"). |
+| `messages` | Array | Yes | Conversation message list. Supported roles: `system`, `user`, `assistant`, `tool`. |
+| `stream` | Boolean | No | Whether to stream the output. Default `false`. |
+| `temperature` | Float | No | Sampling temperature (0-2). |
+| `max_tokens` | Integer | No | Maximum number of tokens to generate. |
 
-### 2. TGO-AI 扩展参数 (TGO-AI Extensions)
+### 2. Pelatis-AI Extensions
 
-| 参数名 | 类型 | 描述 |
+| Parameter | Type | Description |
 | :--- | :--- | :--- |
-| `tool_ids` | Array[UUID] | 动态加载工具 ID 列表。后端会自动从数据库读取 MCP 工具定义并转换成 OpenAI function 格式发送给模型。 |
-| `collection_ids` | Array[String] | RAG 知识库 ID 列表。后端会为每个集合自动生成一个 RAG 搜索工具 (如 `rag_search_xxx`)。 |
-| `max_tool_rounds` | Integer | 自动工具调用的最大轮数 (Agentic Loop)。默认 `5`，最大 `20`。 |
+| `tool_ids` | Array[UUID] | IDs of tools to load dynamically. The backend reads MCP tool definitions from the database and converts them to the OpenAI function format before sending them to the model. |
+| `collection_ids` | Array[String] | RAG collection IDs. The backend automatically generates one RAG search tool per collection (e.g. `rag_search_xxx`). |
+| `max_tool_rounds` | Integer | Maximum number of automatic tool-calling rounds (agentic loop). Default `5`, maximum `20`. |
 
-### 3. 返回值 (Return Value)
+### 3. Return Value
 
-#### 非流式模式 (stream=false)
-返回一个标准的 OpenAI 兼容 JSON 对象 (`ChatCompletionResponse`)。
-*   如果触发了工具调用且 `max_tool_rounds > 0`，后端会**自动执行工具**并在获取结果后再次请求 LLM，直到输出最终回复。
-*   `usage` 字段将包含整个 agentic loop 累积的 Token 消耗。
+#### Non-streaming mode (stream=false)
+Returns a standard OpenAI-compatible JSON object (`ChatCompletionResponse`).
+*   If a tool call is triggered and `max_tool_rounds > 0`, the backend **executes the tools automatically** and requests the LLM again with the results until a final reply is produced.
+*   The `usage` field contains the token consumption accumulated over the whole agentic loop.
 
-#### 流式模式 (stream=true)
-返回 `text/event-stream`。除了标准的 OpenAI chunk 外，还会包含 TGO-AI 自定义的工具执行事件：
+#### Streaming mode (stream=true)
+Returns `text/event-stream`. In addition to standard OpenAI chunks, it contains Pelatis-AI custom tool execution events:
 
-| 事件类型 (SSE Data) | 描述 |
+| Event type (SSE data) | Description |
 | :--- | :--- |
-| `{"id":"...","object":"chat.completion.chunk",...}` | 标准的文本增量或模型原始输出。 |
-| `{"type": "tool_call", "tool_call": {...}}` | **TGO-AI 自定义事件**：通知前端后端正在自动执行某个工具调用。 |
-| `{"type": "tool_result", "tool_call_id": "...", "result": "..."}` | **TGO-AI 自定义事件**：工具执行完成，返回执行结果。 |
-| `data: [DONE]` | 流结束。 |
+| `{"id":"...","object":"chat.completion.chunk",...}` | Standard text delta or raw model output. |
+| `{"type": "tool_call", "tool_call": {...}}` | **Pelatis-AI custom event**: tells the frontend that the backend is automatically executing a tool call. |
+| `{"type": "tool_result", "tool_call_id": "...", "result": "..."}` | **Pelatis-AI custom event**: the tool finished executing and returned its result. |
+| `data: [DONE]` | End of stream. |
 
-### 4. 供应商支持情况 (Provider Support)
-*   **OpenAI / OpenAI Compatible**: 支持完整的工具调用和流式输出。
-*   **Anthropic (Claude)**: 支持工具调用。
-*   **Google (Gemini)**: 支持工具调用。
+### 4. Provider Support
+*   **OpenAI / OpenAI Compatible**: full tool calling and streaming support.
+*   **Anthropic (Claude)**: tool calling supported.
+*   **Google (Gemini)**: tool calling supported.
 
-### 5. 错误处理 (Error Handling)
-*   `404`: `provider_id` 不存在或不属于当前项目。
-*   `400`: `messages` 格式错误或 `max_tool_rounds` 超出范围。
-*   `500`: 远程供应商服务不可用或超时。
+### 5. Error Handling
+*   `404`: `provider_id` does not exist or does not belong to the current project.
+*   `400`: invalid `messages` format or `max_tool_rounds` out of range.
+*   `500`: the remote provider service is unavailable or timed out.
 """,
 )
 async def create_chat_completion(

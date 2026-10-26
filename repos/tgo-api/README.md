@@ -1,6 +1,6 @@
-# TGO-Tech API Service
+# Pelatis API Service
 
-Core Business Logic Microservice for the TGO-Tech customer service platform.
+Core Business Logic Microservice for the Pelatis customer service platform.
 
 ## Features
 
@@ -140,7 +140,7 @@ SECRET_KEY=your-secret-key-here
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 
 # API Configuration
-PROJECT_NAME=TGO-Tech API Service
+PROJECT_NAME=Pelatis API Service
 PROJECT_DESCRIPTION=Core Business Logic Microservice
 PROJECT_VERSION=0.1.0
 API_V1_STR=/v1
@@ -206,4 +206,4 @@ The application uses PostgreSQL with the following main entities:
 
 ## License
 
-Proprietary - TGO-Tech
+Proprietary - Pelatis

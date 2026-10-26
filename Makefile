@@ -1,5 +1,5 @@
 # ==========================================================
-# TGO Development Makefile
+# Pelatis Development Makefile
 # ==========================================================
 # Primary local workflow:
 #   cp .env.dev.example .env.dev
@@ -41,7 +41,7 @@ RESET := $(shell printf '\033[0m')
 
 help:
 	@echo ""
-	@echo "$(CYAN)TGO Dev Commands$(RESET)"
+	@echo "$(CYAN)Pelatis Dev Commands$(RESET)"
 	@echo "================="
 	@echo ""
 	@echo "  make dev                       Build backend images, run init, and launch the dev stack"

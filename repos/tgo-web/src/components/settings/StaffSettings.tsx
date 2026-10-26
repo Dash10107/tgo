@@ -112,32 +112,32 @@ const StaffDialog: React.FC<StaffDialogProps> = ({
 
     // Name is always required
     if (!formData.name.trim()) {
-      newErrors.name = t('settings.staff.errors.nameRequired', '请输入姓名');
+      newErrors.name = t('settings.staff.errors.nameRequired', 'Please enter name');
     }
 
     if (!isEditing) {
       if (!formData.username.trim()) {
-        newErrors.username = t('settings.staff.errors.usernameRequired', '请输入用户名');
+        newErrors.username = t('settings.staff.errors.usernameRequired', 'Please enter username');
       } else if (formData.username.length < 1 || formData.username.length > 50) {
-        newErrors.username = t('settings.staff.errors.usernameLength', '用户名长度需在1-50个字符之间');
+        newErrors.username = t('settings.staff.errors.usernameLength', 'Username must be between 1-50 characters');
       }
 
       if (!formData.password) {
-        newErrors.password = t('settings.staff.errors.passwordRequired', '请输入密码');
+        newErrors.password = t('settings.staff.errors.passwordRequired', 'Please enter password');
       } else if (formData.password.length < 8) {
-        newErrors.password = t('settings.staff.errors.passwordLength', '密码长度至少8个字符');
+        newErrors.password = t('settings.staff.errors.passwordLength', 'Password must be at least 8 characters');
       }
 
       if (formData.password !== formData.confirmPassword) {
-        newErrors.confirmPassword = t('settings.staff.errors.passwordMismatch', '两次输入的密码不一致');
+        newErrors.confirmPassword = t('settings.staff.errors.passwordMismatch', 'Passwords do not match');
       }
     } else {
       // When editing, only validate password if it's being changed
       if (formData.password && formData.password.length < 8) {
-        newErrors.password = t('settings.staff.errors.passwordLength', '密码长度至少8个字符');
+        newErrors.password = t('settings.staff.errors.passwordLength', 'Password must be at least 8 characters');
       }
       if (formData.password && formData.password !== formData.confirmPassword) {
-        newErrors.confirmPassword = t('settings.staff.errors.passwordMismatch', '两次输入的密码不一致');
+        newErrors.confirmPassword = t('settings.staff.errors.passwordMismatch', 'Passwords do not match');
       }
     }
 
@@ -182,8 +182,8 @@ const StaffDialog: React.FC<StaffDialogProps> = ({
             <UserPlus className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
               {isEditing
-                ? t('settings.staff.editStaff', '编辑坐席')
-                : t('settings.staff.addStaff', '添加坐席')}
+                ? t('settings.staff.editStaff', 'Edit Staff')
+                : t('settings.staff.addStaff', 'Add Staff')}
             </h2>
           </div>
           <button
@@ -199,7 +199,7 @@ const StaffDialog: React.FC<StaffDialogProps> = ({
           {/* Username - Required for new staff */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('settings.staff.username', '用户名')} {!isEditing && <span className="text-red-500">*</span>}
+              {t('settings.staff.username', 'Username')} {!isEditing && <span className="text-red-500">*</span>}
             </label>
             <input
               type="text"
@@ -216,7 +216,7 @@ const StaffDialog: React.FC<StaffDialogProps> = ({
                 focus:outline-none focus:ring-2 focus:ring-offset-0
                 text-gray-800 dark:text-gray-200
               `}
-              placeholder={t('settings.staff.usernamePlaceholder', '请输入用户名')}
+              placeholder={t('settings.staff.usernamePlaceholder', 'Enter username')}
             />
             {errors.username && (
               <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
@@ -229,7 +229,7 @@ const StaffDialog: React.FC<StaffDialogProps> = ({
           {/* Name - Required */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('settings.staff.name', '姓名')} <span className="text-red-500">*</span>
+              {t('settings.staff.name', 'Name')} <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -244,7 +244,7 @@ const StaffDialog: React.FC<StaffDialogProps> = ({
                 }
                 focus:outline-none focus:ring-2 focus:ring-offset-0
               `}
-              placeholder={t('settings.staff.namePlaceholder', '请输入姓名')}
+              placeholder={t('settings.staff.namePlaceholder', 'Enter name')}
             />
             {errors.name && (
               <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
@@ -257,7 +257,7 @@ const StaffDialog: React.FC<StaffDialogProps> = ({
           {/* Password - Required for new staff */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('settings.staff.password', '密码')} {!isEditing && <span className="text-red-500">*</span>}
+              {t('settings.staff.password', 'Password')} {!isEditing && <span className="text-red-500">*</span>}
             </label>
             <div className="relative">
               <input
@@ -274,8 +274,8 @@ const StaffDialog: React.FC<StaffDialogProps> = ({
                   focus:outline-none focus:ring-2 focus:ring-offset-0
                 `}
                 placeholder={isEditing
-                  ? t('settings.staff.passwordPlaceholderEdit', '留空则不修改密码')
-                  : t('settings.staff.passwordPlaceholder', '请输入密码（至少8位）')
+                  ? t('settings.staff.passwordPlaceholderEdit', 'Leave empty to keep current password')
+                  : t('settings.staff.passwordPlaceholder', 'Enter password (at least 8 characters)')
                 }
               />
               <button
@@ -297,7 +297,7 @@ const StaffDialog: React.FC<StaffDialogProps> = ({
           {/* Confirm Password */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('settings.staff.confirmPassword', '确认密码')} {!isEditing && <span className="text-red-500">*</span>}
+              {t('settings.staff.confirmPassword', 'Confirm Password')} {!isEditing && <span className="text-red-500">*</span>}
             </label>
             <div className="relative">
               <input
@@ -313,7 +313,7 @@ const StaffDialog: React.FC<StaffDialogProps> = ({
                   }
                   focus:outline-none focus:ring-2 focus:ring-offset-0
                 `}
-                placeholder={t('settings.staff.confirmPasswordPlaceholder', '请再次输入密码')}
+                placeholder={t('settings.staff.confirmPasswordPlaceholder', 'Re-enter password')}
               />
               <button
                 type="button"
@@ -334,7 +334,7 @@ const StaffDialog: React.FC<StaffDialogProps> = ({
           {/* Description - Optional */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('settings.staff.descriptionLabel', '描述')}
+              {t('settings.staff.descriptionLabel', 'Description')}
             </label>
             <textarea
               value={formData.description}
@@ -346,7 +346,7 @@ const StaffDialog: React.FC<StaffDialogProps> = ({
                 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0
                 transition-colors resize-none
               "
-              placeholder={t('settings.staff.descriptionPlaceholder', '请输入坐席描述（可选）')}
+              placeholder={t('settings.staff.descriptionPlaceholder', 'Enter staff description (optional)')}
             />
           </div>
 
@@ -361,7 +361,7 @@ const StaffDialog: React.FC<StaffDialogProps> = ({
                 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors
               "
             >
-              {t('common.cancel', '取消')}
+              {t('common.cancel', 'Cancel')}
             </button>
             <button
               type="submit"
@@ -374,8 +374,8 @@ const StaffDialog: React.FC<StaffDialogProps> = ({
             >
               {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
               {isEditing
-                ? t('common.save', '保存')
-                : t('common.create', '创建')}
+                ? t('common.save', 'Save')
+                : t('common.create', 'Create')}
             </button>
           </div>
         </form>
@@ -412,10 +412,10 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({
             <Trash2 className="w-6 h-6 text-red-600 dark:text-red-400" />
           </div>
           <h3 className="text-lg font-semibold text-center text-gray-800 dark:text-gray-200 mb-2">
-            {t('settings.staff.deleteConfirmTitle', '确认删除')}
+            {t('settings.staff.deleteConfirmTitle', 'Confirm Delete')}
           </h3>
           <p className="text-sm text-center text-gray-600 dark:text-gray-400">
-            {t('settings.staff.deleteConfirmMessage', '确定要删除坐席 "{{name}}" 吗？此操作无法撤销。', { name: staffName })}
+            {t('settings.staff.deleteConfirmMessage', 'Are you sure you want to delete staff "{{name}}"? This action cannot be undone.', { name: staffName })}
           </p>
         </div>
         <div className="flex gap-3 px-6 pb-6">
@@ -427,7 +427,7 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({
               hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors
             "
           >
-            {t('common.cancel', '取消')}
+            {t('common.cancel', 'Cancel')}
           </button>
           <button
             onClick={onConfirm}
@@ -439,7 +439,7 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({
             "
           >
             {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-            {t('common.delete', '删除')}
+            {t('common.delete', 'Delete')}
           </button>
         </div>
       </div>
@@ -448,24 +448,24 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({
 };
 
 // Default assignment rules prompt
-const DEFAULT_ASSIGNMENT_PROMPT = `你是一个智能客服分配助手。当AI无法解决用户问题时，你需要根据以下规则将对话分配给合适的人工坐席：
+const DEFAULT_ASSIGNMENT_PROMPT = `You are an intelligent customer-service assignment assistant. When the AI cannot resolve a user's problem, assign the conversation to a suitable human agent according to the following rules:
 
-## 分配原则
-1. **技能匹配**：根据用户问题类型，优先分配给具有相关专业知识的坐席
-2. **负载均衡**：在技能匹配的前提下，优先分配给当前处理对话较少的坐席
-3. **在线状态**：只分配给在线状态的坐席，忙碌状态的坐席作为备选
-4. **响应速度**：考虑坐席的历史平均响应时间，优先分配给响应较快的坐席
+## Assignment principles
+1. **Skill match**: based on the type of the user's problem, prefer agents with relevant expertise
+2. **Load balancing**: among skill-matched agents, prefer the agent currently handling fewer conversations
+3. **Online status**: only assign to online agents; busy agents are a fallback
+4. **Response speed**: consider each agent's historical average response time and prefer faster agents
 
-## 分配流程
-1. 分析用户对话内容，识别问题类型和紧急程度
-2. 筛选符合条件的可用坐席
-3. 按照优先级排序并选择最合适的坐席
-4. 如果没有合适的坐席，将对话放入等待队列
+## Assignment process
+1. Analyze the conversation to identify the problem type and urgency
+2. Filter the available agents that meet the conditions
+3. Sort by priority and choose the most suitable agent
+4. If no agent is suitable, put the conversation into the waiting queue
 
-## 特殊情况处理
-- 紧急问题：优先分配给经验丰富的资深坐席
-- VIP用户：可以考虑分配给专属坐席
-- 投诉类问题：分配给具有投诉处理经验的坐席`;
+## Special cases
+- Urgent problems: assign to experienced senior agents first
+- VIP users: consider assigning to a dedicated agent
+- Complaints: assign to agents with complaint-handling experience`;
 
 const StaffSettings: React.FC = () => {
   const { t } = useTranslation();
@@ -564,12 +564,12 @@ const StaffSettings: React.FC = () => {
       setStaffList(prev => prev.map(s => s.id === staffId ? updated : s));
       showSuccess(
         currentActive
-          ? t('settings.staff.serviceStopped', '已停止该坐席的服务')
-          : t('settings.staff.serviceStarted', '已开启该坐席的服务')
+          ? t('settings.staff.serviceStopped', 'Service stopped for this agent')
+          : t('settings.staff.serviceStarted', 'Service started for this agent')
       );
     } catch (error: any) {
       console.error('Failed to toggle is_active:', error);
-      showError(error?.message || t('settings.staff.toggleActiveError', '切换服务状态失败'));
+      showError(error?.message || t('settings.staff.toggleActiveError', 'Failed to toggle service status'));
     } finally {
       setTogglingActiveStaffId(null);
     }
@@ -621,17 +621,17 @@ const StaffSettings: React.FC = () => {
       setSubmitting(true);
       if (selectedStaff) {
         await staffApi.updateStaff(selectedStaff.id, data as StaffUpdateRequest);
-        showSuccess(t('settings.staff.updateSuccess', '坐席更新成功'));
+        showSuccess(t('settings.staff.updateSuccess', 'Staff updated successfully'));
       } else {
         await staffApi.createStaff(data as StaffCreateRequest);
-        showSuccess(t('settings.staff.createSuccess', '坐席创建成功'));
+        showSuccess(t('settings.staff.createSuccess', 'Staff created successfully'));
       }
       setDialogOpen(false);
       setSelectedStaff(null);
       fetchStaff();
     } catch (error: any) {
       console.error('Failed to save staff:', error);
-      const errorMessage = error?.message || t('settings.staff.saveError', '保存失败');
+      const errorMessage = error?.message || t('settings.staff.saveError', 'Save failed');
       showError(errorMessage);
     } finally {
       setSubmitting(false);
@@ -645,13 +645,13 @@ const StaffSettings: React.FC = () => {
     try {
       setSubmitting(true);
       await staffApi.deleteStaff(selectedStaff.id);
-      showSuccess(t('settings.staff.deleteSuccess', '坐席删除成功'));
+      showSuccess(t('settings.staff.deleteSuccess', 'Staff deleted successfully'));
       setDeleteDialogOpen(false);
       setSelectedStaff(null);
       fetchStaff();
     } catch (error: any) {
       console.error('Failed to delete staff:', error);
-      const errorMessage = error?.message || t('settings.staff.deleteError', '删除失败');
+      const errorMessage = error?.message || t('settings.staff.deleteError', 'Delete failed');
       showError(errorMessage);
     } finally {
       setSubmitting(false);
@@ -706,10 +706,10 @@ const StaffSettings: React.FC = () => {
       });
       
       setAssignmentRule(ruleRes);
-      showSuccess(t('settings.staff.rulesSaved', '分配规则保存成功'));
+      showSuccess(t('settings.staff.rulesSaved', 'Assignment rules saved successfully'));
     } catch (error) {
       console.error('Failed to save rules:', error);
-      showError(t('settings.staff.rulesSaveError', '分配规则保存失败'));
+      showError(t('settings.staff.rulesSaveError', 'Failed to save assignment rules'));
     } finally {
       setSavingRules(false);
     }
@@ -727,7 +727,7 @@ const StaffSettings: React.FC = () => {
         <div className="flex items-center gap-2">
           <Users className="w-5 h-5 text-gray-600 dark:text-gray-400" />
           <h2 className="text-lg font-medium text-gray-800 dark:text-gray-200">
-            {t('settings.staff.title', '人工坐席')}
+            {t('settings.staff.title', 'Human Agents')}
           </h2>
         </div>
         <button
@@ -738,7 +738,7 @@ const StaffSettings: React.FC = () => {
           "
         >
           <Plus className="w-4 h-4" />
-          {t('settings.staff.addStaff', '添加坐席')}
+          {t('settings.staff.addStaff', 'Add Staff')}
         </button>
       </div>
 
@@ -747,9 +747,9 @@ const StaffSettings: React.FC = () => {
         <div className="flex items-start gap-3">
           <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
           <div className="text-sm text-blue-800 dark:text-blue-200">
-            <p className="font-medium mb-1">{t('settings.staff.description', '人工坐席说明')}</p>
+            <p className="font-medium mb-1">{t('settings.staff.description', 'About Human Agents')}</p>
             <p className="text-blue-700 dark:text-blue-300">
-              {t('settings.staff.descriptionText', '当AI员工无法解决用户问题时，系统会自动将对话分配给人工坐席。人工坐席可以接管对话，为用户提供更专业的人工服务。')}
+              {t('settings.staff.descriptionText', 'When AI agents cannot resolve user issues, the system automatically assigns conversations to human agents. Human agents can take over conversations to provide more professional human support.')}
             </p>
           </div>
         </div>
@@ -764,7 +764,7 @@ const StaffSettings: React.FC = () => {
           <div className="flex items-center gap-2">
             <Settings2 className="w-5 h-5 text-gray-600 dark:text-gray-400" />
             <span className="font-medium text-gray-800 dark:text-gray-200">
-              {t('settings.staff.assignmentRules', '分配规则')}
+              {t('settings.staff.assignmentRules', 'Assignment Rules')}
             </span>
           </div>
           {assignmentRulesExpanded ? (
@@ -787,24 +787,24 @@ const StaffSettings: React.FC = () => {
                   <div className="flex items-center gap-2 mb-4">
                     <Clock className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                     <h3 className="font-medium text-gray-800 dark:text-gray-200">
-                      {t('settings.staff.serviceTime', '服务时间')}
+                      {t('settings.staff.serviceTime', 'Service Hours')}
                     </h3>
                   </div>
                   
                   {/* Weekdays */}
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      {t('settings.staff.serviceWeekdays', '服务日期')}
+                      {t('settings.staff.serviceWeekdays', 'Service Days')}
                     </label>
                     <div className="flex flex-wrap gap-2">
                       {[
-                        { value: 1, label: t('settings.staff.weekday.mon', '周一') },
-                        { value: 2, label: t('settings.staff.weekday.tue', '周二') },
-                        { value: 3, label: t('settings.staff.weekday.wed', '周三') },
-                        { value: 4, label: t('settings.staff.weekday.thu', '周四') },
-                        { value: 5, label: t('settings.staff.weekday.fri', '周五') },
-                        { value: 6, label: t('settings.staff.weekday.sat', '周六') },
-                        { value: 7, label: t('settings.staff.weekday.sun', '周日') },
+                        { value: 1, label: t('settings.staff.weekday.mon', 'Mon') },
+                        { value: 2, label: t('settings.staff.weekday.tue', 'Tue') },
+                        { value: 3, label: t('settings.staff.weekday.wed', 'Wed') },
+                        { value: 4, label: t('settings.staff.weekday.thu', 'Thu') },
+                        { value: 5, label: t('settings.staff.weekday.fri', 'Fri') },
+                        { value: 6, label: t('settings.staff.weekday.sat', 'Sat') },
+                        { value: 7, label: t('settings.staff.weekday.sun', 'Sun') },
                       ].map((day) => (
                         <button
                           key={day.value}
@@ -834,7 +834,7 @@ const StaffSettings: React.FC = () => {
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        {t('settings.staff.serviceStartTime', '开始时间')}
+                        {t('settings.staff.serviceStartTime', 'Start Time')}
                       </label>
                       <input
                         type="time"
@@ -845,7 +845,7 @@ const StaffSettings: React.FC = () => {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        {t('settings.staff.serviceEndTime', '结束时间')}
+                        {t('settings.staff.serviceEndTime', 'End Time')}
                       </label>
                       <input
                         type="time"
@@ -859,7 +859,7 @@ const StaffSettings: React.FC = () => {
                   {/* Timezone */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      {t('settings.staff.timezone', '时区')}
+                      {t('settings.staff.timezone', 'Timezone')}
                     </label>
                     <select
                       value={timezone}
@@ -882,7 +882,7 @@ const StaffSettings: React.FC = () => {
                   <div className="flex items-center gap-2 mb-4">
                     <MessageSquare className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                     <h3 className="font-medium text-gray-800 dark:text-gray-200">
-                      {t('settings.staff.chatSettings', '会话设置')}
+                      {t('settings.staff.chatSettings', 'Chat Settings')}
                     </h3>
                   </div>
                   
@@ -890,7 +890,7 @@ const StaffSettings: React.FC = () => {
                     {/* Max Concurrent Chats */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        {t('settings.staff.maxConcurrentChats', '最大并发会话数')}
+                        {t('settings.staff.maxConcurrentChats', 'Max Concurrent Chats')}
                       </label>
                       <input
                         type="number"
@@ -901,14 +901,14 @@ const StaffSettings: React.FC = () => {
                         className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                       <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                        {t('settings.staff.maxConcurrentChatsHint', '每个坐席同时处理的最大会话数')}
+                        {t('settings.staff.maxConcurrentChatsHint', 'Maximum number of conversations each agent can handle simultaneously')}
                       </p>
                     </div>
                     
                     {/* Auto Close Hours */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        {t('settings.staff.autoCloseHours', '自动关闭时间')}
+                        {t('settings.staff.autoCloseHours', 'Auto Close Time')}
                       </label>
                       <div className="flex items-center gap-2">
                         <input
@@ -920,11 +920,11 @@ const StaffSettings: React.FC = () => {
                           className="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                         <span className="text-sm text-gray-500 dark:text-gray-400">
-                          {t('settings.staff.hours', '小时')}
+                          {t('settings.staff.hours', 'hours')}
                         </span>
                       </div>
                       <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                        {t('settings.staff.autoCloseHoursHint', '会话无活动后自动关闭的时间')}
+                        {t('settings.staff.autoCloseHoursHint', 'Time after which inactive conversations are automatically closed')}
                       </p>
                     </div>
                   </div>
@@ -936,7 +936,7 @@ const StaffSettings: React.FC = () => {
                     <div className="flex items-center gap-2">
                       <Brain className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                       <h3 className="font-medium text-gray-800 dark:text-gray-200">
-                        {t('settings.staff.llmAssignment', '智能分配')}
+                        {t('settings.staff.llmAssignment', 'Intelligent Assignment')}
                       </h3>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
@@ -951,7 +951,7 @@ const StaffSettings: React.FC = () => {
                   </div>
                   
                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                    {t('settings.staff.llmAssignmentHint', '启用后，系统将使用大模型根据提示词智能分配对话给最合适的坐席。')}
+                    {t('settings.staff.llmAssignmentHint', 'When enabled, the system uses an LLM with this prompt to intelligently assign conversations to the most suitable agent.')}
                   </p>
                   
                   {llmAssignmentEnabled && (
@@ -959,7 +959,7 @@ const StaffSettings: React.FC = () => {
                       {/* Model Selector */}
                       <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          {t('settings.staff.assignmentModel', '分配模型')}
+                          {t('settings.staff.assignmentModel', 'Assignment Model')}
                         </label>
                         <select
                           value={selectedModelId}
@@ -967,7 +967,7 @@ const StaffSettings: React.FC = () => {
                           className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition-colors"
                           disabled={modelsLoading}
                         >
-                          <option value="">{t('settings.staff.selectModel', '请选择模型')}</option>
+                          <option value="">{t('settings.staff.selectModel', 'Select a model')}</option>
                           {llmOptions.map((option) => (
                             <option key={option.value} value={option.value}>
                               {option.label}
@@ -975,7 +975,7 @@ const StaffSettings: React.FC = () => {
                           ))}
                         </select>
                         <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                          {t('settings.staff.assignmentModelHint', '选择用于智能分配对话的大模型，模型来自模型提供商配置')}
+                          {t('settings.staff.assignmentModelHint', 'Select the LLM for intelligent conversation assignment, models come from Model Providers configuration')}
                         </p>
                       </div>
 
@@ -983,7 +983,7 @@ const StaffSettings: React.FC = () => {
                       <div className="mb-3">
                         <div className="flex items-center justify-between mb-1">
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            {t('settings.staff.assignmentPrompt', '分配提示词')}
+                            {t('settings.staff.assignmentPrompt', 'Assignment Prompt')}
                           </label>
                           <span className={`text-xs ${assignmentPrompt.length > 1000 ? 'text-red-500' : 'text-gray-400'}`}>
                             {assignmentPrompt.length}/1000
@@ -1009,19 +1009,19 @@ const StaffSettings: React.FC = () => {
                               : 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
                             }
                           `}
-                          placeholder={t('settings.staff.assignmentRulesPlaceholder', '请输入分配规则提示词...')}
+                          placeholder={t('settings.staff.assignmentRulesPlaceholder', 'Enter assignment rules prompt...')}
                         />
                         {assignmentPrompt.length > 1000 && (
                           <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
                             <AlertCircle className="w-3 h-3" />
-                            {t('settings.staff.promptTooLong', '提示词不能超过1000个字符')}
+                            {t('settings.staff.promptTooLong', 'Prompt cannot exceed 1000 characters')}
                           </p>
                         )}
                         <button
                           onClick={handleResetRules}
                           className="mt-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
                         >
-                          {t('settings.staff.resetToDefault', '恢复默认')}
+                          {t('settings.staff.resetToDefault', 'Reset to Default')}
                         </button>
                       </div>
                     </>
@@ -1040,7 +1040,7 @@ const StaffSettings: React.FC = () => {
                     ) : (
                       <Save className="w-4 h-4" />
                     )}
-                    {t('settings.staff.saveRules', '保存规则')}
+                    {t('settings.staff.saveRules', 'Save Rules')}
                   </button>
                 </div>
               </div>
@@ -1059,7 +1059,7 @@ const StaffSettings: React.FC = () => {
           <div className="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400">
             <Users className="w-12 h-12 mb-4 opacity-50" />
             <p className="text-sm">
-              {t('settings.staff.empty', '暂无坐席，点击"添加坐席"创建')}
+              {t('settings.staff.empty', 'No staff yet, click "Add Staff" to create')}
             </p>
           </div>
         ) : (
@@ -1068,25 +1068,25 @@ const StaffSettings: React.FC = () => {
               <thead>
                 <tr className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    {t('settings.staff.tableUser', '用户')}
+                    {t('settings.staff.tableUser', 'User')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    {t('settings.staff.tableRole', '角色')}
+                    {t('settings.staff.tableRole', 'Role')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    {t('settings.staff.tableDescription', '描述')}
+                    {t('settings.staff.tableDescription', 'Description')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    {t('settings.staff.tableStatus', '状态')}
+                    {t('settings.staff.tableStatus', 'Status')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    {t('settings.staff.tableServiceActive', '服务')}
+                    {t('settings.staff.tableServiceActive', 'Service')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    {t('settings.staff.tableCreated', '创建时间')}
+                    {t('settings.staff.tableCreated', 'Created At')}
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    {t('settings.staff.tableActions', '操作')}
+                    {t('settings.staff.tableActions', 'Actions')}
                   </th>
                 </tr>
               </thead>
@@ -1140,8 +1140,8 @@ const StaffSettings: React.FC = () => {
                             onChange={() => handleToggleIsActive(staff.id, staff.is_active)}
                             size="sm"
                             aria-label={staff.is_active
-                              ? t('settings.staff.clickToStop', '点击停止服务')
-                              : t('settings.staff.clickToStart', '点击开启服务')}
+                              ? t('settings.staff.clickToStop', 'Click to stop service')
+                              : t('settings.staff.clickToStart', 'Click to start service')}
                           />
                         )}
                       </div>
@@ -1202,7 +1202,7 @@ const StaffSettings: React.FC = () => {
               className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
               <Edit2 className="w-4 h-4" />
-              {t('common.edit', '编辑')}
+              {t('common.edit', 'Edit')}
             </button>
             {staffList.find(s => s.id === menuOpen)?.role !== 'admin' && (
               <button
@@ -1213,7 +1213,7 @@ const StaffSettings: React.FC = () => {
                 className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
               >
                 <Trash2 className="w-4 h-4" />
-                {t('common.delete', '删除')}
+                {t('common.delete', 'Delete')}
               </button>
             )}
           </div>

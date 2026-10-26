@@ -1,0 +1,94 @@
+{
+  "common": {
+    "retry": "पुन्हा प्रयत्न करा",
+    "cancel": "रद्द करा",
+    "delete": "हटवा",
+    "loading": "लोड होत आहे...",
+    "message": "संदेश"
+  },
+  "header": {
+    "switchToLight": "लाइट मोडवर जा",
+    "switchToDark": "डार्क मोडवर जा",
+    "collapse": "विंडो लहान करा",
+    "expand": "विंडो मोठी करा"
+  },
+  "messageInput": {
+    "placeholder": "प्रश्न विचारा...",
+    "send": "पाठवा",
+    "interrupt": "थांबवा",
+    "attach": "फाइल जोडा",
+    "emoji": "इमोजी",
+    "fileTooLarge": "फाइल खूप मोठी आहे (>{{size}}MB): {{name}}",
+    "typing": "टाइप करत आहे..."
+  },
+  "messageList": {
+    "loadingHistory": "लोड होत आहे...",
+    "loadHistoryFailed": "संदेश इतिहास लोड करता आला नाही",
+    "noMoreMessages": "आणखी संदेश नाहीत",
+    "sending": "पाठवत आहे...",
+    "uploading": "अपलोड होत आहे..."
+  },
+  "errors": {
+    "authFail": "प्रमाणीकरण अयशस्वी, संदेश पाठवता येत नाही",
+    "subscriberNotExist": "तुम्ही सदस्य नाही, संदेश पाठवता येत नाही",
+    "notAllowSend": "संदेश पाठवण्याची परवानगी नाही",
+    "notInWhitelist": "तुम्ही परवानगी यादीत नाही, संदेश पाठवता येत नाही",
+    "rateLimit": "खूप वेगाने संदेश पाठवले जात आहेत, कृपया नंतर पुन्हा प्रयत्न करा",
+    "banned": "तुम्हाला संदेश पाठवण्यापासून प्रतिबंधित केले आहे",
+    "channelNotExist": "सत्र अस्तित्वात नाही किंवा कालबाह्य झाले आहे",
+    "disbanded": "सत्र बरखास्त केले आहे",
+    "systemError": "सिस्टम त्रुटी, कृपया नंतर पुन्हा प्रयत्न करा",
+    "networkError": "नेटवर्क त्रुटी किंवा टाइमआउट, कृपया तुमचे कनेक्शन तपासा"
+  },
+  "file": {
+    "download": "डाउनलोड करा",
+    "downloadFile": "फाइल डाउनलोड करा: {{name}}",
+    "unknownSize": "आकार अज्ञात",
+    "placeholder": "[फाइल]"
+  },
+  "system": {
+    "staffAssigned": "तुम्हाला ग्राहक सेवेशी जोडले आहे. एजंट {{name0}} तुम्हाला मदत करतील.",
+    "sessionTransferred": "सत्र हस्तांतरित केले. एजंट {{name0}} यांनी तुम्हाला एजंट {{name1}} कडे हस्तांतरित केले आहे.",
+    "sessionClosed": "सत्र संपले. एजंट {{name0}} यांनी सेवा पूर्ण केली आहे.",
+    "sessionClosedNoAgent": "सत्र संपले."
+  },
+  "time": {
+    "justNow": "आत्ताच",
+    "minutesAgo": "{{count}} मिनिटांपूर्वी",
+    "yesterday": "काल {{time}}"
+  },
+  "image": {
+    "close": "बंद करा (Esc)",
+    "previous": "मागील (←)",
+    "next": "पुढील (→)",
+    "loadFailed": "प्रतिमा लोड करता आली नाही",
+    "previewAlt": "पूर्वावलोकन प्रतिमा {{index}}",
+    "viewLarge": "मोठे पहा",
+    "clickToViewLarge": "मोठे पाहण्यासाठी क्लिक करा",
+    "placeholder": "[प्रतिमा]"
+  },
+  "message": {
+    "generic": "[संदेश]"
+  },
+  "upload": {
+    "uploadingImage": "प्रतिमा अपलोड होत आहे…",
+    "uploadingFile": "फाइल अपलोड होत आहे…",
+    "cancelled": "रद्द केले",
+    "failed": "अपलोड अयशस्वी"
+  },
+  "stream": {
+    "endedAbnormally": "स्ट्रीम असामान्यपणे संपला",
+    "unknownError": "अज्ञात त्रुटी"
+  },
+  "actions": {
+    "invalid": "अवैध ॲक्शन URI: {{uri}}",
+    "blocked": "लिंक उघडणे अवरोधित केले",
+    "opened": "लिंक उघडली: {{url}}",
+    "openFailed": "लिंक उघडता आली नाही: {{error}}",
+    "sent": "संदेश पाठवला",
+    "noSender": "संदेश हँडलर कॉन्फिगर केलेला नाही",
+    "copied": "कॉपी केले: {{text}}",
+    "copyFailed": "कॉपी अयशस्वी: {{error}}",
+    "unknownProtocol": "अज्ञात प्रोटोकॉल: {{protocol}}"
+  }
+}

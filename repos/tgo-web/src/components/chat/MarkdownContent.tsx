@@ -56,7 +56,7 @@ hljs.registerLanguage('plaintext', plaintext);
 interface MarkdownContentProps {
   content: string;
   className?: string;
-  /** 发送消息回调（用于 msg:// 协议） */
+  /** Callback for sending a message (used by the msg:// protocol) */
   onSendMessage?: (message: string) => void;
 }
 

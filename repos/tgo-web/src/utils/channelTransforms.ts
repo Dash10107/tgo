@@ -11,7 +11,7 @@ export function visitorToChannelInfo(
   channelId: string,
   channelType: number
 ): ChannelInfo {
-  const name = (visitor.name || visitor.nickname || '').trim() || `访客${visitor.id.slice(-4)}`;
+  const name = (visitor.name || visitor.nickname || '').trim() || `Visitor ${visitor.id.slice(-4)}`;
   const avatar = (visitor.avatar_url || '').trim();
 
   return {
@@ -115,7 +115,7 @@ export function channelResponseToChannelInfo(resp: ChannelInfoApiResponse): Chan
  * Fallback helper for name from channel id when API returns nothing usable
  */
 export function fallbackChannelName(channelId: string): string {
-  if (!channelId) return '未知频道';
-  return `访客${channelId.slice(-4)}`;
+  if (!channelId) return 'Unknown channel';
+  return `Visitor ${channelId.slice(-4)}`;
 }
 

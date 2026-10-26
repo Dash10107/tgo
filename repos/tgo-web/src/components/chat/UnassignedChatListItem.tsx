@@ -98,28 +98,28 @@ export const UnassignedChatListItem: React.FC<UnassignedChatListItemProps> = Rea
    */
   const waitingTime = useMemo(() => {
     const timestampSec = chat.lastTimestampSec;
-    if (!timestampSec) return t('chat.list.waiting.justNow', '刚刚');
+    if (!timestampSec) return t('chat.list.waiting.justNow', 'Just now');
     
     const now = Math.floor(Date.now() / 1000);
     const diffSeconds = now - timestampSec;
     
     if (diffSeconds < 60) {
-      return t('chat.list.waiting.justNow', '刚刚');
+      return t('chat.list.waiting.justNow', 'Just now');
     } else if (diffSeconds < 3600) {
       const minutes = Math.floor(diffSeconds / 60);
-      return t('chat.list.waiting.minutes', { count: minutes, defaultValue: `${minutes}分钟` });
+      return t('chat.list.waiting.minutes', { count: minutes, defaultValue: '{{count}} min' });
     } else if (diffSeconds < 86400) {
       const hours = Math.floor(diffSeconds / 3600);
       const minutes = Math.floor((diffSeconds % 3600) / 60);
       return minutes > 0 
-        ? t('chat.list.waiting.hoursMinutes', { h: hours, m: minutes, defaultValue: `${hours}小时${minutes}分` })
-        : t('chat.list.waiting.hours', { count: hours, defaultValue: `${hours}小时` });
+        ? t('chat.list.waiting.hoursMinutes', { h: hours, m: minutes, defaultValue: '{{h}} h {{m}} min' })
+        : t('chat.list.waiting.hours', { count: hours, defaultValue: '{{count}} h' });
     } else {
       const days = Math.floor(diffSeconds / 86400);
       const hours = Math.floor((diffSeconds % 86400) / 3600);
       return hours > 0 
-        ? t('chat.list.waiting.daysHours', { d: days, h: hours, defaultValue: `${days}天${hours}小时` })
-        : t('chat.list.waiting.days', { count: days, defaultValue: `${days}天` });
+        ? t('chat.list.waiting.daysHours', { d: days, h: hours, defaultValue: '{{d}} d {{h}} h' })
+        : t('chat.list.waiting.days', { count: days, defaultValue: '{{count}} d' });
     }
   }, [chat.lastTimestampSec, t]);
 
@@ -194,7 +194,7 @@ export const UnassignedChatListItem: React.FC<UnassignedChatListItemProps> = Rea
           </div>
         </div>
 
-        {/* Second row: Last message preview + "等待接入" badge (in place of unread count) */}
+        {/* Second row: Last message preview + "Waiting" badge (in place of unread count) */}
         <div className="flex justify-between items-center mt-1">
           <p className={`text-xs truncate flex-1 ${isActive ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'}`}>
             {formatChatLastMessage(chat, t)}
@@ -207,7 +207,7 @@ export const UnassignedChatListItem: React.FC<UnassignedChatListItemProps> = Rea
               : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'
             }
           `}>
-            {t('chat.list.waiting.status', '等待接入')}
+            {t('chat.list.waiting.status', 'Waiting')}
           </span>
         </div>
       </div>

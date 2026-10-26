@@ -4,6 +4,7 @@ import Button from '../ui/Button';
 import { getTagClasses } from '@/utils/tagColors';
 import type { KnowledgeBaseItem } from '@/types';
 
+import { useTranslation } from 'react-i18next';
 type SortColumn = 'title' | 'updatedAt' | 'views' | 'status';
 type SortDirection = 'asc' | 'desc';
 
@@ -25,6 +26,7 @@ const KnowledgeBaseTable: React.FC<KnowledgeBaseTableProps> = ({
   sortColumn,
   sortDirection 
 }) => {
+  const { t } = useTranslation();
   const handleSort = (columnKey: SortColumn): void => {
     if (onSort) {
       const newDirection: SortDirection = sortColumn === columnKey && sortDirection === 'asc' ? 'desc' : 'asc';
@@ -61,13 +63,13 @@ const KnowledgeBaseTable: React.FC<KnowledgeBaseTableProps> = ({
   const getStatusText = (status: string): string => {
     switch (status) {
       case 'published':
-        return '已发布';
+        return t('knowledge.table.status.published', 'Published');
       case 'draft':
-        return '草稿';
+        return t('knowledge.table.status.draft', 'Draft');
       case 'archived':
-        return '已归档';
+        return t('knowledge.table.status.archived', 'Archived');
       default:
-        return '未知';
+        return t('knowledge.table.status.unknown', 'Unknown');
     }
   };
 
@@ -80,8 +82,8 @@ const KnowledgeBaseTable: React.FC<KnowledgeBaseTableProps> = ({
       <div className="bg-white/80 backdrop-blur-md rounded-lg shadow-sm border border-gray-200/60 p-12">
         <div className="text-center text-gray-500">
           <Icon name="FolderOpen" size={48} className="mx-auto mb-4 text-gray-300" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">暂无知识库</h3>
-          <p>点击"新建知识库"按钮开始创建您的第一个知识库</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">{t('knowledge.table.emptyTitle', 'No knowledge bases yet')}</h3>
+          <p>{t('knowledge.table.emptyHint', 'Click the "New Knowledge Base" button to create your first knowledge base')}</p>
         </div>
       </div>
     );
@@ -96,26 +98,26 @@ const KnowledgeBaseTable: React.FC<KnowledgeBaseTableProps> = ({
             className="col-span-4 flex items-center cursor-pointer hover:text-gray-700"
             onClick={() => handleSort('title')}
           >
-            标题
+            {t('knowledge.table.title', 'Title')}
             {renderSortIcon('title')}
           </div>
-          <div className="col-span-2">分类</div>
+          <div className="col-span-2">{t('knowledge.table.category', 'Category')}</div>
           <div 
             className="col-span-2 flex items-center cursor-pointer hover:text-gray-700"
             onClick={() => handleSort('views')}
           >
-            浏览量
+            {t('knowledge.table.views', 'Views')}
             {renderSortIcon('views')}
           </div>
           <div 
             className="col-span-2 flex items-center cursor-pointer hover:text-gray-700"
             onClick={() => handleSort('updatedAt')}
           >
-            更新时间
+            {t('knowledge.table.updatedAt', 'Updated')}
             {renderSortIcon('updatedAt')}
           </div>
-          <div className="col-span-1">状态</div>
-          <div className="col-span-1">操作</div>
+          <div className="col-span-1">{t('knowledge.table.statusColumn', 'Status')}</div>
+          <div className="col-span-1">{t('knowledge.table.actions', 'Actions')}</div>
         </div>
       </div>
 
@@ -181,7 +183,7 @@ const KnowledgeBaseTable: React.FC<KnowledgeBaseTableProps> = ({
                 variant="icon"
                 icon="Eye"
                 size="sm"
-                title="查看"
+                title={t('common.view', 'View')}
                 className="text-gray-400 hover:text-gray-600"
                 onClick={() => handleAction('view', kb)}
               />
@@ -189,7 +191,7 @@ const KnowledgeBaseTable: React.FC<KnowledgeBaseTableProps> = ({
                 variant="icon"
                 icon="Edit"
                 size="sm"
-                title="编辑"
+                title={t('common.edit', 'Edit')}
                 className="text-gray-400 hover:text-gray-600"
                 onClick={() => handleAction('edit', kb)}
               />
@@ -197,7 +199,7 @@ const KnowledgeBaseTable: React.FC<KnowledgeBaseTableProps> = ({
                 variant="icon"
                 icon="Share"
                 size="sm"
-                title="分享"
+                title={t('knowledge.row.share', 'Share')}
                 className="text-gray-400 hover:text-gray-600"
                 onClick={() => handleAction('share', kb)}
               />
@@ -205,7 +207,7 @@ const KnowledgeBaseTable: React.FC<KnowledgeBaseTableProps> = ({
                 variant="icon"
                 icon="MoreHorizontal"
                 size="sm"
-                title="更多"
+                title={t('knowledge.table.more', 'More')}
                 className="text-gray-400 hover:text-gray-600"
                 onClick={() => handleAction('menu', kb)}
               />

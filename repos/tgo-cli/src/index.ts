@@ -16,7 +16,7 @@ const program = new Command();
 
 program
   .name('tgo')
-  .description('TGO CLI - AI Agent customer service operations tool')
+  .description('Pelatis CLI - AI Agent customer service operations tool')
   .version('0.1.0')
   .option('-s, --server <url>', 'API server URL')
   .option('-t, --token <token>', 'Auth token')

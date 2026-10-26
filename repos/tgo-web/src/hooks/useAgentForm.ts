@@ -10,7 +10,7 @@ export interface AgentFormState {
   knowledgeBases: string[];
   workflows: string[];
   boundDeviceId: string;
-  // 高级配置
+  // Advanced configuration
   markdown?: boolean;
   add_datetime_to_context?: boolean;
   skills_enabled?: boolean;

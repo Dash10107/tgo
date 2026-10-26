@@ -303,7 +303,7 @@ class SlackChannelListener:
                         img_resp.raise_for_status()
                         file_bytes = img_resp.content
 
-                        # Upload to TGO-API
+                        # Upload to Pelatis-API
                         upload_url = f"{settings.api_base_url.rstrip('/')}/v1/chat/upload"
                         files_payload = {
                             "file": (filename, file_bytes, mimetype)
@@ -323,7 +323,7 @@ class SlackChannelListener:
                                 content = uploaded_url
                                 print(f"[SLACK] Image processed and uploaded: {uploaded_url}")
                         else:
-                            print(f"[SLACK] Image upload to TGO-API failed: {ul_resp.text}")
+                            print(f"[SLACK] Image upload to Pelatis-API failed: {ul_resp.text}")
                     except Exception as e:
                         print(f"[SLACK] Image download/upload chain failed: {e}")
 
@@ -369,7 +369,7 @@ class SlackChannelListener:
                         print(f"[SLACK] AI disabled or error response, not sending to user: {event_type}")
                         return  # Silently ignore - customer service will handle via WuKongIM
                     
-                    # Correctly extract reply from TGO native response
+                    # Correctly extract reply from Pelatis native response
                     reply_content = result.get("message") or ""
                     
                     if reply_content:

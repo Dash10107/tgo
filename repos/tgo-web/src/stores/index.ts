@@ -1,4 +1,4 @@
-// 导出所有store
+// Export all stores
 export { useChatStore, chatSelectors, StreamEndReason } from './chatStore';
 export type { StreamEndReasonType } from './chatStore';
 export { useAIStore } from './aiStore';
@@ -9,7 +9,7 @@ export { useAuthStore } from './authStore';
 export { useSetupStore } from './setupStore';
 export { useVisitorStore } from './visitorStore';
 
-// 新拆分的 stores (可选直接使用，但 chatStore 提供向后兼容的聚合接口)
+// Newly split stores (can be used directly, but chatStore provides an aggregated interface for backward compatibility)
 export { useConversationStore, conversationSelectors } from './conversationStore';
 export { useMessageStore, messageSelectors } from './messageStore';
 export { useSyncStore, syncSelectors } from './syncStore';

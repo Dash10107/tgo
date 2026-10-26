@@ -43,10 +43,10 @@ def create_user_sentiment_tool(
     client = EventClient(ctx)
 
     error_messages = {
-        "not_configured": "抱歉，当前无法为您更新用户状态，我们已记录该问题并会尽快处理。请稍后再试或直接联系客服。",
-        "api_error": "抱歉，用户状态更新未能成功提交。请稍后重试或联系技术支持。",
-        "http_error": "抱歉，网络异常导致用户状态更新未能提交。请稍后重试或联系技术支持。",
-        "unexpected_error": "抱歉，出现异常，暂时无法为您更新用户状态。请稍后重试或联系技术支持。",
+        "not_configured": "Sorry, the user status cannot be updated right now. We have logged the issue and will handle it soon. Please try again later or contact support directly.",
+        "api_error": "Sorry, the user status update could not be submitted. Please try again later or contact technical support.",
+        "http_error": "Sorry, a network error prevented the user status update from being submitted. Please try again later or contact technical support.",
+        "unexpected_error": "Sorry, something went wrong and the user status cannot be updated right now. Please try again later or contact technical support.",
     }
 
     async def update_user_sentiment(
@@ -64,19 +64,19 @@ def create_user_sentiment_tool(
             try:
                 provided["satisfaction"] = _parse_scale(satisfaction)
             except (ValueError, TypeError):
-                return "满意度和情绪的数值必须在0-5之间，0表示未知。"
+                return "Satisfaction and emotion values must be between 0 and 5, where 0 means unknown."
 
         if emotion not in (None, ""):
             try:
                 provided["emotion"] = _parse_scale(emotion)
             except (ValueError, TypeError):
-                return "满意度和情绪的数值必须在0-5之间，0表示未知。"
+                return "Satisfaction and emotion values must be between 0 and 5, where 0 means unknown."
 
         if intent not in (None, ""):
             provided["intent"] = intent
 
         if not provided:
-            return "请至少提供一个需要更新的用户状态字段，例如满意度、情绪或意图。"
+            return "Please provide at least one user status field to update, such as satisfaction, emotion or intent."
 
         result = await client.post_event(
             "user_sentiment.update",
@@ -88,22 +88,22 @@ def create_user_sentiment_tool(
             return result.message
 
         updated_keys = ", ".join(provided.keys())
-        return f"已记录用户状态更新：{updated_keys}。"
+        return f"User status update recorded: {updated_keys}."
 
     return Function(
         name="update_user_sentiment",
         description=(
-            "当你在对话中识别到用户满意度、情绪或意图发生变化时，调用此工具以记录/更新用户状态。"
-            "可跟踪的信息包括：满意度（0-5数值，0表示未知，数值越高表示越满意）、情绪（0-5数值，0表示未知，数值越高表示情绪越积极）、"
-            "意图（如 purchase/inquiry/complaint/support）；字段均为可选，支持部分更新。"
+            "Call this tool to record/update the user's status when you detect a change in the user's satisfaction, emotion or intent during the conversation. "
+            "Trackable information includes: satisfaction (0-5, 0 means unknown, higher is more satisfied), emotion (0-5, 0 means unknown, higher is more positive), "
+            "and intent (e.g. purchase/inquiry/complaint/support); all fields are optional and partial updates are supported."
         ),
         parameters={
             "type": "object",
             "properties": {
-                "satisfaction": {"type": "integer", "minimum": 0, "maximum": 5, "description": "满意度，0-5数值（0=未知，1=非常不满意，5=非常满意）"},
-                "emotion": {"type": "integer", "minimum": 0, "maximum": 5, "description": "情绪，0-5数值（0=未知，1=非常消极，5=非常积极）"},
-                "intent": {"type": "string", "description": "意图（可选）"},
-                "metadata": {"type": "object", "description": "其他上下文字段（可选）"},
+                "satisfaction": {"type": "integer", "minimum": 0, "maximum": 5, "description": "Satisfaction, 0-5 (0=unknown, 1=very dissatisfied, 5=very satisfied)"},
+                "emotion": {"type": "integer", "minimum": 0, "maximum": 5, "description": "Emotion, 0-5 (0=unknown, 1=very negative, 5=very positive)"},
+                "intent": {"type": "string", "description": "Intent (optional)"},
+                "metadata": {"type": "object", "description": "Other context fields (optional)"},
             },
             "required": [],
         },

@@ -1,4 +1,4 @@
-"""API Service client for interacting with the core TGO API service."""
+"""API Service client for interacting with the core Pelatis API service."""
 
 import logging
 from typing import Any, Dict, Optional
@@ -9,7 +9,7 @@ from app.config import settings
 logger = logging.getLogger("services.api_service")
 
 class APIServiceClient:
-    """Client for interacting with the core TGO API service."""
+    """Client for interacting with the core Pelatis API service."""
 
     def __init__(self):
         """Initialize the API service client."""
@@ -47,7 +47,7 @@ class APIServiceClient:
         context: Dict[str, Any],
     ) -> Dict[str, Any]:
         """
-        Execute a plugin tool via the TGO Plugin Runtime service.
+        Execute a plugin tool via the Pelatis Plugin Runtime service.
 
         Args:
             plugin_id: Unique plugin ID
@@ -80,7 +80,7 @@ class APIServiceClient:
                     return {
                         "success": False,
                         "error": f"API service error: {response.status_code}",
-                        "content": f"工具执行失败 (HTTP {response.status_code})"
+                        "content": f"Tool execution failed (HTTP {response.status_code})"
                     }
 
             except httpx.RequestError as e:
@@ -88,7 +88,7 @@ class APIServiceClient:
                 return {
                     "success": False,
                     "error": str(e),
-                    "content": "无法连接到 TGO API 服务"
+                    "content": "Unable to connect to the Pelatis API service"
                 }
 
 # Global API service client instance

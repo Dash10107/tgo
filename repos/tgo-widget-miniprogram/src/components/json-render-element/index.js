@@ -297,13 +297,13 @@ Component({
       return { label: label, value: value }
     },
     _isSectionTitle: function (text) {
-      return /^(商品详情|支付信息|收货信息|订单信息|物流信息|商品明细|支付详情|配送信息|订单详情|items|payment|shipping|order)$/i.test((text || '').trim())
+      return /^(items|payment|shipping|order|order details|payment info|shipping info|order info|item details|वस्तुएं|भुगतान जानकारी|डिलीवरी जानकारी|ऑर्डर विवरण|वस्तू|पेमेंट माहिती|वितरण माहिती|ऑर्डर तपशील)$/i.test((text || '').trim())
     },
     _isHeadlineKey: function (label) {
-      return /(实付金额|应付金额|支付金额|合计|总额|payable|grand total|total)/i.test(label || '')
+      return /(payable|amount paid|amount due|grand total|total|देय राशि|कुल राशि|कुल|भुगतान राशि|देय रक्कम|एकूण)/i.test(label || '')
     },
     _isDiscountKey: function (label) {
-      return /(优惠|折扣|减免|discount|coupon)/i.test(label || '')
+      return /(discount|coupon|saving|छूट|डिस्काउंट|सवलत)/i.test(label || '')
     },
     _getState: function (path) {
       var ss = this.properties.stateSnapshot

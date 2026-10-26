@@ -87,7 +87,7 @@ class EmailInbox(Base):
 class WeComInbox(Base):
     """Inbound WeCom messages stored for async processing pipeline.
 
-    Supports both WeCom Customer Service (客服) and WeCom Bot (群机器人) messages,
+    Supports both WeCom Customer Service and WeCom Bot (group bot) messages,
     distinguished by the source_type field.
     """
 
@@ -101,7 +101,7 @@ class WeComInbox(Base):
     # Message identity
     message_id: Mapped[str] = mapped_column(String(255), nullable=False)
 
-    # Source type to distinguish between WeCom KF (客服) and WeCom Bot (群机器人)
+    # Source type to distinguish between WeCom KF (customer service) and WeCom Bot (group bot)
     # Values: "wecom_kf" (customer service), "wecom_bot" (group bot)
     source_type: Mapped[str] = mapped_column(String(20), nullable=False, server_default="wecom_kf", index=True)
 

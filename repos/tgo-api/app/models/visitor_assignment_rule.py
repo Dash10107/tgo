@@ -12,12 +12,12 @@ from app.core.database import Base
 
 
 # Default system prompt for visitor assignment
-DEFAULT_ASSIGNMENT_PROMPT = """你是一个智能客服分配助手。根据访客的问题和需求，分析并选择最合适的客服人员来处理。
+DEFAULT_ASSIGNMENT_PROMPT = """You are an intelligent customer-service assignment assistant. Based on the visitor's question and needs, analyze and select the most suitable staff member to handle the visitor.
 
-请根据以下信息进行分析：
-1. 访客的问题内容和意图
-2. 各客服人员的专业领域和描述
-3. 客服人员当前的在线状态
+Analyze using the following information:
+1. The content and intent of the visitor's question
+2. Each staff member's area of expertise and description
+3. Each staff member's current online status
 """
 
 

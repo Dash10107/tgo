@@ -232,7 +232,7 @@ export class AIAgentsTransformUtils {
       avatar: '/api/placeholder/40/40', // Default avatar
       status: 'active' as const,
       type: 'expert' as const,
-      role: apiAgent.config?.profession || '专家',
+      role: apiAgent.config?.profession || 'Specialist',
       llmModel: (apiAgent as any).ai_provider_id && apiAgent.model ? `${(apiAgent as any).ai_provider_id}:${apiAgent.model}` : (apiAgent.model || ''),
       endpoint: undefined,
       capabilities: apiAgent.config?.capabilities || [],

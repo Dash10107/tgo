@@ -205,17 +205,17 @@ export const FileUpload: React.FC<FileUploadProps> = ({
           <>
             <Loader className="w-12 h-12 mx-auto text-gray-400 dark:text-gray-500 mb-4 animate-spin" />
             <h3 className="text-lg font-medium text-gray-600 dark:text-gray-300 mb-2">
-              {t('knowledge.upload.checkingEmbedding', '检查嵌入模型配置...')}
+              {t('knowledge.upload.checkingEmbedding', 'Checking embedding model configuration...')}
             </h3>
           </>
         ) : (
           <>
             <UploadCloud className={`w-12 h-12 mx-auto mb-4 ${isUploadDisabled ? 'text-gray-300 dark:text-gray-600' : 'text-gray-400 dark:text-gray-500'}`} />
             <h3 className={`text-lg font-medium mb-2 ${isUploadDisabled ? 'text-gray-500 dark:text-gray-500' : 'text-gray-800 dark:text-gray-100'}`}>
-              {t('knowledge.upload.title', '点击或拖拽上传文件')}
+              {t('knowledge.upload.title', 'Drag files here or click to upload')}
             </h3>
             <p className={`text-sm mb-4 ${isUploadDisabled ? 'text-gray-400 dark:text-gray-600' : 'text-gray-500 dark:text-gray-400'}`}>
-              {t('knowledge.upload.supportedFormats', '支持 PDF, Word, Excel, PowerPoint, Text, Markdown 等格式')}
+              {t('knowledge.upload.supportedFormats', 'Supports PDF, Word, Excel, PowerPoint, Text files, Markdown, HTML')}
             </p>
 
             <input
@@ -237,7 +237,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                   : 'bg-blue-500 dark:bg-blue-600 text-white hover:bg-blue-600 dark:hover:bg-blue-700'
                   }`}
               >
-                {t('knowledge.upload.selectFiles', '选择文件')}
+                {t('knowledge.upload.selectFiles', 'Select Files')}
               </button>
             </div>
           </>
@@ -260,14 +260,14 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                       {file.name || 'Unknown file'}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {file.size > 0 ? formatFileSize(file.size) : '上传中...'}
+                      {file.size > 0 ? formatFileSize(file.size) : t('knowledge.fileUpload.uploading', 'Uploading...')}
                     </p>
 
                     {/* Progress bar */}
                     {file.status === 'uploading' && (
                       <div className="mt-2">
                         <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-300 mb-1">
-                          <span>{t('knowledge.upload.uploadProgress', '上传进度')}</span>
+                          <span>{t('knowledge.upload.uploadProgress', 'Upload Progress')}</span>
                           <span>{Math.round(file.progress)}%</span>
                         </div>
                         <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-1.5">

@@ -43,22 +43,22 @@ const ImageMessage: React.FC<MessageComponentProps> = ({ message, isStaff }) => 
         className={bubbleClass + (imageUrl && !uploading ? 'cursor-zoom-in hover:opacity-95' : 'cursor-default')}
         style={{ width: dispW, height: dispH }}
         role="button"
-        aria-label={t('chat.messages.image.previewAria', '预览图片')}
+        aria-label={t('chat.messages.image.previewAria', 'Preview image')}
         aria-disabled={uploading || !imageUrl}
         onClick={() => { if (imageUrl && !uploading) setPreviewOpen(true); }}
       >
         {imageUrl ? (
-          <img src={imageUrl} alt={t('chat.messages.image.alt', '图片')} className="w-full h-full object-cover" loading="lazy" />
+          <img src={imageUrl} alt={t('chat.messages.image.alt', 'Image')} className="w-full h-full object-cover" loading="lazy" />
         ) : (
           <div className="w-full h-full bg-gray-100 dark:bg-gray-700" />
         )}
         {uploading && (
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-xs">
-            {typeof uploadProgress === 'number' ? `${uploadProgress}%` : t('chat.messages.image.uploading', '上传中')}
+            {typeof uploadProgress === 'number' ? `${uploadProgress}%` : t('chat.messages.image.uploading', 'Uploading')}
           </div>
         )}
         {uploadError && (
-          <div className="absolute inset-0 bg-red-500/20 dark:bg-red-900/40 flex items-center justify-center text-red-700 dark:text-red-400 text-xs">{t('chat.messages.image.uploadFailed', '上传失败')}</div>
+          <div className="absolute inset-0 bg-red-500/20 dark:bg-red-900/40 flex items-center justify-center text-red-700 dark:text-red-400 text-xs">{t('chat.messages.image.uploadFailed', 'Upload failed')}</div>
         )}
       </div>
 

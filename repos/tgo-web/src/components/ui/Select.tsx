@@ -39,16 +39,16 @@ const Select: React.FC<SelectProps> = ({
   value,
   onChange,
   options,
-  placeholder = '请选择',
+  placeholder = 'Please select',
   disabled = false,
   className = '',
   showAddProvider = false,
   onAddProvider,
-  addProviderLabel = '+ 添加供应商',
-  emptyMessage = '暂无可用选项',
+  addProviderLabel = '+ Add provider',
+  emptyMessage = 'No options available',
   onOpen,
   isLoading = false,
-  loadingText = '加载中...',
+  loadingText = 'Loading...',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);

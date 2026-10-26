@@ -16,7 +16,7 @@ class NormalizedMessage(BaseModel):
 
 
 class VisitorInfo(BaseModel):
-    """Visitor representation returned by TGO API.
+    """Visitor representation returned by Pelatis API.
     Extra fields are allowed to accommodate API growth without breaking.
     """
     model_config = ConfigDict(extra="allow")

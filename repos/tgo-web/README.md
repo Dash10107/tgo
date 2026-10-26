@@ -1,6 +1,6 @@
-# TGO Web
+# Pelatis Web
 
-TGO Web 是一个现代化的 AI 智能客服前端应用，基于 React 19 构建，提供流畅的实时聊天体验和强大的 AI 智能交互能力。
+Pelatis Web 是一个现代化的 AI 智能客服前端应用，基于 React 19 构建，提供流畅的实时聊天体验和强大的 AI 智能交互能力。
 
 ## ✨ 核心特性
 

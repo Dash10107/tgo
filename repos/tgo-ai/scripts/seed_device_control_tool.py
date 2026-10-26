@@ -23,7 +23,7 @@ import sqlalchemy as sa
 
 TABLE_NAME = "ai_tools"
 TOOL_NAME = "device-control"
-TOOL_TITLE_ZH = "设备控制"
+TOOL_TITLE_ZH = "Device Control"
 TOOL_TITLE_EN = "Device Control"
 TOOL_DESCRIPTION = (
     "MCP transparent proxy for remote device control. "

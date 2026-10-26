@@ -1,10 +1,10 @@
 openapi: 3.0.3
 info:
-  title: TGO-Tech RAG Service
+  title: Pelatis RAG Service
   description: |
-    **TGO-Tech RAG Service** - Retrieval-Augmented Generation Document & File Management Microservice
+    **Pelatis RAG Service** - Retrieval-Augmented Generation Document & File Management Microservice
     
-    This service handles file upload, document processing, content management, and vector storage specifically for RAG (Retrieval-Augmented Generation) operations in the TGO-Tech customer service platform.
+    This service handles file upload, document processing, content management, and vector storage specifically for RAG (Retrieval-Augmented Generation) operations in the Pelatis customer service platform.
     
     **Service Responsibilities:**
     - File upload and storage management for RAG operations
@@ -41,7 +41,7 @@ info:
     - Supports semantic search and context retrieval for AI agents
   version: 1.0.0
   contact:
-    name: TGO-Tech RAG Support
+    name: Pelatis RAG Support
     email: rag-support@tgo-tech.com
   license:
     name: Proprietary

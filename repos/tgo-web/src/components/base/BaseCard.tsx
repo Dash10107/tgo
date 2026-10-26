@@ -3,6 +3,7 @@
  * Provides common card functionality and patterns
  */
 
+import i18n from '@/i18n';
 import React, { ReactNode } from 'react';
 import { Eye, Trash2, Edit, Plus, Check, Shield } from 'lucide-react';
 import { generateDefaultAvatar } from '@/utils/avatarUtils';
@@ -171,13 +172,13 @@ export function BaseCard<T extends BaseCardItem>({
                 {displayName}
               </h3>
               {item.verified && (
-                <div title="已验证">
+                <div title={i18n.t('baseCard.verified', 'Verified')}>
                   <Shield className="w-3 h-3 text-blue-500 flex-shrink-0" />
                 </div>
               )}
               {item.featured && (
                 <span className="bg-yellow-100 text-yellow-800 text-xs px-1.5 py-0.5 rounded-full font-medium">
-                  推荐
+                  {i18n.t('baseCard.featured', 'Featured')}
                 </span>
               )}
             </div>
@@ -207,14 +208,14 @@ export function BaseCard<T extends BaseCardItem>({
       <div className="space-y-2 mb-3">
         {showVersion && item.version && (
           <div className="flex items-center justify-between text-xs text-gray-500">
-            <span>版本</span>
+            <span>{i18n.t('baseCard.version', 'Version')}</span>
             <span className="font-mono">{item.version}</span>
           </div>
         )}
         
         {showRating && item.rating && (
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-500">评分</span>
+            <span className="text-xs text-gray-500">{i18n.t('baseCard.rating', 'Rating')}</span>
             {renderRating(item.rating)}
           </div>
         )}
@@ -250,7 +251,7 @@ export function BaseCard<T extends BaseCardItem>({
                 title={action.label}
               >
                 {action.icon}
-                <span>{action.loading ? '处理中...' : action.label}</span>
+                <span>{action.loading ? i18n.t('common.processing', 'Processing...') : action.label}</span>
               </button>
             ))}
           </div>
@@ -266,7 +267,7 @@ export function BaseCard<T extends BaseCardItem>({
 export const createCardActions = {
   view: (onClick: () => void): CardAction => ({
     type: 'view',
-    label: '详情',
+    label: i18n.t('baseCard.actions.details', 'Details'),
     icon: <Eye className="w-4 h-4" />,
     variant: 'secondary',
     onClick,
@@ -274,7 +275,7 @@ export const createCardActions = {
   
   edit: (onClick: () => void, disabled?: boolean): CardAction => ({
     type: 'edit',
-    label: '编辑',
+    label: i18n.t('baseCard.actions.edit', 'Edit'),
     icon: <Edit className="w-4 h-4" />,
     variant: 'secondary',
     disabled,
@@ -283,7 +284,7 @@ export const createCardActions = {
   
   delete: (onClick: () => void, disabled?: boolean): CardAction => ({
     type: 'delete',
-    label: '删除',
+    label: i18n.t('baseCard.actions.delete', 'Delete'),
     icon: <Trash2 className="w-4 h-4" />,
     variant: 'danger',
     disabled,
@@ -292,7 +293,7 @@ export const createCardActions = {
   
   install: (onClick: () => void, isInstalled?: boolean, loading?: boolean): CardAction => ({
     type: 'install',
-    label: isInstalled ? '已安装' : '安装',
+    label: isInstalled ? i18n.t('baseCard.actions.installed', 'Installed') : i18n.t('baseCard.actions.install', 'Install'),
     icon: isInstalled ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4" />,
     variant: isInstalled ? 'success' : 'primary',
     disabled: isInstalled,

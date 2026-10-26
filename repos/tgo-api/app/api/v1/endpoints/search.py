@@ -58,7 +58,7 @@ def _build_message_result(raw: dict) -> dict:
     response_model=UnifiedSearchResponse,
     summary="Unified search across visitors and messages",
     description=(
-        "Search visitor profiles stored in TGO and historical chat messages in WuKongIM. "
+        "Search visitor profiles stored in Pelatis and historical chat messages in WuKongIM. "
         "Set scope to filter results to visitors or messages only."
     ),
 )

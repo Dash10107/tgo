@@ -258,7 +258,7 @@ class GitHubSkillDownloader:
         url = f"https://github.com/{owner}/{repo}/tree/{ref}/{path}"
         headers = {
             "Accept": "application/json",
-            "User-Agent": "Mozilla/5.0 (compatible; TGO-Skill-Importer/1.0)",
+            "User-Agent": "Mozilla/5.0 (compatible; Pelatis-Skill-Importer/1.0)",
             "X-Requested-With": "XMLHttpRequest",
         }
 

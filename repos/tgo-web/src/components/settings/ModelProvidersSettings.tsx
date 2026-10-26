@@ -57,7 +57,7 @@ const ModelProvidersSettings: React.FC = () => {
       }));
       setChatOptions(opts);
     } catch (err: any) {
-      toast?.showToast('error', t('common.loadFailed', '加载失败'), err?.message);
+      toast?.showToast('error', t('common.loadFailed', 'Load Failed'), err?.message);
     } finally {
       setChatLoading(false);
     }
@@ -75,7 +75,7 @@ const ModelProvidersSettings: React.FC = () => {
       }));
       setEmbeddingOptions(opts);
     } catch (err: any) {
-      toast?.showToast('error', t('common.loadFailed', '加载失败'), err?.message);
+      toast?.showToast('error', t('common.loadFailed', 'Load Failed'), err?.message);
     } finally {
       setEmbLoading(false);
     }
@@ -190,11 +190,11 @@ const ModelProvidersSettings: React.FC = () => {
                 <FiCpu className="w-6 h-6" />
               </div>
               <h2 className="text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight">
-                {t('settings.providers.title', '模型提供商')}
+                {t('settings.providers.title', 'Model Providers')}
               </h2>
             </div>
             <p className="text-lg text-gray-500 dark:text-gray-400 font-medium max-w-2xl leading-relaxed">
-              {t('settings.providers.subtitle', '集中管理各大 AI 提供商的访问配置：密钥、安全代理、模型清单与默认模型。')}
+              {t('settings.providers.subtitle', 'Manage access configs for AI providers: keys, secure proxy, model lists and defaults.')}
             </p>
           </div>
 
@@ -207,7 +207,7 @@ const ModelProvidersSettings: React.FC = () => {
               className="rounded-2xl font-black px-8 py-4 bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 hover:border-blue-500 transition-all active:scale-95"
             >
               <Settings className="mr-2 w-5 h-5" />
-              {t('settings.providers.addCustom', '自定义配置')}
+              {t('settings.providers.addCustom', 'Custom Config')}
             </Button>
             <Button 
               variant="primary" 
@@ -216,7 +216,7 @@ const ModelProvidersSettings: React.FC = () => {
               className="rounded-2xl font-black px-8 py-4 shadow-xl shadow-blue-200 dark:shadow-none transition-all active:scale-95"
             >
               <Sparkles className="mr-2 w-5 h-5" />
-              {t('settings.providers.fromStore', '从商店获取模型')}
+              {t('settings.providers.fromStore', 'Get from Store')}
           </Button>
         </div>
       </div>
@@ -231,10 +231,10 @@ const ModelProvidersSettings: React.FC = () => {
         </div>
           <div>
                   <h3 className="text-sm font-black text-gray-900 dark:text-gray-100 uppercase tracking-wider">
-                    {t('settings.models.defaults.title', '默认模型配置')}
+                    {t('settings.models.defaults.title', 'Default Models')}
                   </h3>
                   <p className="text-xs text-gray-500 dark:text-gray-400 font-bold">
-                    {t('settings.models.defaults.description', '选择全局默认模型，Agent 可单独覆盖')}
+                    {t('settings.models.defaults.description', 'Select the required global default models for LLM and Embedding.')}
                   </p>
                 </div>
               </div>
@@ -242,7 +242,7 @@ const ModelProvidersSettings: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest px-1">
-              {t('settings.models.defaults.llmLabel', '默认 LLM')}
+              {t('settings.models.defaults.llmLabel', 'Default LLM')}
             </label>
             <Select
               value={llmSelection}
@@ -250,7 +250,7 @@ const ModelProvidersSettings: React.FC = () => {
                     onOpen={ensureFetchChatOptions}
                     isLoading={chatLoading}
               options={[
-                { value: '', label: t('settings.models.defaults.none', '未设置') },
+                { value: '', label: t('settings.models.defaults.none', 'Not Set') },
                       ...chatOptions,
                     ]}
                     className="w-full"
@@ -258,7 +258,7 @@ const ModelProvidersSettings: React.FC = () => {
           </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest px-1">
-                {t('settings.models.defaults.embeddingLabel', '默认嵌入模型')}
+                {t('settings.models.defaults.embeddingLabel', 'Default Embedding')}
               </label>
             <Select
               value={embSelection}
@@ -266,7 +266,7 @@ const ModelProvidersSettings: React.FC = () => {
                     onOpen={ensureFetchEmbeddingOptions}
                     isLoading={embLoading}
               options={[
-                { value: '', label: t('settings.models.defaults.none', '未设置') },
+                { value: '', label: t('settings.models.defaults.none', 'Not Set') },
                       ...embeddingOptions,
                     ]}
                     className="w-full"
@@ -283,7 +283,7 @@ const ModelProvidersSettings: React.FC = () => {
                 className="w-full md:w-auto rounded-xl font-black px-8 shadow-lg shadow-blue-200 dark:shadow-none"
               >
                 {isSavingDefaults ? <FiLoader className="animate-spin mr-2" /> : null}
-                {t('common.save', '保存')}
+                {t('common.save', 'Save')}
               </Button>
             </div>
         </div>
@@ -298,10 +298,10 @@ const ModelProvidersSettings: React.FC = () => {
               </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-black text-gray-900 dark:text-gray-100">
-                  {t('settings.providers.emptyTitle', '开启您的 AI 之旅')}
+                  {t('settings.providers.emptyTitle', 'Start Your AI Journey')}
                 </h3>
                 <p className="text-gray-500 dark:text-gray-400 font-medium">
-                  {t('settings.providers.empty', '尚未配置任何模型提供商，点击右上角"从商店获取"或"自定义配置"开始。')}
+                  {t('settings.providers.empty', 'No providers configured yet. Click "Get from Store" or "Custom Config" to get started.')}
                 </p>
             </div>
               <Button 
@@ -310,7 +310,7 @@ const ModelProvidersSettings: React.FC = () => {
                 onClick={() => setShowModelStore(true)}
                 className="rounded-2xl font-black px-10 py-4 shadow-xl shadow-blue-200 dark:shadow-none"
               >
-                {t('settings.providers.fromStore', '从商店获取模型')}
+                {t('settings.providers.fromStore', 'Get from Store')}
               </Button>
           </div>
         )}
@@ -343,10 +343,10 @@ const ModelProvidersSettings: React.FC = () => {
 
       <ConfirmDialog
           isOpen={!!deletingId}
-        title={t('settings.providers.confirmDeleteTitle', '删除提供商')}
-        message={t('settings.providers.confirmDeleteMsg', '确定要删除该提供商配置吗？此操作不可撤销。')}
-        confirmText={t('common.delete', '删除')!}
-        cancelText={t('common.cancel', '取消')!}
+        title={t('settings.providers.confirmDeleteTitle', 'Delete Provider')}
+        message={t('settings.providers.confirmDeleteMsg', 'Are you sure you want to delete this provider configuration? This action cannot be undone.')}
+        confirmText={t('common.delete', 'Delete')!}
+        cancelText={t('common.cancel', 'Cancel')!}
         confirmVariant="danger"
           onConfirm={() => deletingId && handleDelete(deletingId)}
           onCancel={() => setDeletingId(null)}

@@ -322,7 +322,7 @@ const EmailPlatformConfig: React.FC<Props> = ({ platform }) => {
       if (Object.keys(updates).length > 0) {
         await updatePlatform(platform.id, updates);
       }
-      showSuccess(showToast, t('platforms.email.messages.saveSuccess', '保存成功'), t('platforms.email.messages.saveSuccessMessage', '邮件平台配置已保存'));
+      showSuccess(showToast, t('platforms.email.messages.saveSuccess', 'Saved Successfully'), t('platforms.email.messages.saveSuccessMessage', 'Email platform configuration has been saved'));
     } catch (e) {
       showApiError(showToast, e);
     }
@@ -332,7 +332,7 @@ const EmailPlatformConfig: React.FC<Props> = ({ platform }) => {
     // Validate required fields
     if (!formValues.imap_username || !formValues.imap_password || !formValues.imap_host || !formValues.imap_port ||
         !formValues.smtp_host || !formValues.smtp_port) {
-      showToast('error', t('platforms.email.messages.testValidationError', '请先填写完整的邮箱配置信息'));
+      showToast('error', t('platforms.email.messages.testValidationError', 'Please fill in all required email configuration fields'));
       return;
     }
 
@@ -367,8 +367,8 @@ const EmailPlatformConfig: React.FC<Props> = ({ platform }) => {
       if (response.overall_success) {
         showSuccess(
           showToast,
-          t('platforms.email.messages.testSuccess', '连接测试成功'),
-          t('platforms.email.messages.testSuccessMessage', 'IMAP 和 SMTP 连接均正常')
+          t('platforms.email.messages.testSuccess', 'Connection Test Successful'),
+          t('platforms.email.messages.testSuccessMessage', 'Both IMAP and SMTP connections are working')
         );
       } else {
         // Show detailed error message
@@ -379,7 +379,7 @@ const EmailPlatformConfig: React.FC<Props> = ({ platform }) => {
         if (response.imap_status !== 'success') {
           errorDetails.push(`IMAP: ${response.imap_message}`);
         }
-        showToast('error', t('platforms.email.messages.testFailed', '连接测试失败'), errorDetails.join('\n'));
+        showToast('error', t('platforms.email.messages.testFailed', 'Connection Test Failed'), errorDetails.join('\n'));
       }
     } catch (e) {
       showApiError(showToast, e);
@@ -392,8 +392,8 @@ const EmailPlatformConfig: React.FC<Props> = ({ platform }) => {
     <main className="flex flex-col flex-1 min-h-0 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <header className="px-6 py-4 border-b border-gray-200/80 dark:border-gray-700/80 flex justify-between items-center bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg sticky top-0 z-10">
         <div>
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">{platform.name} - {t('platforms.email.header.title', '邮件平台配置')}</h2>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{t('platforms.email.header.subtitle', '配置 IMAP（接收）和 SMTP（发送）信息。')}</p>
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">{platform.name} - {t('platforms.email.header.title', 'Email Platform Configuration')}</h2>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{t('platforms.email.header.subtitle', 'Configure IMAP (receiving) and SMTP (sending) information.')}</p>
         </div>
         <div className="flex items-center gap-3">
           <button
@@ -401,7 +401,7 @@ const EmailPlatformConfig: React.FC<Props> = ({ platform }) => {
             onClick={() => setConfirmOpen(true)}
             className={`px-3 py-1.5 text-sm rounded-md ${isDeleting ? 'bg-red-400 text-white' : 'bg-red-600 dark:bg-red-500 text-white hover:bg-red-700 dark:hover:bg-red-600'}`}
           >
-            {isDeleting ? t('platforms.email.buttons.deleting', '删除中…') : t('platforms.email.buttons.delete', '删除')}
+            {isDeleting ? t('platforms.email.buttons.deleting', 'Deleting...') : t('platforms.email.buttons.delete', 'Delete')}
           </button>
           <button
             disabled={isUpdating || isDeleting || isToggling}
@@ -411,10 +411,10 @@ const EmailPlatformConfig: React.FC<Props> = ({ platform }) => {
               try {
                 if (isEnabled) {
                   await disablePlatform(platform.id);
-                  showSuccess(showToast, t('platforms.email.messages.disabled', '平台已禁用'));
+                  showSuccess(showToast, t('platforms.email.messages.disabled', 'Platform Disabled'));
                 } else {
                   await enablePlatform(platform.id);
-                  showSuccess(showToast, t('platforms.email.messages.enabled', '平台已启用'));
+                  showSuccess(showToast, t('platforms.email.messages.enabled', 'Platform Enabled'));
                 }
               } catch (e) {
                 showApiError(showToast, e);
@@ -424,21 +424,21 @@ const EmailPlatformConfig: React.FC<Props> = ({ platform }) => {
             }}
             className={`px-3 py-1.5 text-sm rounded-md text-white ${isEnabled ? 'bg-gray-600 dark:bg-gray-500 hover:bg-gray-700 dark:hover:bg-gray-600' : 'bg-green-600 dark:bg-green-500 hover:bg-green-700 dark:hover:bg-green-600'} ${isToggling ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
-            {isToggling ? (isEnabled ? t('platforms.email.buttons.disabling', '禁用中…') : t('platforms.email.buttons.enabling', '启用中…')) : (isEnabled ? t('platforms.email.buttons.disable', '禁用') : t('platforms.email.buttons.enable', '启用'))}
+            {isToggling ? (isEnabled ? t('platforms.email.buttons.disabling', 'Disabling...') : t('platforms.email.buttons.enabling', 'Enabling...')) : (isEnabled ? t('platforms.email.buttons.disable', 'Disable') : t('platforms.email.buttons.enable', 'Enable'))}
           </button>
           <button
             disabled={isTesting}
             onClick={handleTestConnection}
             className={`px-3 py-1.5 text-sm rounded-md ${isTesting ? 'bg-purple-400 text-white cursor-not-allowed' : 'bg-purple-600 dark:bg-purple-500 text-white hover:bg-purple-700 dark:hover:bg-purple-600'}`}
           >
-            {isTesting ? t('platforms.email.buttons.testing', '测试中…') : t('platforms.email.buttons.testConnection', '测试连接')}
+            {isTesting ? t('platforms.email.buttons.testing', 'Testing...') : t('platforms.email.buttons.testConnection', 'Test Connection')}
           </button>
           <button
             disabled={!canSave || isUpdating}
             onClick={handleSave}
             className={`px-3 py-1.5 text-sm rounded-md ${canSave ? 'bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600' : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'}`}
           >
-            {isUpdating ? t('platforms.email.buttons.saving', '保存中…') : t('platforms.email.buttons.save', '保存')}
+            {isUpdating ? t('platforms.email.buttons.saving', 'Saving...') : t('platforms.email.buttons.save', 'Save')}
           </button>
         </div>
       </header>
@@ -446,24 +446,24 @@ const EmailPlatformConfig: React.FC<Props> = ({ platform }) => {
       <div className="flex flex-1 min-h-0 flex-col lg:flex-row gap-4 p-6">
         {/* Left: form */}
         <section className="lg:w-2/5 w-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-5 rounded-lg shadow-sm border border-gray-200/60 dark:border-gray-700/60 space-y-4 overflow-y-auto min-h-0 auto-hide-scrollbar">
-          {/* 平台名称 */}
+          {/* Platform name */}
           <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.email.form.name', '平台名称')}</label>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.email.form.name', 'Platform Name')}</label>
             <input
               type="text"
               value={platformName}
               onChange={(e) => setPlatformName(e.target.value)}
-              placeholder={t('platforms.email.form.namePlaceholder', '请输入平台名称')}
+              placeholder={t('platforms.email.form.namePlaceholder', 'Enter platform name')}
               className="w-full text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-700/50 dark:text-gray-200"
             />
           </div>
 
           {/* Simplified Mode: Email Address and Password */}
           <div className="space-y-4">
-            {/* 邮箱地址 */}
+            {/* Email address */}
             <div>
               <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
-                {t('platforms.email.form.emailAddress', '邮箱地址')}
+                {t('platforms.email.form.emailAddress', 'Email Address')}
                 <span className="text-red-500 ml-1">*</span>
               </label>
               <input
@@ -475,15 +475,15 @@ const EmailPlatformConfig: React.FC<Props> = ({ platform }) => {
               />
               {autoDetectedProvider && (
                 <p className="text-xs text-green-600 dark:text-green-400 mt-1">
-                  ✓ {t('platforms.email.form.autoDetected', '已自动识别为')} {autoDetectedProvider}
+                  ✓ {t('platforms.email.form.autoDetected', 'Auto-detected as')} {autoDetectedProvider}
                 </p>
               )}
             </div>
 
-            {/* 邮箱密码 */}
+            {/* Email password */}
             <div>
               <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
-                {t('platforms.email.form.emailPassword', '邮箱密码')}
+                {t('platforms.email.form.emailPassword', 'Email Password')}
                 <span className="text-red-500 ml-1">*</span>
               </label>
               <div className="flex items-center gap-2">
@@ -491,7 +491,7 @@ const EmailPlatformConfig: React.FC<Props> = ({ platform }) => {
                   type={showPassword ? 'text' : 'password'}
                   value={formValues.imap_password}
                   onChange={(e) => handleChange({ imap_password: e.target.value })}
-                  placeholder={showPassword ? t('platforms.email.form.passwordPlaceholder', '请输入邮箱密码或授权码') : '********'}
+                  placeholder={showPassword ? t('platforms.email.form.passwordPlaceholder', 'Enter email password or authorization code') : '********'}
                   className="flex-1 text-sm p-2 border border-gray-300/80 dark:border-gray-600/80 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-700/50 dark:text-gray-200"
                 />
                 <button
@@ -499,11 +499,11 @@ const EmailPlatformConfig: React.FC<Props> = ({ platform }) => {
                   onClick={() => setShowPassword(v => !v)}
                   className="px-3 py-2 text-xs rounded-md bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 transition-colors"
                 >
-                  {showPassword ? t('platforms.email.buttons.hide', '隐藏') : t('platforms.email.buttons.show', '显示')}
+                  {showPassword ? t('platforms.email.buttons.hide', 'Hide') : t('platforms.email.buttons.show', 'Show')}
                 </button>
               </div>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                {t('platforms.email.form.passwordHint', 'Gmail/QQ 邮箱需使用应用专用密码或授权码')}
+                {t('platforms.email.form.passwordHint', 'Gmail/QQ Mail requires app-specific password or authorization code')}
               </p>
             </div>
           </div>
@@ -523,7 +523,7 @@ const EmailPlatformConfig: React.FC<Props> = ({ platform }) => {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
-              <span>{showAdvanced ? t('platforms.email.form.hideAdvanced', '隐藏高级设置') : t('platforms.email.form.showAdvanced', '显示高级设置')}</span>
+              <span>{showAdvanced ? t('platforms.email.form.hideAdvanced', 'Hide Advanced Settings') : t('platforms.email.form.showAdvanced', 'Show Advanced Settings')}</span>
             </button>
           </div>
 
@@ -545,23 +545,23 @@ const EmailPlatformConfig: React.FC<Props> = ({ platform }) => {
               <div className="bg-blue-50/50 dark:bg-blue-900/20 p-4 rounded-md space-y-3">
                 <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
                   <span>📥</span>
-                  <span>{t('platforms.email.form.imapSection', 'IMAP 配置（接收邮件）')}</span>
+                  <span>{t('platforms.email.form.imapSection', 'IMAP Configuration (Receiving Emails)')}</span>
                 </h4>
 
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.email.form.imapHost', 'IMAP 服务器')}</label>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.email.form.imapHost', 'IMAP Server')}</label>
                   <input
                     type="text"
                     value={formValues.imap_host}
                     onChange={(e) => handleChange({ imap_host: e.target.value }, true)}
-                    placeholder={t('platforms.email.form.imapHostPlaceholder', '例如：imap.gmail.com')}
+                    placeholder={t('platforms.email.form.imapHostPlaceholder', 'e.g., imap.gmail.com')}
                     className={`w-full text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 dark:text-gray-200 ${autoDetectedProvider ? 'bg-green-50 dark:bg-green-900/30' : 'bg-white/90 dark:bg-gray-700/50'}`}
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.email.form.imapPort', 'IMAP 端口')}</label>
+                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.email.form.imapPort', 'IMAP Port')}</label>
                     <input
                       type="number"
                       value={formValues.imap_port}
@@ -579,7 +579,7 @@ const EmailPlatformConfig: React.FC<Props> = ({ platform }) => {
                         onChange={(e) => handleChange({ imap_use_ssl: e.target.checked }, true)}
                         className="w-4 h-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded"
                       />
-                      <label htmlFor="imapUseSsl" className="text-xs text-gray-700 dark:text-gray-300 select-none">{t('platforms.email.form.useSsl', '使用 SSL')}</label>
+                      <label htmlFor="imapUseSsl" className="text-xs text-gray-700 dark:text-gray-300 select-none">{t('platforms.email.form.useSsl', 'Use SSL')}</label>
                     </div>
                   </div>
                 </div>
@@ -589,10 +589,10 @@ const EmailPlatformConfig: React.FC<Props> = ({ platform }) => {
               <div className="bg-green-50/50 dark:bg-green-900/20 p-4 rounded-md space-y-3">
                 <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
                   <span>📤</span>
-                  <span>{t('platforms.email.form.smtpSection', 'SMTP 配置（发送邮件）')}</span>
+                  <span>{t('platforms.email.form.smtpSection', 'SMTP Configuration (Sending Emails)')}</span>
                 </h4>
 
-                {/* 使用相同凭据 */}
+                {/* Use the same credentials */}
                 <div className="flex items-center gap-2 bg-white/60 dark:bg-gray-700/40 p-2 rounded-md">
                   <input
                     id="useSameCredentials"
@@ -601,23 +601,23 @@ const EmailPlatformConfig: React.FC<Props> = ({ platform }) => {
                     onChange={(e) => handleChange({ use_same_credentials: e.target.checked })}
                     className="w-4 h-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded"
                   />
-                  <label htmlFor="useSameCredentials" className="text-xs text-gray-700 dark:text-gray-300 select-none">{t('platforms.email.form.useSameCredentials', 'SMTP 使用相同凭据（推荐）')}</label>
+                  <label htmlFor="useSameCredentials" className="text-xs text-gray-700 dark:text-gray-300 select-none">{t('platforms.email.form.useSameCredentials', 'Use Same Credentials for SMTP (Recommended)')}</label>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.email.form.smtpHost', 'SMTP 服务器')}</label>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.email.form.smtpHost', 'SMTP Server')}</label>
                   <input
                     type="text"
                     value={formValues.smtp_host}
                     onChange={(e) => handleChange({ smtp_host: e.target.value }, true)}
-                    placeholder={t('platforms.email.form.smtpHostPlaceholder', '例如：smtp.gmail.com')}
+                    placeholder={t('platforms.email.form.smtpHostPlaceholder', 'e.g., smtp.gmail.com')}
                     className={`w-full text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 dark:text-gray-200 ${autoDetectedProvider ? 'bg-green-50 dark:bg-green-900/30' : 'bg-white/90 dark:bg-gray-700/50'}`}
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.email.form.smtpPort', 'SMTP 端口')}</label>
+                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.email.form.smtpPort', 'SMTP Port')}</label>
                     <input
                       type="number"
                       value={formValues.smtp_port}
@@ -655,23 +655,23 @@ const EmailPlatformConfig: React.FC<Props> = ({ platform }) => {
                 {!formValues.use_same_credentials && (
                   <>
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.email.form.smtpUsername', 'SMTP 用户名')}</label>
+                      <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.email.form.smtpUsername', 'SMTP Username')}</label>
                       <input
                         type="email"
                         value={formValues.smtp_username}
                         onChange={(e) => handleChange({ smtp_username: e.target.value }, true)}
-                        placeholder={t('platforms.email.form.smtpUsernamePlaceholder', '通常与邮箱地址相同')}
+                        placeholder={t('platforms.email.form.smtpUsernamePlaceholder', 'Usually same as email address')}
                         className="w-full text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-700/50 dark:text-gray-200"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.email.form.smtpPassword', 'SMTP 密码')}</label>
+                      <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.email.form.smtpPassword', 'SMTP Password')}</label>
                       <input
                         type={showPassword ? 'text' : 'password'}
                         value={formValues.smtp_password}
                         onChange={(e) => handleChange({ smtp_password: e.target.value }, true)}
-                        placeholder={showPassword ? t('platforms.email.form.smtpPasswordPlaceholder', '请输入 SMTP 密码') : '********'}
+                        placeholder={showPassword ? t('platforms.email.form.smtpPasswordPlaceholder', 'Enter SMTP password') : '********'}
                         className="w-full text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-700/50 dark:text-gray-200"
                       />
                     </div>
@@ -684,35 +684,35 @@ const EmailPlatformConfig: React.FC<Props> = ({ platform }) => {
 
         {/* Right: comprehensive guide */}
         <section className="lg:w-3/5 w-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-5 rounded-lg shadow-sm border border-gray-200/60 dark:border-gray-700/60 min-h-0 overflow-y-auto auto-hide-scrollbar space-y-4">
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">{t('platforms.email.guide.title', '邮件平台配置指南（IMAP 接收 + SMTP 发送）')}</h3>
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">{t('platforms.email.guide.title', 'Email Platform Configuration Guide (IMAP Receiving + SMTP Sending)')}</h3>
 
           <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-200 text-sm rounded-md p-3">
-            <p className="font-medium">{t('platforms.email.guide.tipTitle', '提示')}</p>
-            <p className="mt-1" dangerouslySetInnerHTML={{ __html: t('platforms.email.guide.tipMessage', 'IMAP 用于接收邮件，SMTP 用于发送邮件。常用端口：<span class="font-mono">IMAP SSL=993</span>，<span class="font-mono">SMTP SSL=465</span>，<span class="font-mono">SMTP TLS=587</span>。') }} />
+            <p className="font-medium">{t('platforms.email.guide.tipTitle', 'Tip')}</p>
+            <p className="mt-1" dangerouslySetInnerHTML={{ __html: t('platforms.email.guide.tipMessage', 'IMAP is for receiving emails, SMTP is for sending emails. Common ports: <span class="font-mono">IMAP SSL=993</span>, <span class="font-mono">SMTP SSL=465</span>, <span class="font-mono">SMTP TLS=587</span>.') }} />
           </div>
 
           <div>
-            <h4 className="text-md font-semibold text-gray-700 dark:text-gray-200 mb-2">{t('platforms.email.guide.section1Title', '一、获取邮箱凭据（通用步骤）')}</h4>
+            <h4 className="text-md font-semibold text-gray-700 dark:text-gray-200 mb-2">{t('platforms.email.guide.section1Title', '1. Get Email Credentials (General Steps)')}</h4>
             <ol className="list-decimal pl-5 text-sm text-gray-700 dark:text-gray-300 space-y-1">
-              <li>{t('platforms.email.guide.section1Step1', '登录邮箱服务商账号（Gmail / Outlook / QQ 邮箱等）。')}</li>
-              <li>{t('platforms.email.guide.section1Step2', '进入「账户设置」或「安全」页面，开启 IMAP/SMTP 服务（如需）。')}</li>
-              <li>{t('platforms.email.guide.section1Step3', '如服务商要求（如 Gmail/QQ），启用两步验证并创建「应用专用密码」。')}</li>
-              <li>{t('platforms.email.guide.section1Step4', '在左侧表单填写 IMAP 和 SMTP 配置。如果使用相同凭据，勾选"SMTP 使用相同凭据"。')}</li>
-              <li>{t('platforms.email.guide.section1Step5', '点击右上角「保存」，随后进行收发邮件测试。')}</li>
+              <li>{t('platforms.email.guide.section1Step1', 'Log in to your email service provider account (Gmail / Outlook / QQ Mail, etc.).')}</li>
+              <li>{t('platforms.email.guide.section1Step2', 'Go to \'Account Settings\' or \'Security\' page, enable IMAP/SMTP service (if required).')}</li>
+              <li>{t('platforms.email.guide.section1Step3', 'If required by the service provider (such as Gmail/QQ), enable two-step verification and create an \'App-specific password\'.')}</li>
+              <li>{t('platforms.email.guide.section1Step4', 'Fill in IMAP and SMTP configuration in the left form. If using same credentials, check \'Use Same Credentials for SMTP\'.')}</li>
+              <li>{t('platforms.email.guide.section1Step5', 'Click \'Save\' in the upper right corner, then test sending and receiving emails.')}</li>
             </ol>
           </div>
 
           <div>
-            <h4 className="text-md font-semibold text-gray-700 dark:text-gray-200 mb-2">{t('platforms.email.guide.section2Title', '二、常用邮箱服务器与端口')}</h4>
+            <h4 className="text-md font-semibold text-gray-700 dark:text-gray-200 mb-2">{t('platforms.email.guide.section2Title', '2. Common Email Servers and Ports')}</h4>
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-left border border-gray-200 dark:border-gray-600 rounded-md overflow-hidden">
                 <thead className="bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-200">
                   <tr>
-                    <th className="px-3 py-2 border-b dark:border-gray-600">{t('platforms.email.guide.tableProvider', '服务商')}</th>
-                    <th className="px-3 py-2 border-b dark:border-gray-600">{t('platforms.email.guide.tableImapServer', 'IMAP 服务器')}</th>
-                    <th className="px-3 py-2 border-b dark:border-gray-600">{t('platforms.email.guide.tableImapPort', 'IMAP 端口')}</th>
-                    <th className="px-3 py-2 border-b dark:border-gray-600">{t('platforms.email.guide.tableSmtpServer', 'SMTP 服务器')}</th>
-                    <th className="px-3 py-2 border-b dark:border-gray-600">{t('platforms.email.guide.tableSmtpPort', 'SMTP 端口')}</th>
+                    <th className="px-3 py-2 border-b dark:border-gray-600">{t('platforms.email.guide.tableProvider', 'Provider')}</th>
+                    <th className="px-3 py-2 border-b dark:border-gray-600">{t('platforms.email.guide.tableImapServer', 'IMAP Server')}</th>
+                    <th className="px-3 py-2 border-b dark:border-gray-600">{t('platforms.email.guide.tableImapPort', 'IMAP Port')}</th>
+                    <th className="px-3 py-2 border-b dark:border-gray-600">{t('platforms.email.guide.tableSmtpServer', 'SMTP Server')}</th>
+                    <th className="px-3 py-2 border-b dark:border-gray-600">{t('platforms.email.guide.tableSmtpPort', 'SMTP Port')}</th>
                   </tr>
                 </thead>
                 <tbody className="text-gray-700 dark:text-gray-300">
@@ -731,7 +731,7 @@ const EmailPlatformConfig: React.FC<Props> = ({ platform }) => {
                     <td className="px-3 py-2 border-b dark:border-gray-600">587</td>
                   </tr>
                   <tr className="odd:bg-white dark:odd:bg-gray-800 even:bg-gray-50 dark:even:bg-gray-700">
-                    <td className="px-3 py-2 border-b dark:border-gray-600">{t('platforms.email.guide.tableQQMail', 'QQ 邮箱')}</td>
+                    <td className="px-3 py-2 border-b dark:border-gray-600">{t('platforms.email.guide.tableQQMail', 'QQ Mail')}</td>
                     <td className="px-3 py-2 border-b dark:border-gray-600 font-mono text-xs">imap.qq.com</td>
                     <td className="px-3 py-2 border-b dark:border-gray-600">993</td>
                     <td className="px-3 py-2 border-b dark:border-gray-600 font-mono text-xs">smtp.qq.com</td>
@@ -743,15 +743,15 @@ const EmailPlatformConfig: React.FC<Props> = ({ platform }) => {
           </div>
 
           <div>
-            <h4 className="text-md font-semibold text-gray-700 dark:text-gray-200 mb-2">{t('platforms.email.guide.section3Title', '三、常见服务商详解')}</h4>
+            <h4 className="text-md font-semibold text-gray-700 dark:text-gray-200 mb-2">{t('platforms.email.guide.section3Title', '3. Detailed Provider Configuration')}</h4>
             <details className="rounded-md border border-gray-200 dark:border-gray-600 p-3 bg-white/70 dark:bg-gray-700/50">
-              <summary className="cursor-pointer font-medium text-gray-800 dark:text-gray-100">{t('platforms.email.guide.gmailTitle', 'Gmail（应用专用密码）')}</summary>
+              <summary className="cursor-pointer font-medium text-gray-800 dark:text-gray-100">{t('platforms.email.guide.gmailTitle', 'Gmail (App-specific Password)')}</summary>
               <div className="text-sm text-gray-700 dark:text-gray-300 mt-2 space-y-2">
                 <ol className="list-decimal pl-5 space-y-1">
-                  <li dangerouslySetInnerHTML={{ __html: t('platforms.email.guide.gmailStep1', '前往 Google 账号安全中心 → 两步验证 → 应用专用密码；确认 IMAP/SMTP 已开启。') }} />
-                  <li dangerouslySetInnerHTML={{ __html: t('platforms.email.guide.gmailStep2', 'IMAP 服务器：<code class="px-1 bg-gray-100 rounded">imap.gmail.com</code>，端口：993（SSL）。') }} />
-                  <li dangerouslySetInnerHTML={{ __html: t('platforms.email.guide.gmailStep3', 'SMTP 服务器：<code class="px-1 bg-gray-100 rounded">smtp.gmail.com</code>，端口：465（SSL）或 587（TLS）。') }} />
-                  <li>{t('platforms.email.guide.gmailStep4', '用户名为你的 Gmail 地址；密码使用应用专用密码（IMAP 和 SMTP 使用相同密码）。')}</li>
+                  <li dangerouslySetInnerHTML={{ __html: t('platforms.email.guide.gmailStep1', 'Go to Google Account Security Center → Two-step Verification → App-specific Password; confirm IMAP/SMTP is enabled.') }} />
+                  <li dangerouslySetInnerHTML={{ __html: t('platforms.email.guide.gmailStep2', 'IMAP server: <code class="px-1 bg-gray-100 rounded">imap.gmail.com</code>, port: 993 (SSL).') }} />
+                  <li dangerouslySetInnerHTML={{ __html: t('platforms.email.guide.gmailStep3', 'SMTP server: <code class="px-1 bg-gray-100 rounded">smtp.gmail.com</code>, port: 465 (SSL) or 587 (TLS).') }} />
+                  <li>{t('platforms.email.guide.gmailStep4', 'Username is your Gmail address; password uses app-specific password (same for IMAP and SMTP).')}</li>
                 </ol>
                 <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded p-2 font-mono text-xs overflow-x-auto dark:text-gray-300">
                   <pre>{`IMAP_HOST=imap.gmail.com
@@ -759,10 +759,10 @@ IMAP_PORT=993
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 USERNAME=you@gmail.com
-PASSWORD=${t('platforms.email.guide.gmailPasswordPlaceholder', '应用专用密码')}
+PASSWORD=${t('platforms.email.guide.gmailPasswordPlaceholder', 'App-specific password')}
 USE_SAME_CREDENTIALS=true`}</pre>
                 </div>
-                <a className="text-blue-600 dark:text-blue-400 hover:underline" href="https://support.google.com/accounts/answer/185833" target="_blank" rel="noreferrer">{t('platforms.email.guide.gmailDocs', 'Gmail 官方指南')}</a>
+                <a className="text-blue-600 dark:text-blue-400 hover:underline" href="https://support.google.com/accounts/answer/185833" target="_blank" rel="noreferrer">{t('platforms.email.guide.gmailDocs', 'Gmail Official Guide')}</a>
               </div>
             </details>
 
@@ -770,9 +770,9 @@ USE_SAME_CREDENTIALS=true`}</pre>
               <summary className="cursor-pointer font-medium text-gray-800 dark:text-gray-100">{t('platforms.email.guide.outlookTitle', 'Outlook（Office 365）')}</summary>
               <div className="text-sm text-gray-700 dark:text-gray-300 mt-2 space-y-2">
                 <ul className="list-disc pl-5 space-y-1">
-                  <li dangerouslySetInnerHTML={{ __html: t('platforms.email.guide.outlookStep1', 'IMAP 服务器：<code class="px-1 bg-gray-100 rounded">outlook.office365.com</code>，端口：993（SSL）。') }} />
-                  <li dangerouslySetInnerHTML={{ __html: t('platforms.email.guide.outlookStep2', 'SMTP 服务器：<code class="px-1 bg-gray-100 rounded">smtp.office365.com</code>，端口：587（TLS）。') }} />
-                  <li>{t('platforms.email.guide.outlookStep3', '用户名通常为邮箱地址；IMAP 和 SMTP 使用相同凭据。')}</li>
+                  <li dangerouslySetInnerHTML={{ __html: t('platforms.email.guide.outlookStep1', 'IMAP server: <code class="px-1 bg-gray-100 rounded">outlook.office365.com</code>, port: 993 (SSL).') }} />
+                  <li dangerouslySetInnerHTML={{ __html: t('platforms.email.guide.outlookStep2', 'SMTP server: <code class="px-1 bg-gray-100 rounded">smtp.office365.com</code>, port: 587 (TLS).') }} />
+                  <li>{t('platforms.email.guide.outlookStep3', 'Username is usually the email address; IMAP and SMTP use same credentials.')}</li>
                 </ul>
                 <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded p-2 font-mono text-xs overflow-x-auto dark:text-gray-300">
                   <pre>{`IMAP_HOST=outlook.office365.com
@@ -782,18 +782,18 @@ SMTP_PORT=587
 USERNAME=you@outlook.com
 USE_SAME_CREDENTIALS=true`}</pre>
                 </div>
-                <a className="text-blue-600 dark:text-blue-400 hover:underline" href="https://learn.microsoft.com/exchange/clients-and-mobile-in-exchange-online/pop-imap-smtp-settings" target="_blank" rel="noreferrer">{t('platforms.email.guide.outlookDocs', 'Microsoft 文档')}</a>
+                <a className="text-blue-600 dark:text-blue-400 hover:underline" href="https://learn.microsoft.com/exchange/clients-and-mobile-in-exchange-online/pop-imap-smtp-settings" target="_blank" rel="noreferrer">{t('platforms.email.guide.outlookDocs', 'Microsoft Documentation')}</a>
               </div>
             </details>
 
             <details className="rounded-md border border-gray-200 dark:border-gray-600 p-3 bg-white/70 dark:bg-gray-700/50">
-              <summary className="cursor-pointer font-medium text-gray-800 dark:text-gray-100">{t('platforms.email.guide.qqTitle', 'QQ 邮箱（需开启 IMAP/SMTP）')}</summary>
+              <summary className="cursor-pointer font-medium text-gray-800 dark:text-gray-100">{t('platforms.email.guide.qqTitle', 'QQ Mail (Enable IMAP/SMTP Required)')}</summary>
               <div className="text-sm text-gray-700 dark:text-gray-300 mt-2 space-y-2">
                 <ol className="list-decimal pl-5 space-y-1">
-                  <li>{t('platforms.email.guide.qqStep1', '进入 QQ 邮箱设置 → 账户 → 开启「IMAP/SMTP 服务」。')}</li>
-                  <li dangerouslySetInnerHTML={{ __html: t('platforms.email.guide.qqStep2', '获取授权码作为密码；IMAP 服务器：<code class="px-1 bg-gray-100 rounded">imap.qq.com</code>，端口：993。') }} />
-                  <li dangerouslySetInnerHTML={{ __html: t('platforms.email.guide.qqStep3', 'SMTP 服务器：<code class="px-1 bg-gray-100 rounded">smtp.qq.com</code>，端口：465（SSL）或 587（TLS）。') }} />
-                  <li>{t('platforms.email.guide.qqStep4', 'IMAP 和 SMTP 使用相同的授权码。')}</li>
+                  <li>{t('platforms.email.guide.qqStep1', 'Go to QQ Mail Settings → Account → Enable \'IMAP/SMTP Service\'.')}</li>
+                  <li dangerouslySetInnerHTML={{ __html: t('platforms.email.guide.qqStep2', 'Get authorization code as password; IMAP server: <code class="px-1 bg-gray-100 rounded">imap.qq.com</code>, port: 993.') }} />
+                  <li dangerouslySetInnerHTML={{ __html: t('platforms.email.guide.qqStep3', 'SMTP server: <code class="px-1 bg-gray-100 rounded">smtp.qq.com</code>, port: 465 (SSL) or 587 (TLS).') }} />
+                  <li>{t('platforms.email.guide.qqStep4', 'IMAP and SMTP use the same authorization code.')}</li>
                 </ol>
                 <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded p-2 font-mono text-xs overflow-x-auto dark:text-gray-300">
                   <pre>{`IMAP_HOST=imap.qq.com
@@ -801,27 +801,27 @@ IMAP_PORT=993
 SMTP_HOST=smtp.qq.com
 SMTP_PORT=465
 USERNAME=your_qq@qq.com
-PASSWORD=${t('platforms.email.guide.qqPasswordPlaceholder', '授权码')}
+PASSWORD=${t('platforms.email.guide.qqPasswordPlaceholder', 'Authorization code')}
 USE_SAME_CREDENTIALS=true`}</pre>
                 </div>
-                <a className="text-blue-600 dark:text-blue-400 hover:underline" href="https://wx.mail.qq.com/list/readtemplate?name=app_intro.html#/agreement/authorizationCode" target="_blank" rel="noreferrer">{t('platforms.email.guide.qqDocs', 'QQ 邮箱帮助')}</a>
+                <a className="text-blue-600 dark:text-blue-400 hover:underline" href="https://wx.mail.qq.com/list/readtemplate?name=app_intro.html#/agreement/authorizationCode" target="_blank" rel="noreferrer">{t('platforms.email.guide.qqDocs', 'QQ Mail Help')}</a>
               </div>
             </details>
           </div>
 
           <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 text-yellow-800 dark:text-yellow-200 text-sm rounded-md p-3">
-            <p className="font-semibold">{t('platforms.email.guide.troubleshootTitle', '排查指南')}</p>
+            <p className="font-semibold">{t('platforms.email.guide.troubleshootTitle', 'Troubleshooting Guide')}</p>
             <ul className="list-disc pl-5 mt-1 space-y-1">
-              <li>{t('platforms.email.guide.troubleshootItem1', '确认服务商已开启 IMAP/SMTP 服务；Gmail/QQ 需在设置中启用并使用应用专用密码/授权码。')}</li>
-              <li>{t('platforms.email.guide.troubleshootItem2', 'IMAP 优先使用 SSL（端口 993）；SMTP 推荐使用 TLS（端口 587）或 SSL（端口 465）。')}</li>
-              <li>{t('platforms.email.guide.troubleshootItem3', '核对邮箱地址（用户名）与密码是否正确，注意大小写与空格。')}</li>
-              <li>{t('platforms.email.guide.troubleshootItem4', '如果勾选了"使用相同凭据"，确保 IMAP 和 SMTP 使用相同的用户名和密码。')}</li>
-              <li>{t('platforms.email.guide.troubleshootItem5', '若仍失败，检查是否需要在服务商后台允许第三方客户端访问。')}</li>
+              <li>{t('platforms.email.guide.troubleshootItem1', 'Confirm that the service provider has enabled IMAP/SMTP service; Gmail/QQ need to enable in settings and use app-specific password/authorization code.')}</li>
+              <li>{t('platforms.email.guide.troubleshootItem2', 'IMAP: prioritize SSL (port 993); SMTP: recommend TLS (port 587) or SSL (port 465).')}</li>
+              <li>{t('platforms.email.guide.troubleshootItem3', 'Verify that the email address (username) and password are correct, pay attention to case and spaces.')}</li>
+              <li>{t('platforms.email.guide.troubleshootItem4', 'If \'Use Same Credentials\' is checked, ensure IMAP and SMTP use the same username and password.')}</li>
+              <li>{t('platforms.email.guide.troubleshootItem5', 'If still failing, check if you need to allow third-party client access in the service provider backend.')}</li>
             </ul>
           </div>
 
           <div className="text-xs text-gray-500 dark:text-gray-400">
-            <p>{t('platforms.email.guide.moreInfo', '更多文档参考：各邮箱服务商官方文档与支持页面。')}</p>
+            <p>{t('platforms.email.guide.moreInfo', 'More documentation: Official documentation and support pages of each email service provider.')}</p>
           </div>
         </section>
       </div>
@@ -839,10 +839,10 @@ USE_SAME_CREDENTIALS=true`}</pre>
       `}</style>
       <ConfirmDialog
         isOpen={confirmOpen}
-        title={t('platforms.email.confirm.deleteTitle', '删除平台')}
-        message={t('platforms.email.confirm.deleteMessage', '确定要删除此平台吗？')}
-        confirmText={t('platforms.email.confirm.confirmText', '删除')}
-        cancelText={t('platforms.email.confirm.cancelText', '取消')}
+        title={t('platforms.email.confirm.deleteTitle', 'Delete Platform')}
+        message={t('platforms.email.confirm.deleteMessage', 'Are you sure you want to delete this platform?')}
+        confirmText={t('platforms.email.confirm.confirmText', 'Delete')}
+        cancelText={t('platforms.email.confirm.cancelText', 'Cancel')}
         confirmVariant="danger"
         isLoading={isDeleting}
         onCancel={() => setConfirmOpen(false)}
@@ -855,7 +855,7 @@ USE_SAME_CREDENTIALS=true`}</pre>
               ? (idx < platforms.length - 1 ? platforms[idx + 1]?.id : (idx > 0 ? platforms[idx - 1]?.id : null))
               : null;
             await deletePlatform(platform.id);
-            showSuccess(showToast, t('platforms.email.messages.deleteSuccess', '平台已删除'), t('platforms.email.messages.deleteSuccessMessage', '平台已删除'));
+            showSuccess(showToast, t('platforms.email.messages.deleteSuccess', 'Platform Deleted'), t('platforms.email.messages.deleteSuccessMessage', 'Platform has been deleted'));
             setConfirmOpen(false);
             if (nextId) navigate(`/platforms/${nextId}`);
             else navigate('/platforms');

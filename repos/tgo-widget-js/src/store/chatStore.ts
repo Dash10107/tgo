@@ -114,7 +114,7 @@ function toPayloadFromAny(raw: any): MessagePayload {
     return { type: 2, url: raw.url, width: raw.width, height: raw.height }
   }
   if (t === 3 && typeof raw?.url === 'string' && typeof raw?.name === 'string' && typeof raw?.size === 'number') {
-    return { type: 3, content: (typeof raw?.content === 'string' && raw.content) ? raw.content : '[文件]', url: raw.url, name: raw.name, size: raw.size }
+    return { type: 3, content: (typeof raw?.content === 'string' && raw.content) ? raw.content : i18n.t('file.placeholder'), url: raw.url, name: raw.name, size: raw.size }
   }
   if (t === 12 && typeof raw?.content === 'string' && Array.isArray(raw?.images)) {
     const images = raw.images
@@ -212,7 +212,7 @@ function mapHistoryToChatMessage(m: WuKongIMMessage, myUid?: string): ChatMessag
   const payload: MessagePayload = displayContent
     ? { type: 1, content: displayContent }
     : toPayloadFromAny(m?.payload)
-  // 检查消息的 error 字段（与 payload 平级）
+  // Check the message's error field (sibling of payload)
   const errorMessage = m?.error ? String(m.error) : undefined
   return {
     id: m.message_id_str ?? m.client_msg_no ?? `h-${m.message_seq}`,
@@ -292,7 +292,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       let cached = loadCachedVisitor(cfg.apiBase, platformApiKey)
       if (!cached) {
         const sys = collectVisitorSystemInfo()
-        // 获取访客时区
+        // Get the visitor's timezone
         const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || null
         const res = await registerVisitor({
           apiBase: cfg.apiBase,
@@ -306,7 +306,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
         cached = loadCachedVisitor(cfg.apiBase, platformApiKey)!
       }
 
-      // WuKongIM 连接要求：使用 visitor_id + "-vtr" 作为 uid
+      // WuKongIM connection requirement: use visitor_id + "-vtr" as uid
       const uid = String(cached.visitor_id || '')
       const uidForIM = uid.endsWith('-vtr') ? uid : `${uid}-vtr`
       const target = cached.channel_id
@@ -355,11 +355,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
         // New message received: play sound and show notification
         playNotificationSound()
         const pConfig = usePlatformStore.getState().config
-        const title = pConfig.widget_title || 'Tgo'
+        const title = pConfig.widget_title || 'Pelatis'
         let content = ''
         if (chat.payload.type === 1) content = chat.payload.content
-        else if (chat.payload.type === 2) content = '[图片]'
-        else if (chat.payload.type === 3) content = '[文件]'
+        else if (chat.payload.type === 2) content = i18n.t('image.placeholder')
+        else if (chat.payload.type === 3) content = i18n.t('file.placeholder')
         
         if (content) {
           void showBrowserNotification(title, {
@@ -436,7 +436,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
             // Flush parser before finalizing
             const closeParser = activeParsers.get(clientMsgNo)
             if (closeParser) { closeParser.flush(); activeParsers.delete(clientMsgNo) }
-            const errorMessage = eventData?.payload?.end_reason > 0 ? '流异常结束' : undefined
+            const errorMessage = eventData?.payload?.end_reason > 0 ? i18n.t('stream.endedAbnormally') : undefined
             console.log('[Chat] Stream closed for message:', clientMsgNo, errorMessage ? `error: ${errorMessage}` : '')
             get().finalizeStreamMessage(clientMsgNo, errorMessage)
             try { get().markStreamingEnd() } catch {}
@@ -447,7 +447,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
             if (!clientMsgNo) return
             const errParser = activeParsers.get(clientMsgNo)
             if (errParser) { errParser.flush(); activeParsers.delete(clientMsgNo) }
-            const errorMessage = eventData?.payload?.error || '未知错误'
+            const errorMessage = eventData?.payload?.error || i18n.t('stream.unknownError')
             console.log('[Chat] Stream error for message:', clientMsgNo, errorMessage)
             get().finalizeStreamMessage(clientMsgNo, errorMessage)
             try { get().markStreamingEnd() } catch {}
@@ -480,7 +480,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
             // Stream started: play sound
             playNotificationSound()
             const pConfig = usePlatformStore.getState().config
-            void showBrowserNotification(pConfig.widget_title || 'Tgo', {
+            void showBrowserNotification(pConfig.widget_title || 'Pelatis', {
               body: i18n.t('messageInput.typing'),
               icon: pConfig.logo_url || undefined,
             })
@@ -525,7 +525,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
           if (customEvent.type === '___TextMessageEnd') {
             const id = customEvent?.id ? String(customEvent.id) : ''
             if (!id) return
-            // 如果 data 字段有值，则认为是错误信息
+            // If the data field has a value, treat it as error info
             const errorMessage = customEvent?.data ? String(customEvent.data) : undefined
             console.log('[Chat] Stream ended for message:', id, errorMessage ? `error: ${errorMessage}` : '')
             get().finalizeStreamMessage(id, errorMessage)
@@ -554,7 +554,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     const id = 'u-' + Date.now()
     const you: ChatMessage = { id, role: 'user', payload: { type: 1, content: v }, time: new Date(), status: 'sending', clientMsgNo }
 
-    // 1. 先渲染消息到消息列表（发送中状态）
+    // 1. Render the message into the message list first (sending state)
     set(state => ({ messages: [...state.messages, you] }))
 
     try {
@@ -572,8 +572,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
       // If a previous stream is ongoing, auto-cancel it before sending a new one
       if (st.isStreaming) { try { await get().cancelStreaming('auto_cancel_on_new_send') } catch {} }
 
-      // 2. 先通过 websocket 发送
-      // 确保 IM 已就绪
+      // 2. Send via websocket first
+      // Make sure IM is ready
       if (!IMService.isReady) {
         if (!st.initializing && st.apiBase) {
           console.log('[Chat] IM not ready, attempting to initialize...')
@@ -593,7 +593,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       const result = await IMService.sendText(v, { clientMsgNo })
       console.log('[Chat] WebSocket send result:', result)
 
-      // 只有 WebSocket 发送成功（reasonCode 为 Success）才继续调用 completion 接口
+      // Only continue to the completion API when the WebSocket send succeeds (reasonCode is Success)
       if (result.reasonCode !== ReasonCode.Success) {
         console.warn('[Chat] WebSocket send did not return Success, skipping completion API.', result.reasonCode)
         set(state => ({
@@ -602,7 +602,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
         return
       }
 
-      // 3. WebSocket 发送成功后，再调用 /v1/chat/completion 接口（stream=false）
+      // 3. After the WebSocket send succeeds, call the /v1/chat/completion API (stream=false)
       const url = `${apiBase.replace(/\/$/, '')}/v1/chat/completion`
       const payload: Record<string, any> = {
         api_key: platformApiKey,
@@ -623,11 +623,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
         body: JSON.stringify(payload),
       })
 
-      // 解析响应 JSON
+      // Parse the response JSON
       const resJson = await res.json().catch(() => ({}))
       console.log('[Chat] /v1/chat/completion response:', resJson)
 
-      // 检查 event_type 是否为 error
+      // Check whether event_type is error
       if (resJson.event_type === 'error') {
         const errMsg = resJson.message || resJson.detail || 'Unknown error'
         throw new Error(errMsg)
@@ -670,7 +670,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
           const placeholder: ChatMessage = {
             id,
             role: 'user',
-            payload: { type: 1, content: isImage ? '图片上传中…' : '文件上传中…' } as any,
+            payload: { type: 1, content: isImage ? i18n.t('upload.uploadingImage') : i18n.t('upload.uploadingFile') } as any,
             time: new Date(),
             status: 'uploading',
             uploadProgress: 0,
@@ -704,7 +704,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
               set(s => ({ messages: s.messages.map(m => m.id === id ? { ...m, status: undefined, reasonCode: (result?.reasonCode ?? ReasonCode.Unknown) as ReasonCode } : m) }))
             } else {
               const fileUrl = res.file_url
-              const payload: MessagePayload = { type: 3, content: file.name || '[文件]', url: fileUrl, name: res.file_name || file.name, size: res.file_size ?? file.size }
+              const payload: MessagePayload = { type: 3, content: file.name || i18n.t('file.placeholder'), url: fileUrl, name: res.file_name || file.name, size: res.file_size ?? file.size }
               set(s => ({ messages: s.messages.map(m => m.id === id ? { ...m, payload, status: 'sending', uploadProgress: undefined, uploadError: undefined } : m) }))
               const result = await IMService.sendPayload(payload, { clientMsgNo })
               set(s => ({ messages: s.messages.map(m => m.id === id ? { ...m, status: undefined, reasonCode: (result?.reasonCode ?? ReasonCode.Unknown) as ReasonCode } : m) }))
@@ -717,7 +717,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
             uploadControllers.delete(id)
             const aborted = err?.name === 'AbortError'
             set(s => ({
-              messages: s.messages.map(m => m.id === id ? { ...m, status: undefined, uploadError: aborted ? '已取消' : (err?.message || '上传失败') } : m),
+              messages: s.messages.map(m => m.id === id ? { ...m, status: undefined, uploadError: aborted ? i18n.t('upload.cancelled') : (err?.message || i18n.t('upload.failed')) } : m),
               error: aborted ? s.error : (err?.message || String(err))
             }))
             // keep pendingFiles for retry on failure
@@ -738,7 +738,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     const dimsPromise = isImage ? readImageDimensions(file) : Promise.resolve(null)
     const clientMsgNo = (typeof crypto !== 'undefined' && (crypto as any)?.randomUUID) ? (crypto as any).randomUUID() : `um-${Date.now()}-${Math.random().toString(36).slice(2,8)}`
     // reset state
-    set(s => ({ messages: s.messages.map(m => m.id === messageId ? { ...m, payload: { type: 1, content: isImage ? '图片上传中…' : '文件上传中…' } as any, status: 'uploading', uploadProgress: 0, uploadError: undefined, clientMsgNo } : m) }))
+    set(s => ({ messages: s.messages.map(m => m.id === messageId ? { ...m, payload: { type: 1, content: isImage ? i18n.t('upload.uploadingImage') : i18n.t('upload.uploadingFile') } as any, status: 'uploading', uploadProgress: 0, uploadError: undefined, clientMsgNo } : m) }))
     const controller = new AbortController()
     uploadControllers.set(messageId, controller)
     try {
@@ -761,7 +761,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
         set(s => ({ messages: s.messages.map(m => m.id === messageId ? { ...m, status: undefined, reasonCode: (result?.reasonCode ?? ReasonCode.Unknown) as ReasonCode } : m) }))
       } else {
         const fileUrl = res.file_url
-        const payload: MessagePayload = { type: 3, content: file.name || '[文件]', url: fileUrl, name: res.file_name || file.name, size: res.file_size ?? file.size }
+        const payload: MessagePayload = { type: 3, content: file.name || i18n.t('file.placeholder'), url: fileUrl, name: res.file_name || file.name, size: res.file_size ?? file.size }
         set(s => ({ messages: s.messages.map(m => m.id === messageId ? { ...m, payload, status: 'sending', uploadProgress: undefined, uploadError: undefined } : m) }))
         const result = await IMService.sendPayload(payload, { clientMsgNo })
         set(s => ({ messages: s.messages.map(m => m.id === messageId ? { ...m, status: undefined, reasonCode: (result?.reasonCode ?? ReasonCode.Unknown) as ReasonCode } : m) }))
@@ -772,7 +772,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       uploadControllers.delete(messageId)
       const aborted = err?.name === 'AbortError'
       set(s => ({
-        messages: s.messages.map(m => m.id === messageId ? { ...m, status: undefined, uploadError: aborted ? '已取消' : (err?.message || '上传失败') } : m),
+        messages: s.messages.map(m => m.id === messageId ? { ...m, status: undefined, uploadError: aborted ? i18n.t('upload.cancelled') : (err?.message || i18n.t('upload.failed')) } : m),
         error: aborted ? s.error : (err?.message || String(err))
       }))
     }
@@ -785,7 +785,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       uploadControllers.delete(messageId)
     } else {
       // if no inflight controller, mark as cancelled locally
-      set(s => ({ messages: s.messages.map(m => m.id === messageId ? { ...m, status: undefined, uploadError: '已取消' } : m) }))
+      set(s => ({ messages: s.messages.map(m => m.id === messageId ? { ...m, status: undefined, uploadError: i18n.t('upload.cancelled') } : m) }))
     }
   },
 
@@ -1060,7 +1060,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       const messages = state.messages.map(m => {
         if (m.clientMsgNo && m.clientMsgNo === clientMsgNo) {
           // Move streamData into payload.content and clear streamData to stop blinking cursor
-          // 如果有错误信息，设置 errorMessage 字段
+          // If there is error info, set the errorMessage field
           return {
             ...m,
             payload: m.streamData ? { type: 1, content: m.streamData } as MessagePayload : m.payload,

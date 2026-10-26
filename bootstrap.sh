@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bootstrap script for one-command TGO deployment
+# Bootstrap script for one-command Pelatis deployment
 # Usage (remote):  curl -fsSL https://your.host/bootstrap.sh | bash
 # Usage (local):   bash bootstrap.sh
 
@@ -478,7 +478,7 @@ update_image_tags() {
   local compose_main="$DIR/docker-compose.yml"
   local compose_cn="$DIR/docker-compose.cn.yml"
 
-  echo "[INFO] Setting Docker image tags to '$image_tag' for TGO application services..."
+  echo "[INFO] Setting Docker image tags to '$image_tag' for Pelatis application services..."
 
   if [ -f "$compose_main" ]; then
     echo "[INFO] Updating $compose_main ..."

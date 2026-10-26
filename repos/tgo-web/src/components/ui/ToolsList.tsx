@@ -3,6 +3,7 @@ import { Wrench } from 'lucide-react';
 import ToolTag from './ToolTag';
 import type { AiTool } from '@/types';
 
+import { useTranslation } from 'react-i18next';
 interface ToolsListProps {
   toolIds: string[];
   toolsMap?: Record<string, AiTool>;
@@ -17,8 +18,8 @@ interface ToolsListProps {
 }
 
 /**
- * 工具列表组件
- * 用于显示AI员工关联的工具列表
+ * Tools list component
+ * Shows the list of tools linked to an AI agent
  */
 const ToolsList: React.FC<ToolsListProps> = ({
   toolIds,
@@ -29,10 +30,11 @@ const ToolsList: React.FC<ToolsListProps> = ({
   showIcon = true,
   maxDisplay,
   className = '',
-  emptyText = '未关联工具',
+  emptyText = 'No tools linked',
   showLabel = false
 }) => {
-  // 如果没有关联工具，显示空状态
+  const { t } = useTranslation();
+  // If there are no linked tools, show the empty state
   if (!toolIds || toolIds.length === 0) {
     return (
       <div className={`flex items-center text-gray-500 ${className}`}>
@@ -42,7 +44,7 @@ const ToolsList: React.FC<ToolsListProps> = ({
     );
   }
 
-  // 处理显示数量限制
+  // Handle the display count limit
   const displayToolIds = maxDisplay ? toolIds.slice(0, maxDisplay) : toolIds;
   const remainingCount = maxDisplay && toolIds.length > maxDisplay 
     ? toolIds.length - maxDisplay 
@@ -53,7 +55,7 @@ const ToolsList: React.FC<ToolsListProps> = ({
       {showLabel && (
         <div className="flex items-center text-[13px] font-medium text-gray-700 mb-1.5">
           <Wrench className="w-3.5 h-3.5 mr-1.5" />
-          关联工具 ({toolIds.length})
+          {t('toolsList.linkedTools', 'Linked tools')} ({toolIds.length})
         </div>
       )}
 
@@ -75,7 +77,7 @@ const ToolsList: React.FC<ToolsListProps> = ({
             inline-flex items-center rounded-md border bg-gray-100 text-gray-600 border-gray-200
             ${size === 'xs' ? 'px-1.5 py-0.5 text-[11px]' : size === 'sm' ? 'px-2 py-1 text-xs' : 'px-3 py-1.5 text-sm'}
           `}>
-            +{remainingCount} 更多
+            +{remainingCount} {t('toolsList.more', 'more')}
           </span>
         )}
       </div>

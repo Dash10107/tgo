@@ -53,7 +53,7 @@ const AgentStoreCard: React.FC<AgentStoreCardProps> = ({ agent, onClick, onInsta
 
       {/* Description */}
       <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 h-10 mb-4 leading-relaxed">
-        {description || '暂无描述'}
+        {description || t('agents.store.noDescription', 'No description')}
       </p>
 
       {/* Footer / Actions */}
@@ -78,7 +78,7 @@ const AgentStoreCard: React.FC<AgentStoreCardProps> = ({ agent, onClick, onInsta
               : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-200 dark:shadow-none'
           }`}
         >
-          {isInstalled ? t('common.installed', '已安装') : t('agents.store.hire', '招聘')}
+          {isInstalled ? t('common.installed', 'Installed') : t('agents.store.hire', 'Hire')}
         </button>
       </div>
     </StoreCardBase>

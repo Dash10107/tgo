@@ -83,7 +83,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             className="flex-1 px-6 py-2.5 text-sm font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all active:scale-95 disabled:opacity-50"
             disabled={isLoading}
           >
-            {cancelText || t('common.cancel', '取消')}
+            {cancelText || t('common.cancel', 'Cancel')}
           </button>
           <button
             onClick={onConfirm}
@@ -93,10 +93,10 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             {isLoading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>{t('common.processing', '处理中...')}</span>
+                <span>{t('common.processing', 'Processing...')}</span>
               </>
             ) : (
-              confirmText || t('common.confirm', '确认')
+              confirmText || t('common.confirm', 'Confirm')
             )}
           </button>
         </div>

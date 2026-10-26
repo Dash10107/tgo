@@ -164,7 +164,7 @@ const LoginPage: React.FC = () => {
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <Link to="/" className="flex items-center space-x-2">
-            <img src="/logo.svg" alt="Tgo CS Logo" className="w-10 h-10" />
+            <img src="/logo.svg" alt="Pelatis CS Logo" className="w-10 h-10" />
             <span className="font-semibold text-2xl text-gray-800 dark:text-gray-200">{t('brand.name')}</span>
           </Link>
         </div>
@@ -247,7 +247,7 @@ const LoginPage: React.FC = () => {
                   onClick={() => setShowForgotPassword(!showForgotPassword)}
                   className="text-xs text-blue-500 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors"
                 >
-                  {t('auth.login.forgotPassword', '忘记密码?')}
+                  {t('auth.login.forgotPassword', 'Forgot password?')}
                 </button>
                 {showForgotPassword && (
                   <div
@@ -257,7 +257,7 @@ const LoginPage: React.FC = () => {
                     onClick={(e) => e.stopPropagation()}
                   >
                     <p className="text-xs text-gray-700 dark:text-gray-300 mb-3">
-                      {t('auth.login.resetAdminInstruction', '执行以下命令可重置 admin 用户')}
+                      {t('auth.login.resetAdminInstruction', 'Run the following command to reset the admin user')}
                     </p>
                     <div className="bg-gray-900 dark:bg-black rounded-md p-3 flex items-center gap-2 group">
                       <code className="text-white text-xs font-mono flex-1 whitespace-nowrap min-w-0">
@@ -267,7 +267,7 @@ const LoginPage: React.FC = () => {
                         type="button"
                         onClick={handleCopyCommand}
                         className="p-1.5 text-gray-400 hover:text-white transition-colors rounded hover:bg-gray-800 dark:hover:bg-gray-700 flex-shrink-0"
-                        title={copied ? t('auth.login.copied', '已复制') : t('auth.login.copy', '复制')}
+                        title={copied ? t('auth.login.copied', 'Copied') : t('auth.login.copy', 'Copy')}
                       >
                         {copied ? (
                           <Check className="w-4 h-4 text-green-400" />

@@ -1,4 +1,4 @@
-# TGO UI Widget 前端集成指南
+# Pelatis UI Widget 前端集成指南
 
 本文档说明如何在前端解析和渲染 `tgo-ui-widget` 代码块。
 

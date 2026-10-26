@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "tgo-api"
 version = "0.1.0"
-description = "TGO-Tech API Service - Core Business Logic Microservice"
-authors = ["TGO-Tech Team <api-support@tgo-tech.com>"]
+description = "Pelatis API Service - Core Business Logic Microservice"
+authors = ["Pelatis Team <api-support@tgo-tech.com>"]
 readme = "README.md"
 packages = [{include = "app"}]
 

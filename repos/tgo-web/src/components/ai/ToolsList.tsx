@@ -14,7 +14,7 @@ interface ToolsListProps {
 }
 
 /**
- * 工具列表组件
+ * Tools list component
  */
 const ToolsList: React.FC<ToolsListProps> = ({
   tools,
@@ -30,16 +30,16 @@ const ToolsList: React.FC<ToolsListProps> = ({
         <div className="text-gray-400 dark:text-gray-500 mb-4">
           <LuWrench className="mx-auto h-12 w-12" />
         </div>
-        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{t('tools.list.emptyTitle', '暂无工具')}</h3>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{t('tools.list.emptyTitle', 'No tools yet')}</h3>
         <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
           {selectedCategory === 'all'
-            ? t('tools.list.emptyDescriptionAll', '点击"添加工具"按钮开始添加您的第一个工具')
-            : t('tools.list.emptyDescriptionCategory', { category: t(`tools.categories.${selectedCategory}`, '未知分类') })
+            ? t('tools.list.emptyDescriptionAll', 'Click the "Add Tool" button to add your first tool')
+            : t('tools.list.emptyDescriptionCategory', { category: t(`tools.categories.${selectedCategory}`, 'Unknown category') })
           }
         </p>
         <div className="mt-6">
           <button className="inline-flex items-center px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white text-sm rounded-md hover:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
-            {t('tools.list.emptyAction', '开始添加工具')}
+            {t('tools.list.emptyAction', 'Start adding tools')}
           </button>
         </div>
       </div>

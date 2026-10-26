@@ -13,7 +13,7 @@ import NodeExecutionOverlay from '../overlays/NodeExecutionOverlay';
 const ConditionNode: React.FC<NodeProps<ConditionNodeData>> = ({ id, data, selected }) => {
   const { t } = useTranslation();
   const hasCondition = Boolean(data.expression || data.variable || data.llm_prompt);
-  const defaultLabel = t('workflow.node_types.condition.label', '条件判断');
+  const defaultLabel = t('workflow.node_types.condition.label', 'Condition');
   
   const getConditionSummary = () => {
     if (data.condition_type === 'expression' && data.expression) {
@@ -27,7 +27,7 @@ const ConditionNode: React.FC<NodeProps<ConditionNodeData>> = ({ id, data, selec
     if (data.condition_type === 'llm') {
       return t('workflow.node_display.llm_evaluation', 'LLM Evaluation');
     }
-    return t('workflow.node_display.not_configured_condition', '未配置条件');
+    return t('workflow.node_display.not_configured_condition', 'Condition Not Configured');
   };
   
   return (

@@ -31,7 +31,7 @@ import { useAuthStore } from '@/stores/authStore';
 
 
 /**
- * AI员工创建模态框组件
+ * AI agent creation modal component
  */
 const CreateAgentModal: React.FC = () => {
   const {
@@ -85,7 +85,7 @@ const CreateAgentModal: React.FC = () => {
           setLlmOptions(options);
         }
       } catch (e: any) {
-        if (!cancelled) setLlmError(e?.message || t('agents.create.models.error', '加载模型失败'));
+        if (!cancelled) setLlmError(e?.message || t('agents.create.models.error', 'Failed to load models'));
       } finally {
         if (!cancelled) setLlmLoading(false);
       }
@@ -175,21 +175,21 @@ const CreateAgentModal: React.FC = () => {
 
 
 
-  // 已添加的Tool工具列表 - 显示所有已添加的工具（包括启用和禁用的）
+  // List of added tools - shows all added tools (enabled and disabled)
   const addedAiTools = useMemo(() => {
     // Transform AI tools (from NEW /v1/ai/tools API) to AiTool format
     const tools = transformAiToolResponseList(aiTools);
     return tools.filter((tool: AiTool) => createAgentFormData.tools.includes(tool.id));
   }, [aiTools, createAgentFormData.tools]);
 
-  // 知识库启用状态：后端暂不支持单独启用/禁用，选中即关联
+  // Knowledge base enabled state: the backend does not support enabling/disabling individually yet; selecting means linking
 
-  // 已添加的知识库列表 - 显示所有已添加的知识库（包括启用和禁用的）
+  // List of added knowledge bases - shows all added knowledge bases (enabled and disabled)
   const addedKnowledgeBases = useMemo(() => {
     return knowledgeBases.filter(kb => createAgentFormData.knowledgeBases.includes(kb.id));
   }, [knowledgeBases, createAgentFormData.knowledgeBases]);
 
-  // 已添加的工作流列表
+  // List of added workflows
   const addedWorkflows = useMemo<WorkflowSummary[]>(() => {
     return workflows.filter(wf => createAgentFormData.workflows.includes(wf.id));
   }, [workflows, createAgentFormData.workflows]);
@@ -202,8 +202,8 @@ const CreateAgentModal: React.FC = () => {
       // Global feedback
       showToast(
         'error',
-        t('agents.messages.validationFailed', '验证失败'),
-        t('agents.messages.fillRequired', '请填写所有必填字段')
+        t('agents.messages.validationFailed', 'Validation failed'),
+        t('agents.messages.fillRequired', 'Please fill in all required fields')
       );
 
       // Scroll to the first invalid field and focus it
@@ -245,8 +245,8 @@ const CreateAgentModal: React.FC = () => {
         const names = missing.join(t('common.separator', '、'));
         showToast(
           'error',
-          t('agents.create.tools.missingTitle', '工具信息缺失'),
-          t('agents.create.tools.missingDesc', '以下工具缺少名称：{{names}}，请重新选择后重试', { names })
+          t('agents.create.tools.missingTitle', 'Tool information missing'),
+          t('agents.create.tools.missingDesc', 'The following tools are missing names: {{names}}. Please reselect and try again', { names })
         );
         return;
       }
@@ -256,8 +256,8 @@ const CreateAgentModal: React.FC = () => {
       if (!uiModel || !uiModel.includes(':')) {
         showToast(
           'error',
-          t('agents.create.models.selectPlaceholder', '请选择模型'),
-          t('agents.create.models.invalid', '请选择一个有效的模型（需包含提供商）')
+          t('agents.create.models.selectPlaceholder', 'Please select a model'),
+          t('agents.create.models.invalid', 'Please select a valid model (a provider is required)')
         );
         // Ensure the user sees the model field
         if (llmSelectRef.current) {
@@ -293,15 +293,15 @@ const CreateAgentModal: React.FC = () => {
       // Show success toast
       showToast(
         'success',
-        t('agents.messages.createSuccess', '创建成功'),
-        t('agents.messages.createSuccessDesc', 'AI员工 "{name}" 已成功创建', { name: createAgentFormData.name })
+        t('agents.messages.createSuccess', 'Create Successful'),
+        t('agents.messages.createSuccessDesc', 'Agent "{{name}}" has been successfully created', { name: createAgentFormData.name })
       );
     } catch (error) {
-      console.error('创建AI员工失败:', error);
+      console.error('Failed to create AI agent:', error);
       const errorMessage = error instanceof Error
         ? error.message
-        : t('agents.messages.createFailed', '创建AI员工时发生未知错误');
-      showToast('error', t('agents.messages.createFailed', '创建失败'), errorMessage);
+        : t('agents.messages.createFailed', 'Create Failed');
+      showToast('error', t('agents.messages.createFailed', 'Create Failed'), errorMessage);
     }
   };
 
@@ -310,22 +310,22 @@ const CreateAgentModal: React.FC = () => {
     resetCreateAgentForm();
   };
 
-  // 处理工具移除
+  // Handle tool removal
   const handleToolRemove = (toolId: string) => {
     removeTool(toolId);
   };
 
-  // 处理知识库移除
+  // Handle knowledge base removal
   const handleKnowledgeBaseRemove = (kbId: string) => {
     removeKnowledgeBase(kbId);
   };
 
-  // 处理工作流移除
+  // Handle workflow removal
   const handleWorkflowRemove = (workflowId: string) => {
     removeWorkflow(workflowId);
   };
 
-  // 知识库图标颜色由通用组件处理
+  // Knowledge base icon colors are handled by the shared component
 
   if (!showCreateAgentModal) return null;
 
@@ -346,8 +346,8 @@ const CreateAgentModal: React.FC = () => {
               <Bot className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-bold">{t('agents.modal.create.title', '创建AI员工')}</h2>
-              <p className="text-blue-100 text-xs mt-0.5 opacity-80">{t('agents.modal.create.subtitle', '定义一个具有专业技能的虚拟数字员工')}</p>
+              <h2 className="text-xl font-bold">{t('agents.modal.create.title', 'Create Agent')}</h2>
+              <p className="text-blue-100 text-xs mt-0.5 opacity-80">{t('agents.modal.create.subtitle', 'Define a virtual digital agent with professional skills')}</p>
             </div>
           </div>
           <button
@@ -363,20 +363,20 @@ const CreateAgentModal: React.FC = () => {
         <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-0">
           <div className="flex-1 overflow-y-auto custom-scrollbar bg-gray-50 dark:bg-gray-950">
             <div className="p-8 space-y-8">
-              {/* 基本信息 Section */}
+              {/* Basic info section */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2 px-1">
                   <User className="w-5 h-5 text-blue-600" />
                   <h3 className="font-bold text-gray-900 dark:text-gray-100 uppercase tracking-tight text-sm">
-                    {t('agents.detail.basicInfo', '基本信息')}
+                    {t('agents.detail.basicInfo', 'Basic Info')}
                   </h3>
                 </div>
                 <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* AI员工名称 */}
+                    {/* AI agent name */}
                     <div className="space-y-2">
                       <label className="text-xs font-bold text-gray-500 dark:text-gray-400 ml-1 uppercase">
-                        {t('agents.form.name', 'AI员工名称')} <span className="text-red-500">*</span>
+                        {t('agents.form.name', 'Agent Name')} <span className="text-red-500">*</span>
                       </label>
                       <input
                         ref={nameInputRef}
@@ -386,7 +386,7 @@ const CreateAgentModal: React.FC = () => {
                         className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border rounded-2xl focus:ring-4 focus:ring-blue-500/10 transition-all outline-none ${
                           createAgentErrors.name ? 'border-red-500 focus:border-red-500' : 'border-gray-100 dark:border-gray-700 focus:border-blue-500'
                         }`}
-                        placeholder={t('agents.create.placeholders.name', '请输入AI员工名称')}
+                        placeholder={t('agents.create.placeholders.name', 'Please enter agent name')}
                         disabled={isCreatingAgent}
                       />
                       {createAgentErrors.name && (
@@ -396,10 +396,10 @@ const CreateAgentModal: React.FC = () => {
                       )}
                     </div>
 
-                    {/* 职业/角色 */}
+                    {/* Profession / role */}
                     <div className="space-y-2">
                       <label className="text-xs font-bold text-gray-500 dark:text-gray-400 ml-1 uppercase">
-                        {t('agents.form.profession', '职业/角色')} <span className="text-red-500">*</span>
+                        {t('agents.form.profession', 'Profession')} <span className="text-red-500">*</span>
                       </label>
                       <input
                         ref={professionInputRef}
@@ -409,7 +409,7 @@ const CreateAgentModal: React.FC = () => {
                         className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border rounded-2xl focus:ring-4 focus:ring-blue-500/10 transition-all outline-none ${
                           createAgentErrors.profession ? 'border-red-500 focus:border-red-500' : 'border-gray-100 dark:border-gray-700 focus:border-blue-500'
                         }`}
-                        placeholder={t('agents.create.placeholders.profession', '例如：客服专员、技术支持')}
+                        placeholder={t('agents.create.placeholders.profession', 'e.g. Customer Support, Technical Support, Sales Consultant')}
                         disabled={isCreatingAgent}
                       />
                       {createAgentErrors.profession && (
@@ -422,18 +422,18 @@ const CreateAgentModal: React.FC = () => {
                 </div>
               </div>
 
-              {/* 模型配置 Section */}
+              {/* Model configuration section */}
               <div className="space-y-4">
                   <div className="flex items-center gap-2 px-1">
                     <Layout className="w-5 h-5 text-purple-600" />
                     <h3 className="font-bold text-gray-900 dark:text-gray-100 uppercase tracking-tight text-sm">
-                      {t('agents.create.sections.modelConfig', '模型配置')}
+                      {t('agents.create.sections.modelConfig', 'Model Configuration')}
                     </h3>
                   </div>
                   <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
                     <div className="space-y-2">
                       <label className="text-xs font-bold text-gray-500 dark:text-gray-400 ml-1 uppercase">
-                        {t('agents.form.llmModel', 'LLM模型')} <span className="text-red-500">*</span>
+                        {t('agents.form.llmModel', 'LLM Model')} <span className="text-red-500">*</span>
                       </label>
                       <div className="relative">
                         <select
@@ -446,15 +446,15 @@ const CreateAgentModal: React.FC = () => {
                           disabled={isCreatingAgent || llmLoading}
                         >
                           {llmLoading ? (
-                            <option value="">{t('agents.create.models.loading', '正在加载模型...')}</option>
+                            <option value="">{t('agents.create.models.loading', 'Loading models...')}</option>
                           ) : llmError ? (
-                            <option value="">{t('agents.create.models.error', '加载模型失败')}</option>
+                            <option value="">{t('agents.create.models.error', 'Failed to load models')}</option>
                           ) : llmOptions.length === 0 ? (
-                            <option value="">{t('agents.create.models.empty', '暂无可用模型')}</option>
+                            <option value="">{t('agents.create.models.empty', 'No models available')}</option>
                           ) : (
                             <>
                               {!createAgentFormData.llmModel && (
-                                <option value="">{t('agents.create.models.selectPlaceholder', '请选择模型')}</option>
+                                <option value="">{t('agents.create.models.selectPlaceholder', 'Please select a model')}</option>
                               )}
                               {llmOptions.map(option => (
                                 <option key={option.value} value={option.value}>
@@ -475,25 +475,25 @@ const CreateAgentModal: React.FC = () => {
                       )}
                       {llmError && (
                         <p className="text-[11px] text-red-500 flex items-center gap-1 mt-1 ml-1">
-                          <XCircle className="w-3 h-3" /> {t('agents.create.models.loadFailedInline', '模型加载失败: {{error}}', { error: llmError })}
+                          <XCircle className="w-3 h-3" /> {t('agents.create.models.loadFailedInline', 'Model load failed: {{error}}', { error: llmError })}
                         </p>
                       )}
                     </div>
                   </div>
                 </div>
 
-              {/* 能力描述 Section */}
+              {/* Capability description section */}
               <div className="space-y-4">
                   <div className="flex items-center gap-2 px-1">
                     <Sparkles className="w-5 h-5 text-green-600" />
                     <h3 className="font-bold text-gray-900 dark:text-gray-100 uppercase tracking-tight text-sm">
-                      {t('agents.create.sections.description', '能力描述')}
+                      {t('agents.create.sections.description', 'Capability Description')}
                     </h3>
                   </div>
                   <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
                     <div className="space-y-2">
                       <label className="text-xs font-bold text-gray-500 dark:text-gray-400 ml-1 uppercase">
-                        {t('agents.form.detailedDescription', '详细提示词/指令')} <span className="text-red-500">*</span>
+                        {t('agents.form.detailedDescription', 'Detailed Description')} <span className="text-red-500">*</span>
                       </label>
                       <textarea
                         ref={descriptionTextareaRef}
@@ -503,7 +503,7 @@ const CreateAgentModal: React.FC = () => {
                         className={`w-full px-4 py-4 bg-gray-50 dark:bg-gray-800/50 border rounded-2xl focus:ring-4 focus:ring-green-500/10 transition-all outline-none resize-none ${
                           createAgentErrors.description ? 'border-red-500 focus:border-red-500' : 'border-gray-100 dark:border-gray-700 focus:border-green-500'
                         }`}
-                        placeholder={t('agents.create.placeholders.description', '请详细描述AI员工的功能、职责和特点...')}
+                        placeholder={t('agents.create.placeholders.description', 'Please describe the agent’s functions, responsibilities and characteristics, e.g., handling customer inquiries, providing product information and technical support...')}
                         disabled={isCreatingAgent}
                       />
                       {createAgentErrors.description && (
@@ -525,7 +525,7 @@ const CreateAgentModal: React.FC = () => {
                     <div className="flex items-center gap-3">
                       <Settings className={`w-5 h-5 ${isAdvancedOpen ? 'text-blue-600' : 'text-gray-400'} transition-colors`} />
                       <h3 className="font-bold text-gray-900 dark:text-gray-100 uppercase tracking-tight text-sm">
-                        {t('agents.config.advanced', '高级配置')}
+                        {t('agents.config.advanced', 'Advanced Configuration')}
                       </h3>
                     </div>
                     {isAdvancedOpen ? (
@@ -541,8 +541,8 @@ const CreateAgentModal: React.FC = () => {
                         {/* Markdown */}
                         <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-50 dark:border-gray-700">
                           <div>
-                            <p className="text-sm font-bold text-gray-700 dark:text-gray-200">{t('config.markdown', 'Markdown 格式')}</p>
-                            <p className="text-xs text-gray-500">{t('config.markdownDesc', '使用 Markdown 格式化输出内容')}</p>
+                            <p className="text-sm font-bold text-gray-700 dark:text-gray-200">{t('config.markdown', 'Markdown Format')}</p>
+                            <p className="text-xs text-gray-500">{t('config.markdownDesc', 'Use Markdown to format output content')}</p>
                           </div>
                           <Toggle
                             checked={!!createAgentFormData.markdown}
@@ -553,8 +553,8 @@ const CreateAgentModal: React.FC = () => {
                         {/* Add Datetime */}
                         <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-50 dark:border-gray-700">
                           <div>
-                            <p className="text-sm font-bold text-gray-700 dark:text-gray-200">{t('config.addDatetime', '添加日期时间')}</p>
-                            <p className="text-xs text-gray-500">{t('config.addDatetimeDesc', '在上下文中包含当前日期时间')}</p>
+                            <p className="text-sm font-bold text-gray-700 dark:text-gray-200">{t('config.addDatetime', 'Add Datetime')}</p>
+                            <p className="text-xs text-gray-500">{t('config.addDatetimeDesc', 'Include current date and time in the context')}</p>
                           </div>
                           <Toggle
                             checked={!!createAgentFormData.add_datetime_to_context}
@@ -565,8 +565,8 @@ const CreateAgentModal: React.FC = () => {
                         {/* Skills Enabled */}
                         <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-50 dark:border-gray-700">
                           <div>
-                            <p className="text-sm font-bold text-gray-700 dark:text-gray-200">{t('config.skillsEnabled', '启用技能')}</p>
-                            <p className="text-xs text-gray-500">{t('config.skillsEnabledDesc', '允许 AI 员工自动发现并使用项目中的专业技能')}</p>
+                            <p className="text-sm font-bold text-gray-700 dark:text-gray-200">{t('config.skillsEnabled', 'Enable Skills')}</p>
+                            <p className="text-xs text-gray-500">{t('config.skillsEnabledDesc', 'Allow AI agents to discover and use project skills')}</p>
                           </div>
                           <Toggle
                             checked={!!createAgentFormData.skills_enabled}
@@ -577,7 +577,7 @@ const CreateAgentModal: React.FC = () => {
                         {/* History Runs */}
                         <div className="space-y-2">
                           <label className="text-xs font-bold text-gray-500 dark:text-gray-400 ml-1 uppercase">
-                            {t('config.numHistoryRuns', '历史会话轮数')}
+                            {t('config.numHistoryRuns', 'History Session Runs')}
                           </label>
                           <input
                             type="number"
@@ -592,7 +592,7 @@ const CreateAgentModal: React.FC = () => {
                         {/* Tool Call Limit */}
                         <div className="space-y-2">
                           <label className="text-xs font-bold text-gray-500 dark:text-gray-400 ml-1 uppercase">
-                            {t('config.toolCallLimit', '工具调用限制')}
+                            {t('config.toolCallLimit', 'Tool Call Limit')}
                           </label>
                           <input
                             type="number"
@@ -608,18 +608,18 @@ const CreateAgentModal: React.FC = () => {
                   )}
                 </div>
 
-              {/* 资源关联 Section */}
+              {/* Resource linking section */}
               <div className="space-y-4">
                   <div className="flex items-center gap-2 px-1">
                     <Briefcase className="w-5 h-5 text-orange-600" />
                     <h3 className="font-bold text-gray-900 dark:text-gray-100 uppercase tracking-tight text-sm">
-                      {t('agents.create.sections.resources', '资源关联')}
+                      {t('agents.create.sections.resources', 'Resource Association')}
                     </h3>
                   </div>
                   <div className="grid grid-cols-1 gap-6">
-                    {/* Tool工具 */}
+                    {/* Tools */}
                     <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
-                      <SectionHeader icon={<Wrench className="w-4 h-4 text-orange-600" />} title={t('agents.create.sections.tools', 'Tool工具')} />
+                      <SectionHeader icon={<Wrench className="w-4 h-4 text-orange-600" />} title={t('agents.create.sections.tools', 'Tools')} />
                       <AgentToolsSection
                         tools={addedAiTools}
                         toolConfigs={createAgentFormData.toolConfigs}
@@ -629,9 +629,9 @@ const CreateAgentModal: React.FC = () => {
                       />
                     </div>
 
-                    {/* 知识库 */}
+                    {/* Knowledge bases */}
                     <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
-                      <SectionHeader icon={<FolderOpen className="w-4 h-4 text-teal-600" />} title={t('agents.form.knowledge_bases', '知识库')} />
+                      <SectionHeader icon={<FolderOpen className="w-4 h-4 text-teal-600" />} title={t('agents.form.knowledge_bases', 'Knowledge Bases')} />
                       <AgentKnowledgeBasesSection
                         items={addedKnowledgeBases}
                         onAdd={() => setShowKnowledgeBaseSelectionModal(true)}
@@ -640,9 +640,9 @@ const CreateAgentModal: React.FC = () => {
                       />
                     </div>
 
-                    {/* 工作流 */}
+                    {/* Workflows */}
                     <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
-                      <SectionHeader icon={<GitBranch className="w-4 h-4 text-purple-600" />} title={t('workflow.title', '工作流')} />
+                      <SectionHeader icon={<GitBranch className="w-4 h-4 text-purple-600" />} title={t('workflow.title', 'Workflows')} />
                       <AgentWorkflowsSection
                         workflows={addedWorkflows}
                         onAdd={() => setShowWorkflowSelectionModal(true)}
@@ -651,9 +651,9 @@ const CreateAgentModal: React.FC = () => {
                       />
                     </div>
 
-                    {/* 绑定设备 */}
+                    {/* Bound devices */}
                     <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
-                      <SectionHeader icon={<Monitor className="w-4 h-4 text-purple-600" />} title={t('agents.deviceSection.title', '绑定设备')} />
+                      <SectionHeader icon={<Monitor className="w-4 h-4 text-purple-600" />} title={t('agents.deviceSection.title', 'Bound Device')} />
                       <AgentDeviceSection
                         device={boundDevice}
                         onAdd={() => setShowDeviceSelectionModal(true)}
@@ -675,7 +675,7 @@ const CreateAgentModal: React.FC = () => {
               className="flex items-center px-6 py-2.5 text-sm font-bold text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all"
               disabled={isCreatingAgent}
             >
-              {t('common.cancel', '取消')}
+              {t('common.cancel', 'Cancel')}
             </button>
             <button
               type="button"
@@ -684,7 +684,7 @@ const CreateAgentModal: React.FC = () => {
               disabled={isCreatingAgent}
             >
               <RotateCcw className="w-4 h-4" />
-              {t('common.reset', '重置')}
+              {t('common.reset', 'Reset')}
             </button>
             <button
               type="submit"
@@ -696,7 +696,7 @@ const CreateAgentModal: React.FC = () => {
               ) : (
                 <Save className="w-4 h-4" />
               )}
-              {t('common.create', '立即创建')}
+              {t('common.create', 'Create')}
             </button>
           </div>
         </form>

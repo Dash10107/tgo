@@ -1,4 +1,4 @@
-# Dockerfile for TGO Device Control AgentOS
+# Dockerfile for Pelatis Device Control AgentOS
 # This builds a container specifically for the AgentOS server (port 7778)
 
 FROM python:3.11-slim

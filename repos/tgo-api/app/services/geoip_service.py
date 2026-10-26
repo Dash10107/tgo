@@ -242,10 +242,10 @@ class GeoIPService:
                 return GeoLocation()
             
             # ip2region format can vary:
-            # - Standard: 国家|区域|省份|城市|ISP (5 parts)
-            # - Simplified: 国家|省份|城市|ISP (4 parts)
-            # Example (5 parts): 中国|0|广东省|深圳市|电信
-            # Example (4 parts): 中国|广东省|深圳市|电信
+            # - Standard: country|region|province|city|ISP (5 parts)
+            # - Simplified: country|province|city|ISP (4 parts)
+            # Example (5 parts): China|0|Guangdong|Shenzhen|Telecom (the xdb database stores these in Chinese)
+            # Example (4 parts): China|Guangdong|Shenzhen|Telecom
             parts = result.split("|")
             
             if len(parts) == 5:
@@ -270,7 +270,7 @@ class GeoIPService:
             country_code = self._get_country_code(country)
             
             return GeoLocation(
-                country=country,
+                country=self._get_country_name(country),
                 country_code=country_code,
                 region=region,
                 city=city,
@@ -298,61 +298,72 @@ class GeoIPService:
             logger.warning(f"GeoIP2 lookup failed for {ip_address}: {e}")
             return GeoLocation()
     
+    # ip2region stores country names in Chinese (written as unicode escapes): name -> (ISO code, English name)
+    _COUNTRY_INFO = {
+        "\u4e2d\u56fd": ("CN", "China"),
+        "\u7f8e\u56fd": ("US", "United States"),
+        "\u65e5\u672c": ("JP", "Japan"),
+        "\u97e9\u56fd": ("KR", "South Korea"),
+        "\u82f1\u56fd": ("GB", "United Kingdom"),
+        "\u5fb7\u56fd": ("DE", "Germany"),
+        "\u6cd5\u56fd": ("FR", "France"),
+        "\u4fc4\u7f57\u65af": ("RU", "Russia"),
+        "\u52a0\u62ff\u5927": ("CA", "Canada"),
+        "\u6fb3\u5927\u5229\u4e9a": ("AU", "Australia"),
+        "\u65b0\u52a0\u5761": ("SG", "Singapore"),
+        "\u5370\u5ea6": ("IN", "India"),
+        "\u5df4\u897f": ("BR", "Brazil"),
+        "\u610f\u5927\u5229": ("IT", "Italy"),
+        "\u897f\u73ed\u7259": ("ES", "Spain"),
+        "\u8377\u5170": ("NL", "Netherlands"),
+        "\u745e\u58eb": ("CH", "Switzerland"),
+        "\u745e\u5178": ("SE", "Sweden"),
+        "\u632a\u5a01": ("NO", "Norway"),
+        "\u4e39\u9ea6": ("DK", "Denmark"),
+        "\u82ac\u5170": ("FI", "Finland"),
+        "\u6ce2\u5170": ("PL", "Poland"),
+        "\u5965\u5730\u5229": ("AT", "Austria"),
+        "\u6bd4\u5229\u65f6": ("BE", "Belgium"),
+        "\u7231\u5c14\u5170": ("IE", "Ireland"),
+        "\u65b0\u897f\u5170": ("NZ", "New Zealand"),
+        "\u58a8\u897f\u54e5": ("MX", "Mexico"),
+        "\u963f\u6839\u5ef7": ("AR", "Argentina"),
+        "\u667a\u5229": ("CL", "Chile"),
+        "\u5357\u975e": ("ZA", "South Africa"),
+        "\u57c3\u53ca": ("EG", "Egypt"),
+        "\u571f\u8033\u5176": ("TR", "Turkey"),
+        "\u4ee5\u8272\u5217": ("IL", "Israel"),
+        "\u963f\u8054\u914b": ("AE", "United Arab Emirates"),
+        "\u6c99\u7279\u963f\u62c9\u4f2f": ("SA", "Saudi Arabia"),
+        "\u6cf0\u56fd": ("TH", "Thailand"),
+        "\u8d8a\u5357": ("VN", "Vietnam"),
+        "\u9a6c\u6765\u897f\u4e9a": ("MY", "Malaysia"),
+        "\u5370\u5ea6\u5c3c\u897f\u4e9a": ("ID", "Indonesia"),
+        "\u83f2\u5f8b\u5bbe": ("PH", "Philippines"),
+        "\u4e2d\u56fd\u53f0\u6e7e": ("TW", "Taiwan"),
+        "\u53f0\u6e7e": ("TW", "Taiwan"),
+        "\u4e2d\u56fd\u9999\u6e2f": ("HK", "Hong Kong"),
+        "\u9999\u6e2f": ("HK", "Hong Kong"),
+        "\u4e2d\u56fd\u6fb3\u95e8": ("MO", "Macau"),
+        "\u6fb3\u95e8": ("MO", "Macau"),
+        }
+
     def _get_country_code(self, country: Optional[str]) -> Optional[str]:
         """Get ISO country code from country name (for ip2region)."""
         if not country:
             return None
         
         # Common country name to code mapping
-        country_codes = {
-            "中国": "CN",
-            "美国": "US",
-            "日本": "JP",
-            "韩国": "KR",
-            "英国": "GB",
-            "德国": "DE",
-            "法国": "FR",
-            "俄罗斯": "RU",
-            "加拿大": "CA",
-            "澳大利亚": "AU",
-            "新加坡": "SG",
-            "印度": "IN",
-            "巴西": "BR",
-            "意大利": "IT",
-            "西班牙": "ES",
-            "荷兰": "NL",
-            "瑞士": "CH",
-            "瑞典": "SE",
-            "挪威": "NO",
-            "丹麦": "DK",
-            "芬兰": "FI",
-            "波兰": "PL",
-            "奥地利": "AT",
-            "比利时": "BE",
-            "爱尔兰": "IE",
-            "新西兰": "NZ",
-            "墨西哥": "MX",
-            "阿根廷": "AR",
-            "智利": "CL",
-            "南非": "ZA",
-            "埃及": "EG",
-            "土耳其": "TR",
-            "以色列": "IL",
-            "阿联酋": "AE",
-            "沙特阿拉伯": "SA",
-            "泰国": "TH",
-            "越南": "VN",
-            "马来西亚": "MY",
-            "印度尼西亚": "ID",
-            "菲律宾": "PH",
-            "中国台湾": "TW",
-            "台湾": "TW",
-            "中国香港": "HK",
-            "香港": "HK",
-            "中国澳门": "MO",
-            "澳门": "MO",
-        }
-        return country_codes.get(country)
+        country_info = self._COUNTRY_INFO
+        info = country_info.get(country)
+        return info[0] if info else None
+
+    def _get_country_name(self, country: Optional[str]) -> Optional[str]:
+        """Translate a country name from the ip2region database (Chinese) to English."""
+        if not country:
+            return None
+        info = self._COUNTRY_INFO.get(country)
+        return info[1] if info else country
     
     def _is_private_ip(self, ip_address: str) -> bool:
         """Check if an IP address is private/local."""

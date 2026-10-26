@@ -18,7 +18,7 @@ const AboutSettings: React.FC = () => {
         setSystemInfo(info);
       } catch (err) {
         console.error('Failed to fetch system info:', err);
-        setError(t('about.loadError', '加载系统信息失败'));
+        setError(t('about.loadError', 'Failed to load system information'));
       } finally {
         setLoading(false);
       }
@@ -32,7 +32,7 @@ const AboutSettings: React.FC = () => {
       {/* Header */}
       <div className="flex items-center gap-2">
         <Info className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-        <h2 className="text-lg font-medium text-gray-800 dark:text-gray-100">{t('common.about', '关于')}</h2>
+        <h2 className="text-lg font-medium text-gray-800 dark:text-gray-100">{t('common.about', 'About')}</h2>
       </div>
 
       {/* Loading State */}
@@ -40,7 +40,7 @@ const AboutSettings: React.FC = () => {
         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-8 flex items-center justify-center">
           <div className="flex items-center gap-3 text-gray-500 dark:text-gray-400">
             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 dark:border-blue-400"></div>
-            <span className="text-sm">{t('about.loading', '加载中...')}</span>
+            <span className="text-sm">{t('about.loading', 'Loading...')}</span>
           </div>
         </div>
       )}
@@ -63,16 +63,16 @@ const AboutSettings: React.FC = () => {
             <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center gap-2">
                 <Server className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                <h3 className="text-sm font-medium text-gray-800 dark:text-gray-200">{t('about.systemInfo', '系统信息')}</h3>
+                <h3 className="text-sm font-medium text-gray-800 dark:text-gray-200">{t('about.systemInfo', 'System Information')}</h3>
               </div>
             </div>
             <div className="p-4 space-y-3">
               <div className="flex items-center justify-between py-2">
-                <span className="text-sm text-gray-600 dark:text-gray-400">{t('about.version', '版本')}</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">{t('about.version', 'Version')}</span>
                 <span className="text-sm font-mono font-medium text-gray-900 dark:text-gray-100">{systemInfo.version || 'N/A'}</span>
               </div>
               <div className="flex items-center justify-between py-2 border-t border-gray-100 dark:border-gray-700">
-                <span className="text-sm text-gray-600 dark:text-gray-400">{t('about.environment', '环境')}</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">{t('about.environment', 'Environment')}</span>
                 <span className="text-sm font-mono text-gray-900 dark:text-gray-100">
                   <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
                     systemInfo.environment === 'production'
@@ -93,29 +93,29 @@ const AboutSettings: React.FC = () => {
             <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center gap-2">
                 <Code className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                <h3 className="text-sm font-medium text-gray-800 dark:text-gray-200">{t('about.technicalDetails', '技术详情')}</h3>
+                <h3 className="text-sm font-medium text-gray-800 dark:text-gray-200">{t('about.technicalDetails', 'Technical Details')}</h3>
               </div>
             </div>
             <div className="p-4 space-y-3">
               <div className="flex items-center justify-between py-2">
-                <span className="text-sm text-gray-600 dark:text-gray-400">{t('about.apiVersion', 'API 版本')}</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">{t('about.apiVersion', 'API Version')}</span>
                 <span className="text-sm font-mono text-gray-900 dark:text-gray-100">{systemInfo.api_version || 'N/A'}</span>
               </div>
               <div className="flex items-center justify-between py-2 border-t border-gray-100 dark:border-gray-700">
-                <span className="text-sm text-gray-600 dark:text-gray-400">{t('about.pythonVersion', 'Python 版本')}</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">{t('about.pythonVersion', 'Python Version')}</span>
                 <span className="text-sm font-mono text-gray-900 dark:text-gray-100">{systemInfo.python_version || 'N/A'}</span>
               </div>
               <div className="flex items-start justify-between py-2 border-t border-gray-100 dark:border-gray-700">
                 <span className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-1.5">
                   <Clock className="w-3.5 h-3.5" />
-                  {t('about.buildTime', '构建时间')}
+                  {t('about.buildTime', 'Build Time')}
                 </span>
                 <span className="text-sm font-mono text-gray-900 dark:text-gray-100 text-right">{systemInfo.build_time || 'N/A'}</span>
               </div>
               <div className="flex items-start justify-between py-2 border-t border-gray-100 dark:border-gray-700">
                 <span className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-1.5">
                   <GitBranch className="w-3.5 h-3.5" />
-                  {t('about.gitCommit', 'Git 提交')}
+                  {t('about.gitCommit', 'Git Commit')}
                 </span>
                 <span className="text-xs font-mono text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700 px-2 py-1 rounded border border-gray-200 dark:border-gray-600">
                   {systemInfo.git_commit ? systemInfo.git_commit.substring(0, 8) : 'N/A'}
@@ -129,7 +129,7 @@ const AboutSettings: React.FC = () => {
             <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center gap-2">
                 <ExternalLink className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                <h3 className="text-sm font-medium text-gray-800 dark:text-gray-200">{t('about.links', '相关链接')}</h3>
+                <h3 className="text-sm font-medium text-gray-800 dark:text-gray-200">{t('about.links', 'Links')}</h3>
               </div>
             </div>
             <div className="p-4 space-y-3">
@@ -141,7 +141,7 @@ const AboutSettings: React.FC = () => {
               >
                 <span className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
                   <Github className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                  {t('about.github', 'GitHub 开源地址')}
+                  {t('about.github', 'GitHub Repository')}
                 </span>
                 <ExternalLink className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
               </a>
@@ -153,7 +153,7 @@ const AboutSettings: React.FC = () => {
               >
                 <span className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
                   <Globe className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                  {t('about.website', '官网地址')}
+                  {t('about.website', 'Official Website')}
                 </span>
                 <ExternalLink className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
               </a>
@@ -162,7 +162,7 @@ const AboutSettings: React.FC = () => {
 
           {/* Copyright */}
           <div className="text-center text-xs text-gray-500 dark:text-gray-400 pt-2">
-            © {new Date().getFullYear()} TGO Web. {t('about.copyright', 'All rights reserved.')}
+            © {new Date().getFullYear()} Pelatis Web. {t('about.copyright', 'All rights reserved.')}
           </div>
         </div>
       )}

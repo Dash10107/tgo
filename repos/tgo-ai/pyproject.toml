@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "tgo-ai-service"
 version = "1.0.0"
-description = "TGO-Tech AI Service - AI/ML Operations Microservice"
-authors = ["TGO-Tech <ai-support@tgo-tech.com>"]
+description = "Pelatis AI Service - AI/ML Operations Microservice"
+authors = ["Pelatis <ai-support@tgo-tech.com>"]
 readme = "README.md"
 packages = [{include = "app"}]
 

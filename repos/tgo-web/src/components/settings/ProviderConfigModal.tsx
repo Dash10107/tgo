@@ -40,12 +40,12 @@ const ProviderConfigModal: React.FC<ProviderConfigModalProps> = ({ isOpen, onClo
   const providerOptions: Array<{ value: ProviderKind; label: string; hint?: string }> = useMemo(() => [
     { value: 'openai', label: t('settings.providers.provider.openai', 'OpenAI'), hint: 'https://api.openai.com/v1' },
     { value: 'azure', label: t('settings.providers.provider.azure', 'Azure OpenAI'), hint: 'https://{resource}.openai.azure.com' },
-    { value: 'qwen', label: t('settings.providers.provider.qwen', '通义千问 (DashScope)'), hint: 'https://dashscope.aliyuncs.com/compatible-mode/v1' },
-    { value: 'moonshot', label: t('settings.providers.provider.moonshot', '月之暗面 (Kimi)'), hint: 'https://api.moonshot.cn/v1' },
+    { value: 'qwen', label: t('settings.providers.provider.qwen', 'Qwen (DashScope)'), hint: 'https://dashscope.aliyuncs.com/compatible-mode/v1' },
+    { value: 'moonshot', label: t('settings.providers.provider.moonshot', 'Moonshot (Kimi)'), hint: 'https://api.moonshot.cn/v1' },
     { value: 'deepseek', label: t('settings.providers.provider.deepseek', 'DeepSeek'), hint: 'https://api.deepseek.com/v1' },
-    { value: 'baichuan', label: t('settings.providers.provider.baichuan', '百川智能'), hint: 'https://api.baichuan-ai.com/v1' },
+    { value: 'baichuan', label: t('settings.providers.provider.baichuan', 'Baichuan'), hint: 'https://api.baichuan-ai.com/v1' },
     { value: 'ollama', label: t('settings.providers.provider.ollama', 'Ollama'), hint: 'http://localhost:11434' },
-    { value: 'custom', label: t('settings.providers.provider.custom', '自定义'), hint: t('settings.providers.placeholders.baseUrl.custom', '自定义 Base URL') },
+    { value: 'custom', label: t('settings.providers.provider.custom', 'Custom'), hint: t('settings.providers.placeholders.baseUrl.custom', 'Custom Base URL') },
   ], [t]);
 
   useEffect(() => {
@@ -76,17 +76,17 @@ const ProviderConfigModal: React.FC<ProviderConfigModalProps> = ({ isOpen, onClo
       if (draft.id) {
         const res = await service.testProvider(draft.id);
         if ((res as any).ok ?? (res as any).success ?? true) {
-          toast?.showToast('success', t('settings.providers.test.ok', '连接成功'));
+          toast?.showToast('success', t('settings.providers.test.ok', 'Connection succeeded'));
         } else {
-          toast?.showToast('error', t('settings.providers.test.failed', '连接失败'));
+          toast?.showToast('error', t('settings.providers.test.failed', 'Connection failed'));
         }
       } else {
         // For new providers, we'd need a backend endpoint that tests a config DTO
         // For now, let's show a message that they should save first or just skip
-        toast?.showToast('info', t('settings.providers.test.saveFirst', '请先保存后再测试'));
+        toast?.showToast('info', t('settings.providers.test.saveFirst', 'Please save before testing'));
       }
     } catch (err: any) {
-      toast?.showToast('error', t('settings.providers.test.failed', '连接失败'), err?.message);
+      toast?.showToast('error', t('settings.providers.test.failed', 'Connection failed'), err?.message);
     } finally {
       setTesting(false);
     }
@@ -95,7 +95,7 @@ const ProviderConfigModal: React.FC<ProviderConfigModalProps> = ({ isOpen, onClo
   const handleSave = async () => {
     if (!draft) return;
     if (!draft.apiKey?.trim() && !draft.id) {
-      toast?.showToast('warning', t('settings.providers.validate.apiKey', '请输入 API Key'));
+      toast?.showToast('warning', t('settings.providers.validate.apiKey', 'Please enter API Key'));
       return;
     }
     setSaving(true);
@@ -113,19 +113,19 @@ const ProviderConfigModal: React.FC<ProviderConfigModalProps> = ({ isOpen, onClo
 
       if (draft.id) {
         await updateProvider(draft.id, data);
-        toast?.showToast('success', t('settings.providers.toast.saved', '已保存修改'));
+        toast?.showToast('success', t('settings.providers.toast.saved', 'Changes saved'));
       } else {
         const createdProvider = await addProvider(data);
         const modelCount = createdProvider.models?.length || 0;
         if (modelCount > 0) {
           toast?.showToast('success', t('settings.providers.toast.addedWithDefaults', { count: modelCount }));
         } else {
-          toast?.showToast('success', t('settings.providers.toast.added', '已添加提供商'));
+          toast?.showToast('success', t('settings.providers.toast.added', 'Provider added'));
         }
       }
       onClose();
     } catch (e: any) {
-      toast?.showToast('error', t('common.saveFailed', '保存失败'), e?.message);
+      toast?.showToast('error', t('common.saveFailed', 'Save failed'), e?.message);
     } finally {
       setSaving(false);
     }
@@ -140,7 +140,7 @@ const ProviderConfigModal: React.FC<ProviderConfigModalProps> = ({ isOpen, onClo
       <div className="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-[2rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
         <header className="px-8 py-6 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
           <h2 className="text-xl font-black text-gray-900 dark:text-gray-100">
-            {editingProvider ? t('settings.providers.edit', '编辑提供商') : t('settings.providers.add', '添加提供商')}
+            {editingProvider ? t('settings.providers.edit', 'Edit Provider') : t('settings.providers.add', 'Add Provider')}
           </h2>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors">
             <FiX className="w-5 h-5 text-gray-400" />
@@ -150,7 +150,7 @@ const ProviderConfigModal: React.FC<ProviderConfigModalProps> = ({ isOpen, onClo
         <div className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar">
           {/* Provider Kind */}
           <div className="space-y-2">
-            <label className="text-sm font-bold text-gray-700 dark:text-gray-300">{t('settings.providers.fields.kind', '提供商类型')} *</label>
+            <label className="text-sm font-bold text-gray-700 dark:text-gray-300">{t('settings.providers.fields.kind', 'Provider')} *</label>
             <Select
               value={draft.kind}
               onChange={(val) => {
@@ -176,7 +176,7 @@ const ProviderConfigModal: React.FC<ProviderConfigModalProps> = ({ isOpen, onClo
                 className="w-full bg-gray-50 dark:bg-gray-800 border-none rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 transition-all pr-12"
                 value={draft.apiKey}
                 onChange={(e) => setDraft({ ...draft, apiKey: e.target.value })}
-                placeholder={draft.apiKeyMasked ? t('settings.providers.placeholders.apiKeyMasked', `已配置：${draft.apiKeyMasked}`) : t('settings.providers.placeholders.apiKey', '输入密钥')}
+                placeholder={draft.apiKeyMasked ? t('settings.providers.placeholders.apiKeyMasked', `Configured: {{mask}}, leave empty to keep`) : t('settings.providers.placeholders.apiKey', 'Paste API Key')}
               />
               <button
                 type="button"

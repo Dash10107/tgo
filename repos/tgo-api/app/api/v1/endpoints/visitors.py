@@ -677,8 +677,8 @@ async def record_visitor_activity(
 @router.post(
     "/{visitor_id}/accept",
     response_model=AcceptVisitorResponse,
-    summary="接入访客",
-    description="客服接入访客（无论访客是否在排队中）。如果访客正在排队，会自动更新其排队状态。",
+    summary="Accept visitor",
+    description="Staff accepts a visitor (whether or not the visitor is queued). If the visitor is queued, the queue status is updated automatically.",
 )
 async def accept_visitor_direct(
     visitor_id: UUID,
@@ -686,13 +686,13 @@ async def accept_visitor_direct(
     current_user: Staff = Depends(require_permission("visitors:update")),
 ) -> AcceptVisitorResponse:
     """
-    客服接入访客。
+    Staff accepts a visitor.
     
-    - 无论访客是否在等待队列中均可接入
-    - 如果访客在等待队列中，会自动更新其队列条目状态
-    - 调用 transfer_to_staff 完成实际分配和 WuKongIM 关联
+    - A visitor can be accepted whether or not they are in the waiting queue
+    - If the visitor is in the waiting queue, the queue entry status is updated automatically
+    - Calls transfer_to_staff to complete the actual assignment and WuKongIM association
     """
-    # 1. 查找访客
+    # 1. Find the visitor
     visitor = (
         db.query(Visitor)
         .filter(
@@ -708,14 +708,14 @@ async def accept_visitor_direct(
             detail="Visitor not found",
         )
 
-    # 1a. 检查访客服务状态，如果已经是 ACTIVE 则不允许再次接入
+    # 1a. Check the visitor service status; if already ACTIVE, accepting again is not allowed
     if visitor.service_status == VisitorServiceStatus.ACTIVE.value:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Visitor is already being served (status is active)",
         )
 
-    # 2. 检查是否有处于等待中的队列条目
+    # 2. Check whether there is a queue entry in waiting status
     queue_entry = (
         db.query(VisitorWaitingQueue)
         .filter(
@@ -727,21 +727,21 @@ async def accept_visitor_direct(
         .first()
     )
 
-    # 3. 调用 transfer_to_staff 完成接入
-    # transfer_to_staff 内部会处理：
-    # - 状态迁移 (ACTIVE)
-    # - 会话创建/更新 (VisitorSession)
-    # - 历史记录 (VisitorAssignmentHistory)
-    # - WuKongIM 频道订阅和系统消息
+    # 3. Call transfer_to_staff to complete the acceptance
+    # transfer_to_staff handles internally:
+    # - State transition (ACTIVE)
+    # - Session creation/update (VisitorSession)
+    # - History record (VisitorAssignmentHistory)
+    # - WuKongIM channel subscription and system message
     result = await transfer_to_staff(
         db=db,
         visitor_id=visitor_id,
         project_id=current_user.project_id,
         source=AssignmentSource.MANUAL,
         assigned_by_staff_id=current_user.id,
-        target_staff_id=current_user.id,  # 指定由当前客服接入
+        target_staff_id=current_user.id,  # Accept on behalf of the current staff member
         platform_id=visitor.platform_id,
-        ai_disabled=True,  # 人工接入通常禁用 AI
+        ai_disabled=True,  # Manual acceptance usually disables AI
         add_to_queue_if_no_staff=False,
         notes=f"Accepted manually by {current_user.username}",
     )
@@ -752,7 +752,7 @@ async def accept_visitor_direct(
             detail=result.message or "Failed to accept visitor",
         )
 
-    # 4. 如果之前在排队，更新队列状态
+    # 4. If the visitor was queued, update the queue status
     wait_duration = 0
     if queue_entry:
         wait_duration = queue_entry.wait_duration_seconds
@@ -771,7 +771,7 @@ async def accept_visitor_direct(
 
     return AcceptVisitorResponse(
         success=True,
-        message="访客已成功接入",
+        message="Visitor accepted successfully",
         entry_id=queue_entry.id if queue_entry else None,
         visitor_id=visitor_id,
         staff_id=current_user.id,

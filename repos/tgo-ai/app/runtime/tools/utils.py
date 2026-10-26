@@ -1,4 +1,4 @@
-"""工具运行时的辅助方法."""
+"""Helper methods for the tool runtime."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ from mcp.client.streamable_http import streamablehttp_client
 
 
 async def create_rag_tool(rag_url: str, collection_id: str, project_id: Optional[str], filters: Optional[Dict[str, Any]] = None) -> Function:
-    """根据集合信息生成RAG查询工具."""
+    """Generate a RAG query tool from collection info."""
 
     if not project_id:
         raise ValueError("project_id is required to create RAG tools")
@@ -53,7 +53,7 @@ async def create_rag_tool(rag_url: str, collection_id: str, project_id: Optional
                 ) as search_response:
                     search_response.raise_for_status()
                     data = await search_response.json()
-        except Exception as exc:  # noqa: BLE001 - 需要返回错误信息
+        except Exception as exc:  # noqa: BLE001 - the error message needs to be returned
             return f"<error>{exc}</error>"
 
         documents = data.get("results", [])
@@ -85,7 +85,7 @@ async def create_rag_tool(rag_url: str, collection_id: str, project_id: Optional
 
 
 async def create_workflow_tools(workflow_url: str, workflow_ids: List[str], project_id: Optional[str]) -> List[Function]:
-    """根据工作流信息生成工作流执行工具."""
+    """Generate a workflow execution tool from workflow info."""
 
     if not project_id:
         raise ValueError("project_id is required to create workflow tools")
@@ -192,7 +192,7 @@ def create_agno_mcp_tool(
     mcp_server_url: str,
     headers: Optional[dict[str, str]] = None,
 ) -> Function:
-    """为Agno生成基于MCP协议的工具包装."""
+    """Generate an MCP-protocol-based tool wrapper for Agno."""
 
     async def mcp_tool_entrypoint(**tool_args: Any) -> Any:
         async with streamablehttp_client(mcp_server_url, headers=headers) as streams:
@@ -223,7 +223,7 @@ def create_plugin_tool(
     user_id: Optional[str] = None,
     agent_id: Optional[str] = None,
 ) -> Function:
-    """根据插件信息生成插件工具包装."""
+    """Generate a plugin tool wrapper from plugin info."""
     from app.services.api_service import api_service_client
 
     async def plugin_tool_entrypoint(**tool_args: Any) -> Any:
@@ -240,11 +240,11 @@ def create_plugin_tool(
                 context=context,
             )
             if result.get("success"):
-                return result.get("content", "工具执行成功")
+                return result.get("content", "Tool executed successfully")
             else:
-                return f"<error>{result.get('error', '工具执行失败')}</error>"
+                return f"<error>{result.get('error', 'Tool execution failed')}</error>"
         except Exception as e:
-            return f"<error>插件工具执行失败: {str(e)}</error>"
+            return f"<error>Plugin tool execution failed: {str(e)}</error>"
 
     return Function(
         name=tool_name,
@@ -256,7 +256,7 @@ def create_plugin_tool(
 
 
 def wrap_mcp_authenticate_tool(func: Function) -> Function:
-    """捕获MCP鉴权异常并提示用户完成登录流程."""
+    """Catch MCP authentication exceptions and prompt the user to complete the login flow."""
 
     original = func.entrypoint
 
@@ -293,7 +293,7 @@ def create_http_tool(
     parameters: Optional[List[Dict[str, Any]]] = None,
     timeout: float = 30.0,
 ) -> Function:
-    """根据HTTP接口信息生成工具包装."""
+    """Generate a tool wrapper from HTTP endpoint info."""
 
     async def http_tool_entrypoint(**tool_args: Any) -> Any:
         import httpx

@@ -34,15 +34,15 @@ const CustomAttributeManager: React.FC<CustomAttributeManagerProps> = ({
   const [editValue, setEditValue] = useState('');
   const COMMON_TEMPLATES = useMemo(
     () => [
-      t('visitor.customAttr.templates.company', '公司'),
-      t('visitor.customAttr.templates.jobTitle', '职位'),
-      t('visitor.customAttr.templates.department', '部门'),
-      t('visitor.customAttr.templates.industry', '行业'),
-      t('visitor.customAttr.templates.sourceChannel', '来源渠道'),
-      t('visitor.customAttr.templates.budgetRange', '预算范围'),
-      t('visitor.customAttr.templates.decisionAuthority', '决策权限'),
-      t('visitor.customAttr.templates.urgency', '紧急程度'),
-      t('visitor.customAttr.templates.note', '备注'),
+      t('visitor.customAttr.templates.company', 'Company'),
+      t('visitor.customAttr.templates.jobTitle', 'Job Title'),
+      t('visitor.customAttr.templates.department', 'Department'),
+      t('visitor.customAttr.templates.industry', 'Industry'),
+      t('visitor.customAttr.templates.sourceChannel', 'Source Channel'),
+      t('visitor.customAttr.templates.budgetRange', 'Budget Range'),
+      t('visitor.customAttr.templates.decisionAuthority', 'Decision Authority'),
+      t('visitor.customAttr.templates.urgency', 'Urgency'),
+      t('visitor.customAttr.templates.note', 'Note'),
     ],
     [t]
   );
@@ -91,7 +91,7 @@ const CustomAttributeManager: React.FC<CustomAttributeManagerProps> = ({
 
   const handleDeleteInEdit = (id: string) => {
     onDelete(id);
-    handleCancelEdit(); // 删除后退出编辑状态
+    handleCancelEdit(); // Exit edit mode after deleting
   };
 
   const handleTemplateSelect = (template: string) => {
@@ -130,7 +130,7 @@ const CustomAttributeManager: React.FC<CustomAttributeManagerProps> = ({
                   value={editKey}
                   onChange={(e) => setEditKey(e.target.value)}
                   onKeyDown={(e) => handleKeyDown(e, 'edit')}
-                  placeholder={t('visitor.customAttr.namePlaceholder', '属性名')}
+                  placeholder={t('visitor.customAttr.namePlaceholder', 'Attribute name')}
                   className="w-16 px-2 py-1 text-[12px] leading-5 text-gray-800 dark:text-gray-100 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded transition-all focus:outline-none focus:ring-1 focus:ring-blue-500/50"
                 />
                 <input
@@ -138,7 +138,7 @@ const CustomAttributeManager: React.FC<CustomAttributeManagerProps> = ({
                   value={editValue}
                   onChange={(e) => setEditValue(e.target.value)}
                   onKeyDown={(e) => handleKeyDown(e, 'edit')}
-                  placeholder={t('visitor.customAttr.valuePlaceholder', '属性值')}
+                  placeholder={t('visitor.customAttr.valuePlaceholder', 'Attribute value')}
                   className="flex-1 min-w-0 max-w-[120px] px-2 py-1 text-[12px] leading-5 text-gray-800 dark:text-gray-100 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded transition-all focus:outline-none focus:ring-1 focus:ring-blue-500/50"
                 />
                 <button
@@ -188,7 +188,7 @@ const CustomAttributeManager: React.FC<CustomAttributeManagerProps> = ({
               value={newKey}
               onChange={(e) => setNewKey(e.target.value)}
               onKeyDown={(e) => handleKeyDown(e, 'add')}
-              placeholder={t('visitor.customAttr.namePlaceholder', '属性名')}
+              placeholder={t('visitor.customAttr.namePlaceholder', 'Attribute name')}
               className="w-16 px-2 py-1.5 text-[13px] leading-5 text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
             />
             <input
@@ -196,21 +196,21 @@ const CustomAttributeManager: React.FC<CustomAttributeManagerProps> = ({
               value={newValue}
               onChange={(e) => setNewValue(e.target.value)}
               onKeyDown={(e) => handleKeyDown(e, 'add')}
-              placeholder={t('visitor.customAttr.valuePlaceholder', '属性值')}
+              placeholder={t('visitor.customAttr.valuePlaceholder', 'Attribute value')}
               className="flex-1 min-w-0 max-w-[100px] px-2 py-1.5 text-[13px] leading-5 text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
             />
             <button
               onClick={handleSaveAdd}
               disabled={!newKey.trim() || !newValue.trim()}
               className="p-1.5 text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
-              title={t('common.save', '保存')}
+              title={t('common.save', 'Save')}
             >
               <Check className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={handleCancelAdd}
               className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors flex-shrink-0"
-              title={t('common.cancel', '取消')}
+              title={t('common.cancel', 'Cancel')}
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -240,7 +240,7 @@ const CustomAttributeManager: React.FC<CustomAttributeManagerProps> = ({
           className="flex items-center space-x-1.5 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 px-2.5 py-1.5 rounded-md transition-colors mt-2 font-medium"
         >
           <Plus className="w-3 h-3" />
-          <span>{t('visitor.customAttr.addButton', '添加自定义属性')}</span>
+          <span>{t('visitor.customAttr.addButton', 'Add Custom Attribute')}</span>
         </button>
       )}
     </div>

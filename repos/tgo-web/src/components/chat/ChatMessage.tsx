@@ -24,7 +24,7 @@ import SystemMessage from './messages/SystemMessage';
 interface ChatMessageProps {
   message: Message;
   onSuggestionClick?: (suggestion: string) => void;
-  /** 发送消息回调（用于 Widget 中的 msg:// 协议） */
+  /** Callback for sending a message (used by the msg:// protocol in Widgets) */
   onSendMessage?: (message: string) => void;
 }
 
@@ -64,7 +64,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, onSuggestionClick, o
   const typedPayload = message.payload as any | undefined;
 
   // Message type flags
-  // 系统消息：message.type === 'system' 或 payload.type 在 1000-2000 范围内
+  // System message: message.type === 'system' or payload.type is in the 1000-2000 range
   const payloadType = typedPayload?.type ?? message.payloadType;
   const isSystemMessage = message.type === 'system' || (typeof payloadType === 'number' && isSystemMessageType(payloadType));
   const isOwnMessage = currentUid ? message.fromUid === currentUid : false;
@@ -95,15 +95,15 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, onSuggestionClick, o
     // Otherwise, use generic error messages based on end reason
     switch (streamEndReasonNum) {
       case StreamEndReason.TIMEOUT:
-        return t('chat.messages.stream.timeout', 'AI 回复超时');
+        return t('chat.messages.stream.timeout', 'AI response timed out');
       case StreamEndReason.ERROR:
-        return t('chat.messages.stream.error', 'AI 回复生成失败');
+        return t('chat.messages.stream.error', 'AI response generation failed');
       case StreamEndReason.CANCELLED:
-        return t('chat.messages.stream.cancelled', 'AI 回复已取消');
+        return t('chat.messages.stream.cancelled', 'AI response cancelled');
       case StreamEndReason.FORCE:
-        return t('chat.messages.stream.force', 'AI 回复被强制终止');
+        return t('chat.messages.stream.force', 'AI response forcefully terminated');
       default:
-        return t('chat.messages.stream.error', 'AI 回复生成失败');
+        return t('chat.messages.stream.error', 'AI response generation failed');
     }
   };
 
@@ -112,11 +112,11 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, onSuggestionClick, o
     if (typeof meta.error_text === 'string' && meta.error_text.trim().length > 0) {
       return meta.error_text;
     }
-    if (platformSendError) return t('chat.input.errors.platformFailed', '平台消息发送失败，请稍后重试');
-    if (wsSendError) return t('chat.input.errors.websocketFailed', 'WebSocket 发送失败，请检查网络连接');
+    if (platformSendError) return t('chat.input.errors.platformFailed', 'Platform message send failed, please try again later');
+    if (wsSendError) return t('chat.input.errors.websocketFailed', 'WebSocket send failed, please check network connection');
     if (uploadError) {
       const isImageMsg = message.payloadType === MessagePayloadType.IMAGE || Boolean(meta.image_url || meta.image_preview_url);
-      return isImageMsg ? t('chat.messages.image.uploadFailed', '上传失败') : t('chat.input.upload.failed', '上传失败');
+      return isImageMsg ? t('chat.messages.image.uploadFailed', 'Upload failed') : t('chat.input.upload.failed', 'Upload failed');
     }
     return '';
   };
@@ -161,17 +161,17 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, onSuggestionClick, o
   
   // Display info with staff fallback
   const displayName = isOwnMessage
-    ? (message.fromInfo?.name || t('chat.header.staffFallback', '客服'))
+    ? (message.fromInfo?.name || t('chat.header.staffFallback', 'Agent'))
     : channelName;
   const displayAvatar = channelAvatar;
 
-  // System message - payload.type 在 1000-2000 范围内
+  // System message - payload.type is in the 1000-2000 range
   if (isSystemMessage) {
-    // 如果有 payload 且是系统消息格式，使用 SystemMessage 组件
+    // If there is a payload in the system message format, use the SystemMessage component
     if (typedPayload && typeof payloadType === 'number' && isSystemMessageType(payloadType)) {
       return <SystemMessage payload={typedPayload as PayloadSystem} />;
     }
-    // 兼容旧的简单系统消息格式
+    // Compatible with the legacy simple system message format
     return (
       <div className="flex justify-center my-3">
         <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-gray-100/80 dark:bg-gray-700/50 text-xs text-gray-500 dark:text-gray-400">
@@ -249,7 +249,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, onSuggestionClick, o
           onSendMessage={onSendMessage}
         />
         {isSending && (
-          <div className="relative self-center text-gray-400 dark:text-gray-500 mr-2" title={t('chat.messages.sending', '发送中...')}>
+          <div className="relative self-center text-gray-400 dark:text-gray-500 mr-2" title={t('chat.messages.sending', 'Sending...')}>
             <Loader2 className="w-5 h-5 animate-spin" />
           </div>
         )}
@@ -257,7 +257,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, onSuggestionClick, o
           <div
             className="relative self-center text-red-500 dark:text-red-400 cursor-pointer mr-2"
             onClick={() => setErrorOpen(v => !v)}
-            title={t('chat.messages.sendFailedTitle', '发送失败')}
+            title={t('chat.messages.sendFailedTitle', 'Send Failed')}
           >
             <AlertCircle className="w-5 h-5" />
             {errorOpen && (

@@ -13,7 +13,7 @@ interface ToastProps {
 }
 
 /**
- * Toast通知组件
+ * Toast notification component
  */
 const Toast: React.FC<ToastProps> = ({
   id,

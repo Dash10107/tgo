@@ -14,7 +14,7 @@ export function formatChatLastMessage(chat: Chat, t: TFunction): string {
 
   // 1. Handle STREAM messages
   if (payloadType === MessagePayloadType.STREAM && !lastMessage) {
-    return t('chat.status.ai_typing', 'AI 正在输入...');
+    return t('chat.status.ai_typing', 'AI typing...');
   }
 
   // 2. Handle SYSTEM messages (1000-2000)
@@ -56,7 +56,7 @@ export function formatChatLastMessage(chat: Chat, t: TFunction): string {
   const cleaned = stripSpecFences(lastMessage || '');
   // If content is empty after stripping (e.g., message was entirely a json-render UI card),
   // show a generic placeholder instead of blank
-  return cleaned || (lastMessage ? t('chat.messages.aiReply', '[AI 回复]') : '');
+  return cleaned || (lastMessage ? t('chat.messages.aiReply', '[AI Reply]') : '');
 }
 
 /** Remove ```spec...``` fences (and unclosed trailing fences) from text. */

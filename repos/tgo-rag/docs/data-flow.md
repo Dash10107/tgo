@@ -1,8 +1,8 @@
-# TGO-Tech RAG Service Data Flow
+# Pelatis RAG Service Data Flow
 
 ## Overview
 
-This document describes the data flow patterns and processing pipelines within the TGO-Tech RAG Service. The system handles document ingestion, processing, vector embedding generation, and semantic search operations through well-defined workflows.
+This document describes the data flow patterns and processing pipelines within the Pelatis RAG Service. The system handles document ingestion, processing, vector embedding generation, and semantic search operations through well-defined workflows.
 
 ## Document Ingestion Pipeline
 

@@ -9,9 +9,9 @@ interface ChatListTabsProps {
   activeTab: ChatTabType;
   onTabChange: (tab: ChatTabType) => void;
   counts: {
-    mine: number;      // "我的" tab 显示未读数量
-    unassigned: number; // "未分配" tab 显示等待数量
-    // "全部" tab 不显示数量
+    mine: number;      // The "Mine" tab shows the unread count
+    unassigned: number; // The "Unassigned" tab shows the waiting count
+    // The "All" tab shows no count
   };
 }
 
@@ -20,30 +20,30 @@ export const ChatListTabs: React.FC<ChatListTabsProps> = ({ activeTab, onTabChan
   const containerRef = useRef<HTMLDivElement>(null);
   const moreButtonRef = useRef<HTMLButtonElement>(null);
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0, opacity: 1 });
-  const [visibleTabCount, setVisibleTabCount] = useState<number>(5); // 初始全部显示
+  const [visibleTabCount, setVisibleTabCount] = useState<number>(5); // Initially show all
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const [dropdownPos, setDropdownPos] = useState({ top: 0, right: 0 });
 
   const allTabs = useMemo(() => [
-    { key: 'mine' as ChatTabType, label: t('chat.list.tabs.mine', '我的'), count: counts.mine > 0 ? counts.mine : undefined },
-    { key: 'unassigned' as ChatTabType, label: t('chat.list.tabs.unassigned', '未分配'), count: counts.unassigned > 0 ? counts.unassigned : undefined },
-    { key: 'recent' as ChatTabType, label: t('chat.list.tabs.recent', '最近在线') },
-    { key: 'all' as ChatTabType, label: t('chat.list.tabs.all', '已完成') },
-    { key: 'manual' as ChatTabType, label: t('chat.list.tabs.manual', '转人工') },
+    { key: 'mine' as ChatTabType, label: t('chat.list.tabs.mine', 'Mine'), count: counts.mine > 0 ? counts.mine : undefined },
+    { key: 'unassigned' as ChatTabType, label: t('chat.list.tabs.unassigned', 'Unassigned'), count: counts.unassigned > 0 ? counts.unassigned : undefined },
+    { key: 'recent' as ChatTabType, label: t('chat.list.tabs.recent', 'Recently Online') },
+    { key: 'all' as ChatTabType, label: t('chat.list.tabs.all', 'Completed') },
+    { key: 'manual' as ChatTabType, label: t('chat.list.tabs.manual', 'Manual Service') },
   ], [t, counts.mine, counts.unassigned]);
 
-  // 计算哪些 Tab 需要收起
+  // Calculate which tabs need to be collapsed
   const updateTabVisibility = useCallback(() => {
     if (!containerRef.current) return;
     
     const container = containerRef.current;
     const containerWidth = container.offsetWidth;
-    const padding = 32; // 左右 padding 合计
-    const gap = 20; // tabs 之间的 gap
-    const moreBtnWidth = 40; // “更多”按钮的预估宽度
+    const padding = 32; // Total left and right padding
+    const gap = 20; // Gap between tabs
+    const moreBtnWidth = 40; // Estimated width of the "More" button
     const availableWidth = containerWidth - padding;
 
-    // 临时创建一个测量用的 div 来获取各 tab 的宽度
+    // Temporarily create a div for measuring to get each tab's width
     const buttons = Array.from(container.querySelectorAll('button[data-tab]')) as HTMLElement[];
     if (buttons.length === 0) return;
 
@@ -55,9 +55,9 @@ export const ChatListTabs: React.FC<ChatListTabsProps> = ({ activeTab, onTabChan
       const btnWidth = btn.offsetWidth;
       const spacing = i === 0 ? 0 : gap;
       
-      // 如果加上当前按钮超过了可用宽度
+      // If adding the current button exceeds the available width
       if (currentTotalWidth + spacing + btnWidth > availableWidth) {
-        // 如果不是第一个，且还没扣除更多按钮宽度，则尝试重新计算
+        // If it is not the first and the More button width has not been deducted, try to recalculate
         if (i > 0 && currentTotalWidth + spacing + moreBtnWidth > availableWidth) {
            newVisibleCount = i - 1;
         } else {
@@ -68,7 +68,7 @@ export const ChatListTabs: React.FC<ChatListTabsProps> = ({ activeTab, onTabChan
       currentTotalWidth += spacing + btnWidth;
     }
 
-    setVisibleTabCount(Math.max(1, newVisibleCount)); // 至少保留一个
+    setVisibleTabCount(Math.max(1, newVisibleCount)); // Keep at least one
   }, [allTabs.length]);
 
   const updateIndicator = useCallback(() => {
@@ -82,7 +82,7 @@ export const ChatListTabs: React.FC<ChatListTabsProps> = ({ activeTab, onTabChan
         opacity: 1
       });
     } else {
-      // 如果活跃 tab 在“更多”里面，指示器移动到“更多”按钮
+      // If the active tab is inside "More", move the indicator to the "More" button
       if (moreButtonRef.current) {
         setIndicatorStyle({
           left: moreButtonRef.current.offsetLeft,
@@ -138,7 +138,7 @@ export const ChatListTabs: React.FC<ChatListTabsProps> = ({ activeTab, onTabChan
       ref={containerRef}
       className="relative flex items-stretch px-4 gap-5 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 overflow-hidden"
     >
-      {/* 用于测量的隐藏层，始终渲染所有 tabs 以获取宽度 */}
+      {/* Hidden measuring layer; always renders all tabs to get their widths */}
       <div className="absolute top-0 left-0 invisible pointer-events-none flex gap-5 px-4 h-0 overflow-hidden">
         {allTabs.map(tab => (
           <button key={`measure-${tab.key}`} data-tab={tab.key} className="py-2.5 text-[13px] font-medium flex items-center gap-1.5 whitespace-nowrap">
@@ -185,7 +185,7 @@ export const ChatListTabs: React.FC<ChatListTabsProps> = ({ activeTab, onTabChan
             }
           `}
         >
-          <span>{t('common.more', '更多')}</span>
+          <span>{t('common.more', 'more')}</span>
           <ChevronDown size={14} className={`transition-transform duration-200 ${isMoreOpen ? 'rotate-180' : ''}`} />
         </button>
       )}

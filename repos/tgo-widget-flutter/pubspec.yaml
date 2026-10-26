@@ -1,5 +1,5 @@
 name: tgo_widget
-description: A Flutter package for integrating TGO customer service chat widget into your app. Easy to use, customizable, and feature-rich.
+description: A Flutter package for integrating Pelatis customer service chat widget into your app. Easy to use, customizable, and feature-rich.
 version: 1.0.0
 homepage: https://tgo.ai
 repository: https://github.com/AIDotNet/tgo-widget-flutter

@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { X, HelpCircle } from 'lucide-react';
 
+import { useTranslation } from 'react-i18next';
 /**
- * 鉴权类型枚举
+ * Authentication type enum
  */
 export type AuthType = 'none' | 'header' | 'query';
 
 /**
- * 鉴权头部前缀类型
+ * Authentication header prefix type
  */
 export type AuthHeaderPrefix = 'basic' | 'bearer' | 'custom';
 
 /**
- * 鉴权配置接口
+ * Authentication config interface
  */
 export interface AuthConfig {
   type: AuthType;
@@ -29,7 +30,7 @@ interface AuthMethodModalProps {
 }
 
 /**
- * 鉴权方法设置弹窗组件
+ * Authentication method settings modal component
  */
 const AuthMethodModal: React.FC<AuthMethodModalProps> = ({
   isOpen,
@@ -37,13 +38,14 @@ const AuthMethodModal: React.FC<AuthMethodModalProps> = ({
   onSave,
   initialConfig
 }) => {
+  const { t } = useTranslation();
   const [authType, setAuthType] = useState<AuthType>(initialConfig?.type || 'none');
   const [headerPrefix, setHeaderPrefix] = useState<AuthHeaderPrefix>(initialConfig?.headerPrefix || 'custom');
   const [key, setKey] = useState(initialConfig?.key || '');
   const [value, setValue] = useState(initialConfig?.value || '');
 
-  // 当 initialConfig 改变时或模态框打开时更新状态
-  // 这确保了自动检测的鉴权配置能够正确显示在模态框中
+  // Update state when initialConfig changes or the modal opens
+  // This ensures the auto-detected authentication config is shown correctly in the modal
   useEffect(() => {
     if (initialConfig && isOpen) {
       setAuthType(initialConfig.type || 'none');
@@ -53,7 +55,7 @@ const AuthMethodModal: React.FC<AuthMethodModalProps> = ({
     }
   }, [initialConfig, isOpen]);
 
-  // 处理保存
+  // Handle save
   const handleSave = () => {
     const config: AuthConfig = {
       type: authType,
@@ -65,9 +67,9 @@ const AuthMethodModal: React.FC<AuthMethodModalProps> = ({
     onClose();
   };
 
-  // 处理取消
+  // Handle cancel
   const handleCancel = () => {
-    // 重置为初始值
+    // Reset to initial values
     setAuthType(initialConfig?.type || 'none');
     setHeaderPrefix(initialConfig?.headerPrefix || 'custom');
     setKey(initialConfig?.key || '');
@@ -75,7 +77,7 @@ const AuthMethodModal: React.FC<AuthMethodModalProps> = ({
     onClose();
   };
 
-  // 获取键名占位符
+  // Get the key placeholder
   const getKeyPlaceholder = () => {
     if (authType === 'header') {
       return 'Authorization';
@@ -85,7 +87,7 @@ const AuthMethodModal: React.FC<AuthMethodModalProps> = ({
     return '';
   };
 
-  // 获取值占位符
+  // Get the value placeholder
   const getValuePlaceholder = () => {
     if (authType === 'header') {
       if (headerPrefix === 'basic') {
@@ -93,10 +95,10 @@ const AuthMethodModal: React.FC<AuthMethodModalProps> = ({
       } else if (headerPrefix === 'bearer') {
         return 'Bearer <token>';
       } else {
-        return '输入 API Key';
+        return t('authMethod.enterApiKey', 'Enter API Key');
       }
     } else if (authType === 'query') {
-      return '输入 API Key';
+      return t('authMethod.enterApiKey', 'Enter API Key');
     }
     return '';
   };
@@ -108,7 +110,7 @@ const AuthMethodModal: React.FC<AuthMethodModalProps> = ({
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">鉴权方法</h2>
+          <h2 className="text-xl font-semibold text-gray-900">{t('authMethod.title', 'Authentication Method')}</h2>
           <button
             onClick={handleCancel}
             className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -119,9 +121,9 @@ const AuthMethodModal: React.FC<AuthMethodModalProps> = ({
 
         {/* Content */}
         <div className="p-6 space-y-6">
-          {/* 鉴权类型 */}
+          {/* Authentication type */}
           <div>
-            <h3 className="text-sm font-medium text-gray-700 mb-4">鉴权类型</h3>
+            <h3 className="text-sm font-medium text-gray-700 mb-4">{t('authMethod.authType', 'Authentication type')}</h3>
             <div className="grid grid-cols-3 gap-3">
               <label className={`relative flex items-center justify-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
                 authType === 'none' 
@@ -143,7 +145,7 @@ const AuthMethodModal: React.FC<AuthMethodModalProps> = ({
                     <div className="w-2 h-2 rounded-full bg-blue-500"></div>
                   )}
                 </div>
-                <span className="text-sm font-medium text-gray-700">无</span>
+                <span className="text-sm font-medium text-gray-700">{t('authMethod.none', 'None')}</span>
               </label>
 
               <label className={`relative flex items-center justify-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
@@ -166,7 +168,7 @@ const AuthMethodModal: React.FC<AuthMethodModalProps> = ({
                     <div className="w-2 h-2 rounded-full bg-blue-500"></div>
                   )}
                 </div>
-                <span className="text-sm font-medium text-gray-700">请求头</span>
+                <span className="text-sm font-medium text-gray-700">{t('authMethod.header', 'Request Header')}</span>
               </label>
 
               <label className={`relative flex items-center justify-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
@@ -189,15 +191,15 @@ const AuthMethodModal: React.FC<AuthMethodModalProps> = ({
                     <div className="w-2 h-2 rounded-full bg-blue-500"></div>
                   )}
                 </div>
-                <span className="text-sm font-medium text-gray-700">查询参数</span>
+                <span className="text-sm font-medium text-gray-700">{t('authMethod.query', 'Query Parameter')}</span>
               </label>
             </div>
           </div>
 
-          {/* 鉴权头部前缀 - 仅在选择请求头时显示 */}
+          {/* Authentication header prefix - only shown when "Request Header" is selected */}
           {authType === 'header' && (
             <div>
-              <h3 className="text-sm font-medium text-gray-700 mb-4">鉴权头部前缀</h3>
+              <h3 className="text-sm font-medium text-gray-700 mb-4">{t('authMethod.headerPrefix', 'Authorization header prefix')}</h3>
               <div className="grid grid-cols-3 gap-3">
                 <label className={`relative flex items-center justify-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
                   headerPrefix === 'basic' 
@@ -271,13 +273,13 @@ const AuthMethodModal: React.FC<AuthMethodModalProps> = ({
             </div>
           )}
 
-          {/* 键和值输入 - 仅在非"无"类型时显示 */}
+          {/* Key and value inputs - only shown when the type is not "None" */}
           {authType !== 'none' && (
             <>
-              {/* 键 */}
+              {/* Key */}
               <div>
                 <div className="flex items-center space-x-2 mb-2">
-                  <label className="text-sm font-medium text-gray-700">键</label>
+                  <label className="text-sm font-medium text-gray-700">{t('authMethod.key', 'Key')}</label>
                   <HelpCircle className="w-4 h-4 text-gray-400" />
                 </div>
                 <input
@@ -289,9 +291,9 @@ const AuthMethodModal: React.FC<AuthMethodModalProps> = ({
                 />
               </div>
 
-              {/* 值 */}
+              {/* Value */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">值</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('authMethod.value', 'Value')}</label>
                 <input
                   type="text"
                   value={value}
@@ -311,14 +313,14 @@ const AuthMethodModal: React.FC<AuthMethodModalProps> = ({
             onClick={handleCancel}
             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
           >
-            取消
+            {t('common.cancel', 'Cancel')}
           </button>
           <button
             type="button"
             onClick={handleSave}
             className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
           >
-            保存
+            {t('common.save', 'Save')}
           </button>
         </div>
       </div>

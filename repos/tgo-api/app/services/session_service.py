@@ -24,21 +24,21 @@ async def close_visitor_session(
     reason: Optional[str] = None,
 ) -> VisitorSession:
     """
-    关闭访客会话的公用方法。
+    Shared method for closing a visitor session.
     
     Args:
-        db: 数据库会话
-        session: 要关闭的会话对象（需要已加载 visitor 关系）
-        closed_by_staff: 关闭会话的客服（可选，用于发送通知）
-        send_notification: 是否发送系统通知消息
-        auto_commit: 是否自动提交事务
-        reason: 关闭原因（可选，用于日志）
+        db: Database session
+        session: Session object to close (visitor relationship must be loaded)
+        closed_by_staff: Staff member who closes the session (optional, used to send notification)
+        send_notification: Whether to send a system notification message
+        auto_commit: Whether to commit the transaction automatically
+        reason: Close reason (optional, used for logging)
         
     Returns:
-        关闭后的会话对象
+        The closed session object
         
     Raises:
-        ValueError: 如果会话已经关闭
+        ValueError: If the session is already closed
     """
     # Check if session is already closed
     if session.status == SessionStatus.CLOSED.value:

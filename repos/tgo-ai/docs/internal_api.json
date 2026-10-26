@@ -1,7 +1,7 @@
 {
     "openapi": "3.1.0",
     "info": {
-        "title": "TGO-Tech API Service - Internal Services",
+        "title": "Pelatis API Service - Internal Services",
         "description": "Internal services for inter-service communication (no authentication required)",
         "version": "0.1.0"
     },

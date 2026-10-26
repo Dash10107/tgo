@@ -1,7 +1,7 @@
 {
   "name": "tgo-cli",
   "version": "0.1.0",
-  "description": "TGO CLI - AI Agent customer service operations tool",
+  "description": "Pelatis CLI - AI Agent customer service operations tool",
   "type": "module",
   "bin": {
     "tgo": "./bin/tgo.js"

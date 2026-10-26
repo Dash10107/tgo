@@ -41,12 +41,54 @@
     "networkError": "Network error or timeout, please check your connection"
   },
   "file": {
-    "download": "Download"
+    "download": "Download",
+    "downloadFile": "Download file: {{name}}",
+    "unknownSize": "Unknown size",
+    "placeholder": "[File]"
   },
   "system": {
     "staffAssigned": "You have been connected to customer service. Agent {{name0}} will assist you.",
     "sessionTransferred": "Session transferred. Agent {{name0}} has transferred you to Agent {{name1}}.",
     "sessionClosed": "Session ended. Agent {{name0}} has completed the service.",
     "sessionClosedNoAgent": "Session ended."
+  },
+  "time": {
+    "justNow": "Just now",
+    "minutesAgo": "{{count}} min ago",
+    "yesterday": "Yesterday {{time}}"
+  },
+  "image": {
+    "close": "Close (Esc)",
+    "previous": "Previous (←)",
+    "next": "Next (→)",
+    "loadFailed": "Image failed to load",
+    "previewAlt": "Preview image {{index}}",
+    "viewLarge": "View larger",
+    "clickToViewLarge": "Click to view larger",
+    "placeholder": "[Image]"
+  },
+  "message": {
+    "generic": "[Message]"
+  },
+  "upload": {
+    "uploadingImage": "Uploading image…",
+    "uploadingFile": "Uploading file…",
+    "cancelled": "Cancelled",
+    "failed": "Upload failed"
+  },
+  "stream": {
+    "endedAbnormally": "Stream ended abnormally",
+    "unknownError": "Unknown error"
+  },
+  "actions": {
+    "invalid": "Invalid action URI: {{uri}}",
+    "blocked": "Link opening was blocked",
+    "opened": "Opened link: {{url}}",
+    "openFailed": "Failed to open link: {{error}}",
+    "sent": "Message sent",
+    "noSender": "No message handler configured",
+    "copied": "Copied: {{text}}",
+    "copyFailed": "Copy failed: {{error}}",
+    "unknownProtocol": "Unknown protocol: {{protocol}}"
   }
 }

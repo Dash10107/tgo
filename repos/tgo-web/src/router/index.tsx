@@ -23,7 +23,7 @@ const PlatformPlaceholder: React.FC = () => {
   return (
     <div className="flex-1 flex items-center justify-center p-6 text-gray-500">
       <div className="text-center">
-        <p className="text-sm">{t('channels.placeholder.selectOrCreate', '请选择左侧平台，或点击“＋”创建一个新平台。')}</p>
+        <p className="text-sm">{t('channels.placeholder.selectOrCreate', 'Please select a platform from the left, or click "+" to create a new one.')}</p>
       </div>
     </div>
   );

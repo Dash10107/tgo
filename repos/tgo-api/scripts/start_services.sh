@@ -6,7 +6,7 @@
 set -e
 
 echo "=========================================="
-echo "Starting TGO-Tech API Services"
+echo "Starting Pelatis API Services"
 echo "=========================================="
 echo ""
 echo "Main API:      http://localhost:8000"

@@ -48,9 +48,9 @@ const WorkflowToolbar: React.FC = () => {
     setIsSaving(true);
     try {
       await saveWorkflow();
-      showToast('success', t('workflow.messages.saveSuccess', '保存成功'), t('workflow.messages.saveSuccessDesc', '工作流已保存'));
+      showToast('success', t('workflow.messages.saveSuccess', 'Saved'), t('workflow.messages.saveSuccessDesc', 'Workflow saved successfully'));
     } catch (error) {
-      showToast('error', t('workflow.messages.saveFailed', '保存失败'), t('workflow.messages.saveFailedDesc', '保存工作流时发生错误'));
+      showToast('error', t('workflow.messages.saveFailed', 'Save Failed'), t('workflow.messages.saveFailedDesc', 'An error occurred while saving'));
     } finally {
       setIsSaving(false);
     }
@@ -63,9 +63,9 @@ const WorkflowToolbar: React.FC = () => {
     try {
       const isValid = await validate();
       if (isValid) {
-        showToast('success', t('workflow.messages.validateSuccess', '验证通过'), t('workflow.messages.validateSuccessDesc', '工作流配置正确'));
+        showToast('success', t('workflow.messages.validateSuccess', 'Validation Passed'), t('workflow.messages.validateSuccessDesc', 'Workflow configuration is valid'));
       } else {
-        showToast('warning', t('workflow.messages.validateFailed', '验证失败'), t('workflow.messages.validateFailedDesc', '请检查工作流配置'));
+        showToast('warning', t('workflow.messages.validateFailed', 'Validation Failed'), t('workflow.messages.validateFailedDesc', 'Please check workflow configuration'));
       }
     } finally {
       setIsValidating(false);
@@ -82,7 +82,7 @@ const WorkflowToolbar: React.FC = () => {
           onClick={undo}
           disabled={!canUndo}
           className="p-2 text-gray-500 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-white dark:hover:bg-gray-700 rounded-xl disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-90"
-          title={t('workflow.actions.undo', '撤销')}
+          title={t('workflow.actions.undo', 'Undo')}
         >
           <Undo2 className="w-4.5 h-4.5" />
         </button>
@@ -91,7 +91,7 @@ const WorkflowToolbar: React.FC = () => {
           onClick={redo}
           disabled={!canRedo}
           className="p-2 text-gray-500 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-white dark:hover:bg-gray-700 rounded-xl disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-90"
-          title={t('workflow.actions.redo', '重做')}
+          title={t('workflow.actions.redo', 'Redo')}
         >
           <Redo2 className="w-4.5 h-4.5" />
         </button>
@@ -115,7 +115,7 @@ const WorkflowToolbar: React.FC = () => {
           ) : (
             <Bug className="w-4 h-4" />
           )}
-          <span className="hidden lg:inline">{t('workflow.actions.debug', '调试')}</span>
+          <span className="hidden lg:inline">{t('workflow.actions.debug', 'Debug')}</span>
         </button>
 
         {/* Validate */}
@@ -129,7 +129,7 @@ const WorkflowToolbar: React.FC = () => {
           ) : (
             <CheckCircle className="w-4 h-4" />
           )}
-          <span className="hidden lg:inline">{t('workflow.actions.validate', '验证')}</span>
+          <span className="hidden lg:inline">{t('workflow.actions.validate', 'Validate')}</span>
         </button>
 
         {/* Save */}
@@ -147,7 +147,7 @@ const WorkflowToolbar: React.FC = () => {
           ) : (
             <Save className="w-4 h-4" />
           )}
-          <span>{t('workflow.actions.save', '保存')}</span>
+          <span>{t('workflow.actions.save', 'Save')}</span>
           {isDirty && (
             <span className="flex h-2 w-2 relative ml-1">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>

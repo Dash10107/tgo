@@ -21,7 +21,7 @@ router = APIRouter(prefix="/docs", tags=["Documentation"])
 # Service configuration mapping
 SERVICES = {
     "api": {
-        "name": "TGO API Service",
+        "name": "Pelatis API Service",
         "url": None,  # Local service, use internal openapi
         "openapi_path": f"{settings.API_V1_STR}/openapi.json",
     },
@@ -121,10 +121,10 @@ async def docs_index():
 """
 
 
-@router.get("/api", response_class=HTMLResponse, summary="TGO API Documentation")
+@router.get("/api", response_class=HTMLResponse, summary="Pelatis API Documentation")
 async def docs_api():
-    """Swagger UI for the current TGO API service."""
-    return HTMLResponse(_swagger_ui_html("TGO API Service", f"{settings.API_V1_STR}/openapi.json"))
+    """Swagger UI for the current Pelatis API service."""
+    return HTMLResponse(_swagger_ui_html("Pelatis API Service", f"{settings.API_V1_STR}/openapi.json"))
 
 
 @router.get("/{service}/openapi.json", summary="Proxy OpenAPI JSON")
@@ -153,7 +153,7 @@ async def docs_service(service: str):
         return HTMLResponse(_error_html("Not Found", f"Service '{service}' not found."), status_code=404)
     
     if service == "api":
-        return HTMLResponse(_swagger_ui_html("TGO API Service", f"{settings.API_V1_STR}/openapi.json"))
+        return HTMLResponse(_swagger_ui_html("Pelatis API Service", f"{settings.API_V1_STR}/openapi.json"))
     
     svc = SERVICES[service]
     # Use proxied openapi.json to avoid CORS issues

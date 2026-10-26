@@ -1,5 +1,5 @@
 /**
- * API Service Layer for TGO Web
+ * API Service Layer for Pelatis Web
  * Handles all HTTP requests to the backend API
  */
 
@@ -24,16 +24,16 @@ const API_BASE_URL = getApiBaseUrl();
 
 /**
  * Get current user language for API requests
- * Returns the current i18n language code (e.g., 'zh', 'en')
+ * Returns the current i18n language code (e.g., 'en', 'hi', 'mr', 'zh')
  */
 const getCurrentLanguage = (): string => {
   try {
-    // Get current language from i18n, default to 'zh' if not available
-    const lang = i18n.language || 'zh';
+    // Get current language from i18n, default to 'en' if not available
+    const lang = i18n.language || 'en';
     // Return base language code (e.g., 'zh' from 'zh-CN')
     return lang.split('-')[0];
   } catch {
-    return 'zh';
+    return 'en';
   }
 };
 
@@ -66,9 +66,9 @@ export interface StaffResponse {
   avatar_url: string | null;
   role: 'user' | 'admin' | 'agent';
   status: 'online' | 'offline' | 'busy';
-  is_active: boolean; // 是否停止服务（长期开关）
+  is_active: boolean; // Whether service is stopped (long-term switch)
   service_paused: boolean;
-  is_working?: boolean; // 是否在工作时间（根据分配规则计算）
+  is_working?: boolean; // Whether it is within working hours (computed from the assignment rules)
   agent_id: string | null;
   description: string | null;
   created_at: string;

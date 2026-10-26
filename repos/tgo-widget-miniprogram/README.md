@@ -1,6 +1,6 @@
 # tgo-widget-miniprogram
 
-TGO 访客聊天微信小程序组件。开发者 3 步完成接入。
+Pelatis 访客聊天微信小程序组件。开发者 3 步完成接入。
 
 ## 快速接入
 

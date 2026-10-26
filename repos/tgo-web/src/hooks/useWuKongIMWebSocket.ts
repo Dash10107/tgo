@@ -142,10 +142,10 @@ export const useWuKongIMWebSocket = (): UseWuKongIMWebSocketReturn => {
             return await wukongimWebSocketService.sendMessage(channelId, channelType, payload, clientMsgNo);
           } catch (reconnectError) {
             console.error('🔌 Hook: Force reconnect failed:', reconnectError);
-            throw new Error('连接状态不一致，重连失败，请刷新页面');
+            throw new Error('Connection state is inconsistent and reconnection failed, please refresh the page');
           }
         } else {
-          throw new Error('连接状态不一致，请重新登录');
+          throw new Error('Connection state is inconsistent, please log in again');
         }
       }
       
@@ -241,7 +241,7 @@ export const useWuKongIMWebSocket = (): UseWuKongIMWebSocketReturn => {
             return await wukongimWebSocketService.sendMessage(channelId, channelType, payload, clientMsgNo);
           } catch (reconnectError) {
             console.error('🔌 MessageSender: Force reconnect failed:', reconnectError);
-            throw new Error('连接状态不一致，重连失败，请刷新页面');
+            throw new Error('Connection state is inconsistent and reconnection failed, please refresh the page');
           }
         }
         

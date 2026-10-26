@@ -1,4 +1,4 @@
-"""Pydantic schemas for TGO Device Control Service."""
+"""Pydantic schemas for Pelatis Device Control Service."""
 
 from app.schemas.device import (
     DeviceResponse,

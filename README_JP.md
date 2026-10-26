@@ -10,7 +10,7 @@
   <a href="https://tgo.ai">公式サイト</a> | <a href="https://tgo.ai">ドキュメント</a>
 </p>
 
-## TGO 紹介
+## Pelatis 紹介
 
 TGOは、企業が「顧客サービスのためのAIエージェントチームを構築する」ことを支援する、オープンソースのAIエージェントカスタマーサービスプラットフォームです。マルチチャネルアクセス、エージェントオーケストレーション、ナレッジベース管理（RAG）、人間のエージェントとの連携などの主要機能を統合しています。
 
@@ -98,7 +98,7 @@ REF=latest curl -fsSL https://raw.githubusercontent.com/tgoai/tgo/main/bootstrap
 ## 🏗️ システムアーキテクチャ
 
 <p align="center">
-  <img src="resources/architecture_en.svg" width="100%" alt="TGO システムアーキテクチャ">
+  <img src="resources/architecture_en.svg" width="100%" alt="Pelatis システムアーキテクチャ">
 </p>
 
 ## 製品プレビュー

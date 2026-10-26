@@ -1,4 +1,4 @@
-# TGO Widget App (Vite + React + Emotion)
+# Pelatis Widget App (Vite + React + Emotion)
 
 一个类似 Intercom 的客服小窗口 Widget 示例：React 18 + Vite 5 + Emotion（@emotion/react + @emotion/styled）。
 

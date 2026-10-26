@@ -26,7 +26,7 @@ const StoreContentArea: React.FC<StoreContentAreaProps> = ({
       <div className="flex-1 flex flex-col items-center justify-center h-full gap-4">
         <Loader2 className={`w-10 h-10 animate-spin ${colorClasses[themeColor]}`} />
         <p className="text-sm font-bold text-gray-400 animate-pulse">
-          {loadingText || t('common.loading', '加载中...')}
+          {loadingText || t('common.loading', 'Loading...')}
         </p>
       </div>
     );
@@ -39,10 +39,10 @@ const StoreContentArea: React.FC<StoreContentAreaProps> = ({
           {emptyIcon || <Search className="w-10 h-10" />}
         </div>
         <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-          {emptyTitle || t('tools.store.noResults', '未找到匹配的结果')}
+          {emptyTitle || t('tools.store.noResults', 'No matching tools found')}
         </h3>
         <p className="text-gray-500 dark:text-gray-400">
-          {emptyDescription || t('tools.store.noResultsDesc', '试试搜索其他关键词或切换分类')}
+          {emptyDescription || t('tools.store.noResultsDesc', 'Try other keywords or switch categories')}
         </p>
       </div>
     );

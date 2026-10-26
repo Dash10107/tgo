@@ -28,14 +28,14 @@ const VisitorManagement: React.FC = () => {
   }, [fetchVisitors]);
 
   const handleVisitorClick = useCallback(async (visitor: VisitorResponse) => {
-    // 先显示基本信息，然后获取完整详情
+    // Show the basic info first, then fetch the full details
     setSelectedVisitor(visitor);
     try {
       const fullDetail = await visitorApiService.getVisitor(visitor.id);
       setSelectedVisitor(fullDetail);
     } catch (err) {
       console.error('Failed to fetch visitor details:', err);
-      // 即使获取详情失败，仍然显示基本信息
+      // Still show the basic info even if fetching the details fails
     }
   }, []);
 
@@ -43,12 +43,12 @@ const VisitorManagement: React.FC = () => {
     setSelectedVisitor(null);
   }, []);
 
-  // 当访客数据在面板中被更新时的回调
+  // Callback when visitor data is updated in the panel
   const handleVisitorUpdated = useCallback(async (visitorId: string) => {
-    // 刷新列表数据
+    // Refresh the list data
     fetchVisitors();
     
-    // 更新当前选中的访客详情
+    // Update the currently selected visitor details
     try {
       const updatedVisitor = await visitorApiService.getVisitor(visitorId);
       setSelectedVisitor(updatedVisitor);
@@ -69,10 +69,10 @@ const VisitorManagement: React.FC = () => {
           </div>
           <div>
             <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">
-              {t('visitor.management.title', '访客管理')}
+              {t('visitor.management.title', 'Visitor Management')}
             </h1>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              {t('visitor.management.subtitle', '查看并管理所有平台的访客信息')}
+              {t('visitor.management.subtitle', 'View and manage visitor information from all platforms')}
             </p>
           </div>
         </div>
@@ -80,7 +80,7 @@ const VisitorManagement: React.FC = () => {
         <div className="flex items-center gap-4">
           <div className="text-right">
             <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">
-              {t('visitor.management.totalVisitors', '总访客数')}
+              {t('visitor.management.totalVisitors', 'Total Visitors')}
             </p>
             <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
               {(total || 0).toLocaleString()}
@@ -89,7 +89,7 @@ const VisitorManagement: React.FC = () => {
           <button
             onClick={() => fetchVisitors()}
             className="p-2 text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-all"
-            title={t('common.refresh', '刷新')}
+            title={t('common.refresh', 'Refresh')}
           >
             <Icon name="RefreshCw" size={18} className={loading ? 'animate-spin' : ''} />
           </button>
@@ -109,7 +109,7 @@ const VisitorManagement: React.FC = () => {
               <Icon name="AlertCircle" size={24} />
             </div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-              {t('visitor.management.errorTitle', '加载失败')}
+              {t('visitor.management.errorTitle', 'Load Failed')}
             </h3>
             <p className="text-gray-500 dark:text-gray-400 max-w-md mb-6">
               {error}
@@ -118,7 +118,7 @@ const VisitorManagement: React.FC = () => {
               onClick={() => fetchVisitors()}
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
             >
-              {t('common.retry', '重试')}
+              {t('common.retry', 'Retry')}
             </button>
           </div>
         ) : loading && (!visitors || visitors.length === 0) ? (
@@ -126,7 +126,7 @@ const VisitorManagement: React.FC = () => {
             <div className="flex flex-col items-center gap-3">
               <Icon name="Loader2" size={32} className="animate-spin text-blue-500" />
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                {t('common.loading', '加载中...')}
+                {t('common.loading', 'Loading...')}
               </p>
             </div>
           </div>

@@ -12,7 +12,7 @@ import NodeExecutionOverlay from '../overlays/NodeExecutionOverlay';
 
 const InputNode: React.FC<NodeProps<InputNodeData>> = ({ id, data, selected }) => {
   const { t } = useTranslation();
-  const defaultLabel = t('workflow.node_types.input.label', '用户输入');
+  const defaultLabel = t('workflow.node_types.input.label', 'User Input');
 
   return (
     <div

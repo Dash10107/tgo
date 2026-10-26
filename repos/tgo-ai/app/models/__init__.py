@@ -1,4 +1,4 @@
-"""SQLAlchemy models for the TGO-Tech AI Service."""
+"""SQLAlchemy models for the Pelatis AI Service."""
 
 from app.models.agent import Agent, AgentToolAssociation
 from app.models.base import BaseModel

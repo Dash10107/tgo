@@ -92,12 +92,12 @@ export default function MessageList({ messages }: { messages: ChatMessage[] }){
     return () => el.removeEventListener('scroll', onScroll)
   }, [historyLoading, historyHasMore, loadMore])
 
-  // 滚动到底部的辅助函数
+  // Helper to scroll to the bottom
   const scrollToBottom = useCallback((force = false) => {
     const el = ref.current
     if (!el) return
     
-    // 使用双重 requestAnimationFrame 确保 DOM 完全更新
+    // Use a double requestAnimationFrame to make sure the DOM has fully updated
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         if (el) {
@@ -115,7 +115,7 @@ export default function MessageList({ messages }: { messages: ChatMessage[] }){
     const currentCount = messages.length
     prevMessageCountRef.current = currentCount
     
-    // 加载历史记录时保持滚动位置
+    // Keep the scroll position when loading history
     if (preHeightRef.current != null) {
       const delta = el.scrollHeight - preHeightRef.current
       el.scrollTop = delta
@@ -123,13 +123,13 @@ export default function MessageList({ messages }: { messages: ChatMessage[] }){
       return
     }
     
-    // 新消息到达（发送或接收）时强制滚动到底部
+    // Force scroll to the bottom when a new message arrives (sent or received)
     if (currentCount > prevCount) {
       scrollToBottom(true)
       return
     }
     
-    // 消息内容更新（如流式输出）且用户在底部时保持在底部
+    // Stay at the bottom when message content updates (e.g. streaming) and the user is at the bottom
     if (isAtBottomRef.current) {
       scrollToBottom()
     }
@@ -206,7 +206,7 @@ export default function MessageList({ messages }: { messages: ChatMessage[] }){
               ) : payload.type === 2 ? (
                 <ImageMessage url={payload.url} w={payload.width} h={payload.height} />
               ) : m.errorMessage ? (
-                /* 有错误信息 - 在气泡内显示错误 */
+                /* Has error info - show the error inside the bubble */
                 <Bubble self={false}>
                   <div style={{ color: 'var(--error-color, #ef4444)', display: 'flex', alignItems: 'center', gap: 6 }}>
                     <AlertCircle size={14} /> {m.errorMessage}
@@ -228,7 +228,7 @@ export default function MessageList({ messages }: { messages: ChatMessage[] }){
                   {payload.type === 1 ? (
                     <TextMessage content={payload.content} onSendMessage={handleSendMessage} />
                   ) : (
-                    <div>[消息]</div>
+                    <div>{t('message.generic')}</div>
                   )}
                 </Bubble>
               )}

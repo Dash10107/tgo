@@ -29,6 +29,7 @@ import {
 } from '../types';
 
 
+import i18n from '@/i18n';
 /**
  * WuKongIM API Service Class
  */
@@ -125,7 +126,7 @@ export class WuKongIMApiService extends BaseApiService {
       throw new Error('Invalid ws_addr from route');
     } catch (err) {
       console.error('Failed to fetch WuKongIM route, using env fallback if available:', err);
-      throw new Error('无法获取WuKongIM路由地址，请稍后重试');
+      throw new Error('Unable to get the WuKongIM route address, please try again later');
     }
   }
 
@@ -377,13 +378,13 @@ export class WuKongIMUtils {
     if (typeof payload === 'object' && payload !== null) {
       // Special-case image messages (type: 2) with no textual content
       if (payload.type === MessagePayloadType.IMAGE) {
-        return payload.content || '[图片]';
+        return payload.content || i18n.t('image.placeholder', '[Image]');
       }
       // Special-case stream messages (type: 100) with no textual content
       if (payload.type === MessagePayloadType.STREAM) {
-        return payload.content || 'AI 正在输入...';
+        return payload.content || i18n.t('chat.aiTyping', 'AI is typing...');
       }
-      // 处理系统消息 (type: 1000-2000) 的模板替换
+      // Handle template substitution for system messages (type: 1000-2000)
       if (typeof payload.type === 'number' && isSystemMessageType(payload.type)) {
         return WuKongIMUtils.formatSystemMessageContent(payload.content, payload.extra);
       }
@@ -398,12 +399,12 @@ export class WuKongIMUtils {
           return WuKongIMUtils.formatSystemMessageContent(parsed.content, parsed.extra);
         }
         if (parsed.type === MessagePayloadType.STREAM) {
-          return parsed.content || 'AI 正在输入...';
+          return parsed.content || i18n.t('chat.aiTyping', 'AI is typing...');
         }
-        return parsed.content || (parsed.type === MessagePayloadType.IMAGE ? '[图片]' : '');
+        return parsed.content || (parsed.type === MessagePayloadType.IMAGE ? i18n.t('image.placeholder', '[Image]') : '');
       }
       if (parsed) {
-        return parsed.content || parsed.text || (parsed.type === 2 ? '[图片]' : payload);
+        return parsed.content || parsed.text || (parsed.type === 2 ? i18n.t('image.placeholder', '[Image]') : payload);
       }
       return payload;
     }
@@ -413,10 +414,10 @@ export class WuKongIMUtils {
   }
 
   /**
-   * 格式化系统消息内容，将模板中的 {0}, {1} 等占位符替换为 extra 中对应的名称
-   * @param template - 模板字符串，如 "您已接入人工客服，客服{0} 将为您服务"
-   * @param extra - 额外信息数组，如 [{ uid: "xxx", name: "Administrator" }]
-   * @returns 格式化后的字符串
+   * Format system message content, replacing placeholders such as {0}, {1} in the template with the matching names in extra
+   * @param template - template string, e.g. "You have been connected to a human agent; agent {0} will assist you"
+   * @param extra - array of extra info, e.g. [{ uid: "xxx", name: "Administrator" }]
+   * @returns formatted string
    */
   static formatSystemMessageContent(template: string, extra?: Array<{ uid?: string; name?: string; [key: string]: any }>): string {
     if (!template) return '';
@@ -472,7 +473,7 @@ export class WuKongIMUtils {
       const url = url0 ? toAbsoluteApiUrl(url0) : undefined;
       const width = payloadObj?.width || payloadObj?.image_width;
       const height = payloadObj?.height || payloadObj?.image_height;
-      typedPayload = { type: MessagePayloadType.IMAGE, content: payloadObj?.content || content || '[图片]', url: url || '', width, height };
+      typedPayload = { type: MessagePayloadType.IMAGE, content: payloadObj?.content || content || i18n.t('image.placeholder', '[Image]'), url: url || '', width, height };
       imageMeta = { image_url: url || url0, image_width: width, image_height: height };
     } else if (payloadType === MessagePayloadType.RICH_TEXT) {
       const imgs: PayloadRichTextImage[] = Array.isArray(payloadObj?.images)
@@ -490,7 +491,7 @@ export class WuKongIMUtils {
         const fileUrl = fileUrl0 ? toAbsoluteApiUrl(fileUrl0) : undefined;
         fileAttachment = {
           url: (fileUrl || fileUrl0 || '') as string,
-          name: payloadObj.file.name || payloadObj.file.file_name || '未命名文件',
+          name: payloadObj.file.name || payloadObj.file.file_name || i18n.t('richText.unnamedFile', 'Unnamed file'),
           size: payloadObj.file.size || payloadObj.file.file_size,
         };
         fileMeta = { file_url: fileAttachment.url, file_name: fileAttachment.name, file_size: fileAttachment.size };
@@ -523,9 +524,9 @@ export class WuKongIMUtils {
       typedPayload = { type: MessagePayloadType.TEXT, content };
     }
 
-    // 处理系统消息 (payload.type 在 1000-2000 范围内)
+    // Handle system messages (payload.type is in the 1000-2000 range)
     if (isSystemMessageType(payloadTypeNum)) {
-      // 系统消息直接使用原始 payload 对象
+      // System messages use the raw payload object directly
       typedPayload = {
         type: payloadTypeNum,
         content: payloadObj?.content || content || '',
@@ -699,9 +700,9 @@ export class WuKongIMUtils {
     // In a real implementation, this would look up user info
     // For now, generate a display name based on UID
     if (uid.includes('agent') || uid.includes('staff')) {
-      return '客服';
+      return i18n.t('chat.agentRole', 'Support Agent');
     }
-    return `用户${uid.slice(-4)}`;
+    return `${i18n.t('chat.userRole', 'User')} ${uid.slice(-4)}`;
   }
 
   /**

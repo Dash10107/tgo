@@ -67,7 +67,7 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
         className={`flex items-center justify-between cursor-pointer group select-none py-1 ${headerClassName}`}
         onClick={handleToggle}
         onMouseDown={(e) => {
-          // 只有点击句柄或标题区域才允许拖拽
+          // Dragging is only allowed from the handle or the title area
           const target = e.target as HTMLElement;
           if (target.closest('.drag-handle') || target.tagName === 'H4' || target.closest('h4')) {
             setIsHandlePressed(true);
@@ -97,7 +97,7 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
       {isExpanded && (
         <div 
           className="animate-in fade-in slide-in-from-top-1 duration-200"
-          onMouseDown={() => setIsHandlePressed(false)} // 在内容区按下鼠标时强制禁用拖拽
+          onMouseDown={() => setIsHandlePressed(false)} // Force-disable dragging when the mouse is pressed in the content area
         >
           {children}
         </div>

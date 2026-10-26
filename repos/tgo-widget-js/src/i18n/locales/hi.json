@@ -1,0 +1,94 @@
+{
+  "common": {
+    "retry": "पुनः प्रयास करें",
+    "cancel": "रद्द करें",
+    "delete": "हटाएँ",
+    "loading": "लोड हो रहा है...",
+    "message": "संदेश"
+  },
+  "header": {
+    "switchToLight": "लाइट मोड पर जाएँ",
+    "switchToDark": "डार्क मोड पर जाएँ",
+    "collapse": "विंडो छोटी करें",
+    "expand": "विंडो बड़ी करें"
+  },
+  "messageInput": {
+    "placeholder": "कोई प्रश्न पूछें...",
+    "send": "भेजें",
+    "interrupt": "रोकें",
+    "attach": "फ़ाइल संलग्न करें",
+    "emoji": "इमोजी",
+    "fileTooLarge": "फ़ाइल बहुत बड़ी है (>{{size}}MB): {{name}}",
+    "typing": "टाइप कर रहा है..."
+  },
+  "messageList": {
+    "loadingHistory": "लोड हो रहा है...",
+    "loadHistoryFailed": "संदेश इतिहास लोड नहीं हो सका",
+    "noMoreMessages": "और संदेश नहीं हैं",
+    "sending": "भेजा जा रहा है...",
+    "uploading": "अपलोड हो रहा है..."
+  },
+  "errors": {
+    "authFail": "प्रमाणीकरण विफल, संदेश नहीं भेजा जा सकता",
+    "subscriberNotExist": "आप सब्सक्राइबर नहीं हैं, संदेश नहीं भेजा जा सकता",
+    "notAllowSend": "संदेश भेजने की अनुमति नहीं है",
+    "notInWhitelist": "आप अनुमत सूची में नहीं हैं, संदेश नहीं भेजा जा सकता",
+    "rateLimit": "बहुत जल्दी-जल्दी संदेश भेजे जा रहे हैं, कृपया बाद में पुनः प्रयास करें",
+    "banned": "आपको संदेश भेजने से प्रतिबंधित किया गया है",
+    "channelNotExist": "सत्र मौजूद नहीं है या समाप्त हो चुका है",
+    "disbanded": "सत्र समाप्त कर दिया गया है",
+    "systemError": "सिस्टम त्रुटि, कृपया बाद में पुनः प्रयास करें",
+    "networkError": "नेटवर्क त्रुटि या टाइमआउट, कृपया अपना कनेक्शन जाँचें"
+  },
+  "file": {
+    "download": "डाउनलोड करें",
+    "downloadFile": "फ़ाइल डाउनलोड करें: {{name}}",
+    "unknownSize": "आकार अज्ञात",
+    "placeholder": "[फ़ाइल]"
+  },
+  "system": {
+    "staffAssigned": "आपको ग्राहक सेवा से जोड़ दिया गया है। एजेंट {{name0}} आपकी सहायता करेंगे।",
+    "sessionTransferred": "सत्र स्थानांतरित किया गया। एजेंट {{name0}} ने आपको एजेंट {{name1}} को स्थानांतरित किया है।",
+    "sessionClosed": "सत्र समाप्त। एजेंट {{name0}} ने सेवा पूर्ण की है।",
+    "sessionClosedNoAgent": "सत्र समाप्त।"
+  },
+  "time": {
+    "justNow": "अभी",
+    "minutesAgo": "{{count}} मिनट पहले",
+    "yesterday": "कल {{time}}"
+  },
+  "image": {
+    "close": "बंद करें (Esc)",
+    "previous": "पिछली (←)",
+    "next": "अगली (→)",
+    "loadFailed": "छवि लोड नहीं हो सकी",
+    "previewAlt": "पूर्वावलोकन छवि {{index}}",
+    "viewLarge": "बड़ा देखें",
+    "clickToViewLarge": "बड़ा देखने के लिए क्लिक करें",
+    "placeholder": "[छवि]"
+  },
+  "message": {
+    "generic": "[संदेश]"
+  },
+  "upload": {
+    "uploadingImage": "छवि अपलोड हो रही है…",
+    "uploadingFile": "फ़ाइल अपलोड हो रही है…",
+    "cancelled": "रद्द किया गया",
+    "failed": "अपलोड विफल"
+  },
+  "stream": {
+    "endedAbnormally": "स्ट्रीम असामान्य रूप से समाप्त हुई",
+    "unknownError": "अज्ञात त्रुटि"
+  },
+  "actions": {
+    "invalid": "अमान्य एक्शन URI: {{uri}}",
+    "blocked": "लिंक खोलना अवरुद्ध किया गया",
+    "opened": "लिंक खोला गया: {{url}}",
+    "openFailed": "लिंक नहीं खोला जा सका: {{error}}",
+    "sent": "संदेश भेजा गया",
+    "noSender": "संदेश हैंडलर कॉन्फ़िगर नहीं है",
+    "copied": "कॉपी किया गया: {{text}}",
+    "copyFailed": "कॉपी विफल: {{error}}",
+    "unknownProtocol": "अज्ञात प्रोटोकॉल: {{protocol}}"
+  }
+}

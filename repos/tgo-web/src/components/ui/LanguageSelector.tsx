@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Globe, Check, ChevronDown } from 'lucide-react';
+import { detectSystemLang, mapToSupportedLang, type SupportedLang } from '@/i18n';
 
 interface Language {
   code: string;
@@ -12,8 +13,10 @@ interface Language {
 
 const languages: Language[] = [
   { code: 'system', name: 'Auto', nativeName: 'Auto', flag: '🌐' },
-  { code: 'zh', name: 'Chinese', nativeName: '中文', flag: '🇨🇳' },
-  { code: 'en', name: 'English', nativeName: 'English', flag: '🇺🇸' }
+  { code: 'en', name: 'English', nativeName: 'English', flag: '🇺🇸' },
+  { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳' },
+  { code: 'mr', name: 'Marathi', nativeName: 'मराठी', flag: '🇮🇳' },
+  { code: 'zh', name: 'Chinese', nativeName: '\u4e2d\u6587', flag: '🇨🇳' }
 ];
 
 type Placement = 'bottom' | 'right';
@@ -26,8 +29,8 @@ interface LanguageSelectorProps {
 
 /**
  * Language Selector Component
- * variant="icon" 仅显示图标（适合窄侧边栏）；variant="button" 显示图标+文字
- * placement 控制下拉方向：bottom(默认) 或 right（适合贴边窄栏）
+ * variant="icon" shows only the icon (for narrow sidebars); variant="button" shows icon + text
+ * placement controls the dropdown direction: bottom (default) or right (for narrow edge-aligned bars)
  */
 const LanguageSelector: React.FC<LanguageSelectorProps> = ({ variant = 'icon', placement = 'bottom', usePortal = true }) => {
   const { t, i18n } = useTranslation();
@@ -39,22 +42,10 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({ variant = 'icon', p
     try { return localStorage.getItem('tgo-language') || 'system'; } catch { return 'system'; }
   });
 
-  const mapToSupportedLang = (lng?: string | null): 'zh' | 'en' => {
-    const code = (lng || '').toLowerCase();
-    if (code.startsWith('zh')) return 'zh';
-    return 'en';
-  };
+  const detectSystemLanguage = (): SupportedLang => detectSystemLang();
 
-  const detectSystemLanguage = (): 'zh' | 'en' => {
-    if (typeof navigator !== 'undefined') {
-      const cand = (Array.isArray((navigator as any).languages) && (navigator as any).languages[0]) || (navigator as any).language;
-      return mapToSupportedLang(cand);
-    }
-    return 'zh';
-  };
-
-  const normalizedCode = useMemo(() => (i18n.language || 'zh').split('-')[0], [i18n.language]);
-  const selectedCode = (pref === 'system' || pref === 'auto') ? 'system' : (normalizedCode as 'zh' | 'en');
+  const normalizedCode = useMemo(() => mapToSupportedLang(i18n.language), [i18n.language]);
+  const selectedCode = (pref === 'system' || pref === 'auto') ? 'system' : normalizedCode;
   const currentLanguage = languages.find(lang => lang.code === selectedCode) || languages[0];
 
   const currentNativeName = selectedCode === 'system'

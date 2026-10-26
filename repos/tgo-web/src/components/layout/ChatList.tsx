@@ -56,7 +56,7 @@ const useSearchFiltering = (chats: Chat[], searchQuery: string) => {
     const lowerQuery = searchQuery.toLowerCase();
     return chats.filter((chat: Chat) => {
       const baseId = chat.channelId || chat.id;
-      const name = (chat.channelInfo?.name || `访客${String(baseId).slice(-4)}`).toLowerCase();
+      const name = (chat.channelInfo?.name || `Visitor ${String(baseId).slice(-4)}`).toLowerCase();
       return name.includes(lowerQuery) || chat.lastMessage.toLowerCase().includes(lowerQuery);
     });
   }, [chats, searchQuery]);
@@ -88,9 +88,9 @@ type StoredVisitorTag = {
  *
  * Features:
  * - Tab filtering (Mine, Unassigned, All) - each tab has its own data source
- * - "我的": /conversations/my + 新消息创建的会话
- * - "未分配": /conversations/waiting
- * - "全部": /conversations/all
+ * - "Mine": /conversations/my + conversations created by new messages
+ * - "Unassigned": /conversations/waiting
+ * - "All": /conversations/all
  * - Search filtering by visitor name or last message
  * - Real-time sync with WuKongIM
  * - Empty state when no conversations exist
@@ -106,7 +106,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
 }) => {
   const { t } = useTranslation();
   
-  // Store subscriptions - chats 用于存储新消息创建的会话
+  // Store subscriptions - chats stores conversations created by new messages
   const realtimeChats = useChatStore(chatSelectors.chats) ?? [];
   const searchQuery = useChatStore(chatSelectors.searchQuery) ?? '';
   const setSearchQuery = useChatStore(state => state.setSearchQuery);
@@ -117,29 +117,29 @@ const ChatListComponent: React.FC<ChatListProps> = ({
   // Get seedChannel from channelStore to cache channel info from API responses
   const seedChannel = useChannelStore(state => state.seedChannel);
 
-  // "我的" tab 标签筛选
+  // Tag filter for the "Mine" tab
   const mineTagIds = useConversationStore(state => state.mineTagIds);
   const setMineTagIds = useConversationStore(state => state.setMineTagIds);
   const [mineTagMeta, setMineTagMeta] = useState<Record<string, StoredVisitorTag>>({});
   const [availableVisitorTags, setAvailableVisitorTags] = useState<TagResponse[]>([]);
   const [isLoadingTags, setIsLoadingTags] = useState(false);
-  const [isTagFilterOpen, setIsTagFilterOpen] = useState(false); // 选择面板（用于“+”添加）
-  const [isEditingMineTags, setIsEditingMineTags] = useState(false); // “-”进入编辑删除模式
+  const [isTagFilterOpen, setIsTagFilterOpen] = useState(false); // Selection panel (opened by "+")
+  const [isEditingMineTags, setIsEditingMineTags] = useState(false); // "-" enters edit/delete mode
   const tagFilterRef = useRef<HTMLDivElement>(null);
   const tagPickerRef = useRef<HTMLDivElement>(null);
   const addButtonRef = useRef<HTMLButtonElement>(null);
   const [tagPickerPos, setTagPickerPos] = useState<{ top: number; left: number; width: number } | null>(null);
   const [tagSearch, setTagSearch] = useState('');
 
-  // 标记是否已完成初始化
+  // Whether initialization has completed
   const [mineTagInitialized] = useState(true);
   
-  // 当标签筛选开启但频道信息（含 tags）异步回填失败时：做有限重试，避免会话误入筛选结果或无限请求
+  // When the tag filter is on but the async backfill of channel info (including tags) fails: retry a limited number of times to avoid wrongly entering the filter results or endless requests
   const [channelInfoRetryTick, setChannelInfoRetryTick] = useState(0);
   const channelInfoRetryCountRef = useRef<Record<string, number>>({});
   const channelInfoPendingRef = useRef<Set<string>>(new Set());
-  // 标签筛选开启时，如果某会话的频道信息最终获取失败：允许“兜底显示”在列表里，避免造成“会话/消息丢了”的假象
-  // 一旦后续成功拿到 tags，会自动移除兜底标记并回归正常筛选逻辑
+  // When the tag filter is on and a conversation's channel info finally fails to load: allow a "fallback display" in the list so conversations/messages don't appear to be lost
+  // Once the tags are obtained later, the fallback mark is removed automatically and normal filtering resumes
   const [tagFilterBypassKeys, setTagFilterBypassKeys] = useState<Record<string, true>>({});
 
   // Connection status from uiStore
@@ -153,7 +153,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
   const activeTab = controlledActiveTab ?? internalActiveTab;
   const setActiveTab = controlledOnTabChange ?? setInternalActiveTab;
   
-  // 每个 tab 独立的会话列表
+  // Independent conversation list for each tab
   const [myChats, setMyChats] = useState<Chat[]>([]);
   const [unassignedChats, setUnassignedChats] = useState<Chat[]>([]);
   const [allChats, setAllChats] = useState<Chat[]>([]);
@@ -185,14 +185,14 @@ const ChatListComponent: React.FC<ChatListProps> = ({
   // Scroll container ref for infinite scroll
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   
-  // 未分配数量（从 API 获取，监听 queue.updated 事件更新）
+  // Unassigned count (fetched from the API, updated by listening to the queue.updated event)
   const [unassignedCount, setUnassignedCount] = useState<number>(0);
   
-  // 获取未分配数量的函数
+  // Function to fetch the unassigned count
   const fetchUnassignedCount = useCallback(async () => {
     try {
       const response = await conversationsApi.getWaitingQueueCount();
-      // API 可能返回 { count: number } 或 { waiting: number }
+      // The API may return { count: number } or { waiting: number }
       const count = response.waiting ?? 0;
       setUnassignedCount(count);
       console.log('📋 ChatList: Fetched unassigned count:', count, response);
@@ -201,22 +201,22 @@ const ChatListComponent: React.FC<ChatListProps> = ({
     }
   }, []);
   
-  // 初始化时获取一次，并监听 queue.updated 事件
+  // Fetch once on init and listen for the queue.updated event
   useEffect(() => {
-    // 立即获取一次
+    // Fetch once immediately
     fetchUnassignedCount();
     
-    // 监听 queue.updated 事件
+    // Listen for the queue.updated event
     const unsubscribe = wukongimWebSocketService.onQueueUpdated(() => {
       console.log('📋 ChatList: queue.updated event received, refreshing count');
       fetchUnassignedCount();
     });
     
-    // 清理订阅
+    // Clean up the subscription
     return () => unsubscribe();
   }, [fetchUnassignedCount]);
   
-  // 获取"我的"会话
+  // Fetch the "Mine" conversations
   const fetchMyConversations = useCallback(async (force = false) => {
     if (!force && loadedTabsRef.current.has('mine')) return;
     loadedTabsRef.current.add('mine');
@@ -231,7 +231,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
         setMyChats(sortChatsByTimestamp(chats));
         console.log(`📋 ChatList: Loaded "mine" tab, ${chats.length} conversations`);
         
-        // 缓存频道信息，避免后续单独请求
+        // Cache the channel info to avoid separate requests later
         if (response.channels && response.channels.length > 0) {
           response.channels.forEach(channel => {
             if (channel.channel_id && channel.channel_type != null) {
@@ -248,10 +248,10 @@ const ChatListComponent: React.FC<ChatListProps> = ({
     }
   }, [convertWuKongIMToChat, seedChannel, mineTagIds]);
 
-  // 加载可选访客标签（用于“我的”标签筛选）
+  // Load the selectable visitor tags (for the "Mine" tag filter)
   useEffect(() => {
     let mounted = true;
-    if (!isTagFilterOpen) return; // 只在面板打开时请求
+    if (!isTagFilterOpen) return; // Only request when the panel is open
     (async () => {
       setIsLoadingTags(true);
       try {
@@ -259,7 +259,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
         if (!mounted) return;
         setAvailableVisitorTags(resp.data ?? []);
 
-        // 补齐已选标签的展示信息（避免分页导致找不到显示名/颜色）
+        // Fill in the display info of the selected tags (avoids missing names/colors because of pagination)
         if (resp.data && resp.data.length > 0) {
           setMineTagMeta((prev) => {
             const next = { ...prev };
@@ -278,7 +278,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
           });
         }
       } catch (e) {
-        // 静默失败：不影响会话列表使用
+        // Fail silently: does not affect using the conversation list
         if (!mounted) return;
         setAvailableVisitorTags([]);
       } finally {
@@ -290,7 +290,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
     };
   }, [isTagFilterOpen]);
 
-  // 点击外部关闭标签筛选面板
+  // Close the tag filter panel when clicking outside
   useEffect(() => {
     if (!isTagFilterOpen) return;
     const onMouseDown = (e: MouseEvent) => {
@@ -304,7 +304,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
     return () => document.removeEventListener('mousedown', onMouseDown);
   }, [isTagFilterOpen]);
 
-  // 打开标签选择面板时计算锚点位置（Portal + fixed，避免被列表遮挡/裁剪）
+  // Compute the anchor position when opening the tag selection panel (Portal + fixed, to avoid being covered/clipped by the list)
   useEffect(() => {
     if (!isTagFilterOpen) return;
 
@@ -313,14 +313,14 @@ const ChatListComponent: React.FC<ChatListProps> = ({
       if (!btn) return;
       const rect = btn.getBoundingClientRect();
       const width = 260;
-      const left = Math.max(50, Math.min(window.innerWidth - width - 8, rect.right - width)); // 右对齐按钮
+      const left = Math.max(50, Math.min(window.innerWidth - width - 8, rect.right - width)); // Right-align with the button
       const top = Math.min(window.innerHeight - 8, rect.bottom + 8);
       setTagPickerPos({ top, left, width });
     };
 
     updatePos();
     window.addEventListener('resize', updatePos);
-    // 捕获所有滚动（含列表滚动），确保位置跟随
+    // Capture all scrolling (including list scrolling) so the position follows
     window.addEventListener('scroll', updatePos, true);
     return () => {
       window.removeEventListener('resize', updatePos);
@@ -328,20 +328,20 @@ const ChatListComponent: React.FC<ChatListProps> = ({
     };
   }, [isTagFilterOpen]);
 
-  // 标签筛选变化时，强制刷新"我的"会话（避免 loadedTabsRef 阻止刷新）
-  // 必须等 localStorage 初始化完成后才触发，避免空数组时的无效请求
+  // When the tag filter changes, force-refresh the "Mine" conversations (prevents loadedTabsRef from blocking the refresh)
+  // Must wait until localStorage initialization completes before triggering, to avoid useless requests with an empty array
   useEffect(() => {
-    if (!mineTagInitialized) return; // 等待初始化完成
+    if (!mineTagInitialized) return; // Wait for initialization to complete
     if (activeTab === 'mine') {
       loadedTabsRef.current.delete('mine');
       fetchMyConversations(true);
     }
   }, [mineTagInitialized, mineTagIds, activeTab, fetchMyConversations]);
   
-  // 每页会话数量
+  // Number of conversations per page
   const PAGE_SIZE = 20;
   
-  // 获取"未分配"会话（首次加载）
+  // Fetch the "Unassigned" conversations (first load)
   const fetchUnassignedConversations = useCallback(async () => {
     setIsLoadingUnassigned(true);
     try {
@@ -352,7 +352,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
         setHasMoreUnassigned(response.pagination?.has_next ?? false);
         console.log(`📋 ChatList: Loaded "unassigned" tab, ${chats.length} conversations, hasMore: ${response.pagination?.has_next}`);
         
-        // 缓存频道信息，避免后续单独请求
+        // Cache the channel info to avoid separate requests later
         if (response.channels && response.channels.length > 0) {
           response.channels.forEach(channel => {
             if (channel.channel_id && channel.channel_type != null) {
@@ -369,7 +369,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
     }
   }, [convertWuKongIMToChat, seedChannel]);
   
-  // 加载更多"未分配"会话
+  // Load more "Unassigned" conversations
   const loadMoreUnassignedConversations = useCallback(async () => {
     if (isLoadingMoreUnassigned || !hasMoreUnassigned) return;
     
@@ -383,7 +383,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
         setHasMoreUnassigned(response.pagination?.has_next ?? false);
         console.log(`📋 ChatList: Loaded more "unassigned", +${newChats.length} conversations, hasMore: ${response.pagination?.has_next}`);
         
-        // 缓存频道信息
+        // Cache the channel info
         if (response.channels && response.channels.length > 0) {
           response.channels.forEach(channel => {
             if (channel.channel_id && channel.channel_type != null) {
@@ -399,7 +399,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
     }
   }, [isLoadingMoreUnassigned, hasMoreUnassigned, unassignedChats.length, convertWuKongIMToChat, seedChannel]);
   
-  // 获取"已完成"会话（每次切换到此 tab 都调用）
+  // Fetch the "Completed" conversations (called every time this tab is switched to)
   const fetchAllConversations = useCallback(async () => {
     setIsLoadingAll(true);
     try {
@@ -410,7 +410,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
         setHasMoreAll(response.pagination?.has_next ?? false);
         console.log(`📋 ChatList: Loaded "all" tab, ${chats.length} conversations, hasMore: ${response.pagination?.has_next}`);
         
-        // 缓存频道信息，避免后续单独请求
+        // Cache the channel info to avoid separate requests later
         if (response.channels && response.channels.length > 0) {
           response.channels.forEach(channel => {
             if (channel.channel_id && channel.channel_type != null) {
@@ -427,7 +427,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
     }
   }, [convertWuKongIMToChat, seedChannel]);
   
-  // 加载更多"已完成"会话
+  // Load more "Completed" conversations
   const loadMoreAllConversations = useCallback(async () => {
     if (isLoadingMoreAll || !hasMoreAll) return;
     
@@ -441,7 +441,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
         setHasMoreAll(response.pagination?.has_next ?? false);
         console.log(`📋 ChatList: Loaded more "all", +${newChats.length} conversations, hasMore: ${response.pagination?.has_next}`);
         
-        // 缓存频道信息
+        // Cache the channel info
         if (response.channels && response.channels.length > 0) {
           response.channels.forEach(channel => {
             if (channel.channel_id && channel.channel_type != null) {
@@ -457,7 +457,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
     }
   }, [isLoadingMoreAll, hasMoreAll, allChats.length, convertWuKongIMToChat, seedChannel]);
 
-  // 获取"转人工"会话（按访客标签筛选，manual_service_contain=true）
+  // Fetch the "Manual Service" conversations (filtered by visitor tag, manual_service_contain=true)
   const fetchManualConversations = useCallback(async () => {
     setIsLoadingManual(true);
     try {
@@ -520,7 +520,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
     }
   }, [isLoadingMoreManual, hasMoreManual, manualChats.length, convertWuKongIMToChat, seedChannel]);
 
-  // 获取"最近在线"访客
+  // Fetch the "Recently online" visitors
   const fetchRecentVisitors = useCallback(async () => {
     setIsLoadingRecent(true);
     try {
@@ -567,8 +567,8 @@ const ChatListComponent: React.FC<ChatListProps> = ({
     }
   }, [isLoadingMoreRecent, hasMoreRecent, recentVisitors.length]);
   
-  // 根据当前 tab 获取对应数据（组件挂载时和 tab 切换时）
-  // 注意：'mine' tab 的请求由标签筛选 effect 统一处理，这里不再单独调用
+  // Fetch the data for the current tab (on component mount and tab switch)
+  // Note: the request for the 'mine' tab is handled by the tag filter effect, so it is not called separately here
   useEffect(() => {
     if (activeTab === 'unassigned') {
       fetchUnassignedConversations();
@@ -579,35 +579,35 @@ const ChatListComponent: React.FC<ChatListProps> = ({
     } else if (activeTab === 'recent') {
       fetchRecentVisitors();
     }
-    // 'mine' tab 不在这里处理，由标签筛选 effect 统一管理
+    // The 'mine' tab is not handled here; it is managed by the tag filter effect
   }, [activeTab, fetchUnassignedConversations, fetchAllConversations, fetchManualConversations]);
   
-  // 当 refreshTrigger 变化时，强制刷新"我的"和"未分配"列表及数量
+  // When refreshTrigger changes, force-refresh the "Mine" and "Unassigned" lists and counts
   const prevRefreshTriggerRef = useRef(refreshTrigger);
   useEffect(() => {
-    // 只在 refreshTrigger 变化时触发（而不是初次挂载）
+    // Only trigger when refreshTrigger changes (not on initial mount)
     if (refreshTrigger !== undefined && refreshTrigger !== prevRefreshTriggerRef.current) {
       prevRefreshTriggerRef.current = refreshTrigger;
       console.log('📋 ChatList: refreshTrigger changed, refreshing lists');
-      // 强制刷新"我的"会话
+      // Force-refresh the "Mine" conversations
       loadedTabsRef.current.delete('mine');
       fetchMyConversations(true);
-      // 刷新未分配列表和数量
+      // Refresh the unassigned list and count
       fetchUnassignedConversations();
       fetchUnassignedCount();
     }
   }, [refreshTrigger, fetchMyConversations, fetchUnassignedConversations, fetchUnassignedCount]);
   
-  // 追踪上一次处理的 deletedChatChannel，避免重复处理
+  // Track the deletedChatChannel processed last time to avoid duplicate handling
   const lastDeletedChannelRef = useRef<string | null>(null);
   
-  // 当 deletedChatChannel 变化时，从本地状态中移除该会话并选中下一个
+  // When deletedChatChannel changes, remove that conversation from local state and select the next one
   useEffect(() => {
     if (deletedChatChannel?.channelId && deletedChatChannel?.channelType != null) {
       const { channelId, channelType } = deletedChatChannel;
       const key = getChannelKey(channelId, channelType);
       
-      // 避免重复处理同一个删除
+      // Avoid handling the same deletion twice
       if (lastDeletedChannelRef.current === key) {
         return;
       }
@@ -615,17 +615,17 @@ const ChatListComponent: React.FC<ChatListProps> = ({
       
       console.log('📋 ChatList: Removing deleted chat from local state:', key);
       
-      // 从本地状态中移除（使用函数式更新，不依赖外部状态）
+      // Remove from local state (functional update, no dependency on external state)
       setMyChats(prev => {
         const remaining = prev.filter(c => !(c.channelId === channelId && c.channelType === channelType));
         
-        // 如果被删除的是当前选中的会话，选中下一个
+        // If the deleted one is the currently selected conversation, select the next one
         if (activeChat?.channelId === channelId && activeChat?.channelType === channelType && remaining.length > 0 && activeTab === 'mine') {
           const deletedIndex = prev.findIndex(c => c.channelId === channelId && c.channelType === channelType);
           const nextIndex = Math.min(deletedIndex, remaining.length - 1);
           const nextChat = remaining[Math.max(0, nextIndex)];
           console.log('📋 ChatList: Selecting next chat:', nextChat.channelId);
-          // 使用 setTimeout 避免在 setState 回调中调用
+          // Use setTimeout to avoid calling inside a setState callback
           setTimeout(() => onChatSelect(nextChat), 0);
         }
         
@@ -635,9 +635,9 @@ const ChatListComponent: React.FC<ChatListProps> = ({
     }
   }, [deletedChatChannel, activeChat, activeTab, onChatSelect]);
   
-  // 合并"我的"会话：API 返回的 + 新消息创建的会话
-  // 优先使用 realtimeChats 中的更新数据（包含最新的 lastMessage 和 unreadCount）
-  // 但只在 realtimeChats 的数据比 API 的更新时才使用
+  // Merge the "Mine" conversations: those returned by the API + those created by new messages
+  // Prefer the updated data in realtimeChats (including the latest lastMessage and unreadCount)
+  // But only use it when the realtimeChats data is newer than the API's
   const mergedMyChats = useMemo(() => {
     const selectedTagIds = (mineTagIds ?? []).filter(Boolean);
     const selectedTagSet = new Set(selectedTagIds);
@@ -662,22 +662,22 @@ const ChatListComponent: React.FC<ChatListProps> = ({
 
     const matchTagFilter = (chat: Chat): boolean => {
       if (!hasTagFilter) return true;
-      // 若该会话已被标记为“频道信息获取失败”，兜底展示（避免造成会话/消息丢失假象）
+      // If the conversation is marked as "channel info fetch failed", show it as a fallback (so conversations/messages don't appear lost)
       if (shouldBypassFilter(chat)) return true;
-      // 标签来自频道信息（异步）；未拿到标签前先不展示，避免把不匹配的访客混入筛选结果
+      // Tags come from the channel info (async); do not show before the tags arrive, to avoid mixing non-matching visitors into the filter results
       const ids = extractChannelTagIds(chat);
       if (ids.length === 0) return false;
       return ids.some((id) => selectedTagSet.has(id));
     };
 
-    // 建立 realtimeChats 的 key -> chat 映射，用于快速查找
+    // Build a key -> chat map of realtimeChats for fast lookup
     const realtimeChatMap = new Map<string, Chat>();
     realtimeChats.forEach(c => {
       const key = getChannelKey(c.channelId, c.channelType);
       realtimeChatMap.set(key, c);
     });
     
-    // 合并 API 会话，如果 realtimeChats 中有更新（时间戳更晚或内容不同）则使用更新后的数据
+    // Merge the API conversations; if realtimeChats has an update (later timestamp or different content), use the updated data
     const mergedFromApi = myChats.map(apiChat => {
       const key = getChannelKey(apiChat.channelId, apiChat.channelType);
       const realtimeChat = realtimeChatMap.get(key);
@@ -685,9 +685,9 @@ const ChatListComponent: React.FC<ChatListProps> = ({
         const apiTimestamp = apiChat.lastTimestampSec ?? 0;
         const realtimeTimestamp = realtimeChat.lastTimestampSec ?? 0;
         
-        // 判定实时数据是否更新：
-        // 1. 时间戳更晚
-        // 2. 时间戳相同但内容不同（例如流式消息增量更新预览）
+        // Decide whether the realtime data is newer:
+        // 1. The timestamp is later
+        // 2. The timestamp is the same but the content differs (e.g. a streaming message incrementally updating the preview)
         const isNewer = realtimeTimestamp > apiTimestamp;
         const isContentUpdated = realtimeTimestamp === apiTimestamp && realtimeChat.lastMessage !== apiChat.lastMessage;
 
@@ -706,10 +706,10 @@ const ChatListComponent: React.FC<ChatListProps> = ({
       return apiChat;
     });
     
-    // 获取 API 返回的会话 keys
+    // Get the keys of the conversations returned by the API
     const apiChatKeys = new Set(myChats.map(c => getChannelKey(c.channelId, c.channelType)));
     
-    // 过滤出不在 API 结果中的实时会话（新消息创建的，且有实际内容或特殊消息类型）
+    // Filter the realtime conversations that are not in the API result (created by new messages, with actual content or a special message type)
     const newRealtimeChats = realtimeChats.filter(
       c =>
         !apiChatKeys.has(getChannelKey(c.channelId, c.channelType)) &&
@@ -717,12 +717,12 @@ const ChatListComponent: React.FC<ChatListProps> = ({
         matchTagFilter(c)
     );
     
-    // 合并并排序
+    // Merge and sort
     return sortChatsByTimestamp([...mergedFromApi, ...newRealtimeChats]);
   }, [myChats, realtimeChats, mineTagIds, tagFilterBypassKeys]);
 
-  // 当开启标签筛选时，实时新会话若缺少 channelInfo.extra.tags，会被隐藏；
-  // 这里主动触发“刷新频道信息”来尽快拿到 tags（有限重试，避免无限请求）。
+  // When the tag filter is on, a new realtime conversation that lacks channelInfo.extra.tags is hidden;
+  // so we proactively trigger a "refresh channel info" to get the tags quickly (limited retries to avoid endless requests).
   useEffect(() => {
     if (!mineTagInitialized) return;
     if (activeTab !== 'mine') return;
@@ -751,32 +751,32 @@ const ChatListComponent: React.FC<ChatListProps> = ({
       if (!c.channelId || c.channelType == null) return false;
       const key = getChannelKey(c.channelId, c.channelType);
       if (apiChatKeys.has(key)) return false;
-      // 已被标记兜底展示的不再重试
+      // Do not retry those already marked for fallback display
       if (tagFilterBypassKeys[key] === true) return false;
 
-      // 只有在“频道信息缺失/未包含 tags 字段”或“上次请求报错”时才触发刷新
+      // Only trigger a refresh when the "channel info is missing / has no tags field" or the "last request failed"
       const state = getChannelTagState(c.channelId, c.channelType);
-      if (state.tagIds.length > 0) return false; // 已有 tags，不需要
-      if (state.err) return true; // 有错误，重试
-      if (!state.hasTagsField) return true; // 还没加载到 tags 字段，重试
-      // hasTagsField=true 且 tagIds 为空：代表成功拿到信息但就是没有标签，不应重试
+      if (state.tagIds.length > 0) return false; // Already has tags; no need
+      if (state.err) return true; // Has an error; retry
+      if (!state.hasTagsField) return true; // The tags field has not loaded yet; retry
+      // hasTagsField=true and tagIds is empty: the info was fetched successfully but there are simply no tags; do not retry
       return false;
     });
 
     if (candidates.length === 0) return;
 
-    // 限制并发：每轮最多触发 6 个刷新
+    // Limit concurrency: trigger at most 6 refreshes per round
     const toRefresh = candidates.slice(0, 6);
     toRefresh.forEach((c) => {
       const key = getChannelKey(c.channelId, c.channelType);
       if (channelInfoPendingRef.current.has(key)) return;
       const retries = channelInfoRetryCountRef.current[key] ?? 0;
-      if (retries >= 3) return; // 最多重试 3 次
+      if (retries >= 3) return; // Retry at most 3 times
 
       channelInfoPendingRef.current.add(key);
       (async () => {
         try {
-          // refreshChannel + apply 到 chats/messages（chatStore 已提供统一入口）
+          // refreshChannel + apply to chats/messages (chatStore already provides a unified entry point)
           await useChatStore.getState().syncChannelInfoAcrossUI(c.channelId!, c.channelType!);
         } catch {
           // ignore
@@ -787,7 +787,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
           const hasTagsNow = latest.tagIds.length > 0;
           const hadError = !!latest.err;
 
-          // 若成功拿到 tags：清除兜底标记、清除重试计数
+          // If the tags were fetched successfully: clear the fallback mark and the retry count
           if (hasTagsNow) {
             channelInfoRetryCountRef.current[key] = 0;
             setTagFilterBypassKeys((prev) => {
@@ -799,17 +799,17 @@ const ChatListComponent: React.FC<ChatListProps> = ({
             return;
           }
 
-          // 若成功拿到信息且明确 tags 字段为空（无标签）：不兜底显示，也不重试
+          // If the info was fetched successfully and the tags field is explicitly empty (no tags): do not show as fallback and do not retry
           if (!hadError && latest.hasTagsField) {
             channelInfoRetryCountRef.current[key] = 0;
             return;
           }
 
-          // 请求失败或仍未拿到 tags 字段：进行退避重试；超过上限则“兜底显示”
+          // The request failed or the tags field is still missing: retry with backoff; show as fallback once the limit is exceeded
           const nextRetry = (channelInfoRetryCountRef.current[key] ?? 0) + 1;
           channelInfoRetryCountRef.current[key] = nextRetry;
           if (nextRetry >= 3) {
-            // 最终失败：兜底展示，避免造成会话/消息丢失假象
+            // Final failure: show as fallback so conversations/messages don't appear lost
             setTagFilterBypassKeys((prev) => (prev[key] ? prev : { ...prev, [key]: true }));
             return;
           }
@@ -820,7 +820,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
     });
   }, [mineTagInitialized, activeTab, mineTagIds, myChats, realtimeChats, channelInfoRetryTick, tagFilterBypassKeys]);
 
-  // "已完成"会话：仅使用 API 返回结果（不合并实时会话，避免把活跃会话混入“已完成”）
+  // "Completed" conversations: use only the API results (do not merge realtime conversations, to avoid mixing active ones into "Completed")
   const mergedAllChats = useMemo(() => {
     return sortChatsByTimestamp(allChats);
   }, [allChats]);
@@ -842,7 +842,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
   }, [activeTab, mergedMyChats, unassignedChats, mergedAllChats, manualChats]);
 
   // Calculate counts for tabs
-  // "我的" tab 显示会话数量，"未分配" tab 显示等待数量
+  // The "Mine" tab shows the conversation count; the "Unassigned" tab shows the waiting count
   const counts = useMemo(() => {
     return {
       mine: mergedMyChats.length,
@@ -860,7 +860,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
     if (!searchQuery.trim()) return recentVisitors;
     const lowerQuery = searchQuery.toLowerCase();
     return recentVisitors.filter(v => {
-      const name = (v.name || v.display_nickname || v.nickname_zh || v.nickname || `访客${String(v.id).slice(-4)}`).toLowerCase();
+      const name = (v.name || v.display_nickname || v.nickname_zh || v.nickname || `Visitor ${String(v.id).slice(-4)}`).toLowerCase();
       return name.includes(lowerQuery);
     });
   }, [recentVisitors, searchQuery]);
@@ -900,21 +900,21 @@ const ChatListComponent: React.FC<ChatListProps> = ({
     try {
       const visitorId = v?.id;
       if (!visitorId) {
-        showToast('warning', t('search.toasts.incompleteVisitorInfo', '访客信息不完整'), t('search.toasts.missingVisitorId', '缺少 visitor_id'));
+        showToast('warning', t('search.toasts.incompleteVisitorInfo', 'Visitor information is incomplete'), t('search.toasts.missingVisitorId', 'Missing visitor_id'));
         return;
       }
       const channelId = `${visitorId}-vtr`;
-      const channelType = 251; // 访客会话类型
+      const channelType = 251; // Visitor conversation type
 
-      // 1) 已存在则直接切换
+      // 1) If it already exists, switch to it directly
       const exist = realtimeChats.find(c => c.channelId === channelId && c.channelType === channelType);
       if (exist) {
         onChatSelect(exist);
         return;
       }
 
-      // 2) 不存在则新建 Chat 对象并插入到顶部
-      const fallbackName = t('visitor.fallbackName', '访客 {{suffix}}').replace('{{suffix}}', (v.platform_open_id || '').slice(-4));
+      // 2) Otherwise create a new Chat object and insert it at the top
+      const fallbackName = t('visitor.fallbackName', 'Visitor {{suffix}}').replace('{{suffix}}', (v.platform_open_id || '').slice(-4));
       const rawName = (v.name || v.display_nickname || v.nickname_zh || v.nickname || fallbackName) as string;
       const plainName = (rawName || '').replace(/<[^>]*>/g, '') || fallbackName;
 
@@ -967,7 +967,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
       useChatStore.getState().setChats([newChat, ...realtimeChats]);
       onChatSelect(newChat);
     } catch (e) {
-      console.error('打开访客会话失败', e);
+      console.error('Failed to open visitor conversation', e);
       showApiError(showToast, e);
     }
   }, [t, onChatSelect, realtimeChats, showToast]);
@@ -990,7 +990,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
     }
   }, [activeTab, isLoadingMine, isLoadingUnassigned, isLoadingAll, isLoadingManual, isLoadingRecent]);
   
-  // 是否正在加载更多
+  // Whether more is currently loading
   const isLoadingMore = useMemo(() => {
     switch (activeTab) {
       case 'unassigned':
@@ -1006,7 +1006,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
     }
   }, [activeTab, isLoadingMoreUnassigned, isLoadingMoreAll, isLoadingMoreManual, isLoadingMoreRecent]);
   
-  // 是否还有更多数据
+  // Whether there is more data
   const hasMore = useMemo(() => {
     switch (activeTab) {
       case 'unassigned':
@@ -1022,14 +1022,14 @@ const ChatListComponent: React.FC<ChatListProps> = ({
     }
   }, [activeTab, hasMoreUnassigned, hasMoreAll, hasMoreManual, hasMoreRecent]);
   
-  // 滚动事件处理 - 上拉加载更多
+  // Scroll event handling - pull up to load more
   const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
     const target = e.currentTarget;
     const scrollTop = target.scrollTop;
     const scrollHeight = target.scrollHeight;
     const clientHeight = target.clientHeight;
     
-    // 当滚动到距离底部 100px 时触发加载更多
+    // Trigger loading more when scrolled within 100px of the bottom
     const threshold = 100;
     const isNearBottom = scrollHeight - scrollTop - clientHeight < threshold;
     
@@ -1065,14 +1065,14 @@ const ChatListComponent: React.FC<ChatListProps> = ({
             )}
           </div>
           <span className="text-xs font-medium flex-grow">
-            {isConnecting ? t('chat.status.connecting', '正在连接服务器...') : t('chat.status.disconnected', '网络已断开')}
+            {isConnecting ? t('chat.status.connecting', 'Connecting...') : t('chat.status.disconnected', 'Disconnected')}
           </span>
           {!isConnecting && (
             <button 
               onClick={() => window.location.reload()}
               className="text-[10px] underline hover:no-underline"
             >
-              {t('common.retry', '重试')}
+              {t('common.retry', 'Retry')}
             </button>
           )}
         </div>
@@ -1085,12 +1085,12 @@ const ChatListComponent: React.FC<ChatListProps> = ({
         counts={counts}
       />
 
-      {/* "我的" tab 标签筛选 */}
+      {/* "Mine" tab tag filter */}
       {activeTab === 'mine' && (
         <div className="px-4 py-2 border-b border-gray-200/60 dark:border-gray-700/60 bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg">
           <div ref={tagFilterRef} className="relative z-40">
             <div className="flex flex-wrap items-center gap-1.5">
-              {/* 已选择的标签展示（紧凑 chips） */}
+              {/* Display of selected tags (compact chips) */}
               {mineTagIds.map((id: string) => {
                 const fromList = availableVisitorTags.find(tg => tg.id === id);
                 const meta = mineTagMeta[id];
@@ -1119,8 +1119,8 @@ const ChatListComponent: React.FC<ChatListProps> = ({
                     {isEditingMineTags && (
                       <button
                         type="button"
-                        title={t('chat.list.tagFilter.remove', '删除标签')}
-                        aria-label={t('chat.list.tagFilter.remove', '删除标签')}
+                        title={t('chat.list.tagFilter.remove', 'Remove tag')}
+                        aria-label={t('chat.list.tagFilter.remove', 'Remove tag')}
                         className="ml-0.5 w-3.5 h-3.5 flex items-center justify-center rounded hover:bg-gray-200/70 dark:hover:bg-gray-600/60"
                         onClick={() => {
                           setMineTagIds(mineTagIds.filter((x: string) => x !== id));
@@ -1129,7 +1129,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
                             delete next[id];
                             return next;
                           });
-                          setIsEditingMineTags(false); // 删除后恢复非编辑状态
+                          setIsEditingMineTags(false); // Exit edit mode after deleting
                         }}
                       >
                         <X className="w-3 h-3" />
@@ -1139,12 +1139,12 @@ const ChatListComponent: React.FC<ChatListProps> = ({
                 );
               })}
 
-              {/* + / - 放在标签最后面 */}
+              {/* Put + / - after the tags */}
               <button
                 ref={addButtonRef}
                 type="button"
-                title={t('chat.list.tagFilter.add', '添加筛选标签')}
-                aria-label={t('chat.list.tagFilter.add', '添加筛选标签')}
+                title={t('chat.list.tagFilter.add', 'Add filter tag')}
+                aria-label={t('chat.list.tagFilter.add', 'Add filter tag')}
                 onClick={() => {
                   setIsEditingMineTags(false);
                   setIsTagFilterOpen(v => !v);
@@ -1157,12 +1157,12 @@ const ChatListComponent: React.FC<ChatListProps> = ({
               <button
                 type="button"
                 disabled={mineTagIds.length === 0}
-                title={t('chat.list.tagFilter.edit', '编辑筛选标签')}
-                aria-label={t('chat.list.tagFilter.edit', '编辑筛选标签')}
+                title={t('chat.list.tagFilter.edit', 'Edit filter tags')}
+                aria-label={t('chat.list.tagFilter.edit', 'Edit filter tags')}
                 onClick={() => {
                   if (mineTagIds.length === 0) return;
                   setIsTagFilterOpen(false);
-                  setIsEditingMineTags(v => !v); // 多次点击切换编辑/非编辑
+                  setIsEditingMineTags(v => !v); // Clicking repeatedly toggles edit / non-edit
                 }}
                 className={`inline-flex items-center justify-center p-0.5 rounded transition ${
                   mineTagIds.length === 0
@@ -1179,7 +1179,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
         </div>
       )}
 
-      {/* 标签选择面板（Portal 到 body，避免被会话列表遮挡/裁剪） */}
+      {/* Tag selection panel (Portal to body, to avoid being covered/clipped by the conversation list) */}
       {isTagFilterOpen && tagPickerPos && typeof document !== 'undefined' && (
         <>
           {createPortal(
@@ -1191,13 +1191,13 @@ const ChatListComponent: React.FC<ChatListProps> = ({
               {/* Header */}
               <div className="px-3 py-2 border-b border-gray-200/70 dark:border-gray-700/70">
                 <div className="text-xs font-medium text-gray-800 dark:text-gray-100">
-                  {t('chat.list.tagFilter.add', '添加筛选标签')}
+                  {t('chat.list.tagFilter.add', 'Add filter tag')}
                 </div>
                 <div className="mt-2">
                   <input
                     value={tagSearch}
                     onChange={(e) => setTagSearch(e.target.value)}
-                    placeholder={t('chat.list.tagFilter.searchPlaceholder', '搜索标签')}
+                    placeholder={t('chat.list.tagFilter.searchPlaceholder', 'Search tags')}
                     className="w-full px-2 py-1 text-xs rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
                   />
                 </div>
@@ -1207,11 +1207,11 @@ const ChatListComponent: React.FC<ChatListProps> = ({
               <div className="max-h-64 overflow-auto p-2">
                 {isLoadingTags ? (
                   <div className="py-3 text-xs text-gray-500 dark:text-gray-400">
-                    {t('chat.list.tagFilter.loading', '加载标签中...')}
+                    {t('chat.list.tagFilter.loading', 'Loading tags...')}
                   </div>
                 ) : availableVisitorTags.length === 0 ? (
                   <div className="py-3 text-xs text-gray-500 dark:text-gray-400">
-                    {t('chat.list.tagFilter.empty', '暂无可用标签')}
+                    {t('chat.list.tagFilter.empty', 'No tags')}
                   </div>
                 ) : (
                   <div className="space-y-1">
@@ -1278,14 +1278,14 @@ const ChatListComponent: React.FC<ChatListProps> = ({
                   onClick={handleOnlineVisitorClick}
                 />
               ))}
-              {/* 加载更多提示 */}
+              {/* Load-more hint */}
               {isLoadingMore && (
                 <div className="flex items-center justify-center py-3">
                   <div className="w-4 h-4 border-2 border-gray-300 dark:border-gray-600 border-t-blue-500 rounded-full animate-spin" />
                   <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">{t('common.loadingMore')}</span>
                 </div>
               )}
-              {/* 没有更多数据提示 */}
+              {/* No-more-data hint */}
               {!hasMore && filteredRecentVisitors.length > 0 && (
                 <div className="flex items-center justify-center py-3">
                   <span className="text-xs text-gray-400 dark:text-gray-500">{t('common.noMore')}</span>
@@ -1314,14 +1314,14 @@ const ChatListComponent: React.FC<ChatListProps> = ({
                 />
               )
             ))}
-            {/* 加载更多提示 */}
+            {/* Load-more hint */}
             {isLoadingMore && (
               <div className="flex items-center justify-center py-3">
                 <div className="w-4 h-4 border-2 border-gray-300 dark:border-gray-600 border-t-blue-500 rounded-full animate-spin" />
                 <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">{t('common.loadingMore')}</span>
               </div>
             )}
-            {/* 没有更多数据提示 */}
+            {/* No-more-data hint */}
             {!hasMore && filteredChats.length > 0 && (activeTab === 'unassigned' || activeTab === 'all' || activeTab === 'manual') && (
               <div className="flex items-center justify-center py-3">
                 <span className="text-xs text-gray-400 dark:text-gray-500">{t('common.noMore')}</span>

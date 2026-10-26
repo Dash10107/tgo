@@ -4,28 +4,31 @@ Query preprocessing for improved retrieval.
 This module provides query expansion and preprocessing capabilities
 to improve RAG retrieval accuracy through multi-query approaches.
 
-TODO: 升级为LLM驱动的查询预处理 (参考FastGPT queryExtension.ts)
+TODO: Upgrade to LLM-driven query preprocessing (see FastGPT queryExtension.ts)
 ======================================================================
-FastGPT的实现方式:
-1. 使用LLM生成10个查询变体（消耗~200-500 token/查询）
-2. 结合对话历史消除指代歧义（如"它"→"FastGPT"）
-3. 从不同角度扩展（原因/影响/解决方案/对比等）
-4. 使用Submodular贪心算法从N个候选中选最优3个
-5. Few-shot提示词包含8个多语言示例
+FastGPT approach:
+1. Use an LLM to generate ~10 query variants (~200-500 tokens per query)
+2. Resolve coreference using conversation history (e.g. "it" -> "FastGPT")
+3. Expand from different angles (cause / impact / solution / comparison)
+4. Pick the best 3 of N candidates with a submodular greedy algorithm
+5. Few-shot prompt with 8 multilingual examples
 
-FastGPT Prompt模板核心:
-- 为"原问题"生成N个不同版本的"检索词"
-- 从不同角度探索主题以提高语义丰富度
-- 要求: 相关性、多角度、无冗余、简洁可搜索
+Core of the FastGPT prompt template:
+- Generate N different "search terms" versions of the "original question"
+- Explore the topic from different angles for semantic richness
+- Requirements: relevant, multi-angle, non-redundant, concise and searchable
 
-当前实现: 规则驱动(零成本)，可在需要时升级为LLM驱动
+Current implementation: rule-driven (zero cost), upgradeable to LLM-driven
+when needed. English, Hindi and Marathi are supported.
 ======================================================================
 """
 
+import re
 from typing import List, Optional
 
 from ..config import get_settings
 from ..logging_config import get_logger
+from .text_utils import STOPWORDS, extract_keywords
 
 logger = get_logger(__name__)
 
@@ -35,14 +38,22 @@ class QueryProcessor:
     
     def __init__(self):
         self.settings = get_settings()
-        # Chinese stopwords for keyword extraction
-        self._stopwords = {
-            "的", "是", "在", "和", "了", "有", "与", "为", "等", "及",
-            "这", "那", "你", "我", "他", "她", "它", "们", "也", "都",
-            "就", "而", "但", "如果", "因为", "所以", "虽然", "可以",
-            "什么", "如何", "怎么", "怎样", "为什么", "哪些", "哪个",
-            "请", "吗", "呢", "啊", "吧", "呀", "嘛", "哦", "哈"
-        }
+        self._stopwords = STOPWORDS
+        # Leading question phrases removed to turn a question into a statement.
+        # Latin phrases are matched on word boundaries; Devanagari phrases are
+        # matched as whole whitespace-delimited tokens.
+        self._question_phrases = [
+            "what is", "what are", "how to", "how do i", "how can i", "how do", "how does",
+            "why is", "why does", "why do", "which", "please tell me", "can you tell me",
+            "\u0915\u094d\u092f\u093e \u0939\u0948", "\u0915\u094d\u092f\u093e", "\u0915\u0948\u0938\u0947", "\u0915\u094d\u092f\u094b\u0902", "\u0915\u094c\u0928 \u0938\u093e", "\u0915\u0943\u092a\u092f\u093e \u092c\u0924\u093e\u090f\u0902",
+            "\u0915\u093e\u092f \u0906\u0939\u0947", "\u0915\u093e\u092f", "\u0915\u0938\u0947", "\u0915\u0938\u093e", "\u0915\u0936\u0940", "\u0915\u093e", "\u0915\u094b\u0923\u0924\u0947", "\u0915\u0943\u092a\u092f\u093e \u0938\u093e\u0902\u0917\u093e",
+        ]
+        self._question_re = re.compile(
+            r"(?:(?<=\s)|^)(?:" + "|".join(
+                re.escape(p) for p in sorted(self._question_phrases, key=len, reverse=True)
+            ) + r")(?=\s|$|[?\u0964])",
+            re.IGNORECASE,
+        )
     
     async def expand_query(self, query: str) -> List[str]:
         """
@@ -81,14 +92,7 @@ class QueryProcessor:
         Returns:
             List of keywords
         """
-        # Remove punctuation and split
-        cleaned = query.replace("？", "").replace("?", "").replace("，", " ").replace(",", " ")
-        cleaned = cleaned.replace("。", "").replace(".", "").replace("：", " ").replace(":", " ")
-        
-        words = cleaned.split()
-        keywords = [w for w in words if w not in self._stopwords and len(w) > 1]
-        
-        return keywords
+        return extract_keywords(query)
     
     def _to_declarative(self, query: str) -> Optional[str]:
         """
@@ -100,29 +104,10 @@ class QueryProcessor:
         Returns:
             Declarative version or None if not applicable
         """
-        # Question patterns to remove/replace
-        replacements = [
-            ("什么是", ""),
-            ("如何", ""),
-            ("怎么", ""),
-            ("怎样", ""),
-            ("为什么", ""),
-            ("哪些", ""),
-            ("哪个", ""),
-            ("请问", ""),
-            ("？", ""),
-            ("?", ""),
-        ]
-        
-        result = query.strip()
-        changed = False
-        
-        for old, new in replacements:
-            if old in result:
-                result = result.replace(old, new)
-                changed = True
-        
-        result = result.strip()
+        result = self._question_re.sub(" ", query)
+        result = re.sub(r"[?\u0964\u061f\uff1f]+", " ", result)
+        result = re.sub(r"\s+", " ", result).strip()
+        changed = result != re.sub(r"\s+", " ", query).strip()
         
         # Only return if it changed and has content
         return result if changed and len(result) >= 2 else None

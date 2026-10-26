@@ -759,31 +759,31 @@ class QAPairCreateRequest(BaseSchema):
         min_length=1,
         max_length=10000,
         description="The question text",
-        examples=["如何重置密码？"]
+        examples=["How do I reset my password?"]
     )
     answer: str = Field(
         ...,
         min_length=1,
         max_length=50000,
         description="The answer text",
-        examples=["您可以通过以下步骤重置密码：1. 点击登录页面的'忘记密码'..."]
+        examples=["You can reset your password with these steps: 1. Click 'Forgot password' on the login page..."]
     )
     category: Optional[str] = Field(
         None,
         max_length=255,
         description="Category for organizing QA pairs",
-        examples=["账户管理"]
+        examples=["Account management"]
     )
     subcategory: Optional[str] = Field(
         None,
         max_length=255,
         description="Subcategory for finer organization",
-        examples=["密码相关"]
+        examples=["Password"]
     )
     tags: Optional[List[str]] = Field(
         None,
         description="Tags for filtering and search",
-        examples=[["密码", "重置", "账户"]]
+        examples=[["password", "reset", "account"]]
     )
     qa_metadata: Optional[Dict[str, Any]] = Field(
         None,

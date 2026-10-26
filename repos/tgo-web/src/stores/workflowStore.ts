@@ -205,7 +205,7 @@ export const useWorkflowStore = create<WorkflowState>()(
 
       // Create new workflow
       createWorkflow: async (name) => {
-        const finalName = name || i18n.t('workflow.actions.new_workflow', '新建工作流');
+        const finalName = name || i18n.t('workflow.actions.new_workflow', 'New Workflow');
         const workflow = await WorkflowApiService.createWorkflow({
           name: finalName,
           nodes: [],

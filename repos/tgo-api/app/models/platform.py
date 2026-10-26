@@ -21,7 +21,7 @@ class PlatformType(str, Enum):
 
     WEBSITE = "website"
     WECHAT = "wechat"
-    WECHAT_PERSONAL = "wechat_personal" # 个人微信
+    WECHAT_PERSONAL = "wechat_personal" # Personal WeChat
     WHATSAPP = "whatsapp"
     TELEGRAM = "telegram"
     EMAIL = "email"
@@ -37,10 +37,10 @@ class PlatformType(str, Enum):
     DOUYIN = "douyin"
     TIKTOK = "tiktok"
     CUSTOM = "custom"
-    WECOM = "wecom" # 企业微信
-    WECOM_BOT = "wecom_bot" # 企业微信机器人
-    FEISHU_BOT = "feishu_bot" # 飞书机器人
-    DINGTALK_BOT = "dingtalk_bot" # 钉钉机器人
+    WECOM = "wecom" # WeCom (Enterprise WeChat)
+    WECOM_BOT = "wecom_bot" # WeCom bot
+    FEISHU_BOT = "feishu_bot" # Feishu bot
+    DINGTALK_BOT = "dingtalk_bot" # DingTalk bot
 
 
 class PlatformTypeDefinition(Base):
@@ -114,9 +114,9 @@ class PlatformSyncStatus(str, Enum):
 
 class PlatformAIMode(str, Enum):
     """Platform AI mode enumeration."""
-    AUTO = "auto"           # 自动：AI 自动处理所有消息
-    ASSIST = "assist"       # 辅助：人工优先，超时后 AI 接管
-    OFF = "off"             # 关闭：AI 不处理消息
+    AUTO = "auto"           # Auto: AI handles all messages automatically
+    ASSIST = "assist"       # Assist: humans first, AI takes over after a timeout
+    OFF = "off"             # Off: AI does not handle messages
 
 
 class Platform(Base):

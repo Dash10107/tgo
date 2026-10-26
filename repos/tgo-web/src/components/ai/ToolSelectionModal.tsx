@@ -68,7 +68,7 @@ const ToolSelectionModal: React.FC<ToolSelectionModalProps> = ({
     if (isOpen && aiTools.length === 0) {
       loadTools(false).catch(error => {
         console.error('Failed to load tools:', error);
-        showToast('error', t('common.loadFailed', '加载失败'), t('tools.selectModal.loadFailedDesc', '无法加载工具列表，请稍后重试'));
+        showToast('error', t('common.loadFailed', 'Load Failed'), t('tools.selectModal.loadFailedDesc', 'Unable to load tool list, please try again later'));
       });
     }
   }, [isOpen, aiTools.length, loadTools, showToast, t]);
@@ -148,7 +148,7 @@ const ToolSelectionModal: React.FC<ToolSelectionModalProps> = ({
     clearError();
     loadTools(false).catch(error => {
       console.error('Failed to retry loading tools:', error);
-      showToast('error', t('tools.selectModal.retryFailedTitle', '重试失败'), t('tools.selectModal.retryFailedDesc', '无法加载工具列表，请检查网络连接'));
+      showToast('error', t('tools.selectModal.retryFailedTitle', 'Retry Failed'), t('tools.selectModal.retryFailedDesc', 'Unable to load tool list, please check your network connection'));
     });
   };
 
@@ -166,7 +166,7 @@ const ToolSelectionModal: React.FC<ToolSelectionModalProps> = ({
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('tools.selectModal.title', '选择工具')}</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('tools.selectModal.title', 'Select Tool')}</h3>
           <button
             onClick={onClose}
             className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
@@ -183,7 +183,7 @@ const ToolSelectionModal: React.FC<ToolSelectionModalProps> = ({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t('tools.selectModal.searchPlaceholder', '搜索工具...')}
+              placeholder={t('tools.selectModal.searchPlaceholder', 'Search tools...')}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
             />
           </div>
@@ -216,7 +216,7 @@ const ToolSelectionModal: React.FC<ToolSelectionModalProps> = ({
               <div className="flex items-center justify-center py-8">
                 <div className="text-center">
                   <RefreshCw className="w-6 h-6 animate-spin text-gray-400 dark:text-gray-500 mx-auto mb-2" />
-                  <p className="text-gray-500 dark:text-gray-400 text-sm">{t('tools.selectModal.loading', '正在加载工具...')}</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">{t('tools.selectModal.loading', 'Loading tools...')}</p>
                 </div>
               </div>
             )}
@@ -228,13 +228,13 @@ const ToolSelectionModal: React.FC<ToolSelectionModalProps> = ({
                   <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
                     <X className="w-6 h-6 text-red-600 dark:text-red-400" />
                   </div>
-                  <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">{t('common.loadFailed', '加载失败')}</h3>
+                  <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">{t('common.loadFailed', 'Load Failed')}</h3>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">{error}</p>
                   <button
                     onClick={handleRetry}
                     className="px-3 py-1.5 bg-blue-500 dark:bg-blue-600 text-white text-xs rounded hover:bg-blue-600 dark:hover:bg-blue-700 transition-colors"
                   >
-                    {t('common.retry', '重试')}
+                    {t('common.retry', 'Retry')}
                   </button>
                 </div>
               </div>
@@ -246,7 +246,7 @@ const ToolSelectionModal: React.FC<ToolSelectionModalProps> = ({
                 {filteredTools.length === 0 ? (
                   <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                     <Wrench className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <p>{t('tools.selectModal.noMatch', '未找到匹配的工具')}</p>
+                    <p>{t('tools.selectModal.noMatch', 'No matching tools found')}</p>
                   </div>
                 ) : (
                   filteredTools.map((tool: AiTool) => {
@@ -286,7 +286,7 @@ const ToolSelectionModal: React.FC<ToolSelectionModalProps> = ({
                           handleConfigTool(tool);
                         }}
                         className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
-                        title={t('tools.selectModal.configTool', '配置工具')}
+                        title={t('tools.selectModal.configTool', 'Configure Tool')}
                       >
                         <Settings className="w-4 h-4" />
                       </button>
@@ -312,7 +312,7 @@ const ToolSelectionModal: React.FC<ToolSelectionModalProps> = ({
             onClick={handleManageTools}
             className="flex items-center space-x-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm transition-colors"
           >
-            <span>{t('tools.selectModal.manageTools', '管理工具')}</span>
+            <span>{t('tools.selectModal.manageTools', 'Manage Tools')}</span>
             <ExternalLink className="w-4 h-4" />
           </button>
         </div>
@@ -323,13 +323,13 @@ const ToolSelectionModal: React.FC<ToolSelectionModalProps> = ({
             onClick={handleCancel}
             className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600"
           >
-            {t('common.cancel', '取消')}
+            {t('common.cancel', 'Cancel')}
           </button>
           <button
             onClick={handleConfirm}
             className="px-4 py-2 text-sm font-medium text-white bg-blue-600 dark:bg-blue-700 border border-transparent rounded-md hover:bg-blue-700 dark:hover:bg-blue-800"
           >
-            {t('tools.selectModal.confirmSelection', '确认选择 ({{count}})', { count: tempSelectedTools.length })}
+            {t('tools.selectModal.confirmSelection', 'Confirm Selection ({{count}})', { count: tempSelectedTools.length })}
           </button>
         </div>
       </div>

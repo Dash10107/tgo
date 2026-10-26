@@ -4,6 +4,7 @@ import type { ChannelInfo, ChannelExtra } from '@/types';
 import { getChannelKey } from '@/utils/channelUtils';
 import { generateDefaultAvatar, hasValidAvatar, type DefaultAvatar } from '@/utils/avatarUtils';
 
+import i18n from '@/i18n';
 /**
  * Props for useChannelDisplay hook
  */
@@ -133,8 +134,8 @@ export const useChannelDisplay = ({
   const name = useMemo(() => {
     if (overrideName && overrideName.trim()) return overrideName;
     if (channelInfo?.name) return channelInfo.name;
-    // Fallback: "访客" + last 4 chars of channelId
-    return `访客${(channelId || '').slice(-4)}`;
+    // Fallback: "Visitor" + last 4 chars of channelId
+    return `${i18n.t('visitor.defaultName', 'Visitor')} ${(channelId || '').slice(-4)}`;
   }, [overrideName, channelInfo?.name, channelId]);
 
   const avatar = useMemo(() => {

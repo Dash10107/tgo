@@ -16,7 +16,7 @@ interface RelatedTicketsSectionProps {
 }
 
 /**
- * 相关工单模块组件
+ * Related tickets module component
  */
 const RelatedTicketsSection: React.FC<RelatedTicketsSectionProps> = ({
   tickets,
@@ -38,7 +38,7 @@ const RelatedTicketsSection: React.FC<RelatedTicketsSectionProps> = ({
 
   return (
     <div className={`pt-4 space-y-3 ${className}`}>
-      <h4 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">{t('visitor.sections.relatedTickets', '相关工单')}</h4>
+      <h4 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">{t('visitor.sections.relatedTickets', 'Related Tickets')}</h4>
       <div className="space-y-2">
         {tickets.map((ticket) => (
           <a
@@ -53,7 +53,7 @@ const RelatedTicketsSection: React.FC<RelatedTicketsSectionProps> = ({
           </a>
         ))}
         {(!tickets || tickets.length === 0) && (
-          <div className="text-gray-400 text-xs">{t('visitor.activity.noTickets', '暂无相关工单')}</div>
+          <div className="text-gray-400 text-xs">{t('visitor.activity.noTickets', 'No related tickets')}</div>
         )}
       </div>
     </div>

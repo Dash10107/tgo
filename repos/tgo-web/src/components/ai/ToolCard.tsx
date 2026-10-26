@@ -54,10 +54,10 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onAction, onShowToast }) => {
     try {
       await navigator.clipboard.writeText(endpoint);
       setCopiedEndpoint(true);
-      onShowToast?.('success', t('common.copied', '已复制'), t('tools.endpointCopied', '端点地址已复制到剪贴板'));
+      onShowToast?.('success', t('common.copied', 'Copied'), t('tools.endpointCopied', 'Endpoint address copied to clipboard'));
       setTimeout(() => setCopiedEndpoint(false), 2000);
     } catch (error) {
-      onShowToast?.('error', t('common.copyFailed', '复制失败'), t('tools.copyEndpointFailed', '无法复制端点地址'));
+      onShowToast?.('error', t('common.copyFailed', 'Copy failed'), t('tools.copyEndpointFailed', 'Unable to copy endpoint address'));
     }
   };
 
@@ -135,17 +135,17 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onAction, onShowToast }) => {
             {showMenu && (
               <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-1 z-20 animate-in fade-in zoom-in-95 duration-200">
                 <button onClick={() => handleAction('edit')} className="w-full flex items-center px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                  <Pencil className="w-4 h-4 mr-2" /> {t('common.edit', '编辑')}
+                  <Pencil className="w-4 h-4 mr-2" /> {t('common.edit', 'Edit')}
                 </button>
                 {endpoint && (
                   <button onClick={handleCopyEndpoint} className="w-full flex items-center px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                     {copiedEndpoint ? <Check className="w-4 h-4 mr-2 text-green-500" /> : <Copy className="w-4 h-4 mr-2" />}
-                    {t('tools.copyEndpoint', '复制端点')}
+                    {t('tools.copyEndpoint', 'Copy Endpoint')}
                   </button>
                 )}
                 <div className="h-px bg-gray-100 dark:bg-gray-700 my-1"></div>
                 <button onClick={() => handleAction('delete')} className="w-full flex items-center px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
-                  <Trash2 className="w-4 h-4 mr-2" /> {t('common.delete', '删除')}
+                  <Trash2 className="w-4 h-4 mr-2" /> {t('common.delete', 'Delete')}
                 </button>
               </div>
             )}
@@ -153,7 +153,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onAction, onShowToast }) => {
         </div>
 
         <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4 line-clamp-2 h-10 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
-          {tool.description || t('tools.noDescription', '暂无描述')}
+          {tool.description || t('tools.noDescription', 'No description')}
         </p>
 
         {endpoint && (
@@ -170,7 +170,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onAction, onShowToast }) => {
           className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-blue-200 dark:shadow-none transition-all duration-200 active:scale-95"
         >
           <Pencil className="w-3.5 h-3.5" />
-          {t('tools.editTool', '编辑工具')}
+          {t('tools.editTool', 'Edit Tool')}
         </button>
       </div>
     </div>

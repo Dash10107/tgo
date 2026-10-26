@@ -13,31 +13,32 @@ import {
   STORAGE_KEYS,
 } from '@/constants';
 
+import i18n from '@/i18n';
 /**
  * Sync Store State Interface
  * Manages conversation synchronization with WuKongIM
  */
 interface SyncState {
-  // 同步状态
+  // Sync state
   isSyncing: boolean;
   lastSyncTime: string | null;
   syncVersion: number;
   syncError: string | null;
   hasSyncedOnce: boolean;
 
-  // Actions - 同步控制
+  // Actions - sync control
   setSyncing: (syncing: boolean) => void;
   setSyncError: (error: string | null) => void;
 
-  // Actions - 同步方法
+  // Actions - sync methods
   syncConversations: () => Promise<void>;
   syncConversationsIfNeeded: () => Promise<void>;
   forceSyncConversations: () => Promise<void>;
 
-  // Actions - 转换工具
+  // Actions - conversion utilities
   convertWuKongIMToChat: (conversation: WuKongIMConversation) => Chat;
 
-  // Actions - 清理
+  // Actions - cleanup
   clearSyncStore: () => void;
 }
 
@@ -80,7 +81,7 @@ export const useSyncStore = create<SyncState>()(
           });
         }
 
-        const lastMessage = latestWkMsg ? WuKongIMUtils.extractMessageContent(latestWkMsg) : '暂无消息';
+        const lastMessage = latestWkMsg ? WuKongIMUtils.extractMessageContent(latestWkMsg) : i18n.t('sync.noMessages', 'No messages yet');
         const rawPayload = latestWkMsg?.payload;
         let lastPayload: any = undefined;
         if (typeof rawPayload === 'object' && rawPayload !== null) {
@@ -154,7 +155,7 @@ export const useSyncStore = create<SyncState>()(
             })),
           });
 
-          // 转换 WuKongIM 对话为内部格式
+          // Convert WuKongIM conversations to the internal format
           const convertedChats = response.conversations.map((conv) => convertWuKongIMToChat(conv));
 
           // Merge existing visitor/channel info to prevent losing data on navigation
@@ -163,10 +164,10 @@ export const useSyncStore = create<SyncState>()(
           const existingMap = new Map(existingChats.map((c) => [getChannelKey(c.channelId, c.channelType), c]));
           const channelStore = useChannelStore.getState();
           
-          // 新会话的 key 集合
+          // Set of keys of the new conversations
           const newChatKeys = new Set(convertedChats.map((c) => getChannelKey(c.channelId, c.channelType)));
           
-          // 合并新会话（保留现有信息）
+          // Merge the new conversations (keeping existing info)
           const mergedChats = convertedChats.map((chat) => {
             const key = getChannelKey(chat.channelId, chat.channelType);
             const prev = existingMap.get(key);
@@ -175,17 +176,17 @@ export const useSyncStore = create<SyncState>()(
               ...chat,
               channelInfo: prev?.channelInfo ?? cached ?? chat.channelInfo,
               visitorStatus: prev?.visitorStatus ?? chat.visitorStatus,
-              // Preserve lastSeenMinutes if it was a meaningful value (>0); avoid carrying over 0 which renders as "刚刚"
+              // Preserve lastSeenMinutes if it was a meaningful value (>0); avoid carrying over 0 which renders as "just now"
               lastSeenMinutes:
                 prev?.lastSeenMinutes != null && prev.lastSeenMinutes !== 0 ? prev.lastSeenMinutes : chat.lastSeenMinutes,
               tags: prev?.tags ?? chat.tags,
             } as Chat;
           });
           
-          // 保留现有但不在新结果中的会话（可能来自其他 API 如 /conversations/my）
+          // Keep existing conversations that are not in the new result (they may come from other APIs such as /conversations/my)
           const preservedChats = existingChats.filter((c) => !newChatKeys.has(getChannelKey(c.channelId, c.channelType)));
           
-          // 合并所有会话
+          // Merge all conversations
           const allChats = [...mergedChats, ...preservedChats];
 
           // Sort conversations by lastTimestampSec (desc)
@@ -195,10 +196,10 @@ export const useSyncStore = create<SyncState>()(
             return bSec - aSec;
           });
 
-          // 更新 conversationStore 的 chats
+          // Update the chats of conversationStore
           conversationStore.setChats(sortedChats);
 
-          // 更新本地状态
+          // Update local state
           const maxVersion = Math.max(...response.conversations.map((c) => c.version), syncVersion);
           set(
             {
@@ -212,14 +213,14 @@ export const useSyncStore = create<SyncState>()(
             'syncConversationsSuccess'
           );
         } catch (error) {
-          console.error('同步对话失败:', error);
-          const errorMessage = error instanceof Error ? error.message : '同步失败';
+          console.error('Sync conversation failed:', error);
+          const errorMessage = error instanceof Error ? error.message : i18n.t('sync.failed', 'Sync failed');
           setSyncError(errorMessage);
           setSyncing(false);
         }
       },
 
-      // 仅在未同步过时同步会话列表
+      // Sync the conversation list only if it has not been synced yet
       syncConversationsIfNeeded: async () => {
         const { hasSyncedOnce, isSyncing, syncConversations } = get();
         if (hasSyncedOnce || isSyncing) {
@@ -230,7 +231,7 @@ export const useSyncStore = create<SyncState>()(
         await syncConversations();
       },
 
-      // 强制同步会话列表（用于 WebSocket 重连后）
+      // Force-sync the conversation list (used after a WebSocket reconnect)
       forceSyncConversations: async () => {
         console.log('📋 forceSyncConversations: Force syncing conversations after reconnect');
         await get().syncConversations();

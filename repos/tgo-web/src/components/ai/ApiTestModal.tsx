@@ -48,7 +48,7 @@ interface TestResult {
 }
 
 /**
- * API端点测试弹窗组件
+ * API endpoint test modal component
  */
 const ApiTestModal: React.FC<ApiTestModalProps> = ({
   isOpen,
@@ -85,30 +85,30 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
     setTestResult(null);
   }, [endpoint]);
 
-  // 处理参数值变化
+  // Handle parameter value changes
   const handleParameterChange = (index: number, value: string) => {
     const newParameters = [...parameters];
     newParameters[index].value = value;
     setParameters(newParameters);
   };
 
-  // 验证参数
+  // Validate parameters
   const validateParameters = (): { isValid: boolean; errors: string[] } => {
     const errors: string[] = [];
 
     parameters.forEach(param => {
-      // 检查必填参数
+      // Check required parameters
       if (param.required && !param.value.trim()) {
         errors.push(t('agents.modal.apiTest.errors.required', { name: param.name }));
         return;
       }
 
-      if (!param.value.trim()) return; // 跳过空的非必填参数
+      if (!param.value.trim()) return; // Skip empty optional parameters
 
       const value = param.value.trim();
       const schema = param.schema;
 
-      // 类型验证
+      // Type validation
       if (schema.type === 'number' || schema.type === 'integer') {
         const numValue = Number(value);
         if (isNaN(numValue)) {
@@ -124,7 +124,7 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
         }
       }
 
-      // 字符串长度验证
+      // String length validation
       if (schema.type === 'string') {
         if (schema.minLength !== undefined && value.length < schema.minLength) {
           errors.push(t('agents.modal.apiTest.errors.minLength', { name: param.name, min: schema.minLength }));
@@ -133,7 +133,7 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
           errors.push(t('agents.modal.apiTest.errors.maxLength', { name: param.name, max: schema.maxLength }));
         }
 
-        // 正则模式验证
+        // Regex pattern validation
         if (schema.pattern) {
           try {
             const regex = new RegExp(schema.pattern);
@@ -146,7 +146,7 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
         }
       }
 
-      // 枚举值验证
+      // Enum value validation
       if (schema.enum && schema.enum.length > 0) {
         if (!schema.enum.includes(value)) {
           errors.push(t('agents.modal.apiTest.errors.enumInvalid', { name: param.name, values: schema.enum.join(', ') }));
@@ -157,26 +157,26 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
     return { isValid: errors.length === 0, errors };
   };
 
-  // 构建请求URL
+  // Build the request URL
   const buildRequestUrl = (baseUrl: string): string => {
     let url = baseUrl;
     const queryParams: string[] = [];
 
-    // 替换路径参数
+    // Replace path parameters
     parameters.forEach(param => {
       if (param.type === 'path' && param.value.trim()) {
         url = url.replace(`{${param.name}}`, encodeURIComponent(param.value.trim()));
       }
     });
 
-    // 添加查询参数
+    // Add query parameters
     parameters.forEach(param => {
       if (param.type === 'query' && param.value.trim()) {
         queryParams.push(`${encodeURIComponent(param.name)}=${encodeURIComponent(param.value.trim())}`);
       }
     });
 
-    // 添加鉴权查询参数
+    // Add authentication query parameters
     const effectiveAuthConfig = getEffectiveAuthConfig();
     if (effectiveAuthConfig.type === 'query' && effectiveAuthConfig.key && effectiveAuthConfig.value) {
       queryParams.push(`${encodeURIComponent(effectiveAuthConfig.key)}=${encodeURIComponent(effectiveAuthConfig.value)}`);
@@ -189,18 +189,18 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
     return url;
   };
 
-  // 构建请求头
+  // Build the request headers
   const buildRequestHeaders = (): Record<string, string> => {
     const headers: Record<string, string> = {};
 
-    // 添加参数中的头部
+    // Add headers from parameters
     parameters.forEach(param => {
       if (param.type === 'header' && param.value.trim()) {
         headers[param.name] = param.value.trim();
       }
     });
 
-    // 添加鉴权头部
+    // Add authentication headers
     const effectiveAuthConfig = getEffectiveAuthConfig();
     if (effectiveAuthConfig.type === 'header' && effectiveAuthConfig.key && effectiveAuthConfig.value) {
       if (effectiveAuthConfig.headerPrefix === 'basic') {
@@ -215,13 +215,13 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
     return headers;
   };
 
-  // 构建请求体
+  // Build the request body
   const buildRequestBody = (): any => {
     const bodyParams = parameters.filter(param => param.type === 'body' && param.value.trim());
 
     if (bodyParams.length === 0) return null;
 
-    // 如果只有一个body参数且名称为'body'，直接使用其值
+    // If there is only one body parameter named 'body', use its value directly
     if (bodyParams.length === 1 && bodyParams[0].name === 'body') {
       try {
         return JSON.parse(bodyParams[0].value);
@@ -230,12 +230,12 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
       }
     }
 
-    // 否则构建JSON对象
+    // Otherwise build a JSON object
     const body: any = {};
     bodyParams.forEach(param => {
       let value: any = param.value.trim();
 
-      // 尝试根据schema类型转换值
+      // Try to convert the value according to the schema type
       if (param.schema.type === 'number' || param.schema.type === 'integer') {
         const numValue = Number(value);
         if (!isNaN(numValue)) {
@@ -253,7 +253,7 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
         try {
           value = JSON.parse(value);
         } catch {
-          // 保持字符串值
+          // Keep the string value
         }
       }
 
@@ -263,7 +263,7 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
     return body;
   };
 
-  // 执行API测试
+  // Run the API test
   const handleTest = async (e?: React.MouseEvent) => {
     // Prevent form submission and event bubbling
     if (e) {
@@ -277,7 +277,7 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
     setTestResult(null);
 
     try {
-      // 验证参数
+      // Validate parameters
       const validation = validateParameters();
       if (!validation.isValid) {
         setTestResult({
@@ -287,31 +287,31 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
         return;
       }
 
-      // 构建请求URL (使用示例基础URL，实际应用中应该从endpoint或配置中获取)
+      // Build the request URL (uses a sample base URL; in a real app it should come from the endpoint or config)
       const baseUrl = 'https://api.example.com' + endpoint.path;
       const requestUrl = buildRequestUrl(baseUrl);
 
-      // 构建请求头
+      // Build the request headers
       const headers = buildRequestHeaders();
 
-      // 设置Content-Type
+      // Set Content-Type
       const hasBodyData = ['POST', 'PUT', 'PATCH'].includes(endpoint.method.toUpperCase());
       if (hasBodyData) {
         headers['Content-Type'] = headers['Content-Type'] || 'application/json';
       }
 
-      // 构建请求体
+      // Build the request body
       const requestBody = buildRequestBody();
 
-      // 构建fetch选项
+      // Build the fetch options
       const fetchOptions: RequestInit = {
         method: endpoint.method.toUpperCase(),
         headers,
-        mode: 'cors', // 处理CORS
-        credentials: 'omit', // 不发送凭据以避免CORS问题
+        mode: 'cors', // Handle CORS
+        credentials: 'omit', // Do not send credentials, to avoid CORS issues
       };
 
-      // 添加请求体（仅对支持body的方法）
+      // Add the request body (only for methods that support a body)
       if (hasBodyData && requestBody !== null) {
         if (headers['Content-Type']?.includes('application/json')) {
           fetchOptions.body = JSON.stringify(requestBody);
@@ -320,23 +320,23 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
         }
       }
 
-      console.log('发送API请求:', {
+      console.log('Sending API request:', {
         url: requestUrl,
         method: endpoint.method.toUpperCase(),
         headers,
         body: requestBody
       });
 
-      // 发送请求
+      // Send the request
       const response = await fetch(requestUrl, fetchOptions);
 
-      // 解析响应头
+      // Parse the response headers
       const responseHeaders: Record<string, string> = {};
       response.headers.forEach((value, key) => {
         responseHeaders[key] = value;
       });
 
-      // 解析响应体
+      // Parse the response body
       let responseData: any;
       const contentType = response.headers.get('content-type');
 
@@ -346,19 +346,19 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
         } else if (contentType?.includes('text/')) {
           responseData = await response.text();
         } else {
-          // 尝试解析为文本
+          // Try to parse as text
           responseData = await response.text();
-          // 如果是空响应，设置为null
+          // If the response is empty, set it to null
           if (!responseData) {
             responseData = null;
           }
         }
       } catch (parseError) {
-        console.warn('响应解析失败:', parseError);
-        responseData = t('agents.modal.apiTest.errors.parseResponseFailed', '响应解析失败');
+        console.warn('Failed to parse response:', parseError);
+        responseData = t('agents.modal.apiTest.errors.parseResponseFailed', 'Failed to parse response');
       }
 
-      // 构建测试结果
+      // Build the test result
       const testResult: TestResult = {
         status: response.status,
         statusText: response.statusText,
@@ -367,7 +367,7 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
         timestamp: new Date().toISOString()
       };
 
-      // 如果响应不成功，添加错误信息
+      // If the response was not successful, add error info
       if (!response.ok) {
         testResult.error = `HTTP ${response.status}: ${response.statusText}`;
       }
@@ -375,12 +375,12 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
       setTestResult(testResult);
 
     } catch (error) {
-      console.error('API测试失败:', error);
+      console.error('API test failed:', error);
 
-      let errorMessage = t('agents.modal.apiTest.errors.requestFailed', '请求失败');
+      let errorMessage = t('agents.modal.apiTest.errors.requestFailed', 'Request failed');
 
       if (error instanceof TypeError && error.message.includes('fetch')) {
-        errorMessage = t('agents.modal.apiTest.errors.networkFailed', '网络连接失败，请检查URL是否正确或是否存在CORS问题');
+        errorMessage = t('agents.modal.apiTest.errors.networkFailed', 'Network connection failed. Check that the URL is correct or whether there is a CORS issue');
       } else if (error instanceof Error) {
         errorMessage = error.message;
       }
@@ -394,36 +394,36 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
     }
   };
 
-  // 处理鉴权配置保存
+  // Handle saving the authentication config
   const handleAuthSave = (config: AuthConfig) => {
     if (onAuthConfigChange) {
       onAuthConfigChange(config);
     }
   };
 
-  // 获取鉴权显示文本
+  // Get the authentication display text
   const getAuthDisplayText = () => {
     const autoAuth = endpoint?.autoDetectedAuth;
 
     let baseText = '';
     if (authConfig.type === 'none') {
       if (autoAuth && autoAuth.type !== 'none') {
-        baseText = `自动检测: ${autoAuth.type === 'header' ? '请求头' : '查询参数'}`;
+        baseText = `${t('authMethod.autoDetected', 'Auto-detected')}: ${autoAuth.type === 'header' ? t('authMethod.header', 'Request Header') : t('authMethod.query', 'Query Parameter')}`;
       } else {
-        baseText = '无';
+        baseText = t('authMethod.none', 'None');
       }
     } else if (authConfig.type === 'header') {
-      baseText = `请求头 (${authConfig.headerPrefix?.toUpperCase()})`;
+      baseText = `${t('authMethod.header', 'Request Header')} (${authConfig.headerPrefix?.toUpperCase()})`;
     } else if (authConfig.type === 'query') {
-      baseText = '查询参数';
+      baseText = t('authMethod.query', 'Query Parameter');
     } else {
-      baseText = '无';
+      baseText = t('authMethod.none', 'None');
     }
 
     return baseText;
   };
 
-  // 检查是否为自动检测的鉴权
+  // Check whether the authentication was auto-detected
   const isAutoDetectedAuth = () => {
     const autoAuth = endpoint?.autoDetectedAuth;
     return autoAuth && (
@@ -432,20 +432,20 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
     );
   };
 
-  // 获取有效的鉴权配置（优先使用手动配置，否则使用自动检测）
+  // Get the effective authentication config (manual config first, otherwise auto-detected)
   const getEffectiveAuthConfig = (): AuthConfig => {
     if (authConfig.type !== 'none') {
       return authConfig;
     }
 
-    // 如果没有手动配置，尝试使用自动检测的配置
+    // If there is no manual config, try the auto-detected config
     const autoAuth = endpoint?.autoDetectedAuth;
     if (autoAuth && autoAuth.type !== 'none') {
       return {
         type: autoAuth.type,
         headerPrefix: autoAuth.headerPrefix,
         key: autoAuth.key,
-        value: '', // 需要用户提供实际的API密钥
+        value: '', // The user must provide the real API key
       };
     }
 
@@ -481,7 +481,7 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
         {/* Content */}
         <div className="overflow-y-auto max-h-[calc(90vh-140px)]">
           <div className="p-6 space-y-6">
-            {/* 端点信息 */}
+            {/* Endpoint info */}
             <div className="bg-gray-50 rounded-lg p-4">
               <div className="flex items-center space-x-2 text-sm text-gray-600">
                 <span className={`font-medium ${getMethodColorClass(endpoint.method)}`}>
@@ -492,17 +492,17 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
               <p className="text-sm text-gray-700 mt-1">{endpoint.description}</p>
             </div>
 
-            {/* 鉴权方法 */}
+            {/* Authentication method */}
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-2">
-                  <h3 className="text-sm font-medium text-gray-700">{t('agents.modal.apiTest.sections.authMethod', '鉴权方法')}</h3>
+                  <h3 className="text-sm font-medium text-gray-700">{t('agents.modal.apiTest.sections.authMethod', 'Authentication Method')}</h3>
                   {isAutoDetectedAuth() && (
                     <span
                       className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full"
                       title={t('agents.modal.apiTest.auth.autoDetectedTitle', { level: t(`agents.modal.apiTest.auth.level.${endpoint?.autoDetectedAuth?.source === 'operation' ? 'operation' : 'global'}`) })}
                     >
-                      {t('agents.modal.apiTest.auth.autoDetected', '自动检测')}
+                      {t('agents.modal.apiTest.auth.autoDetected', 'Auto-detected')}
                     </span>
                   )}
                 </div>
@@ -530,14 +530,14 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
               </div>
             </div>
 
-            {/* 参数和值 */}
+            {/* Parameters and values */}
             <div>
-              <h3 className="text-sm font-medium text-gray-700 mb-3">参数和值</h3>
+              <h3 className="text-sm font-medium text-gray-700 mb-3">{t('apiTestModal.paramsAndValues', 'Parameters and values')}</h3>
               {parameters.length > 0 ? (
                 <div className="space-y-3">
                   <div className="grid grid-cols-2 gap-4 text-sm font-medium text-gray-500 px-3">
-                    <span>{t('agents.modal.apiTest.labels.param', '参数')}</span>
-                    <span>{t('agents.modal.apiTest.labels.value', '值')}</span>
+                    <span>{t('agents.modal.apiTest.labels.param', 'Parameter')}</span>
+                    <span>{t('agents.modal.apiTest.labels.value', 'Value')}</span>
                   </div>
                   {parameters.map((param, index) => (
                     <div key={index} className="grid grid-cols-2 gap-4">
@@ -568,26 +568,26 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
                         )}
                         <div className="flex items-center space-x-4 mt-1 text-xs text-gray-400">
                           {param.schema.type && (
-                            <span>{t('agents.modal.apiTest.labels.type', '类型')}: {param.schema.type}</span>
+                            <span>{t('agents.modal.apiTest.labels.type', 'Type')}: {param.schema.type}</span>
                           )}
                           {param.schema.format && (
-                            <span>{t('agents.modal.apiTest.labels.format', '格式')}: {param.schema.format}</span>
+                            <span>{t('agents.modal.apiTest.labels.format', 'Format')}: {param.schema.format}</span>
                           )}
                           {param.schema.minimum !== undefined && (
-                            <span>{t('agents.modal.apiTest.labels.min', '最小值')}: {param.schema.minimum}</span>
+                            <span>{t('agents.modal.apiTest.labels.min', 'Minimum')}: {param.schema.minimum}</span>
                           )}
                           {param.schema.maximum !== undefined && (
-                            <span>{t('agents.modal.apiTest.labels.max', '最大值')}: {param.schema.maximum}</span>
+                            <span>{t('agents.modal.apiTest.labels.max', 'Maximum')}: {param.schema.maximum}</span>
                           )}
                           {param.schema.minLength !== undefined && (
-                            <span>{t('agents.modal.apiTest.labels.minLength', '最小长度')}: {param.schema.minLength}</span>
+                            <span>{t('agents.modal.apiTest.labels.minLength', 'Minimum length')}: {param.schema.minLength}</span>
                           )}
                           {param.schema.maxLength !== undefined && (
-                            <span>{t('agents.modal.apiTest.labels.maxLength', '最大长度')}: {param.schema.maxLength}</span>
+                            <span>{t('agents.modal.apiTest.labels.maxLength', 'Maximum length')}: {param.schema.maxLength}</span>
                           )}
                         </div>
                         {param.schema.pattern && (
-                          <p className="text-xs text-gray-400 mt-1">{t('agents.modal.apiTest.labels.pattern', '模式')}: {param.schema.pattern}</p>
+                          <p className="text-xs text-gray-400 mt-1">{t('agents.modal.apiTest.labels.pattern', 'Pattern')}: {param.schema.pattern}</p>
                         )}
                       </div>
                       <div className="space-y-1">
@@ -597,7 +597,7 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
                             onChange={(e) => handleParameterChange(index, e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                           >
-                            <option value="">{t('agents.modal.apiTest.placeholders.select', '请选择')}</option>
+                            <option value="">{t('agents.modal.apiTest.placeholders.select', 'Please select')}</option>
                             {param.schema.enum.map((option, optIndex) => (
                               <option key={optIndex} value={option}>{option}</option>
                             ))}
@@ -614,7 +614,7 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
                               param.schema.example ? t('agents.modal.apiTest.placeholders.example', { value: String(param.schema.example) }) :
                               param.schema.default ? t('agents.modal.apiTest.placeholders.default', { value: String(param.schema.default) }) :
                               param.example ? t('agents.modal.apiTest.placeholders.example', { value: String(param.example) }) :
-                              t('agents.modal.apiTest.placeholders.enter', '请输入')
+                              t('agents.modal.apiTest.placeholders.enter', 'Please enter')
                             }
                             required={param.required}
                             min={param.schema.minimum}
@@ -632,12 +632,12 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
                 </div>
               ) : (
                 <div className="text-center py-8 text-gray-500 text-sm">
-                  {t('agents.modal.apiTest.noParams', '此端点没有定义参数')}
+                  {t('agents.modal.apiTest.noParams', 'This endpoint defines no parameters')}
                 </div>
               )}
             </div>
 
-            {/* 测试按钮 */}
+            {/* Test button */}
             <button
               type="button"
               onClick={handleTest}
@@ -645,15 +645,15 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
               className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Play className="w-4 h-4" />
-              <span>{isTesting ? t('agents.modal.apiTest.buttons.testing', '测试中...') : t('agents.modal.apiTest.buttons.test', '测试')}</span>
+              <span>{isTesting ? t('agents.modal.apiTest.buttons.testing', 'Testing...') : t('agents.modal.apiTest.buttons.test', 'Test')}</span>
             </button>
 
-            {/* 测试结果 */}
+            {/* Test result */}
             <div>
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-medium text-gray-700">{t('agents.modal.apiTest.sections.testResult', '测试结果')}</h3>
+                <h3 className="text-sm font-medium text-gray-700">{t('agents.modal.apiTest.sections.testResult', 'Test Result')}</h3>
                 <div className="text-xs text-gray-500">
-                  <span title={t('agents.modal.apiTest.result.corsHintTitle', '注意：由于浏览器CORS限制，某些API可能无法直接测试')}>ⓘ {t('agents.modal.apiTest.result.corsHint', 'CORS提示')}</span>
+                  <span title={t('agents.modal.apiTest.result.corsHintTitle', 'Note: due to browser CORS restrictions, some APIs cannot be tested directly')}>ⓘ {t('agents.modal.apiTest.result.corsHint', 'CORS hint')}</span>
                 </div>
               </div>
               <div className="min-h-[200px] p-4 bg-gray-50 rounded-lg border">
@@ -661,7 +661,7 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
                   <div className="space-y-3">
                     {testResult.error ? (
                       <div className="text-red-600 text-sm">
-                        <strong>{t('agents.modal.apiTest.result.error', '错误:')}</strong>
+                        <strong>{t('agents.modal.apiTest.result.error', 'Error:')}</strong>
                         <pre className="mt-2 whitespace-pre-wrap font-mono text-xs bg-red-50 p-2 rounded border">
                           {testResult.error}
                         </pre>
@@ -679,7 +679,7 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
                         
                         {testResult.headers && (
                           <div>
-                            <h4 className="text-xs font-medium text-gray-600 mb-2">{t('agents.modal.apiTest.result.responseHeaders', '响应头:')}</h4>
+                            <h4 className="text-xs font-medium text-gray-600 mb-2">{t('agents.modal.apiTest.result.responseHeaders', 'Response headers:')}</h4>
                             <pre className="text-xs text-gray-700 bg-white p-2 rounded border overflow-x-auto">
                               {JSON.stringify(testResult.headers, null, 2)}
                             </pre>
@@ -688,7 +688,7 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
                         
                         {testResult.data && (
                           <div>
-                            <h4 className="text-xs font-medium text-gray-600 mb-2">{t('agents.modal.apiTest.result.responseData', '响应数据:')}</h4>
+                            <h4 className="text-xs font-medium text-gray-600 mb-2">{t('agents.modal.apiTest.result.responseData', 'Response data:')}</h4>
                             <pre className="text-xs text-gray-700 bg-white p-2 rounded border overflow-x-auto">
                               {JSON.stringify(testResult.data, null, 2)}
                             </pre>
@@ -699,7 +699,7 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
                   </div>
                 ) : (
                   <div className="flex items-center justify-center h-full text-sm text-gray-500">
-                    {t('agents.modal.apiTest.result.empty', '测试结果将显示在这里')}
+                    {t('agents.modal.apiTest.result.empty', 'Test results will be shown here')}
                   </div>
                 )}
               </div>
@@ -707,12 +707,12 @@ const ApiTestModal: React.FC<ApiTestModalProps> = ({
           </div>
         </div>
 
-        {/* 鉴权方法设置弹窗 */}
+        {/* Authentication method settings modal */}
         <AuthMethodModal
           isOpen={showAuthModal}
           onClose={() => setShowAuthModal(false)}
           onSave={handleAuthSave}
-          initialConfig={getEffectiveAuthConfig()} // 使用有效配置，包括自动检测的设置
+          initialConfig={getEffectiveAuthConfig()} // Use the effective config, including auto-detected settings
         />
       </div>
     </div>

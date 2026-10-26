@@ -12,6 +12,7 @@ import {
   STORAGE_KEYS,
 } from '@/constants';
 
+import i18n from '@/i18n';
 // Debounce map for unread clearing API calls (per conversation)
 const pendingUnreadTimers: Record<string, ReturnType<typeof setTimeout>> = {};
 
@@ -20,42 +21,42 @@ const pendingUnreadTimers: Record<string, ReturnType<typeof setTimeout>> = {};
  * Manages conversation list, active chat, and search
  */
 interface ConversationState {
-  // 会话列表 (单一数据源)
+  // Conversation list (single source of truth)
   chats: Chat[];
   activeChat: Chat | null;
   searchQuery: string;
 
-  // "我的" tab 筛选标签
+  // Filter tags for the "Mine" tab
   mineTagIds: string[];
 
-  // Actions - 基础操作
+  // Actions - basic operations
   setChats: (chats: Chat[]) => void;
   setActiveChat: (chat: Chat | null) => void;
   setSearchQuery: (query: string) => void;
   setMineTagIds: (tagIds: string[]) => void;
 
-  // Actions - CRUD 操作
+  // Actions - CRUD operations
   createChat: (_visitorName: string, platform: string) => void;
   createChatByChannel: (channelId: string, channelType: number, options?: { platform?: string; name?: string; avatar?: string }) => Chat;
   deleteChat: (chatId: string) => void;
   updateChatStatus: (chatId: string, status: string) => void;
 
-  // Actions - 搜索和筛选
+  // Actions - search and filtering
   getFilteredChats: () => Chat[];
   getChatById: (chatId: string) => Chat | undefined;
   getChatByChannel: (channelId: string, channelType: number) => Chat | undefined;
 
-  // Actions - 会话更新
+  // Actions - conversation updates
   updateConversationLastMessage: (channelId: string, channelType: number, message: Message) => void;
   updateConversationPreview: (channelId: string, channelType: number, content: string) => void;
   moveConversationToTop: (channelId: string, channelType: number) => void;
   incrementUnreadCount: (channelId: string, channelType: number) => void;
   clearConversationUnread: (channelId: string, channelType: number) => Promise<void>;
 
-  // Actions - Channel 信息应用（仅会话部分）
+  // Actions - applying channel info (conversation part only)
   applyChannelInfoToConversations: (channelId: string, channelType: number, info: ChannelInfo) => void;
 
-  // Actions - 清理
+  // Actions - cleanup
   clearConversationStore: () => void;
 }
 
@@ -86,7 +87,7 @@ export const useConversationStore = create<ConversationState>()(
           const newChat: Chat = {
             id,
             platform,
-            lastMessage: '新对话已创建',
+            lastMessage: i18n.t('conversation.newCreated', 'New conversation created'),
             timestamp: new Date().toISOString(),
             lastTimestampSec: Math.floor(Date.now() / 1000),
             status: CHAT_STATUS_CONST.ACTIVE,
@@ -171,7 +172,7 @@ export const useConversationStore = create<ConversationState>()(
           const lower = searchQuery.toLowerCase();
           return chats.filter((chat: Chat) => {
             const baseId = chat.channelId || chat.id;
-            const fallbackName = `访客${String(baseId).slice(-4)}`;
+            const fallbackName = `${i18n.t('visitor.defaultName', 'Visitor')} ${String(baseId).slice(-4)}`;
             const name = (chat.channelInfo?.name || fallbackName).toLowerCase();
             return name.includes(lower) || chat.lastMessage.toLowerCase().includes(lower);
           });
@@ -202,7 +203,7 @@ export const useConversationStore = create<ConversationState>()(
         // For STREAM messages, use a placeholder if content is empty
         let content = message.content;
         if (message.payloadType === MessagePayloadType.STREAM && !content) {
-          content = 'AI 正在输入...';
+          content = i18n.t('chat.aiTyping', 'AI is typing...');
         }
 
                   return {
@@ -333,14 +334,14 @@ export const useConversationStore = create<ConversationState>()(
                 await WuKongIMApiService.setConversationUnread(channelId, channelType, 0);
                 console.log('🔔 clearConversationUnread: API call success');
               } catch (err) {
-                console.warn('清零未读数失败:', { channelId, channelType, error: err });
+                console.warn('Failed to reset unread count:', { channelId, channelType, error: err });
               } finally {
                 delete pendingUnreadTimers[key];
               }
             }, 300);
           } catch (err) {
             // Guard against unexpected scheduling errors
-            console.warn('清零未读数调度失败:', { channelId, channelType, error: err });
+            console.warn('Failed to schedule resetting unread count:', { channelId, channelType, error: err });
           }
         },
 
@@ -454,7 +455,7 @@ export const useConversationStore = create<ConversationState>()(
       {
         name: STORAGE_KEYS.CONVERSATION || 'tgo-conversation',
         partialize: (state) => ({
-          // 持久化搜索查询和我的标签筛选
+          // Persist the search query and the "Mine" tag filter
           searchQuery: state.searchQuery,
           mineTagIds: state.mineTagIds,
         }),

@@ -1,4 +1,4 @@
-# TGO Dev Environment Redesign
+# Pelatis Dev Environment Redesign
 
 > Date: 2026-04-24
 > Status: Approved in chat, written for review
@@ -6,7 +6,7 @@
 
 ## Summary
 
-TGO's current local development flow is split across multiple modes:
+Pelatis's current local development flow is split across multiple modes:
 
 - infrastructure in Docker via `docker-compose.dev.yml`
 - production-like services in Docker via `docker-compose.yml`
@@ -82,7 +82,7 @@ Cons:
 
 Adopt Option B: a layered Compose design with a shared base and a dedicated development override.
 
-This gives TGO one explicit development path while preserving clean configuration boundaries:
+This gives Pelatis one explicit development path while preserving clean configuration boundaries:
 
 - `docker-compose.yml` becomes the shared service topology base
 - `docker-compose.dev.yml` becomes the development override

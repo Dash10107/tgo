@@ -12,7 +12,7 @@ import NodeExecutionOverlay from '../overlays/NodeExecutionOverlay';
 
 const TimerNode: React.FC<NodeProps<TimerNodeData>> = ({ id, data, selected }) => {
   const { t } = useTranslation();
-  const defaultLabel = t('workflow.node_types.timer.label', '定时触发');
+  const defaultLabel = t('workflow.node_types.timer.label', 'Timer Trigger');
 
   return (
     <div

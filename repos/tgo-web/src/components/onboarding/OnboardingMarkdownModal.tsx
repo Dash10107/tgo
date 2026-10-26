@@ -115,7 +115,7 @@ const OnboardingMarkdownModal: React.FC<OnboardingMarkdownModalProps> = ({
             onClick={onClose}
             className="px-5 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors shadow-lg shadow-blue-500/25"
           >
-            {t('onboarding.modal.close', '关闭')}
+            {t('onboarding.modal.close', 'Close')}
           </button>
         </div>
 

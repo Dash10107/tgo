@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "TGO Supervisor Agent",
+    "title": "Pelatis Supervisor Agent",
     "description": "Agent coordination/supervisor system that manages specialized agents by distributing tasks based on capabilities",
     "version": "1.0.0"
   },

@@ -57,7 +57,7 @@ class WuKongIMClientTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(
             result.messages[0].payload,
-            {"type": 1, "content": "你好"},
+            {"type": 1, "content": "Hello"},
         )
 
     async def test_send_event_uses_event_type_as_command_name(self) -> None:

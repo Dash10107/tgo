@@ -1,4 +1,4 @@
-# TGO-Tech API Service
+# Pelatis API Service
 
 This directory contains all files related to the API Service (Core Business Logic).
 

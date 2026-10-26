@@ -13,7 +13,7 @@ const Loading: React.FC = () => {
   const { t } = useTranslation();
   return (
     <div className="flex items-center justify-center py-10 text-sm text-gray-500 dark:text-gray-400">
-      {t('platforms.typeSelector.loading', '正在加载可用平台类型...')}
+      {t('platforms.typeSelector.loading', 'Loading available platform types...')}
     </div>
   );
 };
@@ -22,9 +22,9 @@ const ErrorState: React.FC<{ message: string; onRetry: () => void }> = ({ messag
   const { t } = useTranslation();
   return (
     <div className="flex flex-col items-center justify-center py-10 text-sm text-red-600 dark:text-red-400">
-      <p className="mb-3">{message || t('platforms.typeSelector.loadError', '加载平台类型失败，请稍后重试')}</p>
+      <p className="mb-3">{message || t('platforms.typeSelector.loadError', 'Failed to load platform types, please try again later')}</p>
       <button onClick={onRetry} className="px-3 py-1.5 text-white bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 rounded-md">
-        {t('common.retry', '重试')}
+        {t('common.retry', 'Retry')}
       </button>
     </div>
   );
@@ -49,7 +49,7 @@ const PlatformTypeSelector: React.FC<PlatformTypeSelectorProps> = ({ open, onClo
         const data = await platformsApiService.listPlatformTypes();
         if (!cancelled) setTypes(data);
       } catch (e: any) {
-        const message = e?.getUserMessage?.() || e?.message || t('platforms.typeSelector.loadFailed', '加载失败');
+        const message = e?.getUserMessage?.() || e?.message || t('platforms.typeSelector.loadFailed', 'Load Failed');
         if (!cancelled) setError(message);
       } finally {
         if (!cancelled) setIsLoading(false);
@@ -91,7 +91,7 @@ const PlatformTypeSelector: React.FC<PlatformTypeSelectorProps> = ({ open, onClo
         {/* Header */}
         <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
           <h3 className="text-base font-semibold text-gray-800 dark:text-gray-100">
-            {t('platforms.typeSelector.title', '选择接入平台类型')}
+            {t('platforms.typeSelector.title', 'Select Platform Type')}
           </h3>
           <button onClick={onClose} className="p-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">✕</button>
         </div>
@@ -99,7 +99,7 @@ const PlatformTypeSelector: React.FC<PlatformTypeSelectorProps> = ({ open, onClo
         {/* Body */}
         <div className="p-4">
           {isLoading && <Loading />}
-          {!isLoading && error && <ErrorState message={error} onRetry={() => { setError(null); setIsLoading(true); platformsApiService.listPlatformTypes(true).then(setTypes).catch((e:any)=> setError(e?.getUserMessage?.()||e?.message||t('platforms.typeSelector.loadFailed', '加载失败'))).finally(()=> setIsLoading(false)); }} />}
+          {!isLoading && error && <ErrorState message={error} onRetry={() => { setError(null); setIsLoading(true); platformsApiService.listPlatformTypes(true).then(setTypes).catch((e:any)=> setError(e?.getUserMessage?.()||e?.message||t('platforms.typeSelector.loadFailed', 'Load Failed'))).finally(()=> setIsLoading(false)); }} />}
 
           {!isLoading && !error && (
             <div className="grid grid-cols-2 gap-3">
@@ -140,7 +140,7 @@ const PlatformTypeSelector: React.FC<PlatformTypeSelectorProps> = ({ open, onClo
                 })}
               {!types?.filter((platformType) => platformType.is_supported !== false).length && (
                 <div className="col-span-2 text-center text-gray-500 dark:text-gray-400 py-8 text-sm">
-                  {t('platforms.typeSelector.emptyTypes', '暂无可用平台类型')}
+                  {t('platforms.typeSelector.emptyTypes', 'No available platform types')}
                 </div>
               )}
             </div>
@@ -150,7 +150,7 @@ const PlatformTypeSelector: React.FC<PlatformTypeSelectorProps> = ({ open, onClo
         {/* Footer */}
         <div className="px-5 py-3 border-t border-gray-100 dark:border-gray-700 flex justify-end">
           <button onClick={onClose} className="px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700">
-            {t('common.cancel', '取消')}
+            {t('common.cancel', 'Cancel')}
           </button>
         </div>
       </div>

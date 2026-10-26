@@ -1,8 +1,8 @@
-# TGO-Tech AI Service
+# Pelatis AI Service
 
-**TGO-Tech AI Service** - AI/ML Operations Microservice
+**Pelatis AI Service** - AI/ML Operations Microservice
 
-This service handles AI agent management, knowledge base operations, and usage analytics for the TGO-Tech customer service platform.
+This service handles AI agent management, knowledge base operations, and usage analytics for the Pelatis customer service platform.
 
 ## Features
 
@@ -257,4 +257,4 @@ docker run -p 8081:8081 --env-file .env tgo-ai-service
 
 ## License
 
-Proprietary - TGO-Tech
+Proprietary - Pelatis

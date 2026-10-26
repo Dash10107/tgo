@@ -6,12 +6,12 @@ sidebar_position: 2
 
 # 快速入门
 
-本指南将帮助你在 5 分钟内使用官方 SDK 创建并运行第一个 TGO 插件。
+本指南将帮助你在 5 分钟内使用官方 SDK 创建并运行第一个 Pelatis 插件。
 
 ## 前置条件
 
 - 已安装 Go 1.18+ 或 Python 3.8+
-- TGO 系统已部署运行（或本地连接到测试环境）
+- Pelatis 系统已部署运行（或本地连接到测试环境）
 
 ## 使用 Go SDK 开发
 
@@ -45,7 +45,7 @@ func (p *MyPlugin) Capabilities() []tgo.Capability {
 }
 
 func (p *MyPlugin) OnVisitorPanelRender(ctx *tgo.RenderContext) tgo.Template {
-	return tgo.NewText("你好，TGO SDK！").SetSize("lg").SetBold(true)
+	return tgo.NewText("你好，Pelatis SDK！").SetSize("lg").SetBold(true)
 }
 
 func main() {
@@ -84,7 +84,7 @@ class HelloPlugin(TGOPlugin):
     ]
 
     def on_visitor_panel_render(self, ctx: RenderContext):
-        return Text("你好，TGO SDK！").set_size("lg").set_bold(True)
+        return Text("你好，Pelatis SDK！").set_size("lg").set_bold(True)
 
 if __name__ == "__main__":
     HelloPlugin().run()
@@ -98,7 +98,7 @@ python main.py
 
 ## 编写插件配置 (`plugin.yml`)
 
-无论使用哪种 SDK，每个插件都必须包含一个 `plugin.yml` 文件。该文件定义了插件的元数据、源码地址以及编译/运行指令。TGO 通过该文件自动完成插件的下载、构建和生命周期管理。
+无论使用哪种 SDK，每个插件都必须包含一个 `plugin.yml` 文件。该文件定义了插件的元数据、源码地址以及编译/运行指令。Pelatis 通过该文件自动完成插件的下载、构建和生命周期管理。
 
 在项目根目录下创建 `plugin.yml`（详见 [插件配置规范](/plugin/manifest)）：
 
@@ -106,7 +106,7 @@ python main.py
 id: com.example.hello
 name: hello-plugin
 version: 1.0.0
-description: 我的第一个 TGO 插件
+description: 我的第一个 Pelatis 插件
 author: Your Name
 source:
   github:
@@ -121,18 +121,18 @@ runtime:
   auto_restart: true                   # 进程退出后自动重启
 ```
 
-## 部署到 TGO
+## 部署到 Pelatis
 
-TGO 支持直接从 Git 仓库安装插件，无需手动上传代码：
+Pelatis 支持直接从 Git 仓库安装插件，无需手动上传代码：
 
 1. **提交代码**：将你的代码（包含 `main.go/py` 和 `plugin.yml`）提交到 GitHub 或 Gitee。
 2. **获取地址**：复制你的 `plugin.yml` 在 GitHub 上的原始文件 (Raw) 地址或目录地址。
    - 目录地址示例：`https://github.com/your-user/repo/tree/main/my-plugin`
 3. **安装插件**：
-   - 进入 TGO 管理后台 -> 插件市场 -> 点击“安装插件”。
+   - 进入 Pelatis 管理后台 -> 插件市场 -> 点击“安装插件”。
    - 在 URL 栏填入上述地址，点击“获取信息”。
-   - TGO 会自动识别 `plugin.yml` 中的配置，点击“确认安装”即可。
-4. **运行状态**：安装完成后，TGO 会自动下载代码、执行构建并启动插件。
+   - Pelatis 会自动识别 `plugin.yml` 中的配置，点击“确认安装”即可。
+4. **运行状态**：安装完成后，Pelatis 会自动下载代码、执行构建并启动插件。
 
 ## 下一步
 

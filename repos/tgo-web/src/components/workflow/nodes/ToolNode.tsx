@@ -13,7 +13,7 @@ import NodeExecutionOverlay from '../overlays/NodeExecutionOverlay';
 const ToolNode: React.FC<NodeProps<ToolNodeData>> = ({ id, data, selected }) => {
   const { t } = useTranslation();
   const hasTool = Boolean(data.tool_id);
-  const defaultLabel = t('workflow.node_types.tool.label', 'Tool工具');
+  const defaultLabel = t('workflow.node_types.tool.label', 'Tool');
   
   return (
     <div
@@ -46,7 +46,7 @@ const ToolNode: React.FC<NodeProps<ToolNodeData>> = ({ id, data, selected }) => 
             {data.label || defaultLabel}
           </div>
           <div className="text-[10px] text-orange-600 dark:text-orange-400 font-bold uppercase tracking-widest mt-0.5 bg-orange-50 dark:bg-orange-900/30 px-1.5 py-0.5 rounded-md inline-block border border-orange-100/50 dark:border-orange-800/30">
-            {hasTool ? (data.tool_name || data.tool_id) : t('workflow.node_display.not_configured_tool', '未配置工具')}
+            {hasTool ? (data.tool_name || data.tool_id) : t('workflow.node_display.not_configured_tool', 'Tool Not Configured')}
           </div>
         </div>
       </div>
@@ -60,7 +60,7 @@ const ToolNode: React.FC<NodeProps<ToolNodeData>> = ({ id, data, selected }) => 
         </div>
         {!hasTool && (
           <span className="text-[9px] bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded-lg font-bold border border-amber-100 dark:border-amber-800/50 animate-pulse">
-            {t('common.required', '配置未完成')}
+            {t('common.required', 'Required')}
           </span>
         )}
       </div>

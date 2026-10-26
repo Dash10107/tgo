@@ -12,16 +12,16 @@ import NodeExecutionOverlay from '../overlays/NodeExecutionOverlay';
 
 const AnswerNode: React.FC<NodeProps<AnswerNodeData>> = ({ id, data, selected }) => {
   const { t } = useTranslation();
-  const defaultLabel = t('workflow.node_types.answer.label', '直接回复');
+  const defaultLabel = t('workflow.node_types.answer.label', 'Answer');
 
   const getOutputSummary = () => {
     switch (data.output_type) {
       case 'variable':
-        return data.output_variable ? `REF: ${data.output_variable}` : t('workflow.node_display.not_configured_variable', '未配置变量');
+        return data.output_variable ? `REF: ${data.output_variable}` : t('workflow.node_display.not_configured_variable', 'Variable Not Configured');
       case 'template':
-        return t('workflow.node_display.template_output', '文本模板');
+        return t('workflow.node_display.template_output', 'Text Template');
       case 'structured':
-        return t('workflow.node_display.fields_count', `${data.output_structure?.length || 0} 个字段`, { count: data.output_structure?.length || 0 });
+        return t('workflow.node_display.fields_count', `{{count}} Fields`, { count: data.output_structure?.length || 0 });
       default:
         return 'Workflow Output';
     }

@@ -1,4 +1,4 @@
-# TGO Dev Environment Redesign Implementation Plan
+# Pelatis Dev Environment Redesign Implementation Plan
 
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -387,7 +387,7 @@ dev: check-env
 	@$(COMPOSE) up -d $(INFRA_SERVICES)
 	@ENV_FILE=$(ENV_FILE) ./scripts/dev/init.sh
 	@$(COMPOSE) up -d $(RUN_SERVICES)
-	@echo "TGO dev environment is ready."
+	@echo "Pelatis dev environment is ready."
 ```
 
 Add `PROFILES` support by appending `--profile <name>` flags when present, and implement:

@@ -7,7 +7,7 @@ import time
 from typing import Any, Dict, List, Optional, Tuple
 from uuid import UUID
 
-from sqlalchemy import and_, func, or_, select, text
+from sqlalchemy import and_, case, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..config import get_settings
@@ -18,6 +18,7 @@ from ..schemas.search import SearchMetadata, SearchResult, SearchResponse
 from .vector_store import get_vector_store_service
 from .embedding import get_embedding_service_for_project
 from .query_processor import get_query_processor
+from .text_utils import escape_like, extract_keywords, needs_substring_matching
 
 logger = get_logger(__name__)
 
@@ -152,47 +153,51 @@ class SearchService:
         try:
             from ..models import File as FileModel
             async with get_db_session() as db:
-                # Detect if query has Chinese characters
-                has_chinese = any('\u4e00' <= char <= '\u9fff' for char in query)
-                
-                # Build query using trigram similarity for Chinese and TSV for English
-                if has_chinese:
-                    # Trigram similarity matching for Chinese (requires pg_trgm)
-                    # We also combine with ILIKE for exact substring matching
-                    base_query = select(
-                        FileDocument,
-                        FileModel,
-                        func.similarity(FileDocument.content, query).label('rank')
-                    ).outerjoin(
-                        FileModel, FileDocument.file_id == FileModel.id
-                    ).where(
-                        and_(
-                            or_(
-                                FileDocument.content.op('%')(query),
-                                FileDocument.content.ilike(f"%{query}%")
-                            ),
-                            FileDocument.project_id == project_id
-                        )
+                # Full-text search uses the 'simple' configuration (no stemming) so that
+                # English, Hindi and Marathi are tokenized consistently with the
+                # content_tsv trigger. Scripts without reliable word segmentation
+                # (CJK, Devanagari) additionally use trigram/substring matching.
+                tsquery = func.websearch_to_tsquery('simple', query)
+                fts_rank = func.ts_rank_cd(FileDocument.content_tsv, tsquery)
+                fts_match = FileDocument.content_tsv.op('@@')(tsquery)
+
+                if needs_substring_matching(query):
+                    terms = extract_keywords(query) or [query.strip()]
+                    patterns = [f"%{escape_like(t)}%" for t in terms]
+                    full_pattern = f"%{escape_like(query.strip())}%"
+                    term_hits = [
+                        case((FileDocument.content.ilike(pat, escape="\\"), 1.0), else_=0.0)
+                        for pat in patterns
+                    ]
+                    coverage = sum(term_hits[1:], term_hits[0]) / float(len(term_hits))
+                    # word_similarity handles a short query inside a long chunk, unlike similarity()
+                    rank_expr = func.greatest(
+                        func.word_similarity(query, FileDocument.content),
+                        coverage,
+                        fts_rank,
+                    )
+                    match_clause = or_(
+                        fts_match,
+                        FileDocument.content.ilike(full_pattern, escape="\\"),
+                        *[FileDocument.content.ilike(pat, escape="\\") for pat in patterns],
                     )
                 else:
-                    # Standard TSV for English/other languages
-                    base_query = select(
-                        FileDocument,
-                        FileModel,
-                        func.ts_rank_cd(
-                            FileDocument.content_tsv,
-                            func.websearch_to_tsquery('english', query) # Use english for non-chinese
-                        ).label('rank')
-                    ).outerjoin(
-                        FileModel, FileDocument.file_id == FileModel.id
-                    ).where(
-                        and_(
-                            FileDocument.content_tsv.op('@@')(
-                                func.websearch_to_tsquery('english', query)
-                            ),
-                            FileDocument.project_id == project_id
-                        )
-                    )
+                    rank_expr = fts_rank
+                    match_clause = fts_match
+
+                base_query = select(
+                    FileDocument,
+                    FileModel,
+                    rank_expr.label('rank')
+                ).outerjoin(
+                    FileModel, FileDocument.file_id == FileModel.id
+                ).where(
+                    and_(match_clause, FileDocument.project_id == project_id)
+                )
+
+                # Apply collection filter (previously ignored for keyword search)
+                if collection_id:
+                    base_query = base_query.where(FileDocument.collection_id == collection_id)
 
                 # Apply content_type filter
                 if filters and "content_type" in filters:
@@ -201,17 +206,17 @@ class SearchService:
                         base_query = base_query.where(FileDocument.content_type.in_(content_types))
                     else:
                         base_query = base_query.where(FileDocument.content_type == content_types)
+                if filters and "language" in filters:
+                    base_query = base_query.where(FileDocument.language == filters["language"])
 
                 # Apply score threshold and ordering
-                if min_score > 0 and not has_chinese:
-                    base_query = base_query.where(text(f"ts_rank_cd(content_tsv, websearch_to_tsquery('english', :query)) >= {min_score}"))
-                elif min_score > 0 and has_chinese:
-                    base_query = base_query.where(func.similarity(FileDocument.content, query) >= min_score)
-                
-                base_query = base_query.order_by(text("rank DESC")).limit(limit)
+                if min_score > 0:
+                    base_query = base_query.where(rank_expr >= min_score)
+
+                base_query = base_query.order_by(rank_expr.desc()).limit(limit)
                 
                 # Execute query
-                result = await db.execute(base_query, {"query": query})
+                result = await db.execute(base_query)
                 rows = result.all()
                 
                 # Convert to search results

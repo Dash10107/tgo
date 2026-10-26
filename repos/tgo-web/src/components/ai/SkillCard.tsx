@@ -83,7 +83,7 @@ const SkillCard: React.FC<SkillCardProps> = ({ skill, enabled, onToggle, onClick
               onClick={() => onToggle(skill, !enabled)}
               className="relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200 focus:outline-none"
               style={{ backgroundColor: enabled ? '#3b82f6' : '#d1d5db' }}
-              title={enabled ? t('skills.disable', '禁用技能') : t('skills.enable', '启用技能')}
+              title={enabled ? t('skills.disable', 'Disable skill') : t('skills.enable', 'Enable skill')}
             >
               <span
                 className={`inline-block h-3.5 w-3.5 rounded-full bg-white shadow-sm transition-transform duration-200 ${
@@ -127,7 +127,7 @@ const SkillCard: React.FC<SkillCardProps> = ({ skill, enabled, onToggle, onClick
               <User className="w-3.5 h-3.5" />
             )}
             <span className="truncate max-w-[80px]">
-              {skill.is_official ? t('common.official', '官方') : (skill.author || '-')}
+              {skill.is_official ? t('common.official', 'Official') : (skill.author || '-')}
             </span>
           </div>
           <div className="w-px h-3 bg-gray-200 dark:bg-gray-700" />
@@ -156,7 +156,7 @@ const SkillCard: React.FC<SkillCardProps> = ({ skill, enabled, onToggle, onClick
                   }}
                   className="w-full flex items-center px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                 >
-                  <Eye className="w-3.5 h-3.5 mr-2" /> {t('common.view', '查看')}
+                  <Eye className="w-3.5 h-3.5 mr-2" /> {t('common.view', 'View')}
                 </button>
                 <div className="h-px bg-gray-100 dark:bg-gray-700 my-1" />
                 <button
@@ -166,7 +166,7 @@ const SkillCard: React.FC<SkillCardProps> = ({ skill, enabled, onToggle, onClick
                   }}
                   className="w-full flex items-center px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                 >
-                  <Trash2 className="w-3.5 h-3.5 mr-2" /> {t('common.delete', '删除')}
+                  <Trash2 className="w-3.5 h-3.5 mr-2" /> {t('common.delete', 'Delete')}
                 </button>
               </div>
             )}

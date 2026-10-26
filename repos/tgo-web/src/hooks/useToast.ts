@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { ToastContext } from '@/components/ui/ToastContainer';
 
 /**
- * Toast Hook，用于在组件中显示Toast通知
+ * Toast hook for showing Toast notifications in components
  */
 export const useToast = () => {
   const context = useContext(ToastContext);

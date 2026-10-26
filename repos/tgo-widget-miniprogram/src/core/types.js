@@ -2,6 +2,8 @@
  * Message type constants and helper functions
  */
 
+var i18n = require('./i18n')
+
 // Payload types
 var MSG_TYPE_TEXT = 1
 var MSG_TYPE_IMAGE = 2
@@ -48,7 +50,7 @@ function toPayloadFromAny(raw) {
     return { type: MSG_TYPE_IMAGE, url: raw.url, width: raw.width || 0, height: raw.height || 0 }
   }
   if (t === MSG_TYPE_FILE && typeof raw.url === 'string' && typeof raw.name === 'string') {
-    return { type: MSG_TYPE_FILE, content: raw.content || '[文件]', url: raw.url, name: raw.name, size: raw.size || 0 }
+    return { type: MSG_TYPE_FILE, content: raw.content || i18n.t('file.placeholder'), url: raw.url, name: raw.name, size: raw.size || 0 }
   }
   if (t === MSG_TYPE_MIXED && typeof raw.content === 'string' && Array.isArray(raw.images)) {
     var images = raw.images

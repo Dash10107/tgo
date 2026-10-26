@@ -60,7 +60,7 @@ const KnowledgeBaseSelectionModal: React.FC<KnowledgeBaseSelectionModalProps> = 
     if (isOpen && knowledgeBases.length === 0) {
       fetchKnowledgeBases().catch(error => {
         console.error('Failed to load knowledge bases:', error);
-        showToast('error', t('common.loadFailed', '加载失败'), t('knowledge.selectModal.loadFailedDesc', '无法加载知识库列表，请稍后重试'));
+        showToast('error', t('common.loadFailed', 'Load Failed'), t('knowledge.selectModal.loadFailedDesc', 'Unable to load knowledge base list, please try again later'));
       });
     }
   }, [isOpen, knowledgeBases.length, fetchKnowledgeBases, showToast]);
@@ -115,7 +115,7 @@ const KnowledgeBaseSelectionModal: React.FC<KnowledgeBaseSelectionModalProps> = 
   const handleRetry = () => {
     refreshKnowledgeBases().catch(error => {
       console.error('Failed to retry loading knowledge bases:', error);
-      showToast('error', t('common.retryFailed', '重试失败'), t('knowledge.selectModal.retryFailedDesc', '无法加载知识库列表，请检查网络连接'));
+      showToast('error', t('common.retryFailed', 'Retry Failed'), t('knowledge.selectModal.retryFailedDesc', 'Unable to load knowledge base list, please check your network connection'));
     });
   };
 
@@ -126,7 +126,7 @@ const KnowledgeBaseSelectionModal: React.FC<KnowledgeBaseSelectionModalProps> = 
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('knowledge.selectModal.title', '选择知识库')}</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('knowledge.selectModal.title', 'Select Knowledge Base')}</h3>
           <button
             onClick={onClose}
             className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
@@ -143,7 +143,7 @@ const KnowledgeBaseSelectionModal: React.FC<KnowledgeBaseSelectionModalProps> = 
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t('knowledge.selectModal.searchPlaceholder', '搜索知识库...')}
+              placeholder={t('knowledge.selectModal.searchPlaceholder', 'Search knowledge bases...')}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
             />
           </div>
@@ -163,12 +163,12 @@ const KnowledgeBaseSelectionModal: React.FC<KnowledgeBaseSelectionModalProps> = 
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
                   }`}
                 >
-                  {t('common.all', '全部')}
+                  {t('common.all', 'All')}
                 </button>
               ))}
             </div>
             <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
-              <span>{t('knowledge.selectModal.selectedSummary', { selected: tempSelectedKnowledgeBases.length, total: totalCount, defaultValue: `已选 ${tempSelectedKnowledgeBases.length} / 共 ${totalCount}` })}</span>
+              <span>{t('knowledge.selectModal.selectedSummary', { selected: tempSelectedKnowledgeBases.length, total: totalCount, defaultValue: `Selected ${tempSelectedKnowledgeBases.length} / ${totalCount} total` })}</span>
               <span className="text-gray-300 dark:text-gray-600">|</span>
               <button
                 className="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
@@ -178,13 +178,13 @@ const KnowledgeBaseSelectionModal: React.FC<KnowledgeBaseSelectionModalProps> = 
                   setTempSelectedKnowledgeBases(allIds);
                 }}
               >
-                {t('common.selectAll', '全选')}
+                {t('common.selectAll', 'Select All')}
               </button>
               <button
                 className="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                 onClick={() => setTempSelectedKnowledgeBases([])}
               >
-                {t('common.clear', '清空')}
+                {t('common.clear', 'Clear')}
               </button>
             </div>
           </div>
@@ -198,7 +198,7 @@ const KnowledgeBaseSelectionModal: React.FC<KnowledgeBaseSelectionModalProps> = 
               <div className="flex items-center justify-center py-8">
                 <div className="text-center">
                   <RefreshCw className="w-6 h-6 animate-spin text-gray-400 dark:text-gray-500 mx-auto mb-2" />
-                  <p className="text-gray-500 dark:text-gray-400 text-sm">{t('knowledge.selectModal.loading', '正在加载知识库...')}</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">{t('knowledge.selectModal.loading', 'Loading knowledge bases...')}</p>
                 </div>
               </div>
             )}
@@ -210,13 +210,13 @@ const KnowledgeBaseSelectionModal: React.FC<KnowledgeBaseSelectionModalProps> = 
                   <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
                     <X className="w-6 h-6 text-red-600 dark:text-red-400" />
                   </div>
-                  <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">{t('common.loadFailed', '加载失败')}</h3>
+                  <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">{t('common.loadFailed', 'Load Failed')}</h3>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">{error}</p>
                   <button
                     onClick={handleRetry}
                     className="px-3 py-1.5 bg-blue-500 dark:bg-blue-600 text-white text-xs rounded hover:bg-blue-600 dark:hover:bg-blue-700 transition-colors"
                   >
-                    {t('common.retry', '重试')}
+                    {t('common.retry', 'Retry')}
                   </button>
                 </div>
               </div>
@@ -228,7 +228,7 @@ const KnowledgeBaseSelectionModal: React.FC<KnowledgeBaseSelectionModalProps> = 
                 {filteredKnowledgeBases.length === 0 ? (
                   <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                     <FolderOpen className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <p>{t('knowledge.selectModal.noMatch', '未找到匹配的知识库')}</p>
+                    <p>{t('knowledge.selectModal.noMatch', 'No matching knowledge base found')}</p>
                   </div>
                 ) : (
                   filteredKnowledgeBases.map(knowledgeBase => {
@@ -254,7 +254,7 @@ const KnowledgeBaseSelectionModal: React.FC<KnowledgeBaseSelectionModalProps> = 
                           {knowledgeBase.content}
                         </div>
                         <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                          {t('knowledge.filesCount', { count: knowledgeBase.fileCount ?? 0, defaultValue: `${knowledgeBase.fileCount ?? 0} 文件` })}
+                          {t('knowledge.filesCount', { count: knowledgeBase.fileCount ?? 0, defaultValue: `${knowledgeBase.fileCount ?? 0} files` })}
                         </div>
                       </div>
                     </div>
@@ -284,7 +284,7 @@ const KnowledgeBaseSelectionModal: React.FC<KnowledgeBaseSelectionModalProps> = 
               onClose();
             }}
           >
-            <span>{t('knowledge.manage', '管理知识库')}</span>
+            <span>{t('knowledge.manage', 'Manage Knowledge Base')}</span>
             <ExternalLink className="w-4 h-4" />
           </button>
         </div>
@@ -295,13 +295,13 @@ const KnowledgeBaseSelectionModal: React.FC<KnowledgeBaseSelectionModalProps> = 
             onClick={handleCancel}
             className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600"
           >
-            {t('common.cancel', '取消')}
+            {t('common.cancel', 'Cancel')}
           </button>
           <button
             onClick={handleConfirm}
             className="px-4 py-2 text-sm font-medium text-white bg-blue-600 dark:bg-blue-700 border border-transparent rounded-md hover:bg-blue-700 dark:hover:bg-blue-800"
           >
-            {t('knowledge.selectModal.confirmSelection', { count: tempSelectedKnowledgeBases.length, defaultValue: `确认选择 (${tempSelectedKnowledgeBases.length})` })}
+            {t('knowledge.selectModal.confirmSelection', { count: tempSelectedKnowledgeBases.length, defaultValue: `Confirm selection (${tempSelectedKnowledgeBases.length})` })}
           </button>
         </div>
       </div>

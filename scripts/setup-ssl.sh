@@ -44,7 +44,7 @@ fi
 # Check if nginx is running (required for webroot mode)
 if ! docker ps --format '{{.Names}}' | grep -q "^tgo-nginx$"; then
     echo "[ERROR] tgo-nginx container is not running"
-    echo "[INFO] Please start TGO services first: ./tgo.sh up"
+    echo "[INFO] Please start Pelatis services first: ./tgo.sh up"
     exit 1
 fi
 

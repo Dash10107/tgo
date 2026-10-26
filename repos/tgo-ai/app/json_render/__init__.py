@@ -1,4 +1,4 @@
-"""json-render integration for TGO AI."""
+"""json-render integration for Pelatis AI."""
 
 from app.json_render.schema_manager import (
     JSON_RENDER_SPEC_FENCE_CLOSE,

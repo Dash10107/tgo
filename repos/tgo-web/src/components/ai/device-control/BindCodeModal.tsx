@@ -96,7 +96,7 @@ const BindCodeModal: React.FC<BindCodeModalProps> = ({ isOpen, onClose }) => {
               <Monitor className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
             <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
-              {t('deviceControl.bindCode.title', '添加设备')}
+              {t('deviceControl.bindCode.title', 'Add Device')}
             </h2>
           </div>
           <button
@@ -110,7 +110,7 @@ const BindCodeModal: React.FC<BindCodeModalProps> = ({ isOpen, onClose }) => {
         {/* Content */}
         <div className="p-6">
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 text-center">
-            {t('deviceControl.bindCode.description', '在控制端软件中输入以下绑定码来连接您的设备')}
+            {t('deviceControl.bindCode.description', 'Enter the following bind code in the control client software to connect your device')}
           </p>
 
           {/* Bind Code Display */}
@@ -136,13 +136,13 @@ const BindCodeModal: React.FC<BindCodeModalProps> = ({ isOpen, onClose }) => {
                 <div className="flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                   <Clock className="w-4 h-4" />
                   <span>
-                    {t('deviceControl.bindCode.expiresIn', '有效期剩余')} {formatTime(timeLeft)}
+                    {t('deviceControl.bindCode.expiresIn', 'Expires in')} {formatTime(timeLeft)}
                   </span>
                 </div>
               </>
             ) : (
               <div className="text-center py-4 text-gray-500">
-                {t('deviceControl.bindCode.expired', '绑定码已过期')}
+                {t('deviceControl.bindCode.expired', 'Bind code expired')}
               </div>
             )}
           </div>
@@ -157,12 +157,12 @@ const BindCodeModal: React.FC<BindCodeModalProps> = ({ isOpen, onClose }) => {
               {copied ? (
                 <>
                   <Check className="w-4 h-4" />
-                  {t('common.copied', '已复制')}
+                  {t('common.copied', 'Copied')}
                 </>
               ) : (
                 <>
                   <Copy className="w-4 h-4" />
-                  {t('common.copy', '复制')}
+                  {t('common.copy', 'Copy')}
                 </>
               )}
             </button>
@@ -172,7 +172,7 @@ const BindCodeModal: React.FC<BindCodeModalProps> = ({ isOpen, onClose }) => {
               className="px-4 py-3 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-xl font-medium transition-colors flex items-center gap-2"
             >
               <RefreshCw className={`w-4 h-4 ${isGeneratingCode ? 'animate-spin' : ''}`} />
-              {t('common.refresh', '刷新')}
+              {t('common.refresh', 'Refresh')}
             </button>
           </div>
         </div>
@@ -181,12 +181,12 @@ const BindCodeModal: React.FC<BindCodeModalProps> = ({ isOpen, onClose }) => {
         <div className="px-6 pb-6">
           <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4">
             <h4 className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
-              {t('deviceControl.bindCode.howTo', '如何连接？')}
+              {t('deviceControl.bindCode.howTo', 'How to connect?')}
             </h4>
             <ol className="text-sm text-blue-700 dark:text-blue-300 space-y-1 list-decimal list-inside">
-              <li>{t('deviceControl.bindCode.step1', '下载并安装控制端软件')}</li>
-              <li>{t('deviceControl.bindCode.step2', '打开软件并输入上方绑定码')}</li>
-              <li>{t('deviceControl.bindCode.step3', '连接成功后设备将出现在列表中')}</li>
+              <li>{t('deviceControl.bindCode.step1', 'Download and install the control client software')}</li>
+              <li>{t('deviceControl.bindCode.step2', 'Open the software and enter the bind code above')}</li>
+              <li>{t('deviceControl.bindCode.step3', 'Once connected, the device will appear in the list')}</li>
             </ol>
           </div>
         </div>

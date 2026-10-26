@@ -20,7 +20,7 @@ interface ToastContainerProps {
 }
 
 /**
- * Toast容器组件，提供全局Toast功能
+ * Toast container component providing global Toast functionality
  */
 const ToastContainer: React.FC<ToastContainerProps> = ({ children }) => {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
@@ -51,7 +51,7 @@ const ToastContainer: React.FC<ToastContainerProps> = ({ children }) => {
     <ToastContext.Provider value={{ showToast }}>
       {children}
       
-      {/* Toast容器 */}
+      {/* Toast container */}
       <div className="fixed top-4 right-4 z-[2000] space-y-3 max-w-md pointer-events-none">
         {toasts.map(toast => (
           <div key={toast.id} className="transform transition-all duration-300 ease-in-out pointer-events-auto">

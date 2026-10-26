@@ -64,7 +64,7 @@ const PluginsSettings: React.FC = () => {
 
   const handlePluginAction = async (pluginId: string, action: 'start' | 'stop' | 'restart' | 'uninstall') => {
     if (action === 'uninstall') {
-      if (!confirm(t('settings.plugins.actions.uninstallConfirm', '确定要卸载此插件吗？此操作不可恢复。'))) {
+      if (!confirm(t('settings.plugins.actions.uninstallConfirm', 'Are you sure you want to uninstall this plugin? This action cannot be undone.'))) {
         return;
       }
     }
@@ -91,11 +91,11 @@ const PluginsSettings: React.FC = () => {
       
       if (info.message) {
         showInfo(
-          info.has_update ? t('settings.plugins.updateAvailable', '有新版本') : t('common.notice', '提示'), 
+          info.has_update ? t('settings.plugins.updateAvailable', 'Update Available') : t('common.notice', 'Notice'), 
           info.message
         );
       } else if (!info.has_update) {
-        showSuccess(t('settings.plugins.checkUpdate', '检查更新'), t('settings.plugins.noUpdate', '当前已是最新版本'));
+        showSuccess(t('settings.plugins.checkUpdate', 'Check Update'), t('settings.plugins.noUpdate', 'Already the latest version'));
       }
       
       // Refresh list to show the badge persisted in DB
@@ -103,7 +103,7 @@ const PluginsSettings: React.FC = () => {
     } catch (error: any) {
       console.error(`Failed to check update for ${pluginId}:`, error);
       showError(
-        t('settings.plugins.checkUpdateError', '检查更新失败'), 
+        t('settings.plugins.checkUpdateError', 'Failed to check for updates'), 
         error.response?.data?.error?.message || error.message
       );
     } finally {
@@ -116,7 +116,7 @@ const PluginsSettings: React.FC = () => {
     const { plugin, latest_config } = showUpgradeModal;
     
     setIsUpgrading(true);
-    setUpgradeProgress({ stage: 'preparing', message: t('settings.plugins.upgrade.preparing', '准备升级...') });
+    setUpgradeProgress({ stage: 'preparing', message: t('settings.plugins.upgrade.preparing', 'Preparing upgrade...') });
 
     try {
       await upgradePluginStream(
@@ -136,13 +136,13 @@ const PluginsSettings: React.FC = () => {
           }
         },
         (error) => {
-          const message = error.getUserMessage?.() || error.message || t('settings.plugins.upgrade.error', '升级失败');
+          const message = error.getUserMessage?.() || error.message || t('settings.plugins.upgrade.error', 'Upgrade failed');
           setUpgradeProgress({ stage: 'error', message });
           setIsUpgrading(false);
         }
       );
     } catch (error: any) {
-      const message = error.getUserMessage?.() || error.message || t('settings.plugins.upgrade.error', '升级失败');
+      const message = error.getUserMessage?.() || error.message || t('settings.plugins.upgrade.error', 'Upgrade failed');
       setUpgradeProgress({ stage: 'error', message });
       setIsUpgrading(false);
     }
@@ -162,7 +162,7 @@ const PluginsSettings: React.FC = () => {
                       error.response?.data?.error?.message || 
                       error.response?.data?.detail || 
                       error.message || 
-                      t('settings.plugins.fetch.error', '无法获取插件信息，请检查 URL 是否正确。');
+                      t('settings.plugins.fetch.error', 'Unable to fetch plugin information. Please check that the URL is correct.');
       setFetchError(message);
     } finally {
       setIsFetchingInfo(false);
@@ -171,7 +171,7 @@ const PluginsSettings: React.FC = () => {
 
   const handleInstall = async () => {
     setIsInstalling(true);
-    setInstallProgress({ stage: 'preparing', message: t('settings.plugins.install.preparing', '准备安装...') });
+    setInstallProgress({ stage: 'preparing', message: t('settings.plugins.install.preparing', 'Preparing installation...') });
     
     try {
       let config: any;
@@ -195,13 +195,13 @@ const PluginsSettings: React.FC = () => {
           }
         },
         (error) => {
-          const message = error.getUserMessage?.() || error.message || t('settings.plugins.install.error', '安装失败');
+          const message = error.getUserMessage?.() || error.message || t('settings.plugins.install.error', 'Installation failed');
           setInstallProgress({ stage: 'error', message });
           setIsInstalling(false);
         }
       );
     } catch (error: any) {
-      const message = error.getUserMessage?.() || error.message || t('settings.plugins.install.error', '安装失败');
+      const message = error.getUserMessage?.() || error.message || t('settings.plugins.install.error', 'Installation failed');
       setInstallProgress({ stage: 'error', message });
       setIsInstalling(false);
     }
@@ -215,7 +215,7 @@ const PluginsSettings: React.FC = () => {
       setDevToken(token);
       setShowTokenModal(true);
     } catch (error) {
-      alert(t('settings.plugins.token.error', '生成令牌失败'));
+      alert(t('settings.plugins.token.error', 'Failed to generate token'));
     } finally {
       setIsGeneratingToken(false);
     }
@@ -253,10 +253,10 @@ const PluginsSettings: React.FC = () => {
           <Puzzle className="w-6 h-6 text-blue-600" />
           <div>
             <h1 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">
-              {t('settings.plugins.title', '插件管理')}
+              {t('settings.plugins.title', 'Plugins')}
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              {t('settings.plugins.subtitle', '查看并管理已连接或已安装的插件')}
+              {t('settings.plugins.subtitle', 'View and manage plugins connected to Pelatis')}
             </p>
           </div>
         </div>
@@ -267,14 +267,14 @@ const PluginsSettings: React.FC = () => {
             className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800/50 transition-colors"
           >
             {isGeneratingToken ? <RefreshCcw className="w-4 h-4 animate-spin" /> : <Key className="w-4 h-4" />}
-            {t('settings.plugins.token.generate', '调试令牌')}
+            {t('settings.plugins.token.generate', 'Debug Token')}
           </button>
           <button
             onClick={() => setShowInstallModal(true)}
             className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
           >
             <Plus className="w-4 h-4" />
-            {t('settings.plugins.install.button', '安装插件')}
+            {t('settings.plugins.install.button', 'Install Plugin')}
           </button>
           <button
             onClick={() => {
@@ -284,7 +284,7 @@ const PluginsSettings: React.FC = () => {
             className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors"
           >
             <RefreshCcw className={`w-4 h-4 ${isLoadingInstalled ? 'animate-spin' : ''}`} />
-            {t('common.refresh', '刷新')}
+            {t('common.refresh', 'Refresh')}
           </button>
         </div>
       </div>
@@ -294,22 +294,22 @@ const PluginsSettings: React.FC = () => {
         {isLoadingInstalled && installedPlugins.length === 0 ? (
             <div className="p-12 flex flex-col items-center justify-center text-gray-500">
               <RefreshCcw className="w-8 h-8 animate-spin mb-4" />
-              <p>{t('common.loading', '加载中...')}</p>
+              <p>{t('common.loading', 'Loading...')}</p>
             </div>
           ) : installedPlugins.length === 0 ? (
             <div className="p-12 flex flex-col items-center justify-center text-gray-500 text-center">
               <Plus className="w-12 h-12 mb-4 opacity-20" />
               <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">
-              {t('settings.plugins.installed.empty.title', '暂无插件')}
+              {t('settings.plugins.installed.empty.title', 'No plugins yet')}
               </h3>
               <p className="max-w-xs text-sm">
-              {t('settings.plugins.installed.empty.description', '您可以从 GitHub 源码编译安装、通过二进制文件安装，或使用调试令牌连接本地插件。')}
+              {t('settings.plugins.installed.empty.description', 'You can install from GitHub source, via binary files, or connect local plugins using debug tokens.')}
               </p>
               <button
                 onClick={() => setShowInstallModal(true)}
                 className="mt-4 text-blue-600 hover:underline text-sm font-medium"
               >
-                {t('settings.plugins.install.now', '立即安装')}
+                {t('settings.plugins.install.now', 'Install Now')}
               </button>
             </div>
           ) : (
@@ -355,12 +355,12 @@ const PluginsSettings: React.FC = () => {
                               ) : (
                                 <ArrowUpCircle className="w-2 h-2" />
                               )}
-                              {t('settings.plugins.updateAvailable', '有新版本')} v{plugin.latest_version}
+                              {t('settings.plugins.updateAvailable', 'Update Available')} v{plugin.latest_version}
                             </button>
                           )}
                         {plugin.is_dev_mode && (
                           <span className="px-2 py-0.5 text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 rounded uppercase tracking-wider">
-                            {t('settings.plugins.debug.badge', '调试')}
+                            {t('settings.plugins.debug.badge', 'Debug')}
                           </span>
                         )}
                         </h3>
@@ -374,7 +374,7 @@ const PluginsSettings: React.FC = () => {
                             plugin.status === 'installing' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' :
                             'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
                           }`}>
-                          {plugin.status === 'running' && plugin.is_dev_mode ? t('settings.plugins.status.connected', '已连接') : 
+                          {plugin.status === 'running' && plugin.is_dev_mode ? t('settings.plugins.status.connected', 'Connected') : 
                            t(`settings.plugins.status.${plugin.status}`, plugin.status)}
                           </span>
                         </div>
@@ -385,7 +385,7 @@ const PluginsSettings: React.FC = () => {
                     <button
                       onClick={() => setShowDetailPlugin(plugin)}
                       className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md"
-                      title={t('settings.plugins.actions.detail', '查看详情')}
+                      title={t('settings.plugins.actions.detail', 'View Details')}
                     >
                       <ExternalLink className="w-4 h-4" />
                     </button>
@@ -396,7 +396,7 @@ const PluginsSettings: React.FC = () => {
                         onClick={() => handleCheckUpdate(plugin.plugin_id)}
                         disabled={isCheckingUpdate[plugin.plugin_id]}
                         className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md disabled:opacity-50"
-                        title={t('settings.plugins.actions.checkUpdate', '检查更新')}
+                        title={t('settings.plugins.actions.checkUpdate', 'Check for updates')}
                       >
                         <ArrowUpCircle className={`w-4 h-4 ${isCheckingUpdate[plugin.plugin_id] ? 'animate-bounce' : ''}`} />
                       </button>
@@ -404,7 +404,7 @@ const PluginsSettings: React.FC = () => {
                       <button
                         onClick={() => handleShowLogs(plugin.plugin_id)}
                         className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
-                        title={t('settings.plugins.actions.logs', '查看日志')}
+                        title={t('settings.plugins.actions.logs', 'View logs')}
                       >
                         <Terminal className="w-4 h-4" />
                       </button>
@@ -414,7 +414,7 @@ const PluginsSettings: React.FC = () => {
                             onClick={() => handlePluginAction(plugin.plugin_id, 'stop')}
                             disabled={!!processingPlugins[plugin.plugin_id]}
                             className="p-2 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-md disabled:opacity-50"
-                          title={t('settings.plugins.actions.stop', '停止')}
+                          title={t('settings.plugins.actions.stop', 'Stop')}
                         >
                             {processingPlugins[plugin.plugin_id] === 'stop' ? (
                               <RefreshCcw className="w-4 h-4 animate-spin" />
@@ -427,7 +427,7 @@ const PluginsSettings: React.FC = () => {
                             onClick={() => handlePluginAction(plugin.plugin_id, 'start')}
                             disabled={plugin.status === 'installing' || !!processingPlugins[plugin.plugin_id]}
                           className="p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-md disabled:opacity-50"
-                          title={t('settings.plugins.actions.start', '启动')}
+                          title={t('settings.plugins.actions.start', 'Start')}
                         >
                             {processingPlugins[plugin.plugin_id] === 'start' ? (
                               <RefreshCcw className="w-4 h-4 animate-spin" />
@@ -441,7 +441,7 @@ const PluginsSettings: React.FC = () => {
                           onClick={() => handlePluginAction(plugin.plugin_id, 'restart')}
                           disabled={plugin.status === 'installing' || !!processingPlugins[plugin.plugin_id]}
                         className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md disabled:opacity-50"
-                        title={t('settings.plugins.actions.restart', '重启')}
+                        title={t('settings.plugins.actions.restart', 'Restart')}
                       >
                           <RotateCw className={`w-4 h-4 ${processingPlugins[plugin.plugin_id] === 'restart' ? 'animate-spin' : ''}`} />
                       </button>
@@ -450,7 +450,7 @@ const PluginsSettings: React.FC = () => {
                           onClick={() => handlePluginAction(plugin.plugin_id, 'uninstall')}
                           disabled={!!processingPlugins[plugin.plugin_id]}
                           className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md disabled:opacity-50"
-                        title={t('settings.plugins.actions.uninstall', '卸载')}
+                        title={t('settings.plugins.actions.uninstall', 'Uninstall')}
                       >
                           {processingPlugins[plugin.plugin_id] === 'uninstall' ? (
                             <RefreshCcw className="w-4 h-4 animate-spin" />
@@ -462,7 +462,7 @@ const PluginsSettings: React.FC = () => {
                     )}
                     {plugin.is_dev_mode && (
                       <span className="text-xs text-gray-400 px-2 italic">
-                        {t('settings.plugins.debug.autoManaged', '调试模式 - 自动管理')}
+                        {t('settings.plugins.debug.autoManaged', 'Debug Mode - Auto Managed')}
                       </span>
                     )}
                     </div>
@@ -476,7 +476,7 @@ const PluginsSettings: React.FC = () => {
 
                   <div className="mt-4 ml-16 flex items-center gap-6 text-xs text-gray-500">
                     <div className="flex items-center gap-1">
-                    <span>{plugin.is_dev_mode ? t('settings.plugins.connectedAt', '连接于') : t('settings.plugins.installedAt', '安装于')}:</span>
+                    <span>{plugin.is_dev_mode ? t('settings.plugins.connectedAt', 'Connected At') : t('settings.plugins.installedAt', 'Installed At')}:</span>
                       <span className="text-gray-700 dark:text-gray-300 font-medium">
                       {formatRelativeTime(plugin.installed_at)}
                       </span>
@@ -501,7 +501,7 @@ const PluginsSettings: React.FC = () => {
             <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                 <Plus className="w-5 h-5 text-blue-600" />
-                {t('settings.plugins.install.modal.title', '安装新插件')}
+                {t('settings.plugins.install.modal.title', 'Install New Plugin')}
               </h2>
               <button 
                 onClick={resetInstallState}
@@ -561,9 +561,9 @@ const PluginsSettings: React.FC = () => {
                       
                       <div className="space-y-2">
                         <h3 className="text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight">
-                          {installProgress.stage === 'complete' ? t('settings.plugins.install.success', '安装成功') : 
-                           installProgress.stage === 'error' ? t('settings.plugins.install.error', '安装失败') : 
-                           t('settings.plugins.install.processing', '正在安装插件')}
+                          {installProgress.stage === 'complete' ? t('settings.plugins.install.success', 'Installation successful') : 
+                           installProgress.stage === 'error' ? t('settings.plugins.install.error', 'Installation failed') : 
+                           t('settings.plugins.install.processing', 'Installing plugin...')}
                         </h3>
                         <p className="text-sm text-gray-500 dark:text-gray-400 font-medium max-w-[280px] mx-auto leading-relaxed">
                           {installProgress.message}
@@ -574,12 +574,12 @@ const PluginsSettings: React.FC = () => {
                     {/* Progress Stages Visualizer */}
                     <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 space-y-4 border border-gray-100 dark:border-gray-700 shadow-xl shadow-gray-200/50 dark:shadow-none">
                       {[
-                        { id: 'preparing', label: t('settings.plugins.install.stage.preparing', '准备环境'), icon: Settings },
-                        { id: 'cloning', label: t('settings.plugins.install.stage.cloning', '克隆代码'), type: 'github', icon: Github },
-                        { id: 'downloading', label: t('settings.plugins.install.stage.downloading', '下载产物'), type: 'binary', icon: Download },
-                        { id: 'copying', label: t('settings.plugins.install.stage.copying', '部署文件'), icon: Box },
-                        { id: 'building', label: t('settings.plugins.install.stage.building', '编译构建'), type: 'github', icon: Code },
-                        { id: 'starting', label: t('settings.plugins.install.stage.starting', '启动服务'), icon: Play }
+                        { id: 'preparing', label: t('settings.plugins.install.stage.preparing', 'Prepare environment'), icon: Settings },
+                        { id: 'cloning', label: t('settings.plugins.install.stage.cloning', 'Clone code'), type: 'github', icon: Github },
+                        { id: 'downloading', label: t('settings.plugins.install.stage.downloading', 'Download artifact'), type: 'binary', icon: Download },
+                        { id: 'copying', label: t('settings.plugins.install.stage.copying', 'Deploy files'), icon: Box },
+                        { id: 'building', label: t('settings.plugins.install.stage.building', 'Compile and build'), type: 'github', icon: Code },
+                        { id: 'starting', label: t('settings.plugins.install.stage.starting', 'Start service'), icon: Play }
                       ].map((s, idx) => {
                         const stages = ['preparing', 'cloning', 'downloading', 'copying', 'building', 'starting', 'complete'];
                         const currentIdx = stages.indexOf(installProgress.stage);
@@ -633,20 +633,20 @@ const PluginsSettings: React.FC = () => {
                         onClick={() => setInstallProgress(null)}
                         className="w-full py-4 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-2xl hover:opacity-90 transition-all font-black text-sm uppercase tracking-widest shadow-xl shadow-gray-200 dark:shadow-none"
                       >
-                        {t('common.back', '返回并重试')}
+                        {t('common.back', 'Back')}
                       </button>
                     ) : installProgress.stage === 'complete' ? (
                       <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
                         <div className="text-center">
                           <p className="text-xs text-green-600 dark:text-green-500 font-bold uppercase tracking-widest bg-green-50 dark:bg-green-900/20 py-2 px-4 rounded-full inline-block mb-4">
-                            🎉 {t('settings.plugins.install.enjoy', '一切就绪，开始探索吧')}
+                            🎉 {t('settings.plugins.install.enjoy', 'Everything is ready, start exploring!')}
                           </p>
                         </div>
                         <button
                           onClick={resetInstallState}
                           className="w-full py-4 bg-green-600 text-white rounded-2xl hover:bg-green-700 transition-all font-black text-sm uppercase tracking-widest shadow-xl shadow-green-200 dark:shadow-none"
                         >
-                          {t('common.complete', '完成并关闭')}
+                          {t('common.complete', 'Complete')}
                         </button>
                       </div>
                     ) : null}
@@ -658,7 +658,7 @@ const PluginsSettings: React.FC = () => {
                     <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 rounded-lg flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-200">
                       <XCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
                       <div className="text-sm text-red-700 dark:text-red-400">
-                        <p className="font-bold mb-0.5">{t('common.error', '错误')}</p>
+                        <p className="font-bold mb-0.5">{t('common.error', 'Error')}</p>
                         <p>{fetchError}</p>
                       </div>
                     </div>
@@ -670,14 +670,14 @@ const PluginsSettings: React.FC = () => {
                       <div className="flex items-start gap-3 p-3 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/20 rounded-lg text-sm text-amber-800 dark:text-amber-300">
                         <Info className="w-5 h-5 flex-shrink-0 mt-0.5" />
                         <div>
-                          <p className="font-medium mb-1">{t('settings.plugins.install.manual.title', '手动安装模式')}</p>
-                          <p>{t('settings.plugins.install.manual.description', '粘贴插件描述 YAML 文件进行安装。仅建议高级用户或开发调试时使用。')}</p>
+                          <p className="font-medium mb-1">{t('settings.plugins.install.manual.title', 'Manual Install Mode')}</p>
+                          <p>{t('settings.plugins.install.manual.description', 'Paste the plugin description YAML file to install. Recommended only for advanced users or development and debugging.')}</p>
                         </div>
                       </div>
                       
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          {t('settings.plugins.install.modal.yamlLabel', '插件配置 (YAML)')}
+                          {t('settings.plugins.install.modal.yamlLabel', 'Plugin Config (YAML)')}
                         </label>
                         <textarea
                           value={yamlConfig}
@@ -693,7 +693,7 @@ const PluginsSettings: React.FC = () => {
                         }}
                         className="text-sm text-blue-600 hover:underline"
                       >
-                        {t('settings.plugins.install.backToUrl', '返回 URL 安装模式')}
+                        {t('settings.plugins.install.backToUrl', 'Back to URL mode')}
                       </button>
                     </div>
                   ) : installStep === 1 ? (
@@ -702,14 +702,14 @@ const PluginsSettings: React.FC = () => {
                       <div className="flex items-start gap-3 p-3 bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/20 rounded-lg text-sm text-blue-800 dark:text-blue-300">
                         <Info className="w-5 h-5 flex-shrink-0 mt-0.5" />
                         <div>
-                          <p className="font-medium mb-1">{t('settings.plugins.install.url.title', '通过 URL 安装')}</p>
-                          <p>{t('settings.plugins.install.url.description', '输入插件的远程地址，系统将自动获取配置并准备安装。')}</p>
+                          <p className="font-medium mb-1">{t('settings.plugins.install.url.title', 'Install via URL')}</p>
+                          <p>{t('settings.plugins.install.url.description', 'Enter the remote URL of the plugin, the system will automatically fetch configuration and prepare for installation.')}</p>
                         </div>
                       </div>
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          {t('settings.plugins.install.url.label', '插件地址')}
+                          {t('settings.plugins.install.url.label', 'Plugin URL')}
                         </label>
                         <div className="flex gap-2">
                           <input
@@ -729,7 +729,7 @@ const PluginsSettings: React.FC = () => {
                             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2"
                           >
                             {isFetchingInfo ? <RefreshCcw className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                            {t('settings.plugins.install.fetch', '获取信息')}
+                            {t('settings.plugins.install.fetch', 'Fetch Info')}
                           </button>
                         </div>
                         <div className="mt-4 grid grid-cols-3 gap-3">
@@ -738,21 +738,21 @@ const PluginsSettings: React.FC = () => {
                               <Github className="w-3.5 h-3.5" />
                               <span className="text-xs font-bold">GitHub</span>
                             </div>
-                            <p className="text-[10px] text-gray-500">{t('settings.plugins.install.url.github.desc', '支持仓库地址及分支路径')}</p>
+                            <p className="text-[10px] text-gray-500">{t('settings.plugins.install.url.github.desc', 'Supports repo URL and branch path')}</p>
                           </div>
                           <div className="p-3 border border-gray-100 dark:border-gray-700 rounded-lg bg-gray-50/50 dark:bg-gray-900/30">
                             <div className="flex items-center gap-2 mb-1 text-gray-900 dark:text-gray-100">
                               <Puzzle className="w-3.5 h-3.5 text-red-500" />
                               <span className="text-xs font-bold">Gitee</span>
                             </div>
-                            <p className="text-[10px] text-gray-500">{t('settings.plugins.install.url.gitee.desc', '国内加速，支持码云仓库')}</p>
+                            <p className="text-[10px] text-gray-500">{t('settings.plugins.install.url.gitee.desc', 'Domestic acceleration, supports Gitee')}</p>
                           </div>
                           <div className="p-3 border border-gray-100 dark:border-gray-700 rounded-lg bg-gray-50/50 dark:bg-gray-900/30">
                             <div className="flex items-center gap-2 mb-1 text-gray-900 dark:text-gray-100">
                               <ExternalLink className="w-3.5 h-3.5 text-blue-500" />
                               <span className="text-xs font-bold">Custom</span>
                             </div>
-                            <p className="text-[10px] text-gray-500">{t('settings.plugins.install.url.custom.desc', '支持直接 YAML 或目录地址')}</p>
+                            <p className="text-[10px] text-gray-500">{t('settings.plugins.install.url.custom.desc', 'Supports direct YAML or directory URL')}</p>
                           </div>
                         </div>
                       </div>
@@ -764,7 +764,7 @@ const PluginsSettings: React.FC = () => {
                           }}
                           className="text-xs text-gray-400 hover:text-blue-500 transition-colors"
                         >
-                          {t('settings.plugins.install.useManual', '使用手动 YAML 粘贴模式')}
+                          {t('settings.plugins.install.useManual', 'Use manual YAML paste mode')}
                         </button>
                       </div>
                     </div>
@@ -773,7 +773,7 @@ const PluginsSettings: React.FC = () => {
                     <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
                       <div className="p-4 bg-green-50 dark:bg-green-900/10 border border-green-100 dark:border-green-900/20 rounded-lg flex items-center gap-3 text-green-800 dark:text-green-300 text-sm">
                         <Check className="w-5 h-5" />
-                        {t('settings.plugins.install.preview.success', '已成功解析插件配置信息')}
+                        {t('settings.plugins.install.preview.success', 'Plugin configuration parsed successfully')}
                       </div>
 
                       <div className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-6">
@@ -792,11 +792,11 @@ const PluginsSettings: React.FC = () => {
 
                         <div className="grid grid-cols-2 gap-4 text-sm">
                           <div>
-                            <p className="text-gray-400 text-xs uppercase font-bold tracking-wider mb-1">{t('settings.plugins.author', '作者')}</p>
+                            <p className="text-gray-400 text-xs uppercase font-bold tracking-wider mb-1">{t('settings.plugins.author', 'Author')}</p>
                             <p className="text-gray-700 dark:text-gray-300">{fetchedPluginInfo.author || '-'}</p>
                           </div>
                           <div>
-                            <p className="text-gray-400 text-xs uppercase font-bold tracking-wider mb-1">{t('settings.plugins.install.source', '来源')}</p>
+                            <p className="text-gray-400 text-xs uppercase font-bold tracking-wider mb-1">{t('settings.plugins.install.source', 'Source')}</p>
                             <p className="text-gray-700 dark:text-gray-300 truncate" title={fetchedPluginInfo.source_url}>
                               {new URL(fetchedPluginInfo.source_url).hostname}
                             </p>
@@ -805,7 +805,7 @@ const PluginsSettings: React.FC = () => {
 
                         {fetchedPluginInfo.description && (
                           <div>
-                            <p className="text-gray-400 text-xs uppercase font-bold tracking-wider mb-1">{t('settings.plugins.details.description', '描述')}</p>
+                            <p className="text-gray-400 text-xs uppercase font-bold tracking-wider mb-1">{t('settings.plugins.details.description', 'Description')}</p>
                             <p className="text-gray-600 dark:text-gray-400 line-clamp-2">{fetchedPluginInfo.description}</p>
                           </div>
                         )}
@@ -825,7 +825,7 @@ const PluginsSettings: React.FC = () => {
                       onClick={() => setShowManualMode(false)}
                       className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
                     >
-                      {t('common.cancel', '取消')}
+                      {t('common.cancel', 'Cancel')}
                     </button>
                     <button
                       onClick={handleInstall}
@@ -833,7 +833,7 @@ const PluginsSettings: React.FC = () => {
                       className="flex items-center gap-2 px-6 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md disabled:opacity-50 transition-colors"
                     >
                       {isInstalling ? <RefreshCcw className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-                      {isInstalling ? t('common.installing', '安装中...') : t('common.install', '安装')}
+                      {isInstalling ? t('common.installing', 'Installing...') : t('common.install', 'Install')}
                     </button>
                   </>
                 ) : installStep === 1 ? (
@@ -842,7 +842,7 @@ const PluginsSettings: React.FC = () => {
                     onClick={resetInstallState}
                     className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
                   >
-                    {t('common.close', '关闭')}
+                    {t('common.close', 'Close')}
                   </button>
                 ) : (
                   /* Step 2 Footer */
@@ -855,7 +855,7 @@ const PluginsSettings: React.FC = () => {
                       disabled={isInstalling}
                       className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
                     >
-                      {t('settings.plugins.install.back', '上一步')}
+                      {t('settings.plugins.install.back', 'Back')}
                     </button>
                     <button
                       onClick={handleInstall}
@@ -863,7 +863,7 @@ const PluginsSettings: React.FC = () => {
                       className="flex items-center gap-2 px-6 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md disabled:opacity-50 transition-colors shadow-sm"
                     >
                       {isInstalling ? <RefreshCcw className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                      {isInstalling ? t('common.installing', '正在安装...') : t('settings.plugins.install.confirm', '确认并安装')}
+                      {isInstalling ? t('common.installing', 'Installing...') : t('settings.plugins.install.confirm', 'Confirm and Install')}
                     </button>
                   </>
                 )}
@@ -880,7 +880,7 @@ const PluginsSettings: React.FC = () => {
             <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                 <Key className="w-5 h-5 text-blue-600" />
-                {t('settings.plugins.token.modal.title', '项目调试令牌')}
+                {t('settings.plugins.token.modal.title', 'Project Debug Token')}
               </h2>
               <button 
                 onClick={() => setShowTokenModal(false)}
@@ -893,12 +893,12 @@ const PluginsSettings: React.FC = () => {
             <div className="p-6 space-y-6">
               <div className="p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/20 rounded-lg text-sm text-amber-800 dark:text-amber-300 flex items-start gap-3">
                 <Info className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                <p>{t('settings.plugins.token.modal.warning', '令牌有效期为 24 小时。本地调试插件使用此令牌连接后，将自动关联到当前项目。')}</p>
+                <p>{t('settings.plugins.token.modal.warning', 'Token is valid for 24 hours. Local debug plugins will be automatically associated with the current project after connecting with this token.')}</p>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {t('settings.plugins.token.modal.tokenLabel', '您的调试令牌')}
+                  {t('settings.plugins.token.modal.tokenLabel', 'Your Debug Token')}
                 </label>
                 <div className="flex gap-2">
                   <div className="flex-1 p-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg font-mono text-xs break-all text-gray-600 dark:text-gray-400">
@@ -907,7 +907,7 @@ const PluginsSettings: React.FC = () => {
                   <button
                     onClick={handleCopyToken}
                     className="flex-shrink-0 p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-                    title={t('common.copy', '复制')}
+                    title={t('common.copy', 'Copy')}
                   >
                     {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
                   </button>
@@ -915,7 +915,7 @@ const PluginsSettings: React.FC = () => {
               </div>
 
               <div className="space-y-3">
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">{t('settings.plugins.token.modal.usage', '使用方法')}</h4>
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">{t('settings.plugins.token.modal.usage', 'Usage')}</h4>
                 
                 <div className="space-y-2">
                   <p className="text-xs text-gray-500 font-medium">{t('settings.plugins.token.modal.goSDK', 'Go SDK:')}</p>
@@ -943,7 +943,7 @@ plugin.run()`}
                 onClick={() => setShowTokenModal(false)}
                 className="px-6 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors"
               >
-                {t('common.close', '关闭')}
+                {t('common.close', 'Close')}
               </button>
             </div>
           </div>
@@ -958,7 +958,7 @@ plugin.run()`}
               <div className="flex items-center gap-3">
                 <Terminal className="w-5 h-5 text-green-500" />
                 <h2 className="text-lg font-semibold text-gray-100">
-                  {t('settings.plugins.logs.title', '插件日志')}: {showLogsPluginId}
+                  {t('settings.plugins.logs.title', 'Plugin Logs')}: {showLogsPluginId}
                 </h2>
               </div>
               <div className="flex items-center gap-2">
@@ -988,7 +988,7 @@ plugin.run()`}
                 </div>
               ) : (
                 <div className="h-full flex items-center justify-center text-gray-600 italic">
-                  {t('settings.plugins.logs.empty', '暂无日志输出')}
+                  {t('settings.plugins.logs.empty', 'No logs output yet')}
                 </div>
               )}
             </div>
@@ -1037,26 +1037,26 @@ plugin.run()`}
               <section className="space-y-4">
                 <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
                   <Info className="w-4 h-4" />
-                  {t('settings.plugins.detail.basicInfo', '基本信息')}
+                  {t('settings.plugins.detail.basicInfo', 'Basic Information')}
                 </h3>
                 <div className="grid grid-cols-2 gap-6 bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg border border-gray-100 dark:border-gray-700">
                   <div className="space-y-1">
-                    <p className="text-xs text-gray-500">{t('settings.plugins.author', '作者')}</p>
+                    <p className="text-xs text-gray-500">{t('settings.plugins.author', 'Author')}</p>
                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{showDetailPlugin.author || '-'}</p>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-xs text-gray-500">{t('settings.plugins.status.label', '当前状态')}</p>
+                    <p className="text-xs text-gray-500">{t('settings.plugins.status.label', 'Current Status')}</p>
                     <div className="flex items-center gap-2">
                       <span className={`w-2 h-2 rounded-full ${showDetailPlugin.status === 'running' ? 'bg-green-500' : 'bg-gray-400'}`} />
                       <p className="text-sm font-medium text-gray-900 dark:text-gray-100 capitalize">{showDetailPlugin.status}</p>
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-xs text-gray-500">{t('settings.plugins.installType', '安装方式')}</p>
+                    <p className="text-xs text-gray-500">{t('settings.plugins.installType', 'Install Type')}</p>
                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100 capitalize">{showDetailPlugin.install_type}</p>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-xs text-gray-500">{t('settings.plugins.installedAt', '安装时间')}</p>
+                    <p className="text-xs text-gray-500">{t('settings.plugins.installedAt', 'Installed At')}</p>
                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{formatRelativeTime(showDetailPlugin.installed_at)}</p>
                   </div>
                 </div>
@@ -1071,7 +1071,7 @@ plugin.run()`}
               <section className="space-y-4">
                 <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
                   <Cpu className="w-4 h-4" />
-                  {t('settings.plugins.capabilities', '功能能力')}
+                  {t('settings.plugins.capabilities', 'Capabilities')}
                 </h3>
                 {showDetailPlugin.capabilities && showDetailPlugin.capabilities.length > 0 ? (
                   <div className="space-y-3">
@@ -1133,7 +1133,7 @@ plugin.run()`}
                   </div>
                 ) : (
                   <div className="p-8 text-center bg-gray-50 dark:bg-gray-900/30 border border-dashed border-gray-200 dark:border-gray-700 rounded-lg text-gray-400 text-sm">
-                    {t('settings.plugins.detail.noCapabilities', '该插件未声明任何特殊功能')}
+                    {t('settings.plugins.detail.noCapabilities', 'This plugin does not declare any special capabilities')}
                   </div>
                 )}
               </section>
@@ -1144,7 +1144,7 @@ plugin.run()`}
                 onClick={() => setShowDetailPlugin(null)}
                 className="px-6 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
               >
-                {t('common.close', '关闭')}
+                {t('common.close', 'Close')}
               </button>
             </div>
           </div>
@@ -1156,8 +1156,8 @@ plugin.run()`}
         <div className="flex items-start gap-3">
           <Info className="w-5 h-5 text-blue-600 mt-0.5" />
           <div className="text-sm text-blue-800 dark:text-blue-300">
-            <p className="font-semibold mb-1">{t('settings.plugins.debug.title', '调试提示')}</p>
-            <p>{t('settings.plugins.debug.description', '在开发模式下，插件可以通过 8005 端口（TCP）连接到 TGO AI 服务。')}</p>
+            <p className="font-semibold mb-1">{t('settings.plugins.debug.title', 'Debug Hint')}</p>
+            <p>{t('settings.plugins.debug.description', 'In development mode, you can connect local plugins via port 8005 (TCP) or /var/run/tgo/tgo.sock (Unix Socket).')}</p>
           </div>
         </div>
       </div>
@@ -1170,7 +1170,7 @@ plugin.run()`}
               <div className="flex items-center gap-3">
                 <RefreshCcw className="w-5 h-5 text-green-600" />
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                  {t('settings.plugins.upgrade.title', '插件升级')}
+                  {t('settings.plugins.upgrade.title', 'Plugin Upgrade')}
                 </h2>
               </div>
               <button 
@@ -1185,15 +1185,15 @@ plugin.run()`}
             <div className="p-6 space-y-4">
               <div className="p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-100 dark:border-gray-700 space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">{t('settings.plugins.upgrade.pluginName', '插件名称')}</span>
+                  <span className="text-sm text-gray-500">{t('settings.plugins.upgrade.pluginName', 'Plugin Name')}</span>
                   <span className="text-sm font-medium">{showUpgradeModal.plugin.name}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">{t('settings.plugins.upgrade.currentVersion', '当前版本')}</span>
+                  <span className="text-sm text-gray-500">{t('settings.plugins.upgrade.currentVersion', 'Current Version')}</span>
                   <span className="text-sm font-medium text-gray-600">v{showUpgradeModal.plugin.version}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">{t('settings.plugins.upgrade.latestVersion', '最新版本')}</span>
+                  <span className="text-sm text-gray-500">{t('settings.plugins.upgrade.latestVersion', 'Latest Version')}</span>
                   <span className="text-sm font-bold text-green-600">v{showUpgradeModal.latest_config.version}</span>
                 </div>
               </div>
@@ -1221,13 +1221,13 @@ plugin.run()`}
                     onClick={() => setShowUpgradeModal(null)}
                     className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                   >
-                    {t('common.cancel', '取消')}
+                    {t('common.cancel', 'Cancel')}
                   </button>
                   <button
                     onClick={handleUpgrade}
                     className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 transition-colors shadow-sm"
                   >
-                    {t('settings.plugins.upgrade.confirm', '立即升级')}
+                    {t('settings.plugins.upgrade.confirm', 'Upgrade Now')}
                   </button>
                 </div>
               )}

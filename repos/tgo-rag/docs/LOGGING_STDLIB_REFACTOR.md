@@ -2,7 +2,7 @@
 
 ## Summary
 
-Successfully refactored the TGO RAG Service logging system from `structlog` to Python's standard library `logging` module while maintaining **100% backward compatibility**. All existing code continues to work without any modifications.
+Successfully refactored the Pelatis RAG Service logging system from `structlog` to Python's standard library `logging` module while maintaining **100% backward compatibility**. All existing code continues to work without any modifications.
 
 ## What Changed
 

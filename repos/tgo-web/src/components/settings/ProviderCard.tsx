@@ -100,7 +100,7 @@ const ProviderCard: React.FC<ProviderCardProps> = ({
             <button 
               onClick={() => onAddModel(provider)}
               className="flex items-center justify-center w-6 h-6 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-all border border-blue-100 dark:border-blue-800"
-              title={t('settings.providers.addModel', '添加模型')}
+              title={t('settings.providers.addModel', 'Add Model')}
             >
               <FiPlus className="w-3.5 h-3.5" />
             </button>
@@ -119,7 +119,7 @@ const ProviderCard: React.FC<ProviderCardProps> = ({
                   className="rounded-xl font-bold"
                 >
                   {isTesting ? <FiLoader className="animate-spin mr-1" /> : null}
-                  {t('settings.providers.testButton', '测试')}
+                  {t('settings.providers.testButton', 'Test')}
                 </Button>
                 <Button 
                   variant="secondary" 
@@ -128,7 +128,7 @@ const ProviderCard: React.FC<ProviderCardProps> = ({
                   className="rounded-xl font-bold"
                 >
                   <FiEdit2 className="mr-1" />
-                  {t('common.edit', '编辑')}
+                  {t('common.edit', 'Edit')}
                 </Button>
               </>
             )}
@@ -141,7 +141,7 @@ const ProviderCard: React.FC<ProviderCardProps> = ({
             className="text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl font-bold"
           >
             <FiTrash2 className="mr-1" />
-            {t('common.delete', '删除')}
+            {t('common.delete', 'Delete')}
           </Button>
         </div>
       </div>

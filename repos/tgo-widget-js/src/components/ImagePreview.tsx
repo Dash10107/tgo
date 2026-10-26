@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import styled from '@emotion/styled'
+import { useTranslation } from 'react-i18next'
 
 interface ImagePreviewProps {
   images: string[]
@@ -124,6 +125,7 @@ const ErrorMessage = styled.div`
 `
 
 export const ImagePreview: React.FC<ImagePreviewProps> = ({ images, initialIndex = 0, onClose }) => {
+  const { t } = useTranslation()
   const [currentIndex, setCurrentIndex] = useState(initialIndex)
   const [scale, setScale] = useState(1)
   const [loading, setLoading] = useState(true)
@@ -194,7 +196,7 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({ images, initialIndex
 
   return (
     <Overlay ref={overlayRef} onClick={handleOverlayClick}>
-      <CloseButton onClick={onClose} title="关闭 (Esc)">×</CloseButton>
+      <CloseButton onClick={onClose} title={t('image.close')}>×</CloseButton>
       
       {hasMultiple && (
         <>
@@ -202,7 +204,7 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({ images, initialIndex
             direction="left" 
             onClick={goToPrev} 
             disabled={currentIndex === 0}
-            title="上一张 (←)"
+            title={t('image.previous')}
           >
             ‹
           </NavButton>
@@ -210,7 +212,7 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({ images, initialIndex
             direction="right" 
             onClick={goToNext} 
             disabled={currentIndex === images.length - 1}
-            title="下一张 (→)"
+            title={t('image.next')}
           >
             ›
           </NavButton>
@@ -220,11 +222,11 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({ images, initialIndex
       <ImageContainer>
         {loading && !error && <LoadingSpinner />}
         {error ? (
-          <ErrorMessage>图片加载失败</ErrorMessage>
+          <ErrorMessage>{t('image.loadFailed')}</ErrorMessage>
         ) : (
           <PreviewImage
             src={currentImage}
-            alt={`预览图片 ${currentIndex + 1}`}
+            alt={t('image.previewAlt', { index: currentIndex + 1 })}
             scale={scale}
             onClick={toggleZoom}
             onLoad={() => setLoading(false)}

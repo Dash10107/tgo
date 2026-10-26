@@ -25,30 +25,30 @@ import { formatOnlineDuration } from '@/utils/dateUtils';
 import type { ExtendedVisitor, CustomAttribute, VisitorTag } from '@/data/mockVisitor';
 
 export interface VisitorDetailPanelProps {
-  /** 访客ID (用于独立模式) */
+  /** Visitor ID (for standalone mode) */
   visitorId?: string;
-  /** 频道ID (用于聊天模式) */
+  /** Channel ID (for chat mode) */
   channelId?: string | null;
-  /** 频道类型 (用于聊天模式) */
+  /** Channel type (for chat mode) */
   channelType?: number | null;
-  /** 直接传入的访客数据 (可选，用于预填充) */
+  /** Visitor data passed in directly (optional, for pre-filling) */
   visitorData?: VisitorResponse | null;
-  /** 是否显示关闭按钮 */
+  /** Whether to show the close button */
   showCloseButton?: boolean;
-  /** 关闭回调 */
+  /** Close callback */
   onClose?: () => void;
-  /** 访客数据更新后的回调 (用于独立模式，通知父组件刷新数据) */
+  /** Callback after the visitor data is updated (for standalone mode, to notify the parent to refresh) */
   onVisitorUpdated?: (visitorId: string) => void;
-  /** 面板样式变体 */
+  /** Panel style variant */
   variant?: 'sidebar' | 'drawer';
-  /** 自定义类名 */
+  /** Custom class name */
   className?: string;
-  /** 自定义样式 */
+  /** Custom style */
   style?: React.CSSProperties;
 }
 
 /**
- * 将频道信息中的访客扩展数据转换为面板使用的扩展结构
+ * Convert the visitor extension data in the channel info into the extended structure used by the panel
  */
 const toExtendedVisitorFromChannel = (extra: ChannelVisitorExtra): ExtendedVisitor => {
   const tags = Array.isArray(extra.tags)
@@ -71,7 +71,7 @@ const toExtendedVisitorFromChannel = (extra: ChannelVisitorExtra): ExtendedVisit
 
   return {
     id: extra.id,
-    name: extra.name || extra.nickname || i18n.t('visitor.unknown', '未知访客'),
+    name: extra.name || extra.nickname || i18n.t('visitor.unknown', 'Unknown Visitor'),
     avatar: extra.avatar_url || '',
     status: extra.is_online ? 'online' : 'offline',
     platform: extra.source || 'website',
@@ -93,11 +93,11 @@ const toExtendedVisitorFromChannel = (extra: ChannelVisitorExtra): ExtendedVisit
     },
     aiInsights: {
       satisfaction: 4,
-      emotion: { type: 'neutral', icon: 'Meh', label: i18n.t('visitor.ai.emotion.neutral', '中性') },
+      emotion: { type: 'neutral', icon: 'Meh', label: i18n.t('visitor.ai.emotion.neutral', 'Neutral') },
     },
     systemInfo: {
       firstVisit: extra.first_visit_time || '',
-      source: extra.source || i18n.t('visitor.system.defaultSource', '官网'),
+      source: extra.source || i18n.t('visitor.system.defaultSource', 'Official Website'),
       browser: 'Chrome / macOS',
     },
     recentActivity: [],
@@ -107,7 +107,7 @@ const toExtendedVisitorFromChannel = (extra: ChannelVisitorExtra): ExtendedVisit
 };
 
 /**
- * 将 VisitorResponse 转换为 ExtendedVisitor
+ * Convert a VisitorResponse to an ExtendedVisitor
  */
 const toExtendedVisitorFromResponse = (response: VisitorResponse): ExtendedVisitor => {
   const tags = Array.isArray(response.tags)
@@ -130,7 +130,7 @@ const toExtendedVisitorFromResponse = (response: VisitorResponse): ExtendedVisit
 
   return {
     id: response.id,
-    name: response.name || response.display_nickname || response.nickname_zh || response.nickname || i18n.t('visitor.unknown', '未知访客'),
+    name: response.name || response.display_nickname || response.nickname_zh || response.nickname || i18n.t('visitor.unknown', 'Unknown Visitor'),
     avatar: response.avatar_url || '',
     status: response.is_online ? 'online' : 'offline',
     platform: response.platform_type || 'website',
@@ -152,11 +152,11 @@ const toExtendedVisitorFromResponse = (response: VisitorResponse): ExtendedVisit
     },
     aiInsights: {
       satisfaction: 4,
-      emotion: { type: 'neutral', icon: 'Meh', label: i18n.t('visitor.ai.emotion.neutral', '中性') },
+      emotion: { type: 'neutral', icon: 'Meh', label: i18n.t('visitor.ai.emotion.neutral', 'Neutral') },
     },
     systemInfo: {
       firstVisit: response.first_visit_time || '',
-      source: response.source || i18n.t('visitor.system.defaultSource', '官网'),
+      source: response.source || i18n.t('visitor.system.defaultSource', 'Official Website'),
       browser: response.system_info?.browser || '',
     },
     recentActivity: [],
@@ -166,8 +166,8 @@ const toExtendedVisitorFromResponse = (response: VisitorResponse): ExtendedVisit
 };
 
 /**
- * 公共访客详情面板组件
- * 可用于聊天界面侧边栏和访客管理界面的详情抽屉
+ * Shared visitor detail panel component
+ * Can be used in the chat sidebar and in the detail drawer of visitor management
  */
 const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
   visitorId,
@@ -192,7 +192,7 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
   const [dragOverId, setDragOverId] = useState<string | null>(null);
   const [recentlyMovedId, setRecentlyMovedId] = useState<string | null>(null);
   
-  // 板块展开收起状态
+  // Section expand/collapse state
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>(() => {
     try {
       const saved = localStorage.getItem('visitor_panel_expanded_sections');
@@ -231,14 +231,14 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
   const { showToast } = useToast();
   const avatarInputRef = useRef<HTMLInputElement>(null);
 
-  // 默认模块顺序
+  // Default module order
   const DEFAULT_ORDER = ['basic_info', 'ai_insights', 'tags', 'system_info', 'plugins', 'recent_activity'];
   const [sectionOrder, setSectionOrder] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem('visitor_panel_section_order');
       if (saved) {
         const parsed = JSON.parse(saved);
-        // 验证保存的顺序是否包含所有当前定义的模块，防止版本更新导致问题
+        // Verify that the saved order contains all currently defined modules, to prevent issues after version updates
         if (Array.isArray(parsed) && parsed.length === DEFAULT_ORDER.length && parsed.every(id => DEFAULT_ORDER.includes(id))) {
           return parsed;
         }
@@ -249,7 +249,7 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
     return DEFAULT_ORDER;
   });
 
-  // 是否使用频道模式（从 channelStore 获取数据）
+  // Whether to use channel mode (get data from channelStore)
   const useChannelMode = Boolean(channelId && channelType != null);
 
   const compositeKey = useMemo(() => {
@@ -282,7 +282,7 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
     return extra?.ai_insights ?? null;
   }, [channelInfo]);
 
-  // 频道模式：从 channelStore 获取数据
+  // Channel mode: get data from channelStore
   useEffect(() => {
     if (!useChannelMode || !channelId) {
       return;
@@ -291,14 +291,14 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
     // Only auto-fetch when we have not fetched yet, nothing is in-flight, and no prior error exists
     if (!channelInfo && !isChannelFetching && !channelStoreError) {
       ensureChannelInfo({ channel_id: channelId, channel_type: channelType ?? 1 }).catch(error => {
-        const message = error instanceof Error ? error.message : t('visitor.load.failedDesc', '加载访客数据失败');
+        const message = error instanceof Error ? error.message : t('visitor.load.failedDesc', 'Failed to load visitor data');
         setLoadError(message);
-        showToast('error', t('visitor.load.failedTitle', '加载访客信息失败'), message);
+        showToast('error', t('visitor.load.failedTitle', 'Failed to load visitor information'), message);
       });
     }
   }, [useChannelMode, ensureChannelInfo, isChannelFetching, showToast, channelId, channelType, channelInfo, channelStoreError, t]);
 
-  // 独立模式：从 visitorData 或 API 获取数据
+  // Standalone mode: get data from visitorData or the API
   useEffect(() => {
     if (useChannelMode) return;
 
@@ -318,7 +318,7 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
           setHasLoadedInitial(true);
         })
         .catch(error => {
-          const message = error instanceof Error ? error.message : t('visitor.load.failedDesc', '加载访客数据失败');
+          const message = error instanceof Error ? error.message : t('visitor.load.failedDesc', 'Failed to load visitor data');
           setLoadError(message);
         })
         .finally(() => {
@@ -327,7 +327,7 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
     }
   }, [useChannelMode, visitorId, visitorData, t]);
 
-  // 频道模式：更新 loading 状态
+  // Channel mode: update the loading state
   useEffect(() => {
     if (!useChannelMode || !channelId) {
       return;
@@ -336,7 +336,7 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
     setIsLoading(!hasLoadedInitial && isChannelFetching && !channelInfo);
   }, [useChannelMode, isChannelFetching, channelId, channelInfo, hasLoadedInitial]);
 
-  // 频道模式：处理错误
+  // Channel mode: handle errors
   useEffect(() => {
     if (!useChannelMode) return;
 
@@ -347,7 +347,7 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
     }
   }, [useChannelMode, channelStoreError]);
 
-  // 频道模式：从 channelInfo 转换访客数据
+  // Channel mode: convert visitor data from channelInfo
   useEffect(() => {
     if (!useChannelMode) return;
 
@@ -361,7 +361,7 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
     }
   }, [useChannelMode, channelInfo]);
 
-  // API集成的基本信息更新函数
+  // API-integrated basic info update function
   const handleUpdateBasicInfo = useCallback(async (
     field: 'name' | 'nickname' | 'email' | 'phone' | 'note',
     value: string
@@ -400,30 +400,30 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
       } : null);
 
       const labelMap: Record<string, string> = {
-        name: t('visitor.fields.name', '姓名'),
-        nickname: t('visitor.fields.nickname', '昵称'),
-        email: t('visitor.fields.email', '邮箱'),
-        phone: t('visitor.fields.phone', '电话'),
-        note: t('visitor.fields.note', '备注')
+        name: t('visitor.fields.name', 'Name'),
+        nickname: t('visitor.fields.nickname', 'Nickname'),
+        email: t('visitor.fields.email', 'Email'),
+        phone: t('visitor.fields.phone', 'Phone'),
+        note: t('visitor.fields.note', 'Note')
       };
-      showToast('success', t('visitor.update.successTitle', '更新成功'), t('visitor.update.fieldUpdated', '{{field}}已更新', { field: labelMap[field] || t('visitor.fields.field', '字段') }));
+      showToast('success', t('visitor.update.successTitle', 'Updated successfully'), t('visitor.update.fieldUpdated', '{{field}} has been updated', { field: labelMap[field] || t('visitor.fields.field', 'Field') }));
 
-      // 通知父组件数据已更新
+      // Notify the parent that the data has been updated
       if (!useChannelMode && onVisitorUpdated && visitor.id) {
         onVisitorUpdated(visitor.id);
       }
 
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : t('visitor.update.failedDesc', '更新失败');
+      const errorMessage = error instanceof Error ? error.message : t('visitor.update.failedDesc', 'Update failed');
       setUpdateError(errorMessage);
-      showToast('error', t('visitor.update.failedTitle', '更新失败'), errorMessage);
+      showToast('error', t('visitor.update.failedTitle', 'Update failed'), errorMessage);
       throw error;
     } finally {
       setIsUpdating(false);
     }
   }, [visitor, showToast, useChannelMode, channelId, channelType, t, onVisitorUpdated]);
 
-  // API集成的自定义属性管理函数
+  // API-integrated custom attribute management functions
   const handleAddCustomAttribute = useCallback(async (key: string, value: string) => {
     if (!visitor) return;
 
@@ -462,16 +462,16 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
         }
       } : null);
 
-      showToast('success', t('visitor.customAttr.addSuccessTitle', '添加成功'), t('visitor.customAttr.addSuccessDesc', '自定义属性已添加'));
+      showToast('success', t('visitor.customAttr.addSuccessTitle', 'Added successfully'), t('visitor.customAttr.addSuccessDesc', 'Custom attribute added'));
       
-      // 通知父组件数据已更新
+      // Notify the parent that the data has been updated
       if (!useChannelMode && onVisitorUpdated && visitor.id) {
         onVisitorUpdated(visitor.id);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : t('visitor.customAttr.addFailedDesc', '添加失败');
+      const errorMessage = error instanceof Error ? error.message : t('visitor.customAttr.addFailedDesc', 'Add failed');
       setUpdateError(errorMessage);
-      showToast('error', t('visitor.customAttr.addFailedTitle', '添加失败'), errorMessage);
+      showToast('error', t('visitor.customAttr.addFailedTitle', 'Add failed'), errorMessage);
     } finally {
       setIsUpdating(false);
     }
@@ -505,16 +505,16 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
         }
       } : null);
 
-      showToast('success', t('visitor.customAttr.updateSuccessTitle', '更新成功'), t('visitor.customAttr.updateSuccessDesc', '自定义属性已更新'));
+      showToast('success', t('visitor.customAttr.updateSuccessTitle', 'Updated successfully'), t('visitor.customAttr.updateSuccessDesc', 'Custom attribute updated'));
       
-      // 通知父组件数据已更新
+      // Notify the parent that the data has been updated
       if (!useChannelMode && onVisitorUpdated && visitor.id) {
         onVisitorUpdated(visitor.id);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : t('visitor.customAttr.updateFailedDesc', '更新失败');
+      const errorMessage = error instanceof Error ? error.message : t('visitor.customAttr.updateFailedDesc', 'Update failed');
       setUpdateError(errorMessage);
-      showToast('error', t('visitor.customAttr.updateFailedTitle', '更新失败'), errorMessage);
+      showToast('error', t('visitor.customAttr.updateFailedTitle', 'Update failed'), errorMessage);
     } finally {
       setIsUpdating(false);
     }
@@ -546,22 +546,22 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
         }
       } : null);
 
-      showToast('success', t('visitor.customAttr.deleteSuccessTitle', '删除成功'), t('visitor.customAttr.deleteSuccessDesc', '自定义属性已删除'));
+      showToast('success', t('visitor.customAttr.deleteSuccessTitle', 'Deleted successfully'), t('visitor.customAttr.deleteSuccessDesc', 'Custom attribute deleted'));
       
-      // 通知父组件数据已更新
+      // Notify the parent that the data has been updated
       if (!useChannelMode && onVisitorUpdated && visitor.id) {
         onVisitorUpdated(visitor.id);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : t('visitor.customAttr.deleteFailedDesc', '删除失败');
+      const errorMessage = error instanceof Error ? error.message : t('visitor.customAttr.deleteFailedDesc', 'Delete failed');
       setUpdateError(errorMessage);
-      showToast('error', t('visitor.customAttr.deleteFailedTitle', '删除失败'), errorMessage);
+      showToast('error', t('visitor.customAttr.deleteFailedTitle', 'Delete failed'), errorMessage);
     } finally {
       setIsUpdating(false);
     }
   }, [visitor, showToast, t, useChannelMode, onVisitorUpdated]);
 
-  // 获取常用标签
+  // Get the common tags
   const fetchCommonTags = useCallback(async () => {
     const res = await tagsApiService.listVisitorTags({ limit: 50 });
     return res.data.map(tag => ({
@@ -573,7 +573,7 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
     }));
   }, []);
 
-  // 选择已有标签
+  // Select an existing tag
   const handleAssociateExistingTag = useCallback(async (tagId: string) => {
     if (!visitor) return;
 
@@ -584,11 +584,11 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
       if (useChannelMode && channelId) {
         await useChatStore.getState().syncChannelInfoAcrossUI(channelId, channelType ?? 1);
       }
-      showToast('success', t('visitor.tags.addSuccessTitle', '添加成功'), t('visitor.tags.addSuccessDesc', '标签已添加'));
+      showToast('success', t('visitor.tags.addSuccessTitle', 'Added successfully'), t('visitor.tags.addSuccessDesc', 'Tag added'));
       
-      // 通知父组件数据已更新，并刷新本地数据
+      // Notify the parent that the data has been updated and refresh local data
       if (!useChannelMode && visitor.id) {
-        // 重新获取访客详情以更新标签列表
+        // Re-fetch the visitor details to update the tag list
         const updatedVisitor = await visitorApiService.getVisitor(visitor.id);
         setVisitor(toExtendedVisitorFromResponse(updatedVisitor));
         if (onVisitorUpdated) {
@@ -596,15 +596,15 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
         }
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : t('visitor.tags.addFailedDesc', '添加标签失败');
+      const errorMessage = error instanceof Error ? error.message : t('visitor.tags.addFailedDesc', 'Failed to add tag');
       setUpdateError(errorMessage);
-      showToast('error', t('visitor.tags.addFailedTitle', '添加失败'), errorMessage);
+      showToast('error', t('visitor.tags.addFailedTitle', 'Add failed'), errorMessage);
     } finally {
       setIsUpdating(false);
     }
   }, [visitor, showToast, useChannelMode, channelId, channelType, t, onVisitorUpdated]);
 
-  // 添加新标签
+  // Add a new tag
   const handleAddTag = useCallback(async (tagData: Omit<VisitorTag, 'id'>) => {
     if (!visitor) return;
 
@@ -636,7 +636,7 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
         }
       }
 
-      if (!tagId) throw new Error(t('visitor.tags.errors.noTagId', '无法获取标签ID'));
+      if (!tagId) throw new Error(t('visitor.tags.errors.noTagId', 'Failed to get tag ID'));
 
       await tagsApiService.createVisitorTag({
         visitor_id: visitor.id,
@@ -647,9 +647,9 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
         await useChatStore.getState().syncChannelInfoAcrossUI(channelId, channelType ?? 1);
       }
 
-      showToast('success', t('visitor.tags.addSuccessTitle', '添加成功'), t('visitor.tags.addSuccessDesc', '标签已添加'));
+      showToast('success', t('visitor.tags.addSuccessTitle', 'Added successfully'), t('visitor.tags.addSuccessDesc', 'Tag added'));
       
-      // 通知父组件数据已更新，并刷新本地数据
+      // Notify the parent that the data has been updated and refresh local data
       if (!useChannelMode && visitor.id) {
         const updatedVisitor = await visitorApiService.getVisitor(visitor.id);
         setVisitor(toExtendedVisitorFromResponse(updatedVisitor));
@@ -658,9 +658,9 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
         }
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : t('visitor.tags.addFailedDesc', '添加标签失败');
+      const errorMessage = error instanceof Error ? error.message : t('visitor.tags.addFailedDesc', 'Failed to add tag');
       setUpdateError(errorMessage);
-      showToast('error', t('visitor.tags.addFailedTitle', '添加失败'), errorMessage);
+      showToast('error', t('visitor.tags.addFailedTitle', 'Add failed'), errorMessage);
     } finally {
       setIsUpdating(false);
     }
@@ -675,7 +675,7 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
     try {
       const tagToUpdate = visitor.tags.find(tag => tag.id === id);
       if (!tagToUpdate) {
-        throw new Error(t('visitor.tags.errors.notFound', '标签不存在'));
+        throw new Error(t('visitor.tags.errors.notFound', 'Tag not found'));
       }
 
       const updateData: { weight?: number; color?: string } = {};
@@ -694,18 +694,18 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
         await useChatStore.getState().syncChannelInfoAcrossUI(channelId, channelType ?? 1);
       }
 
-      showToast('success', t('visitor.tags.updateSuccessTitle', '更新成功'), t('visitor.tags.updateSuccessDesc', '标签已更新'));
+      showToast('success', t('visitor.tags.updateSuccessTitle', 'Updated successfully'), t('visitor.tags.updateSuccessDesc', 'Tag updated'));
       
-      // 通知父组件数据已更新
+      // Notify the parent that the data has been updated
       if (!useChannelMode && onVisitorUpdated && visitor.id) {
         const updatedVisitor = await visitorApiService.getVisitor(visitor.id);
         setVisitor(toExtendedVisitorFromResponse(updatedVisitor));
         onVisitorUpdated(visitor.id);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : t('visitor.tags.updateFailedDesc', '更新标签失败');
+      const errorMessage = error instanceof Error ? error.message : t('visitor.tags.updateFailedDesc', 'Failed to update tag');
       setUpdateError(errorMessage);
-      showToast('error', t('visitor.tags.updateFailedTitle', '更新失败'), errorMessage);
+      showToast('error', t('visitor.tags.updateFailedTitle', 'Update failed'), errorMessage);
     } finally {
       setIsUpdating(false);
     }
@@ -722,9 +722,9 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
       if (useChannelMode && channelId) {
         await useChatStore.getState().syncChannelInfoAcrossUI(channelId, channelType ?? 1);
       }
-      showToast('success', t('visitor.tags.removeSuccessTitle', '删除成功'), t('visitor.tags.removeSuccessDesc', '标签已删除'));
+      showToast('success', t('visitor.tags.removeSuccessTitle', 'Deleted successfully'), t('visitor.tags.removeSuccessDesc', 'Tag deleted'));
       
-      // 通知父组件数据已更新，并刷新本地数据
+      // Notify the parent that the data has been updated and refresh local data
       if (!useChannelMode && visitor.id) {
         const updatedVisitor = await visitorApiService.getVisitor(visitor.id);
         setVisitor(toExtendedVisitorFromResponse(updatedVisitor));
@@ -733,15 +733,15 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
         }
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : t('visitor.tags.removeFailedDesc', '删除标签失败');
+      const errorMessage = error instanceof Error ? error.message : t('visitor.tags.removeFailedDesc', 'Failed to delete tag');
       setUpdateError(errorMessage);
-      showToast('error', t('visitor.tags.removeFailedTitle', '删除失败'), errorMessage);
+      showToast('error', t('visitor.tags.removeFailedTitle', 'Delete failed'), errorMessage);
     } finally {
       setIsUpdating(false);
     }
   }, [visitor, showToast, useChannelMode, channelId, channelType, t, onVisitorUpdated]);
 
-  // 头像上传处理
+  // Avatar upload handling
   const handleAvatarClick = useCallback(() => {
     avatarInputRef.current?.click();
   }, []);
@@ -752,13 +752,13 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
 
     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
-      showToast('error', t('visitor.avatar.invalidTypeTitle', '文件类型错误'), t('visitor.avatar.invalidTypeDesc', '请选择 JPEG、PNG、GIF 或 WebP 格式的图片'));
+      showToast('error', t('visitor.avatar.invalidTypeTitle', 'Invalid file type'), t('visitor.avatar.invalidTypeDesc', 'Please select a JPEG, PNG, GIF, or WebP image'));
       return;
     }
 
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
-      showToast('error', t('visitor.avatar.fileTooLargeTitle', '文件过大'), t('visitor.avatar.fileTooLargeDesc', '图片大小不能超过 5MB'));
+      showToast('error', t('visitor.avatar.fileTooLargeTitle', 'File too large'), t('visitor.avatar.fileTooLargeDesc', 'Image size must not exceed 5MB'));
       return;
     }
 
@@ -822,16 +822,16 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
         }
       }
 
-      showToast('success', t('visitor.avatar.uploadSuccessTitle', '上传成功'), t('visitor.avatar.uploadSuccessDesc', '访客头像已更新'));
+      showToast('success', t('visitor.avatar.uploadSuccessTitle', 'Upload successful'), t('visitor.avatar.uploadSuccessDesc', 'Visitor avatar has been updated'));
       
-      // 通知父组件数据已更新
+      // Notify the parent that the data has been updated
       if (!useChannelMode && onVisitorUpdated && visitor.id) {
         onVisitorUpdated(visitor.id);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : t('visitor.avatar.uploadFailedDesc', '上传失败');
+      const errorMessage = error instanceof Error ? error.message : t('visitor.avatar.uploadFailedDesc', 'Upload failed');
       setUpdateError(errorMessage);
-      showToast('error', t('visitor.avatar.uploadFailedTitle', '上传失败'), errorMessage);
+      showToast('error', t('visitor.avatar.uploadFailedTitle', 'Upload failed'), errorMessage);
     } finally {
       setIsUploadingAvatar(false);
     }
@@ -848,12 +848,12 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
     setDragOverId(null);
   };
 
-  // 容器级别的 dragOver 处理 - 通过 data 属性查找目标
+  // Container-level dragOver handling - find the target via a data attribute
   const handleContainerDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
     
-    // 查找最近的带有 data-section-id 的元素
+    // Find the nearest element with data-section-id
     const target = (e.target as HTMLElement).closest('[data-section-id]');
     if (!target) {
       setDragOverId(null);
@@ -871,13 +871,13 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
     }
   };
 
-  // 容器级别的 drop 处理
+  // Container-level drop handling
   const handleContainerDrop = (e: React.DragEvent) => {
     e.preventDefault();
     
     const id = e.dataTransfer.getData('text/plain') || draggedId;
     
-    // 查找最近的带有 data-section-id 的元素
+    // Find the nearest element with data-section-id
     const target = (e.target as HTMLElement).closest('[data-section-id]');
     const targetId = target?.getAttribute('data-section-id');
     
@@ -888,11 +888,11 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
       return;
     }
 
-    // 设置最近移动 ID，用于触发入位动画
+    // Set the recently moved ID to trigger the settle-in animation
     setRecentlyMovedId(id);
     setTimeout(() => setRecentlyMovedId(null), 800);
 
-    // 使用函数式更新确保获取最新的 sectionOrder
+    // Use a functional update to make sure the latest sectionOrder is used
     setSectionOrder(prevOrder => {
       const newOrder = [...prevOrder];
       const draggedIdx = newOrder.indexOf(id);
@@ -903,30 +903,30 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
         return prevOrder;
       }
 
-      // 移除被拖拽的项
+      // Remove the dragged item
       newOrder.splice(draggedIdx, 1);
       
-      // 重新计算目标索引（因为移除后索引可能变化）
+      // Recompute the target index (it may change after removal)
       const newTargetIdx = newOrder.indexOf(targetId);
       if (newTargetIdx === -1) {
         setDraggedId(null);
         return prevOrder;
       }
       
-      // 插入到目标位置
+      // Insert at the target position
       newOrder.splice(newTargetIdx, 0, id);
       
-      // 保存到 localStorage
+      // Save to localStorage
       localStorage.setItem('visitor_panel_section_order', JSON.stringify(newOrder));
       
-      // 延迟清除拖拽 ID，让 transition 动画有时间运行
+      // Clear the dragged ID after a delay so the transition animation has time to run
       setTimeout(() => setDraggedId(null), 50);
       
       return newOrder;
     });
   };
 
-  // 基于 variant 的样式
+  // Styles based on variant
   const hasExternalWidth = style && style.width;
   const widthClass = hasExternalWidth ? '' : 'w-72';
 
@@ -938,7 +938,7 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
     ? `w-full h-full bg-white dark:bg-gray-800 flex items-center justify-center ${className}`
     : `${widthClass} bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-l border-gray-200/60 dark:border-gray-700/60 flex items-center justify-center shrink-0 font-sans antialiased ${className}`;
 
-  // 渲染空状态或错误状态
+  // Render the empty or error state
   if (!visitor) {
     return (
       <div className={emptyContainerClasses} style={style}>
@@ -946,24 +946,24 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
           {isLoading ? (
             <>
               <Loader2 size={48} className="mx-auto mb-4 text-gray-300 dark:text-gray-600 animate-spin" />
-              <p className="text-sm leading-5">{t('visitor.ui.loading', '正在加载访客信息...')}</p>
+              <p className="text-sm leading-5">{t('visitor.ui.loading', 'Loading visitor information...')}</p>
             </>
           ) : loadError ? (
             <>
               <AlertCircle size={48} className="mx-auto mb-4 text-red-300 dark:text-red-500" />
-              <p className="text-sm leading-5 text-red-600 dark:text-red-400 mb-2">{t('visitor.ui.loadFailed', '加载失败')}</p>
+              <p className="text-sm leading-5 text-red-600 dark:text-red-400 mb-2">{t('visitor.ui.loadFailed', 'Load Failed')}</p>
               <p className="text-xs text-gray-400 dark:text-gray-500 mb-4">{loadError}</p>
               <button
                 onClick={() => window.location.reload()}
                 className="px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors"
               >
-                {t('common.retry', '重试')}
+                {t('common.retry', 'Retry')}
               </button>
             </>
           ) : (
             <>
               <User size={48} className="mx-auto mb-4 text-gray-300 dark:text-gray-600" />
-              <p className="text-sm leading-5">{t('visitor.ui.noInfo', '暂无访客信息')}</p>
+              <p className="text-sm leading-5">{t('visitor.ui.noInfo', 'No visitor information')}</p>
             </>
           )}
         </div>
@@ -971,7 +971,7 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
     );
   }
 
-  // 获取频道额外信息用于显示
+  // Get the channel's extra info for display
   const channelExtra = channelInfo?.extra as ChannelVisitorExtra | undefined;
 
   return (
@@ -1020,7 +1020,7 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
         onDragOver={handleContainerDragOver}
         onDrop={handleContainerDrop}
         onDragLeave={(e) => {
-          // 只有离开容器本身时才清除指示器
+          // Clear the indicator only when leaving the container itself
           if (!e.currentTarget.contains(e.relatedTarget as Node)) {
             setDragOverId(null);
           }
@@ -1030,7 +1030,7 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
         {isUpdating && (
           <div className="pointer-events-none absolute top-2 left-1/2 -translate-x-1/2 z-20 flex items-center text-xs text-blue-700 dark:text-blue-400 bg-white/80 dark:bg-gray-800/80 backdrop-blur px-2 py-1 rounded border border-blue-100 dark:border-blue-800 shadow-sm">
             <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-            {t('common.updating', '更新中...')}
+            {t('common.updating', 'Updating...')}
           </div>
         )}
 
@@ -1046,7 +1046,7 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
           const isDragOver = dragOverId === sectionId;
           const isRecentlyMoved = recentlyMovedId === sectionId;
           
-          // 外层包装器样式：负责挪位动画
+          // Outer wrapper style: handles the shifting animation
           const wrapperClassName = `
             relative group/section
             transition-all duration-500 ease-[cubic-bezier(0.2,1,0.3,1)]
@@ -1054,14 +1054,14 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
             ${isRecentlyMoved ? 'z-20' : 'z-auto'}
           `;
 
-          // 内层组件样式：负责拖拽视觉反馈和入位动画
+          // Inner component style: handles drag visual feedback and the settle-in animation
           const sectionClassName = `
             transition-all duration-500 ease-[cubic-bezier(0.2,1,0.3,1)]
             ${isDragging ? 'opacity-20 scale-[0.95] blur-[2px] shadow-inner' : 'opacity-100 scale-100 shadow-none'}
             ${isRecentlyMoved ? 'ring-2 ring-blue-500/30 ring-offset-2 dark:ring-offset-gray-800 rounded-lg bg-blue-50/5 dark:bg-blue-900/5' : ''}
           `;
 
-          // 插入位置指示器
+          // Insertion position indicator
           const dropIndicator = isDragOver && (
             <div className="absolute top-0 left-0 right-0 h-1 bg-blue-500 rounded-full transition-all duration-300 shadow-[0_0_8px_rgba(59,130,246,0.5)] z-10 pointer-events-none" />
           );
@@ -1112,7 +1112,7 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
             case 'tags':
               return wrapWithIndicator(
                 <CollapsibleSection
-                  title={t('visitor.tags.title', '标签')}
+                  title={t('visitor.tags.title', 'Tags')}
                   draggable
                   className={sectionClassName}
                   expanded={expandedSections.tags}
@@ -1122,7 +1122,7 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
                   rightContent={isUpdating && (
                     <div className="flex items-center text-xs text-blue-600 dark:text-blue-400">
                       <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-                      {t('common.updating', '更新中')}
+                      {t('common.updating', 'Updating...')}
                     </div>
                   )}
                 >
@@ -1197,7 +1197,7 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
         imageSrc={cropImageSrc}
         aspect={1}
         mimeType={cropImageMimeType}
-        title={t('visitor.avatar.cropTitle', '裁剪头像')}
+        title={t('visitor.avatar.cropTitle', 'Crop Avatar')}
         onCancel={handleCropCancel}
         onConfirm={handleCropConfirm}
       />

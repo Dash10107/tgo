@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bootstrap script for one-command TGO deployment (China Network Optimized)
+# Bootstrap script for one-command Pelatis deployment (China Network Optimized)
 #
 # This is the China-optimized version of bootstrap.sh that uses Gitee mirrors
 # for faster Git repository cloning in mainland China.

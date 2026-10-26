@@ -76,7 +76,7 @@ const VariableSelector: React.FC<VariableSelectorProps> = ({
             : 'bg-white border-transparent text-gray-400 hover:text-blue-500 hover:bg-blue-50/50 dark:bg-transparent dark:border-transparent'
           }
         `}
-        title={t('workflow.palette.insertVariable', '插入变量')}
+        title={t('workflow.palette.insertVariable', 'Insert Variable')}
       >
         <Zap className="w-3.5 h-3.5" />
       </button>
@@ -91,7 +91,7 @@ const VariableSelector: React.FC<VariableSelectorProps> = ({
                 autoFocus
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={t('workflow.palette.searchVariables', '搜索变量...')}
+                placeholder={t('workflow.palette.searchVariables', 'Search variables...')}
                 className="w-full pl-8 pr-3 py-1.5 text-xs bg-gray-50 dark:bg-gray-800 border-none rounded-lg focus:ring-1 focus:ring-blue-500 outline-none"
               />
             </div>
@@ -129,8 +129,8 @@ const VariableSelector: React.FC<VariableSelectorProps> = ({
               <div className="py-8 text-center">
                 <p className="text-xs text-gray-400">
                   {allVariables.length === 0 
-                    ? t('workflow.palette.noUpstreamVariables', '无上游可用变量') 
-                    : t('workflow.palette.noMatchingVariables', '未找到匹配变量')
+                    ? t('workflow.palette.noUpstreamVariables', 'No upstream variables') 
+                    : t('workflow.palette.noMatchingVariables', 'No matching variables')
                   }
                 </p>
               </div>
@@ -139,7 +139,7 @@ const VariableSelector: React.FC<VariableSelectorProps> = ({
 
           <div className="p-2 border-t border-gray-50 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50 rounded-b-xl">
             <p className="text-[10px] text-gray-400 leading-relaxed px-1">
-              {t('workflow.palette.variableTip', '选择变量以在当前输入中引用。')}
+              {t('workflow.palette.variableTip', 'Select a variable to reference in current input.')}
             </p>
           </div>
         </div>

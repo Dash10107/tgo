@@ -25,7 +25,7 @@ public struct PlatformConfig: Codable {
     }
 
     public var resolvedThemeColor: String { themeColor ?? "#2f80ed" }
-    public var resolvedTitle: String { widgetTitle ?? "Tgo" }
+    public var resolvedTitle: String { widgetTitle ?? "Pelatis" }
 }
 
 /// Channel info

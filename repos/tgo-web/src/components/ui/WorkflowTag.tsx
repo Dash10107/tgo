@@ -16,8 +16,8 @@ interface WorkflowTagProps {
 }
 
 /**
- * 工作流标签组件
- * 用于显示AI员工关联的工作流
+ * Workflow tag component
+ * Shows the workflows linked to an AI agent
  */
 const WorkflowTag: React.FC<WorkflowTagProps> = ({
   workflow,
@@ -26,7 +26,7 @@ const WorkflowTag: React.FC<WorkflowTagProps> = ({
   showIcon = true,
   className = ''
 }) => {
-  // 根据工作流状态确定颜色主题
+  // Determine the color theme from the workflow state
   const getColorTheme = (enabled: boolean = true) => {
     if (enabled) {
       return 'bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-200';
@@ -76,7 +76,7 @@ const WorkflowTag: React.FC<WorkflowTagProps> = ({
         ${className}
       `}
       onClick={handleClick}
-      title={`${workflow.name}${isEnabled ? ' (已启用)' : ' (已禁用)'}`}
+      title={`${workflow.name}${isEnabled ? ' (Enabled)' : ' (Disabled)'}`}
     >
       {showIcon && (
         <GitBranch className={`${iconSizeClasses[size]} mr-1 ${iconColor}`} />

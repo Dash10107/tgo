@@ -82,7 +82,7 @@ export async function startMcpServer(): Promise<void> {
 
   server.tool(
     'tgo_auth_login',
-    'Login to TGO and save token',
+    'Login to Pelatis and save token',
     {
       server: z.string().describe('API server URL (e.g. http://localhost:8000/api)'),
       username: z.string().describe('Username or email'),

@@ -52,7 +52,7 @@ const getErrorMessage = (
   if (t && fallbackKey && fallbackDefault) {
     return t(fallbackKey, fallbackDefault);
   }
-  return '上传失败';
+  return 'Upload failed';
 };
 
 interface MessageInputProps {
@@ -152,7 +152,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
   const channelId = activeChat?.channelId;
   const channelType = activeChat?.channelType;
 
-  // 判定当前会话是否正在流式响应
+  // Determine whether the current conversation is streaming a response
   const activeStreamingChannels = useMessageStore(state => state.activeStreamingChannels);
   const isStreamingInProgress = useMemo(() => {
     if (!channelId || channelType == null) return false;
@@ -164,8 +164,8 @@ const MessageInput: React.FC<MessageInputProps> = ({
   // Detect user's platform for keyboard shortcut hints
   const isMac = typeof navigator !== 'undefined' && navigator.platform.toUpperCase().indexOf('MAC') >= 0;
   const newlineHint = isMac
-    ? t('chat.input.shortcuts.newline.mac', '⌘ + Enter 换行')
-    : t('chat.input.shortcuts.newline.windows', 'Ctrl + Enter 换行');
+    ? t('chat.input.shortcuts.newline.mac', '⌘ + Enter to newline')
+    : t('chat.input.shortcuts.newline.windows', 'Ctrl + Enter to newline');
 
   // Focus on conversation switch
   useEffect(() => {
@@ -217,7 +217,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
   // Effect-based focus recovery - runs after every render
   // AI toggle integration
   
-  // 判断是否是 agent 会话（channelId 以 -agent 结尾）
+  // Determine whether this is an agent conversation (channelId ends with -agent)
   const isAgentChat = channelId?.endsWith('-agent') ?? false;
   const isAIChat = isAgentChat;
   
@@ -242,16 +242,16 @@ const MessageInput: React.FC<MessageInputProps> = ({
     ? (aiMode === 'auto') 
     : !aiDisabledRaw;
   
-  // 获取分配坐席的频道信息（用于显示坐席名字）
+  // Get the channel info of the assigned agent (to show the agent's name)
   const assignedStaffChannelId = assignedStaffId ? `${assignedStaffId}-staff` : undefined;
   const assignedStaffChannelInfo = useChannelStore(state => 
     assignedStaffChannelId ? state.getChannel(assignedStaffChannelId, 1) : undefined
   );
   const assignedStaffName = assignedStaffChannelInfo?.name;
   
-  // agent 会话时不禁用手动输入
+  // Manual input is not disabled in agent conversations
   const isManualDisabled = isAIChat ? false : isAIEnabled;
-  // 流消息进行中时不禁用输入框，但发送按钮会变成暂停按钮
+  // The input box is not disabled while a stream message is in progress, but the send button becomes a pause button
   const { showToast, showError } = useToast();
   useEffect(() => {
     if (isManualDisabled) {
@@ -260,7 +260,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
     }
   }, [isManualDisabled]);
 
-  // 当访客分配给其他坐席时，获取该坐席的频道信息以显示名字
+  // When the visitor is assigned to another agent, fetch that agent's channel info to show the name
   const ensureChannel = useChannelStore(state => state.ensureChannel);
   useEffect(() => {
     if (assignedStaffChannelId && !assignedStaffChannelInfo) {
@@ -285,7 +285,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
         await channelStore.refreshChannel({ channel_id: channelId, channel_type: channelType });
       }
       
-      showSuccess(showToast, t('chat.input.accept.successTitle', '接入成功'), t('chat.input.accept.successMessage', '访客已成功接入'));
+      showSuccess(showToast, t('chat.input.accept.successTitle', 'Accepted'), t('chat.input.accept.successMessage', 'Visitor accepted successfully'));
       
       // Notify parent to switch to "my" tab
       onAcceptVisitor?.();
@@ -373,8 +373,8 @@ const MessageInput: React.FC<MessageInputProps> = ({
 
       if (availableSlots <= 0) {
         showError(
-          t('chat.input.errors.images.limitReachedTitleSimple', '图片数量已达上限'),
-          t('chat.input.errors.images.limitReachedAddNine', '最多只能添加 9 张图片')
+          t('chat.input.errors.images.limitReachedTitleSimple', 'Image limit reached'),
+          t('chat.input.errors.images.limitReachedAddNine', 'Maximum 9 images can be added')
         );
       } else {
         const imagesToAdd = imageFiles.slice(0, availableSlots);
@@ -406,8 +406,8 @@ const MessageInput: React.FC<MessageInputProps> = ({
 
         if (skippedCount > 0) {
           showError(
-            t('chat.input.errors.images.partialNotAddedTitle', '部分图片未添加'),
-            t('chat.input.errors.images.partialNotAddedDesc', '已添加 {{added}} 张图片，跳过 {{skipped}} 张（超出 9 张限制）', { added: imagesToAdd.length, skipped: skippedCount })
+            t('chat.input.errors.images.partialNotAddedTitle', 'Some images not added'),
+            t('chat.input.errors.images.partialNotAddedDesc', 'Added {{added}} images, skipped {{skipped}} (exceeds 9 image limit)', { added: imagesToAdd.length, skipped: skippedCount })
           );
         }
       }
@@ -417,8 +417,8 @@ const MessageInput: React.FC<MessageInputProps> = ({
     if (nonImageFiles.length > 0) {
       if (selectedFiles.length > 0) {
         showError(
-          t('chat.input.errors.files.onlyOne', '仅支持发送一个文件'),
-          t('chat.input.errors.files.removeCurrent', '请先移除当前文件')
+          t('chat.input.errors.files.onlyOne', 'Only one file supported'),
+          t('chat.input.errors.files.removeCurrent', 'Please remove current file first')
         );
       } else {
         const fileToAdd = nonImageFiles[0];
@@ -433,8 +433,8 @@ const MessageInput: React.FC<MessageInputProps> = ({
 
         if (skippedCount > 0) {
           showError(
-            t('chat.input.errors.files.onlyOne', '仅支持发送一个文件'),
-            t('chat.input.errors.files.skippedOther', '已添加 "{{name}}"，跳过其他 {{count}} 个文件', { name: fileToAdd.name, count: skippedCount })
+            t('chat.input.errors.files.onlyOne', 'Only one file supported'),
+            t('chat.input.errors.files.skippedOther', 'Added "{{name}}", skipped {{count}} other files', { name: fileToAdd.name, count: skippedCount })
           );
         }
       }
@@ -451,8 +451,8 @@ const MessageInput: React.FC<MessageInputProps> = ({
     const files: File[] = Array.from(filesList).filter(f => /^image\/(png|jpe?g|gif|webp)$/i.test(f.type));
     if (files.length === 0) {
       showError(
-        t('chat.input.errors.images.unsupportedTypeTitle', '不支持的文件类型'),
-        t('chat.input.errors.images.unsupportedTypeDesc', '仅支持图片文件（jpg/png/gif/webp）')
+        t('chat.input.errors.images.unsupportedTypeTitle', 'Unsupported file type'),
+        t('chat.input.errors.images.unsupportedTypeDesc', 'Only image files are supported (jpg/png/gif/webp)')
       );
       return;
     }
@@ -462,8 +462,8 @@ const MessageInput: React.FC<MessageInputProps> = ({
     const allowed = Math.max(0, 9 - current);
     if (allowed <= 0) {
       showError(
-        t('chat.input.errors.images.limitReachedTitle', '已达到图片数量上限（9张）'),
-        t('chat.input.errors.images.limitReachedDesc', '最多只能上传9张图片')
+        t('chat.input.errors.images.limitReachedTitle', 'Image limit reached (9 images)'),
+        t('chat.input.errors.images.limitReachedDesc', 'Maximum 9 images allowed')
       );
       return;
     }
@@ -471,8 +471,8 @@ const MessageInput: React.FC<MessageInputProps> = ({
     const toUse = files.slice(0, allowed);
     if (files.length > allowed) {
       showError(
-        t('chat.input.errors.images.tooManyTitle', '最多只能上传9张图片'),
-        t('chat.input.errors.images.tooManyDesc', '已超过可添加的图片数量')
+        t('chat.input.errors.images.tooManyTitle', 'Maximum 9 images allowed'),
+        t('chat.input.errors.images.tooManyDesc', 'Exceeded the number of images that can be added')
       );
     }
 
@@ -508,9 +508,9 @@ const MessageInput: React.FC<MessageInputProps> = ({
 
       // Toast success
       if (nextEnabled) {
-        showSuccess(showToast, t('chat.input.ai.enabledTitle', 'AI已启用'), t('chat.input.ai.enabledMessage', '访客AI助手已启用'));
+        showSuccess(showToast, t('chat.input.ai.enabledTitle', 'AI Enabled'), t('chat.input.ai.enabledMessage', 'Visitor AI assistant has been enabled'));
       } else {
-        showSuccess(showToast, t('chat.input.ai.disabledTitle', 'AI已禁用'), t('chat.input.ai.disabledMessage', '访客AI助手已禁用'));
+        showSuccess(showToast, t('chat.input.ai.disabledTitle', 'AI Disabled'), t('chat.input.ai.disabledMessage', 'Visitor AI assistant has been disabled'));
       }
 
       // Patch local store state to reflect new status immediately
@@ -570,7 +570,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
   const handleCancelStream = useCallback(async (): Promise<void> => {
     if (!isStreamingInProgress) return;
     
-    // 找到当前会话对应的流式消息 ID
+    // Find the streaming message ID of the current conversation
     const entry = Object.entries(activeStreamingChannels).find(
       ([_, c]) => c.channelId === channelId && c.channelType === channelType
     );
@@ -578,7 +578,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
 
     try {
       await cancelStreamingMessage(targetClientMsgNo);
-      showSuccess(showToast, t('chat.input.streaming.cancelledTitle', '已暂停'), t('chat.input.streaming.cancelledMessage', '流消息已暂停'));
+      showSuccess(showToast, t('chat.input.streaming.cancelledTitle', 'Paused'), t('chat.input.streaming.cancelledMessage', 'Streaming message paused'));
     } catch (error) {
       console.error('Failed to cancel stream message:', error);
       showApiError(showToast, error);
@@ -780,8 +780,8 @@ const MessageInput: React.FC<MessageInputProps> = ({
   const sendImagesOnly = useCallback(async (): Promise<void> => {
     if (!channelId || typeof channelType !== 'number') {
       showError(
-        t('chat.input.errors.noConversationTitle', '请选择对话'),
-        t('chat.input.errors.noConversationDesc.image', '请选择对话后再发送图片')
+        t('chat.input.errors.noConversationTitle', 'Please select a conversation'),
+        t('chat.input.errors.noConversationDesc.image', 'Please select a conversation before sending images')
       );
       return;
     }
@@ -795,7 +795,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
       const localMessage: Message = {
         id: nowId,
         type: 'staff',
-        content: '[图片]',
+        content: '[Image]',
         timestamp: new Date().toISOString(),
         messageId: nowId,
         clientMsgNo: nowId,
@@ -838,7 +838,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
 
         const payload = {
           type: MessagePayloadType.IMAGE,
-          content: '[图片]',
+          content: '[Image]',
           url: toAbsoluteApiUrl(res.file_url),
           width,
           height,
@@ -855,18 +855,18 @@ const MessageInput: React.FC<MessageInputProps> = ({
                 client_msg_no: nowId,
               });
             } catch (err) {
-              const errMsg = err instanceof Error ? err.message : t('chat.input.errors.platformFailed', '平台消息发送失败，请稍后重试');
+              const errMsg = err instanceof Error ? err.message : t('chat.input.errors.platformFailed', 'Platform message send failed, please try again later');
               updateMessageByClientMsgNo(nowId, { metadata: { platform_send_error: true, error_text: errMsg } });
               showApiError(showToast, err);
               return;
             }
           }
-          if (!isConnected) throw new Error(t('chat.input.errors.websocketNotConnected.image', 'WebSocket 未连接，无法发送图片消息'));
+          if (!isConnected) throw new Error(t('chat.input.errors.websocketNotConnected.image', 'WebSocket not connected, cannot send image message'));
           console.log("Sending image message via WebSocket", payload);
           await sendWsMessage(channelId, channelType, payload, nowId);
           updateMessageByClientMsgNo(nowId, { metadata: { ws_sent: true, ws_send_error: false } });
         } catch (err) {
-          const errMsg = getErrorMessage(err, t, 'chat.input.errors.websocketFailed', 'WebSocket 发送失败，请检查网络连接');
+          const errMsg = getErrorMessage(err, t, 'chat.input.errors.websocketFailed', 'WebSocket send failed, please check your network connection');
           updateMessageByClientMsgNo(nowId, { metadata: { ws_send_error: true, error_text: errMsg } });
           showApiError(showToast, err);
         }
@@ -888,8 +888,8 @@ const MessageInput: React.FC<MessageInputProps> = ({
 
     if (!channelId || typeof channelType !== 'number') {
       showError(
-        t('chat.input.errors.noConversationTitle', '请选择对话'),
-        t('chat.input.errors.noConversationDesc.file', '请选择对话后再发送文件')
+        t('chat.input.errors.noConversationTitle', 'Please select a conversation'),
+        t('chat.input.errors.noConversationDesc.file', 'Please select a conversation before sending files')
       );
       return;
     }
@@ -901,7 +901,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
       const localMessage: Message = {
         id: nowId,
         type: 'staff',
-        content: '[文件]',
+        content: '[File]',
         timestamp: new Date().toISOString(),
         messageId: nowId,
         clientMsgNo: nowId,
@@ -945,7 +945,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
 
         const payload = {
           type: MessagePayloadType.FILE,
-          content: '[文件]',
+          content: '[File]',
           url: fileUrl,
           name: f.name,
           size: f.size,
@@ -962,17 +962,17 @@ const MessageInput: React.FC<MessageInputProps> = ({
                 client_msg_no: nowId,
               });
             } catch (err) {
-              const errMsg = err instanceof Error ? err.message : t('chat.input.errors.platformFailed', '平台消息发送失败，请稍后重试');
+              const errMsg = err instanceof Error ? err.message : t('chat.input.errors.platformFailed', 'Platform message send failed, please try again later');
               updateMessageByClientMsgNo(nowId, { metadata: { platform_send_error: true, error_text: errMsg } });
               showApiError(showToast, err);
               return;
             }
           }
-          if (!isConnected) throw new Error(t('chat.input.errors.websocketNotConnected.file', 'WebSocket 未连接，无法发送文件消息'));
+          if (!isConnected) throw new Error(t('chat.input.errors.websocketNotConnected.file', 'WebSocket not connected, cannot send file message'));
           await sendWsMessage(channelId, channelType, payload, nowId);
           updateMessageByClientMsgNo(nowId, { metadata: { ws_sent: true, ws_send_error: false } });
         } catch (err) {
-          const errMsg = getErrorMessage(err, t, 'chat.input.errors.websocketFailed', 'WebSocket 发送失败，请检查网络连接');
+          const errMsg = getErrorMessage(err, t, 'chat.input.errors.websocketFailed', 'WebSocket send failed, please check your network connection');
           updateMessageByClientMsgNo(nowId, { metadata: { ws_send_error: true, error_text: errMsg } });
           showApiError(showToast, err);
         }
@@ -995,8 +995,8 @@ const MessageInput: React.FC<MessageInputProps> = ({
 
     if (!channelId || typeof channelType !== 'number') {
       showError(
-        t('chat.input.errors.noConversationTitle', '请选择对话'),
-        t('chat.input.errors.noConversationDesc.message', '请选择对话后再发送消息')
+        t('chat.input.errors.noConversationTitle', 'Please select a conversation'),
+        t('chat.input.errors.noConversationDesc.message', 'Please select a conversation before sending messages')
       );
       return;
     }
@@ -1073,18 +1073,18 @@ const MessageInput: React.FC<MessageInputProps> = ({
               client_msg_no: nowId,
             });
           } catch (err) {
-            const errMsg = err instanceof Error ? err.message : t('chat.input.errors.platformFailed', '平台消息发送失败，请稍后重试');
+            const errMsg = err instanceof Error ? err.message : t('chat.input.errors.platformFailed', 'Platform message send failed, please try again later');
             updateMessageByClientMsgNo(nowId, { metadata: { platform_send_error: true, error_text: errMsg } });
             showApiError(showToast, err);
             return;
           }
         }
-        if (!isConnected) throw new Error(t('chat.input.errors.websocketNotConnected.message', 'WebSocket 未连接，无法发送消息'));
+        if (!isConnected) throw new Error(t('chat.input.errors.websocketNotConnected.message', 'WebSocket not connected, cannot send message'));
         console.log("Sending rich text with file message via WebSocket", payload);
         await sendWsMessage(channelId, channelType, payload, nowId);
         updateMessageByClientMsgNo(nowId, { metadata: { ws_sent: true, ws_send_error: false } });
       } catch (err) {
-        const errMsg = getErrorMessage(err, t, 'chat.input.errors.websocketFailed', 'WebSocket 发送失败，请检查网络连接');
+        const errMsg = getErrorMessage(err, t, 'chat.input.errors.websocketFailed', 'WebSocket send failed, please check your network connection');
         updateMessageByClientMsgNo(nowId, { metadata: { ws_send_error: true, error_text: errMsg } });
         showApiError(showToast, err);
       }
@@ -1104,8 +1104,8 @@ const MessageInput: React.FC<MessageInputProps> = ({
     if (!items.length) return;
     if (!channelId || typeof channelType !== 'number') {
       showError(
-        t('chat.input.errors.noConversationTitle', '请选择对话'),
-        t('chat.input.errors.noConversationDesc.image', '请选择对话后再发送图片')
+        t('chat.input.errors.noConversationTitle', 'Please select a conversation'),
+        t('chat.input.errors.noConversationDesc.image', 'Please select a conversation before sending images')
       );
       return;
     }
@@ -1191,18 +1191,18 @@ const MessageInput: React.FC<MessageInputProps> = ({
             client_msg_no: nowId,
           });
         } catch (err) {
-          const errMsg = err instanceof Error ? err.message : t('chat.input.errors.platformFailed', '平台消息发送失败，请稍后重试');
+          const errMsg = err instanceof Error ? err.message : t('chat.input.errors.platformFailed', 'Platform message send failed, please try again later');
           updateMessageByClientMsgNo(nowId, { metadata: { platform_send_error: true, error_text: errMsg } });
           showApiError(showToast, err);
           return;
         }
       }
-      if (!isConnected) throw new Error(t('chat.input.errors.websocketNotConnected.richText', 'WebSocket 未连接，无法发送图文消息'));
+      if (!isConnected) throw new Error(t('chat.input.errors.websocketNotConnected.richText', 'WebSocket not connected, cannot send rich text message'));
       console.log("Sending rich text with images message via WebSocket", payload);
       await sendWsMessage(channelId, channelType, payload, nowId);
       updateMessageByClientMsgNo(nowId, { metadata: { ws_sent: true, ws_send_error: false } });
     } catch (err) {
-      const errMsg = getErrorMessage(err, t, 'chat.input.errors.websocketFailed', 'WebSocket 发送失败，请检查网络连接');
+      const errMsg = getErrorMessage(err, t, 'chat.input.errors.websocketFailed', 'WebSocket send failed, please check your network connection');
       updateMessageByClientMsgNo(nowId, { metadata: { ws_send_error: true, error_text: errMsg } });
       showApiError(showToast, err);
     }
@@ -1248,7 +1248,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
       <footer className="p-4 border-t border-gray-200/80 dark:border-gray-700/80 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg sticky bottom-0 z-10">
         <div className="flex flex-col items-center justify-center py-6 space-y-3">
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            {t('chat.input.accept.hint', '该访客正在等待接入')}
+            {t('chat.input.accept.hint', 'This visitor is waiting to be accepted')}
           </p>
           <button
             onClick={handleAcceptVisitor}
@@ -1258,12 +1258,12 @@ const MessageInput: React.FC<MessageInputProps> = ({
             {isAccepting ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>{t('chat.input.accept.accepting', '接入中...')}</span>
+                <span>{t('chat.input.accept.accepting', 'Accepting...')}</span>
               </>
             ) : (
               <>
                 <UserPlus className="w-4 h-4" />
-                <span>{t('chat.input.accept.button', '接入访客')}</span>
+                <span>{t('chat.input.accept.button', 'Accept Visitor')}</span>
               </>
             )}
           </button>
@@ -1278,7 +1278,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
       <footer className="p-4 border-t border-gray-200/80 dark:border-gray-700/80 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg sticky bottom-0 z-10">
         <div className="flex items-center justify-center py-4">
           <p className="text-sm text-gray-400 dark:text-gray-500">
-            {t('chat.input.closed', '会话已结束')}
+            {t('chat.input.closed', 'Conversation ended')}
           </p>
         </div>
       </footer>
@@ -1289,12 +1289,12 @@ const MessageInput: React.FC<MessageInputProps> = ({
   // Only check when assignedStaffId exists and is not the current user
   const isNotMyVisitor = assignedStaffId && user?.id && assignedStaffId !== user.id;
   if (isNotMyVisitor) {
-    const staffDisplayName = assignedStaffName || t('chat.input.otherAgent', '其他坐席');
+    const staffDisplayName = assignedStaffName || t('chat.input.otherAgent', 'another agent');
     return (
       <footer className="p-4 border-t border-gray-200/80 dark:border-gray-700/80 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg sticky bottom-0 z-10">
         <div className="flex items-center justify-center py-4">
           <p className="text-sm text-gray-400 dark:text-gray-500">
-            {t('chat.input.notMyVisitor', '该访客已分配给 {{name}}', { name: staffDisplayName })}
+            {t('chat.input.notMyVisitor', 'This visitor is assigned to {{name}}', { name: staffDisplayName })}
           </p>
         </div>
       </footer>
@@ -1313,8 +1313,8 @@ const MessageInput: React.FC<MessageInputProps> = ({
             onClick={() => { if (isManualDisabled) return; setShowEmoji(v => !v); }}
             disabled={isManualDisabled}
             className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            aria-label={t('chat.input.emoji.aria', '打开表情选择器')}
-            title={isManualDisabled ? t('chat.input.disabled.tooltip', 'AI助手已启用，手动输入已禁用') : t('chat.input.emoji.title', '插入表情')}
+            aria-label={t('chat.input.emoji.aria', 'Open emoji picker')}
+            title={isManualDisabled ? t('chat.input.disabled.tooltip', 'AI assistant enabled, manual input disabled') : t('chat.input.emoji.title', 'Insert emoji')}
           >
             <Smile className="w-6 h-6" />
           </button>
@@ -1323,15 +1323,15 @@ const MessageInput: React.FC<MessageInputProps> = ({
             onClick={() => { if (isManualDisabled) return; handleClickScreenshotBtn(); }}
             disabled={isManualDisabled}
             className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            aria-label={t('chat.input.screenshot.aria', '截图粘贴说明')}
-            title={isManualDisabled ? t('chat.input.disabled.tooltip', 'AI助手已启用，手动输入已禁用') : t('chat.input.screenshot.title', '截图')}
+            aria-label={t('chat.input.screenshot.aria', 'Screenshot paste instructions')}
+            title={isManualDisabled ? t('chat.input.disabled.tooltip', 'AI assistant enabled, manual input disabled') : t('chat.input.screenshot.title', 'Screenshot')}
           >
             <Scissors className="w-6 h-6" />
           </button>
-          <button onClick={handleClickImageBtn} disabled={isManualDisabled} className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" aria-label={t('chat.input.image.aria', '上传图片')} title={isManualDisabled ? t('chat.input.disabled.tooltip', 'AI助手已启用，手动输入已禁用') : t('chat.input.image.title', '发送图片')}>
+          <button onClick={handleClickImageBtn} disabled={isManualDisabled} className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" aria-label={t('chat.input.image.aria', 'Upload image')} title={isManualDisabled ? t('chat.input.disabled.tooltip', 'AI assistant enabled, manual input disabled') : t('chat.input.image.title', 'Send image')}>
             <ImageIcon className="w-6 h-6" />
           </button>
-          <button onClick={handleClickFileBtn} disabled={isManualDisabled} className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" aria-label={t('chat.input.file.aria', '上传文件')} title={isManualDisabled ? t('chat.input.disabled.tooltip', 'AI助手已启用，手动输入已禁用') : t('chat.input.file.title', '发送文件')}>
+          <button onClick={handleClickFileBtn} disabled={isManualDisabled} className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" aria-label={t('chat.input.file.aria', 'Upload file')} title={isManualDisabled ? t('chat.input.disabled.tooltip', 'AI assistant enabled, manual input disabled') : t('chat.input.file.title', 'Send file')}>
             <Folder className="w-6 h-6" />
           </button>
           
@@ -1364,12 +1364,12 @@ const MessageInput: React.FC<MessageInputProps> = ({
         disabled={isManualDisabled}
       />
 
-        {/* AI 助手开关 - agent 会话时不显示 */}
+        {/* AI assistant toggle - not shown in agent conversations */}
         {!isAIChat && (
-          <div className="flex items-center space-x-2" title={isAIEnabled ? t('chat.input.ai.enabled', 'AI已启用') : t('chat.input.ai.disabled', 'AI已禁用')}>
-            <span className="text-xs text-gray-600 dark:text-gray-400 select-none">{t('chat.input.ai.label', 'AI助手')}</span>
+          <div className="flex items-center space-x-2" title={isAIEnabled ? t('chat.input.ai.enabled', 'AI enabled') : t('chat.input.ai.disabled', 'AI disabled')}>
+            <span className="text-xs text-gray-600 dark:text-gray-400 select-none">{t('chat.input.ai.label', 'AI Assistant')}</span>
             <Toggle
-              aria-label={t('chat.input.ai.toggleAria', '切换AI助手')}
+              aria-label={t('chat.input.ai.toggleAria', 'Toggle AI assistant')}
               checked={isAIEnabled}
               onChange={handleChangeAI}
               disabled={!visitorId || isTogglingAI}
@@ -1397,35 +1397,35 @@ const MessageInput: React.FC<MessageInputProps> = ({
               className="fixed z-[1000] w-80 bg-white dark:bg-gray-900 rounded-md shadow-lg border border-gray-200 dark:border-gray-700"
               style={{ top: screenshotTipPos.top, left: screenshotTipPos.left, width: TIP_WIDTH }}
               role="dialog"
-              aria-label={t('chat.input.screenshotTip.aria', '截图发送提示')}
+              aria-label={t('chat.input.screenshotTip.aria', 'Screenshot send tip')}
             >
               <div className="p-3">
                 <div className="flex items-center justify-between mb-2">
 
 
-                  <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{t('chat.input.screenshotTip.title', '截图发送小提示')}</span>
+                  <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{t('chat.input.screenshotTip.title', 'Screenshot Send Tip')}</span>
                   <button
                     className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                    aria-label={t('common.close', '关闭')}
+                    aria-label={t('common.close', 'Close')}
                     onClick={() => setShowScreenshotTip(false)}
                   >
                     ×
                   </button>
                 </div>
                 <div className="text-xs text-gray-700 dark:text-gray-200 leading-relaxed">
-                  <p>{t('chat.input.screenshotTip.line1', '您可以使用 QQ、微信 或 系统自带的截图工具 截图后，')}</p>
+                  <p>{t('chat.input.screenshotTip.line1', 'You can use QQ, WeChat, or system screenshot tools to take a screenshot,')}</p>
                   <p>
-                    {t('chat.input.screenshotTip.line2.prefix', '在消息输入框中按')}
+                    {t('chat.input.screenshotTip.line2.prefix', 'then press')}
                     <span className="mx-1 inline-block font-mono text-[11px] px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
                       {isMac ? '⌘ + V' : 'Ctrl + V'}
                     </span>
                     {isMac && (
                       <>
-                        {t('common.or', '或')}
+                        {t('common.or', 'or')}
                         <span className="ml-1 inline-block font-mono text-[11px] px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">Cmd + V</span>
                       </>
                     )}
-                    {t('chat.input.screenshotTip.line2.suffix', '粘贴发送图片')}
+                    {t('chat.input.screenshotTip.line2.suffix', 'in the message input box to paste and send the image')}
                   </p>
                 </div>
               </div>
@@ -1453,8 +1453,8 @@ const MessageInput: React.FC<MessageInputProps> = ({
                 <button
                   onClick={() => removeSelectedFile(sf.id)}
                   className="text-gray-400 hover:text-red-500 text-sm"
-                  aria-label={t('chat.input.file.remove', '移除文件')}
-                  title={t('chat.input.file.remove', '移除文件')}
+                  aria-label={t('chat.input.file.remove', 'Remove file')}
+                  title={t('chat.input.file.remove', 'Remove file')}
                 >
                   ×
                 </button>
@@ -1482,7 +1482,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
               <div className={`grid ${gridColsClass} gap-2 w-fit`}>
                 {pastedItems.map((it, idx) => (
                   <div key={idx} className={"relative rounded-md overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 " + getGridItemClass(idx)}>
-                    <img src={it.previewUrl} alt={t('chat.input.preview.imageAlt', '预览图片{{index}}', { index: idx + 1 })} className="w-[100px] h-[100px] object-cover" />
+                    <img src={it.previewUrl} alt={t('chat.input.preview.imageAlt', 'Preview image {{index}}', { index: idx + 1 })} className="w-[100px] h-[100px] object-cover" />
                     {/* Progress overlay */}
                     {it.status && it.status !== 'idle' && it.status !== 'completed' && (
                       <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
@@ -1491,13 +1491,13 @@ const MessageInput: React.FC<MessageInputProps> = ({
                     )}
                     {it.status === 'error' && (
                       <div className="absolute inset-0 bg-red-500/20 flex items-center justify-center text-red-700 text-xs text-center px-1 leading-5">
-                        {t('chat.input.upload.failed', '上传失败')}
+                        {t('chat.input.upload.failed', 'Upload failed')}
                       </div>
                     )}
                     <button
                       onClick={() => removePastedItem(idx)}
                       className="absolute -top-2 -right-2 bg-black/60 text-white rounded-full w-6 h-6 leading-6 text-center text-xs hover:bg-black/80"
-                      aria-label={t('chat.input.preview.removeAria', '移除预览')}
+                      aria-label={t('chat.input.preview.removeAria', 'Remove preview')}
                     >
                       ×
                     </button>
@@ -1513,7 +1513,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
       <div className="mt-2">
         <textarea
           ref={textareaRef}
-          placeholder={isManualDisabled ? t('chat.input.disabled.placeholder', 'AI助手已启用，无法手动输入') : t('chat.input.placeholder', '输入消息...')}
+          placeholder={isManualDisabled ? t('chat.input.disabled.placeholder', 'AI assistant enabled, manual input disabled') : t('chat.input.placeholder', 'Type a message...')}
           rows={2}
           value={message}
           onChange={handleMessageChange}
@@ -1523,7 +1523,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
           onCompositionEnd={handleCompositionEnd}
           readOnly={isSending || isSendingLocal || isManualDisabled}
           disabled={isManualDisabled}
-          title={isManualDisabled ? t('chat.input.disabled.placeholder', 'AI助手已启用，无法手动输入') : undefined}
+          title={isManualDisabled ? t('chat.input.disabled.placeholder', 'AI assistant enabled, manual input disabled') : undefined}
           className={`w-full text-sm p-2 border border-transparent rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 resize-none bg-transparent dark:text-gray-200 ${
             isSending || isSendingLocal || isManualDisabled ? 'opacity-50 cursor-not-allowed' : ''
           }`}
@@ -1532,18 +1532,18 @@ const MessageInput: React.FC<MessageInputProps> = ({
 
       {/* Send controls */}
       <div className="flex justify-end mt-1">
-        <button className="text-xs text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 mr-2" title={isManualDisabled ? t('chat.input.disabled.tooltip', 'AI助手已启用，手动输入已禁用') : undefined}>
-          {t('chat.input.shortcuts.sendWithHint', 'Enter 发送 • {{hint}}', { hint: newlineHint })}
+        <button className="text-xs text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 mr-2" title={isManualDisabled ? t('chat.input.disabled.tooltip', 'AI assistant enabled, manual input disabled') : undefined}>
+          {t('chat.input.shortcuts.sendWithHint', 'Enter to send • {{hint}}', { hint: newlineHint })}
         </button>
         {isStreamingInProgress ? (
           <button
             className="px-4 py-1 text-white text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-400 focus:ring-offset-1 transition-colors duration-200 bg-orange-500 hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-700 flex items-center space-x-1.5"
             onMouseDown={(e) => e.preventDefault()}
             onClick={handleCancelStream}
-            title={t('chat.input.streaming.pauseTooltip', '暂停流消息')}
+            title={t('chat.input.streaming.pauseTooltip', 'Pause streaming message')}
           >
             <Pause className="w-4 h-4" />
-            <span>{t('chat.input.streaming.pause', '暂停')}</span>
+            <span>{t('chat.input.streaming.pause', 'Pause')}</span>
           </button>
         ) : (
           <button
@@ -1557,9 +1557,9 @@ const MessageInput: React.FC<MessageInputProps> = ({
             onMouseDown={(e) => e.preventDefault()}
             onClick={handleSend}
             disabled={(!message.trim() && pastedItems.length === 0 && selectedFiles.length === 0) || isSending || isSendingLocal || isManualDisabled}
-            title={isManualDisabled ? t('chat.input.disabled.cannotSendTooltip', 'AI助手已启用，无法手动发送') : undefined}
+            title={isManualDisabled ? t('chat.input.disabled.cannotSendTooltip', 'AI assistant enabled, manual send disabled') : undefined}
           >
-            {isSending || isSendingLocal ? t('chat.input.send.sending', '发送中...') : t('chat.input.send.label', '发送')}
+            {isSending || isSendingLocal ? t('chat.input.send.sending', 'Sending...') : t('chat.input.send.label', 'Send')}
           </button>
         )}
       </div>

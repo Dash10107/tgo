@@ -10,27 +10,27 @@ const GeneralSettings: React.FC = () => {
   const { themeMode, setThemeMode } = useAppSettingsStore();
 
   const themeOptions: Array<{ value: ThemeMode; label: string; icon: React.ReactNode }> = [
-    { value: 'light', label: t('settings.theme.light', '浅色'), icon: <Sun className="w-4 h-4" /> },
-    { value: 'dark', label: t('settings.theme.dark', '深色'), icon: <Moon className="w-4 h-4" /> },
-    { value: 'system', label: t('settings.theme.system', '跟随系统'), icon: <Monitor className="w-4 h-4" /> },
+    { value: 'light', label: t('settings.theme.light', 'Light'), icon: <Sun className="w-4 h-4" /> },
+    { value: 'dark', label: t('settings.theme.dark', 'Dark'), icon: <Moon className="w-4 h-4" /> },
+    { value: 'system', label: t('settings.theme.system', 'Follow System'), icon: <Monitor className="w-4 h-4" /> },
   ];
 
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center gap-2">
         <Settings className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-        <h2 className="text-lg font-medium text-gray-800 dark:text-gray-200">{t('settings.general.title', '通用')}</h2>
+        <h2 className="text-lg font-medium text-gray-800 dark:text-gray-200">{t('settings.general.title', 'General')}</h2>
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-6">
-        {/* 主题设置 */}
+        {/* Theme settings */}
         <div>
           <div className="text-sm font-medium text-gray-800 dark:text-gray-200 mb-3">
-            {t('settings.theme.title', '主题模式')}
+            {t('settings.theme.title', 'Theme Mode')}
           </div>
           <div className="space-y-3">
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              {t('settings.theme.description', '选择您偏好的主题模式，更改将立即生效')}
+              {t('settings.theme.description', 'Choose your preferred theme mode. Changes will take effect immediately')}
             </p>
             <div className="flex gap-3">
               {themeOptions.map((option) => (
@@ -54,12 +54,12 @@ const GeneralSettings: React.FC = () => {
           </div>
         </div>
 
-        {/* 语言设置 */}
+        {/* Language settings */}
         <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
-          <div className="text-sm font-medium text-gray-800 dark:text-gray-200 mb-3">{t('settings.language.title', '语言设置')}</div>
+          <div className="text-sm font-medium text-gray-800 dark:text-gray-200 mb-3">{t('settings.language.title', 'Language Settings')}</div>
           <div className="flex items-center gap-4">
             <LanguageSelector variant="button" placement="bottom" usePortal />
-            <div className="text-xs text-gray-500 dark:text-gray-400">{t('settings.language.persistence', '语言偏好将自动保存到本地')}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">{t('settings.language.persistence', 'Language preference will be automatically saved to local storage')}</div>
           </div>
         </div>
       </div>

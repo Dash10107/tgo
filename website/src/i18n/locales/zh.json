@@ -15,7 +15,7 @@
   },
   "CoreCapabilities": {
     "title": "核心功能",
-    "description": "TGO 提供了一系列核心功能，帮助开发者更高效地构建和管理应用。",
+    "description": "Pelatis 提供了一系列核心功能，帮助开发者更高效地构建和管理应用。",
     "cards": {
       "intelligentOrchestration": {
         "title": "AI 智能体编排",
@@ -79,12 +79,12 @@
     }
   },
   "GetStarted": {
-    "heading": "立即开始使用 Tgo",
-    "subheading": "快速开始使用 Tgo，构建您的智能体客服应用。",
+    "heading": "立即开始使用 Pelatis",
+    "subheading": "快速开始使用 Pelatis，构建您的智能体客服应用。",
     "cards": {
       "docs": {
         "title": "快速入门指南",
-        "description": "详细的文档和教程，帮助您快速上手 Tgo。"
+        "description": "详细的文档和教程，帮助您快速上手 Pelatis。"
       },
       "github": {
         "title": "GitHub 仓库",
@@ -97,7 +97,7 @@
     }
   },
   "Footer": {
-    "title": "Tgo",
+    "title": "Pelatis",
     "description": "Tgo是一个开源的AI智能体客服平台，致力于帮助企业[组建智能体团队为客户服务]。",
     "store": {
       "title": "商店",
@@ -109,6 +109,6 @@
       "docs": "技术文档",
       "contact": "联系我们"
     },
-    "copyright": "2026 Tgo AI智能客服. 保留所有权利."
+    "copyright": "2026 Pelatis AI智能客服. 保留所有权利."
   }
 }

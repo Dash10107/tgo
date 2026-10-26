@@ -53,7 +53,7 @@ const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
       } else {
         createWorkflow().catch(error => {
           console.error('Failed to create workflow:', error);
-          showToast('error', t('workflow.messages.createFailed', '创建失败'), '');
+          showToast('error', t('workflow.messages.createFailed', 'Create Failed'), '');
         });
       }
     }
@@ -66,7 +66,7 @@ const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
 
   const handleClose = () => {
     if (isDirty) {
-      const confirmed = window.confirm(t('workflow.messages.unsavedChanges', '有未保存的更改，确定要关闭吗？'));
+      const confirmed = window.confirm(t('workflow.messages.unsavedChanges', 'You have unsaved changes. Are you sure you want to close?'));
       if (!confirmed) return;
     }
     resetEditor();
@@ -79,10 +79,10 @@ const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
     setIsSaving(true);
     try {
       await saveWorkflow();
-      showToast('success', t('workflow.messages.saveSuccess', '保存成功'), '');
+      showToast('success', t('workflow.messages.saveSuccess', 'Saved'), '');
       onSave?.();
     } catch (error) {
-      showToast('error', t('workflow.messages.saveFailed', '保存失败'), '');
+      showToast('error', t('workflow.messages.saveFailed', 'Save Failed'), '');
     } finally {
       setIsSaving(false);
     }
@@ -100,13 +100,13 @@ const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
             className="flex items-center gap-1 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
           >
             <ChevronLeft className="w-5 h-5" />
-            <span className="text-sm">{t('common.back', '返回')}</span>
+            <span className="text-sm">{t('common.back', 'Back')}</span>
           </button>
 
           {isLoadingCurrentWorkflow ? (
             <div className="flex items-center gap-2 text-gray-500">
               <Loader2 className="w-4 h-4 animate-spin" />
-              <span>{t('common.loading', '加载中...')}</span>
+              <span>{t('common.loading', 'Loading...')}</span>
             </div>
           ) : currentWorkflow ? (
             <div className="flex items-center gap-3">
@@ -115,11 +115,11 @@ const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                 value={currentWorkflow.name}
                 onChange={(e) => updateWorkflowMeta({ name: e.target.value })}
                 className="text-lg font-semibold text-gray-900 dark:text-gray-100 bg-transparent border-none focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 -mx-2"
-                placeholder={t('workflow.namePlaceholder', '工作流名称')}
+                placeholder={t('workflow.namePlaceholder', 'Workflow name')}
               />
               {isDirty && (
                 <span className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-0.5 rounded">
-                  {t('common.unsaved_changes', '未保存')}
+                  {t('common.unsaved_changes', 'Unsaved Changes')}
                 </span>
               )}
             </div>
@@ -135,7 +135,7 @@ const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
                 : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
-            title={t('workflow.settings', '设置')}
+            title={t('workflow.settings', 'Settings')}
           >
             <Settings className="w-5 h-5" />
           </button>
@@ -151,7 +151,7 @@ const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
             ) : (
               <Save className="w-4 h-4" />
             )}
-            <span>{t('common.save', '保存')}</span>
+            <span>{t('common.save', 'Save')}</span>
           </button>
 
           {/* Close Button */}
@@ -173,7 +173,7 @@ const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
               <div className="text-center">
                 <Loader2 className="w-8 h-8 animate-spin text-blue-500 mx-auto mb-3" />
                 <p className="text-gray-600 dark:text-gray-400">
-                  {t('workflow.loading', '加载工作流...')}
+                  {t('workflow.loading', 'Loading workflow...')}
                 </p>
               </div>
             </div>
@@ -187,14 +187,14 @@ const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
           <div className="w-80 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 flex flex-col">
             <div className="p-4 border-b border-gray-200 dark:border-gray-700">
               <h3 className="font-semibold text-gray-900 dark:text-gray-100">
-                {t('workflow.settings', '工作流设置')}
+                {t('workflow.settings', 'Settings')}
               </h3>
             </div>
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {/* Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  {t('workflow.fields.name', '名称')}
+                  {t('workflow.fields.name', 'Name')}
                 </label>
                 <input
                   type="text"
@@ -207,7 +207,7 @@ const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
               {/* Description */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  {t('workflow.fields.description', '描述')}
+                  {t('workflow.fields.description', 'Description')}
                 </label>
                 <textarea
                   value={currentWorkflow.description || ''}
@@ -220,23 +220,23 @@ const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
               {/* Status */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  {t('workflow.fields.status', '状态')}
+                  {t('workflow.fields.status', 'Status')}
                 </label>
                 <select
                   value={currentWorkflow.status}
                   onChange={(e) => updateWorkflowMeta({ status: e.target.value as any })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
                 >
-                  <option value="draft">{t('workflow.status.draft', '草稿')}</option>
-                  <option value="active">{t('workflow.status.active', '已启用')}</option>
-                  <option value="archived">{t('workflow.status.archived', '已归档')}</option>
+                  <option value="draft">{t('workflow.status.draft', 'Draft')}</option>
+                  <option value="active">{t('workflow.status.active', 'Active')}</option>
+                  <option value="archived">{t('workflow.status.archived', 'Archived')}</option>
                 </select>
               </div>
 
               {/* Tags */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  {t('workflow.fields.tags', '标签')}
+                  {t('workflow.fields.tags', 'Tags')}
                 </label>
                 <input
                   type="text"
@@ -244,17 +244,17 @@ const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                   onChange={(e) => updateWorkflowMeta({ 
                     tags: e.target.value.split(',').map(t => t.trim()).filter(Boolean)
                   })}
-                  placeholder={t('workflow.tagsPlaceholder', '用逗号分隔')}
+                  placeholder={t('workflow.tagsPlaceholder', 'Separate with commas')}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
                 />
               </div>
 
               {/* Info */}
               <div className="pt-4 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400 space-y-1">
-                <p>{t('workflow.fields.version', '版本')}: {currentWorkflow.version}</p>
-                <p>{t('workflow.fields.total_nodes', '节点数')}: {currentWorkflow.definition.nodes.length}</p>
-                <p>{t('common.tableCreated', '创建时间')}: {new Date(currentWorkflow.created_at).toLocaleString()}</p>
-                <p>{t('common.lastUpdated', '更新时间')}: {new Date(currentWorkflow.updated_at).toLocaleString()}</p>
+                <p>{t('workflow.fields.version', 'Version')}: {currentWorkflow.version}</p>
+                <p>{t('workflow.fields.total_nodes', 'Total Nodes')}: {currentWorkflow.definition.nodes.length}</p>
+                <p>{t('common.tableCreated', 'Created')}: {new Date(currentWorkflow.created_at).toLocaleString()}</p>
+                <p>{t('common.lastUpdated', 'Last Updated')}: {new Date(currentWorkflow.updated_at).toLocaleString()}</p>
               </div>
             </div>
           </div>

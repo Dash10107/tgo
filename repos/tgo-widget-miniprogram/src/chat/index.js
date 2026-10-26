@@ -28,7 +28,7 @@ Component({
     },
     lang: {
       type: String,
-      value: 'zh'
+      value: 'en'
     },
     visitorName: {
       type: String,
@@ -53,8 +53,9 @@ Component({
     historyHasMore: true,
     initializing: false,
     error: null,
+    labels: { connecting: '', retry: '' },
     resolvedThemeColor: '#2f80ed',
-    title: 'Tgo',
+    title: 'Pelatis',
     logoUrl: ''
   },
 
@@ -62,6 +63,9 @@ Component({
     attached: function () {
       // Set i18n language
       i18n.setLang(this.properties.lang)
+      this.setData({
+        labels: { connecting: i18n.t('common.connecting'), retry: i18n.t('common.retry') }
+      })
 
       // Subscribe to stores
       this._bindStores()
@@ -99,7 +103,7 @@ Component({
       this._unsubPlatform = platformStore.subscribe(function (state) {
         var cfg = state.config || {}
         self.setData({
-          title: cfg.widget_title || 'Tgo',
+          title: cfg.widget_title || 'Pelatis',
           logoUrl: cfg.logo_url || '',
           resolvedThemeColor: self.properties.themeColor || cfg.theme_color || '#2f80ed'
         })

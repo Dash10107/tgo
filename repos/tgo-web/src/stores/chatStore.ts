@@ -27,6 +27,7 @@ import { WuKongIMUtils } from '@/services/wukongimApi';
 import { getChannelKey, isSameChannel } from '@/utils/channelUtils';
 import { CHANNEL_TYPE, DEFAULT_CHANNEL_TYPE, MESSAGE_SENDER_TYPE, CHAT_STATUS as CHAT_STATUS_CONST, CHAT_PRIORITY as CHAT_PRIORITY_CONST, STORAGE_KEYS } from '@/constants';
 
+import i18n from '@/i18n';
 // Re-export StreamEndReason for backward compatibility
 export { StreamEndReason } from './messageStore';
 export type { StreamEndReasonType } from './messageStore';
@@ -37,7 +38,7 @@ export type { StreamEndReasonType } from './messageStore';
  */
 interface ChatState {
   // ============================================================================
-  // Conversation Store Proxy (会话列表)
+  // Conversation Store Proxy (conversation list)
   // ============================================================================
   chats: Chat[];
   activeChat: Chat | null;
@@ -59,7 +60,7 @@ interface ChatState {
   clearConversationUnread: (channelId: string, channelType: number) => Promise<void>;
 
   // ============================================================================
-  // Message Store Proxy (消息管理)
+  // Message Store Proxy (message management)
   // ============================================================================
   messages: Message[];
   isLoading: boolean;
@@ -98,7 +99,7 @@ interface ChatState {
   setTargetMessageLocation: (loc: { channelId: string; channelType: number; messageSeq: number } | null) => void;
 
   // ============================================================================
-  // Sync Store Proxy (同步管理)
+  // Sync Store Proxy (sync management)
   // ============================================================================
   isSyncing: boolean;
   lastSyncTime: string | null;
@@ -114,7 +115,7 @@ interface ChatState {
   convertWuKongIMToChat: (conversation: WuKongIMConversation) => Chat;
 
   // ============================================================================
-  // Cross-Store Coordination (跨 store 协调)
+  // Cross-Store Coordination
   // ============================================================================
   initializeStore: () => Promise<void>;
   handleRealtimeMessage: (message: Message) => void;
@@ -542,7 +543,7 @@ export const useChatStore = create<ChatState>()(
 
             if (message.type === MESSAGE_SENDER_TYPE.VISITOR && channelId) {
               const cachedChannel = channelStore.getChannel(channelId, CHANNEL_TYPE.PERSON);
-              const fallbackName = message.fromInfo?.name || cachedChannel?.name || `访客${String(channelId).slice(-4)}`;
+              const fallbackName = message.fromInfo?.name || cachedChannel?.name || `${i18n.t('visitor.defaultName', 'Visitor')} ${String(channelId).slice(-4)}`;
               const fallbackAvatar = message.fromInfo?.avatar || message.avatar || cachedChannel?.avatar || '';
 
               channelStore.seedChannel(channelId, DEFAULT_CHANNEL_TYPE, {
@@ -557,7 +558,7 @@ export const useChatStore = create<ChatState>()(
                   get().applyChannelInfo(channelId, DEFAULT_CHANNEL_TYPE, info);
                 })
                 .catch((error) => {
-                  console.warn('频道信息获取失败（实时消息）:', error);
+                  console.warn('Failed to get channel info (realtime message):', error);
                 });
             }
 
@@ -571,11 +572,11 @@ export const useChatStore = create<ChatState>()(
               msgStore.registerStreamingChannel(clientMsgNo, channelId, channelType);
             }
 
-            // 检查是否是需要刷新频道信息的系统消息（1000-已分配到客服，1001-会话关闭）
+            // Check whether this is a system message that requires refreshing channel info (1000 - assigned to an agent, 1001 - session closed)
             const payloadType = message.payloadType || (message.payload as any)?.type;
             if (payloadType && isChannelRefreshSystemMessage(payloadType)) {
               console.log('📨 Chat Store: System message requires channel refresh', { payloadType, channelId, channelType });
-              // 强制刷新频道信息以获取最新的 service_status
+              // Force-refresh the channel info to get the latest service_status
               channelStore
                 .refreshChannel({ channel_id: channelId, channel_type: channelType })
                 .then((info) => {
@@ -686,7 +687,7 @@ export const useChatStore = create<ChatState>()(
       {
         name: STORAGE_KEYS.CHAT,
         partialize: (state) => ({
-          // 只持久化用户偏好，不持久化聊天数据
+          // Persist only user preferences, not chat data
           searchQuery: state.searchQuery,
         }),
       }

@@ -1,12 +1,12 @@
 /**
- * AI 流式消息测试工具
- * 用于测试和验证流式消息增量更新功能
+ * AI streaming message test tool
+ * Used to test and verify incremental updates of streaming messages
  */
 
 import { useChatStore } from '../stores/chatStore';
 
 /**
- * 模拟流式消息事件
+ * Simulate a streaming message event
  */
 export const simulateStreamMessage = (clientMsgNo: string, content: string): void => {
   console.log('🧪 Test: Simulating stream message', {
@@ -15,13 +15,13 @@ export const simulateStreamMessage = (clientMsgNo: string, content: string): voi
     contentPreview: content.substring(0, 50)
   });
   
-  // 直接调用 chat store 的方法
+  // Call the chat store method directly
   const store = useChatStore.getState();
   store.appendStreamMessageContent(clientMsgNo, content);
 };
 
 /**
- * 模拟完整的 AI 流式回复
+ * Simulate a complete AI streaming reply
  */
 export const simulateAIStreamResponse = async (
   clientMsgNo: string,
@@ -67,16 +67,16 @@ export const simulateAIStreamResponse = async (
 };
 
 /**
- * 测试示例：Markdown 格式的 AI 回复
+ * Test example: a Markdown-formatted AI reply
  */
 export const testMarkdownStreamResponse = async (clientMsgNo: string): Promise<void> => {
-  const markdownResponse = `# 解决方案
+  const markdownResponse = `# Solution
 
-根据您的问题，我为您准备了以下解决方案：
+Based on your question, I have prepared the following solution:
 
-## 1. 检查配置
+## 1. Check the configuration
 
-首先，请确保您的配置文件正确设置：
+First, make sure your configuration file is set up correctly:
 
 \`\`\`javascript
 const config = {
@@ -86,37 +86,37 @@ const config = {
 };
 \`\`\`
 
-## 2. 验证连接
+## 2. Verify the connection
 
-使用以下命令验证网络连接：
+Use the following command to verify the network connection:
 
 \`\`\`bash
 ping api.example.com
 curl -I https://api.example.com/health
 \`\`\`
 
-## 3. 查看日志
+## 3. Check the logs
 
-检查应用日志以获取更多信息：
+Check the application logs for more information:
 
-- **错误日志**: \`/var/log/app/error.log\`
-- **访问日志**: \`/var/log/app/access.log\`
+- **Error log**: \`/var/log/app/error.log\`
+- **Access log**: \`/var/log/app/access.log\`
 
-## 4. 常见问题
+## 4. Common problems
 
-| 问题 | 解决方案 |
+| Problem | Solution |
 |------|---------|
-| 连接超时 | 增加 timeout 配置 |
-| 认证失败 | 检查 API 密钥 |
-| 限流错误 | 实现重试机制 |
+| Connection timeout | Increase the timeout setting |
+| Authentication failure | Check the API key |
+| Rate limit error | Implement a retry mechanism |
 
-希望这些信息能帮到您！如有其他问题，请随时告诉我。`;
+I hope this helps! If you have other questions, feel free to ask.`;
 
   await simulateAIStreamResponse(clientMsgNo, markdownResponse, 15, 50);
 };
 
 /**
- * 检查消息是否存在
+ * Check whether a message exists
  */
 export const checkMessageExists = (clientMsgNo: string): boolean => {
   const store = useChatStore.getState();
@@ -137,7 +137,7 @@ export const checkMessageExists = (clientMsgNo: string): boolean => {
 };
 
 /**
- * 获取消息内容
+ * Get the message content
  */
 export const getMessageContent = (clientMsgNo: string): string | null => {
   const store = useChatStore.getState();
@@ -162,7 +162,7 @@ export const getMessageContent = (clientMsgNo: string): string | null => {
 };
 
 /**
- * 列出所有消息
+ * List all messages
  */
 export const listAllMessages = (): void => {
   const store = useChatStore.getState();
@@ -182,12 +182,12 @@ export const listAllMessages = (): void => {
 };
 
 /**
- * 测试流式消息处理器是否已注册
+ * Test whether the stream handler is registered
  */
 export const testStreamHandlerRegistration = (): void => {
   console.log('🧪 Test: Checking stream handler registration');
   
-  // 尝试发送一个测试事件
+  // Try sending a test event
   const testClientMsgNo = 'test-' + Date.now();
   const testContent = 'Test content';
   
@@ -196,10 +196,10 @@ export const testStreamHandlerRegistration = (): void => {
     content: testContent
   });
   
-  // 模拟流式消息
+  // Simulate a streaming message
   simulateStreamMessage(testClientMsgNo, testContent);
   
-  // 检查是否被处理
+  // Check whether it was handled
   setTimeout(() => {
     const exists = checkMessageExists(testClientMsgNo);
     if (exists) {
@@ -211,28 +211,28 @@ export const testStreamHandlerRegistration = (): void => {
 };
 
 /**
- * 运行完整的流式消息测试套件
+ * Run the full streaming message test suite
  */
 export const runStreamMessageTests = async (): Promise<void> => {
   console.log('🧪 ========================================');
-  console.log('🧪 AI 流式消息测试套件');
+  console.log('🧪 AI streaming message test suite');
   console.log('🧪 ========================================');
   console.log('');
   
-  // 测试 1: 列出当前消息
-  console.log('📋 测试 1: 列出当前消息');
+  // Test 1: list the current messages
+  console.log('📋 Test 1: list current messages');
   listAllMessages();
   console.log('');
   
-  // 测试 2: 检查流式处理器注册
-  console.log('📋 测试 2: 检查流式处理器注册');
+  // Test 2: check stream handler registration
+  console.log('📋 Test 2: check stream handler registration');
   testStreamHandlerRegistration();
   console.log('');
   
-  // 等待一下
+  // Wait a moment
   await new Promise(resolve => setTimeout(resolve, 500));
   
-  // 测试 3: 查找一个现有消息进行测试
+  // Test 3: find an existing message to test with
   const store = useChatStore.getState();
   const testMessage = store.messages.find(msg => 
     msg.metadata?.wukongim?.client_msg_no
@@ -241,69 +241,69 @@ export const runStreamMessageTests = async (): Promise<void> => {
   if (testMessage) {
     const clientMsgNo = testMessage.metadata!.wukongim!.client_msg_no;
     
-    console.log('📋 测试 3: 追加内容到现有消息');
-    console.log('   使用消息:', {
+    console.log('📋 Test 3: append content to an existing message');
+    console.log('   Using message:', {
       id: testMessage.id,
       client_msg_no: clientMsgNo,
       originalContent: testMessage.content.substring(0, 50)
     });
     
-    // 追加一些测试内容
-    simulateStreamMessage(clientMsgNo, '\n\n[测试追加内容]');
+    // Append some test content
+    simulateStreamMessage(clientMsgNo, '\n\n[Test appended content]');
     
-    // 检查结果
+    // Check the result
     setTimeout(() => {
       const updatedContent = getMessageContent(clientMsgNo);
-      console.log('   更新后的内容:', updatedContent?.substring(0, 100));
+      console.log('   Updated content:', updatedContent?.substring(0, 100));
     }, 100);
   } else {
-    console.log('📋 测试 3: 跳过（没有找到可用的测试消息）');
+    console.log('📋 Test 3: skipped (no usable test message found)');
   }
   
   console.log('');
   console.log('🧪 ========================================');
-  console.log('🧪 测试完成');
+  console.log('🧪 Tests complete');
   console.log('🧪 ========================================');
 };
 
 /**
- * 显示使用帮助
+ * Show usage help
  */
 export const showStreamTestHelp = (): void => {
   console.log('🧪 ========================================');
-  console.log('🧪 AI 流式消息测试工具');
+  console.log('🧪 AI streaming message test tool');
   console.log('🧪 ========================================');
   console.log('');
-  console.log('可用命令:');
+  console.log('Available commands:');
   console.log('');
   console.log('1. runStreamMessageTests()');
-  console.log('   运行完整的测试套件');
+  console.log('   Run the full test suite');
   console.log('');
   console.log('2. listAllMessages()');
-  console.log('   列出所有消息');
+  console.log('   List all messages');
   console.log('');
   console.log('3. simulateStreamMessage(clientMsgNo, content)');
-  console.log('   模拟单个流式消息片段');
-  console.log('   示例: simulateStreamMessage("msg-123", "Hello ")');
+  console.log('   Simulate a single stream message chunk');
+  console.log('   Example: simulateStreamMessage("msg-123", "Hello ")');
   console.log('');
   console.log('4. simulateAIStreamResponse(clientMsgNo, fullResponse, chunkSize, delayMs)');
-  console.log('   模拟完整的 AI 流式回复');
-  console.log('   示例: simulateAIStreamResponse("msg-123", "完整回复内容", 10, 100)');
+  console.log('   Simulate a complete AI streaming reply');
+  console.log('   Example: simulateAIStreamResponse("msg-123", "Full reply content", 10, 100)');
   console.log('');
   console.log('5. testMarkdownStreamResponse(clientMsgNo)');
-  console.log('   测试 Markdown 格式的流式回复');
-  console.log('   示例: testMarkdownStreamResponse("msg-123")');
+  console.log('   Test a Markdown-formatted streaming reply');
+  console.log('   Example: testMarkdownStreamResponse("msg-123")');
   console.log('');
   console.log('6. checkMessageExists(clientMsgNo)');
-  console.log('   检查消息是否存在');
+  console.log('   Check whether a message exists');
   console.log('');
   console.log('7. getMessageContent(clientMsgNo)');
-  console.log('   获取消息内容');
+  console.log('   Get the message content');
   console.log('');
   console.log('🧪 ========================================');
 };
 
-// 在开发环境中将测试函数添加到全局对象
+// Add the test functions to the global object in development
 if (typeof window !== 'undefined' && import.meta.env.DEV) {
   (window as any).simulateStreamMessage = simulateStreamMessage;
   (window as any).simulateAIStreamResponse = simulateAIStreamResponse;
@@ -315,7 +315,7 @@ if (typeof window !== 'undefined' && import.meta.env.DEV) {
   (window as any).runStreamMessageTests = runStreamMessageTests;
   (window as any).showStreamTestHelp = showStreamTestHelp;
   
-  console.log('🧪 AI 流式消息测试工具已加载');
-  console.log('🧪 使用 showStreamTestHelp() 查看帮助');
+  console.log('🧪 AI streaming message test tool loaded');
+  console.log('🧪 Use showStreamTestHelp() for help');
 }
 

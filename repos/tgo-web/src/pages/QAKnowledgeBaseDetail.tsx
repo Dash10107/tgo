@@ -681,8 +681,8 @@ const QAKnowledgeBaseDetail: React.FC = () => {
                     <p className="font-medium mb-1">{t('knowledge.qa.importJsonFormat')}</p>
                     <pre className="bg-gray-100 dark:bg-gray-900 p-2 rounded text-xs overflow-x-auto">
 {`[
-  {"question": "问题1", "answer": "答案1"},
-  {"question": "问题2", "answer": "答案2"}
+  {"question": "Question 1", "answer": "Answer 1"},
+  {"question": "Question 2", "answer": "Answer 2"}
 ]`}
                     </pre>
                   </div>
@@ -691,8 +691,8 @@ const QAKnowledgeBaseDetail: React.FC = () => {
                     <p className="font-medium mb-1">{t('knowledge.qa.importCsvFormat')}</p>
                     <pre className="bg-gray-100 dark:bg-gray-900 p-2 rounded text-xs overflow-x-auto">
 {`question,answer
-问题1,答案1
-问题2,答案2`}
+Question 1,Answer 1
+Question 2,Answer 2`}
                     </pre>
                   </div>
                 )}

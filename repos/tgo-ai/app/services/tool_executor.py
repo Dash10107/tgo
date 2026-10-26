@@ -168,14 +168,14 @@ class ToolExecutor:
             return "<error>Store tool missing store_resource_id</error>"
 
         try:
-            # 1. 获取商店凭证
+            # 1. Get the store credentials
             credential = await api_service_client.get_store_credential(str(self.project_id))
             if not credential or not credential.get("api_key"):
                 return "<error>Project not bound to Store. Please bind credentials first.</error>"
             
             api_key = credential["api_key"]
             
-            # 2. 调用商店执行 API
+            # 2. Call the store execution API
             url = tool_model.endpoint
             if not url:
                  return "<error>Store tool missing endpoint</error>"
@@ -191,12 +191,12 @@ class ToolExecutor:
                 )
                 
                 if response.status_code == 402:
-                    return "<error>工具商店余额不足，请充值</error>"
+                    return "<error>Tool store balance insufficient, please top up</error>"
                 
                 response.raise_for_status()
                 
                 result = response.json()
-                # 商店返回的是原始 MCP 结果，我们需要提取内容
+                # The store returns the raw MCP result; we need to extract the content
                 if isinstance(result, dict) and "content" in result:
                     content = result["content"]
                     if isinstance(content, list):
@@ -227,9 +227,9 @@ class ToolExecutor:
             )
             
             if result.get("success"):
-                return result.get("content", "工具执行成功")
+                return result.get("content", "Tool executed successfully")
             else:
-                error_msg = result.get("error") or result.get("content") or "工具执行失败"
+                error_msg = result.get("error") or result.get("content") or "Tool execution failed"
                 return f"<error>{error_msg}</error>"
         except Exception as e:
             return f"<error>Plugin tool execution failed: {str(e)}</error>"

@@ -9,6 +9,7 @@ import { uploadFileWithProgress, type UploadProgressEvent } from './fileUploadSe
 import type { KnowledgeFile } from '@/types';
 import { useOnboardingStore } from '@/stores/onboardingStore';
 
+import i18n from '@/i18n';
 export interface FileUploadProgress {
   fileId: string;
   fileName: string;
@@ -75,7 +76,7 @@ export class FileManagementService {
 
     // Check authentication before loading files
     if (!isAuthenticated()) {
-      const errorMessage = '身份验证失败，请重新登录后再试';
+      const errorMessage = i18n.t('errors.unauthorizedRetry', 'Authentication failed, please log in again and retry');
       this.setState({
         isLoading: false,
         error: errorMessage,
@@ -99,7 +100,7 @@ export class FileManagementService {
       });
     } catch (error) {
       console.error('Failed to load files:', error);
-      const errorMessage = error instanceof Error ? error.message : '加载文件列表失败';
+      const errorMessage = error instanceof Error ? error.message : i18n.t('fileManagement.loadFailed', 'Failed to load file list');
       this.setState({
         isLoading: false,
         error: errorMessage,
@@ -121,7 +122,7 @@ export class FileManagementService {
   ): Promise<void> {
     // Check authentication before starting upload
     if (!isAuthenticated()) {
-      const error = new Error('身份验证失败，请重新登录后再试');
+      const error = new Error(i18n.t('errors.unauthorizedRetry', 'Authentication failed, please log in again and retry'));
       throw error;
     }
 
@@ -241,7 +242,7 @@ export class FileManagementService {
   async deleteFile(fileId: string): Promise<void> {
     // Check authentication before deleting
     if (!isAuthenticated()) {
-      const error = new Error('身份验证失败，请重新登录后再试');
+      const error = new Error(i18n.t('errors.unauthorizedRetry', 'Authentication failed, please log in again and retry'));
       throw error;
     }
 
@@ -262,7 +263,7 @@ export class FileManagementService {
   async downloadFile(fileId: string): Promise<void> {
     // Check authentication before downloading
     if (!isAuthenticated()) {
-      const error = new Error('身份验证失败，请重新登录后再试');
+      const error = new Error(i18n.t('errors.unauthorizedRetry', 'Authentication failed, please log in again and retry'));
       throw error;
     }
 
@@ -311,7 +312,7 @@ export class FileManagementService {
       // - Open a modal with file content
       // - Navigate to a preview page
       // - Open file in a new tab
-      alert(`预览文件: ${file.name}\n\n此功能正在开发中...`);
+      alert(`${i18n.t('fileManagement.previewFile', 'Preview file')}: ${file.name}\n\n${i18n.t('fileManagement.featureInDevelopment', 'This feature is under development...')}`);
     } catch (error) {
       console.error('Failed to preview file:', error);
       throw error;

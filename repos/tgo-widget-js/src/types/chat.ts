@@ -53,7 +53,7 @@ export type AILoadingMessagePayload = {
   type: 100
 }
 
-// System message (type 1000-2000), e.g. "您已接入人工客服，客服{0} 将为您服务"
+// System message (type 1000-2000), e.g. "You are connected to a human agent; agent {0} will assist you"
 export type SystemMessageExtra = {
   uid?: string
   name?: string
@@ -148,6 +148,6 @@ export type ChatMessage = {
   uploadError?: string
   // Final send result detail from SDK; Success/Failure codes
   reasonCode?: ReasonCode
-  // AI 处理错误信息（来自 ___TextMessageEnd 事件的 data 字段或离线消息的 error 字段）
+  // AI processing error info (from the data field of the ___TextMessageEnd event or the error field of offline messages)
   errorMessage?: string
 }

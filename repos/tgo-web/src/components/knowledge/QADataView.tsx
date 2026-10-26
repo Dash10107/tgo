@@ -66,10 +66,10 @@ export const QADataView: React.FC<QADataViewProps> = ({ fileId, fileName, onClos
                     </div>
                     <div>
                         <h2 className="text-lg font-semibold text-gray-900 dark:text-white truncate max-w-[400px]">
-                            {fileName}-{t('knowledge.qa.results', 'QA 问答对')}
+                            {fileName}-{t('knowledge.qa.results', 'Q&A Pairs')}
                         </h2>
                         <p className="text-xs text-gray-500 dark:text-gray-400">
-                            {t('knowledge.qa.segmentCount', '共 {{count}} 个问答对', { count: segments.length })}
+                            {t('knowledge.qa.segmentCount', '{{count}} Q&A pairs in total', { count: segments.length })}
                         </p>
                     </div>
                 </div>
@@ -87,7 +87,7 @@ export const QADataView: React.FC<QADataViewProps> = ({ fileId, fileName, onClos
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <input
                         type="text"
-                        placeholder={t('knowledge.qa.searchSegments', '搜索分段内容...')}
+                        placeholder={t('knowledge.qa.searchSegments', 'Search segment content...')}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
@@ -100,7 +100,7 @@ export const QADataView: React.FC<QADataViewProps> = ({ fileId, fileName, onClos
                 {isLoading ? (
                     <div className="flex flex-col items-center justify-center h-full py-12">
                         <Loader2 className="h-8 w-8 animate-spin text-blue-500 mb-4" />
-                        <p className="text-gray-500">{t('knowledge.qa.loadingSegments', '正在加载分段成果...')}</p>
+                        <p className="text-gray-500">{t('knowledge.qa.loadingSegments', 'Loading segment results...')}</p>
                     </div>
                 ) : filteredSegments.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full py-12 text-center">
@@ -108,10 +108,10 @@ export const QADataView: React.FC<QADataViewProps> = ({ fileId, fileName, onClos
                             <FileText className="h-8 w-8 text-gray-400" />
                         </div>
                         <p className="text-gray-900 dark:text-white font-medium">
-                            {searchTerm ? t('knowledge.qa.noResults', '未找到匹配的分段') : t('knowledge.qa.noSegments', '该文件暂无问答分段成果')}
+                            {searchTerm ? t('knowledge.qa.noResults', 'No matching segments found') : t('knowledge.qa.noSegments', 'This file has no Q&A segment results yet')}
                         </p>
                         <p className="text-sm text-gray-500 mt-1">
-                            {searchTerm ? t('knowledge.qa.tryDifferentSearch', '请尝试换个关键词') : t('knowledge.qa.ensureQaMode', '请确保上传时开启了 QA 拆分模式')}
+                            {searchTerm ? t('knowledge.qa.tryDifferentSearch', 'Try a different keyword') : t('knowledge.qa.ensureQaMode', 'Make sure Q&A split mode was enabled when uploading')}
                         </p>
                     </div>
                 ) : (
@@ -197,11 +197,11 @@ export const QADataView: React.FC<QADataViewProps> = ({ fileId, fileName, onClos
                                         <div className="mt-4 flex items-center justify-between">
                                             <div className="flex items-center gap-4 text-xs text-gray-400">
                                                 <span>{seg.token_count || 0} Tokens</span>
-                                                <span>{content.length} {t('knowledge.qa.chars', '字符')}</span>
+                                                <span>{content.length} {t('knowledge.qa.chars', 'characters')}</span>
                                             </div>
                                             <button className="flex items-center gap-1.5 text-xs text-blue-500 hover:text-blue-600 font-medium transition-colors">
                                                 <ExternalLink className="h-3 w-3" />
-                                                {t('knowledge.qa.editSegment', '编辑段落')}
+                                                {t('knowledge.qa.editSegment', 'Edit Segment')}
                                             </button>
                                         </div>
                                     </div>
@@ -218,7 +218,7 @@ export const QADataView: React.FC<QADataViewProps> = ({ fileId, fileName, onClos
                     onClick={onClose}
                     className="px-6 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg text-sm font-semibold hover:bg-gray-800 dark:hover:bg-gray-100 transition-all shadow-sm"
                 >
-                    {t('common.close', '关闭')}
+                    {t('common.close', 'Close')}
                 </button>
             </div>
         </div>

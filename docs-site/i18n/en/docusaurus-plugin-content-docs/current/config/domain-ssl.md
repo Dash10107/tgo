@@ -10,7 +10,7 @@ This page explains how to configure domains for Web / Widget / API services and 
 
 ## Configure Domains
 
-TGO supports separate domains for different services:
+Pelatis supports separate domains for different services:
 
 | Service | Config Key | Example |
 |---------|------------|---------|
@@ -48,7 +48,7 @@ This automatically generates/updates Nginx configuration to proxy different doma
 
 ## Enable HTTPS
 
-TGO supports two SSL certificate configuration methods:
+Pelatis supports two SSL certificate configuration methods:
 
 ### Option A: Let's Encrypt Auto Certificate (Recommended)
 

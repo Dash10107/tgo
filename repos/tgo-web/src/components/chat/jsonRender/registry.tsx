@@ -43,7 +43,7 @@ function splitLabelValue(rawText: string): { label: string; value: string } | nu
 }
 
 function isSectionTitle(text: string): boolean {
-  return /^(商品详情|支付信息|收货信息|订单信息|物流信息|商品明细|支付详情|配送信息|订单详情|items|payment|shipping|order)$/i.test(text.trim());
+  return /^(items|payment|shipping|order|order details|payment info|shipping info|order info|item details|वस्तुएं|भुगतान जानकारी|डिलीवरी जानकारी|ऑर्डर विवरण|वस्तू|पेमेंट माहिती|वितरण माहिती|ऑर्डर तपशील)$/i.test(text.trim());
 }
 
 function isSkuLine(text: string): boolean {
@@ -51,15 +51,15 @@ function isSkuLine(text: string): boolean {
 }
 
 function isHeadlineKey(label: string): boolean {
-  return /(实付金额|应付金额|支付金额|合计|总额|payable|grand total|total)/i.test(label);
+  return /(payable|amount paid|amount due|grand total|total|देय राशि|कुल राशि|कुल|भुगतान राशि|देय रक्कम|एकूण)/i.test(label);
 }
 
 function isDiscountKey(label: string): boolean {
-  return /(优惠|折扣|减免|discount|coupon)/i.test(label);
+  return /(discount|coupon|saving|छूट|डिस्काउंट|सवलत)/i.test(label);
 }
 
 function isMetaKey(label: string): boolean {
-  return /(订单号|sku|数量|qty|电话|联系人|收货地址|地址|物流单号|tracking)/i.test(label);
+  return /(order (no|number|id)|sku|quantity|qty|phone|contact|address|tracking|ऑर्डर नंबर|मात्रा|फ़ोन|फोन|संपर्क|पता|पत्ता|ट्रैकिंग|प्रमाण|दूरध्वनी)/i.test(label);
 }
 
 const Text = ({ element }: ComponentRenderProps<JsonRenderProps>) => {
@@ -366,7 +366,7 @@ const MultipleChoice = ({ element, bindings }: ComponentRenderProps<Record<strin
   const rawOptions = Array.isArray(props.options) ? props.options : [];
   const options = rawOptions
     .map((item: unknown) => {
-      // Handle string shorthand: "身份证" → { label: "身份证", value: "身份证" }
+      // Handle string shorthand: "Aadhaar" → { label: "Aadhaar", value: "Aadhaar" }
       if (typeof item === 'string') {
         return item ? { label: item, value: item } : null;
       }

@@ -27,7 +27,7 @@ class _MessageListState extends State<MessageList> {
   int _previousMessageCount = 0;
   bool _isAtBottom = true;
   
-  // 追踪已经显示过的消息ID，用于判断是否需要播放动画
+  // Track message IDs that have already been displayed, to decide whether to play the animation
   final Set<String> _displayedMessageIds = {};
 
   @override
@@ -37,7 +37,7 @@ class _MessageListState extends State<MessageList> {
     widget.provider.addListener(_onProviderChanged);
     _previousMessageCount = widget.provider.messages.length;
     
-    // 初始化时，标记所有现有消息为已显示（不需要动画）
+    // On init, mark all existing messages as displayed (no animation needed)
     for (final msg in widget.provider.messages) {
       _displayedMessageIds.add(msg.id);
     }
@@ -56,10 +56,10 @@ class _MessageListState extends State<MessageList> {
 
     final pos = _scrollController.position;
     
-    // 反向列表中，offset 接近 0 表示在视觉底部（最新消息）
+    // In the reversed list, an offset near 0 means the visual bottom (newest message)
     _isAtBottom = pos.pixels <= 50;
 
-    // 加载更多历史：在视觉顶部（即高 offset）附近触发
+    // Load more history: triggered near the visual top (i.e. a high offset)
     final nearTop = pos.pixels >= pos.maxScrollExtent - 100;
     if (nearTop &&
         !widget.provider.state.historyLoading &&
@@ -74,14 +74,14 @@ class _MessageListState extends State<MessageList> {
     final currentMessages = widget.provider.messages;
     final currentCount = currentMessages.length;
     
-    // 新消息到达时的处理
+    // Handling when a new message arrives
     if (currentCount > _previousMessageCount) {
-      // 如果用户在底部，或者是用户自己发送的消息，滚动到底部
+    // If the user is at the bottom, or the message was sent by the user, scroll to the bottom
       if (_isAtBottom || (currentMessages.isNotEmpty && currentMessages.last.isUser)) {
         _scrollToBottom();
       }
     } else if (currentCount == _previousMessageCount && currentCount > 0) {
-      // 流式输出更新：如果用户在底部，保持在底部
+    // Streaming update: if the user is at the bottom, stay at the bottom
       if (_isAtBottom) {
         _scrollToBottom();
       }
@@ -93,7 +93,7 @@ class _MessageListState extends State<MessageList> {
 
   void _scrollToBottom() {
     if (!mounted) return;
-    // 反向列表中，底部是 offset 0
+    // In the reversed list, the bottom is offset 0
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         _scrollController.jumpTo(0);
@@ -110,23 +110,23 @@ class _MessageListState extends State<MessageList> {
     return Container(
       color: theme.bgPrimary,
       child: ListView.builder(
-        reverse: true,  // 关键：反向渲染，从底部开始
+        reverse: true,  // Key: render in reverse, starting from the bottom
         controller: _scrollController,
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-        // +1 为顶部状态栏（在反向列表中，它是最后一个 item）
+        // +1 for the top status bar (in the reversed list it is the last item)
         itemCount: messages.length + 1,
         itemBuilder: (context, index) {
-          // 反向列表中，index 0 是最新消息（视觉底部）
-          // 最后一个 index 是顶部状态栏（视觉顶部）
+        // In the reversed list, index 0 is the newest message (visual bottom)
+        // The last index is the top status bar (visual top)
           if (index == messages.length) {
             return _buildTopNotice(theme, state);
           }
-          // 反转索引：index 0 对应 messages.last（最新消息）
+        // Invert the index: index 0 maps to messages.last (the newest message)
           final messageIndex = messages.length - 1 - index;
           final message = messages[messageIndex];
           
-          // 判断这条消息是否需要动画（新消息）
+        // Check whether this message needs the animation (new message)
           final isNewMessage = !_displayedMessageIds.contains(message.id);
           if (isNewMessage) {
             _displayedMessageIds.add(message.id);
@@ -462,7 +462,7 @@ class _MessageListState extends State<MessageList> {
   }
 }
 
-/// 消息动画组件 - 像微信、iMessage一样的自然动画
+/// Message animation widget - natural animation like WeChat and iMessage
 class _MessageItemAnimated extends StatefulWidget {
   final ChatMessage message;
   final TgoTheme theme;
@@ -494,20 +494,20 @@ class _MessageItemAnimatedState extends State<_MessageItemAnimated>
   void initState() {
     super.initState();
     
-    // 动画控制器：持续时间350ms，足够流畅但不会太慢
+    // Animation controller: 350ms duration, smooth enough but not too slow
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 350),
     );
 
-    // 淡入动画：从0到1，使用easeOut曲线
+    // Fade animation: from 0 to 1, using the easeOut curve
     _fadeAnimation = CurvedAnimation(
       parent: _controller,
       curve: Curves.easeOut,
     );
 
-    // 缩放动画：从0.85到1.0，带有轻微的弹跳效果
-    // 使用elasticOut会有过度弹跳，所以用easeOutBack获得更自然的效果
+    // Scale animation: from 0.85 to 1.0, with a slight bounce
+    // Using elasticOut would over-bounce, so easeOutBack gives a more natural effect
     _scaleAnimation = Tween<double>(
       begin: 0.85,
       end: 1.0,
@@ -516,8 +516,8 @@ class _MessageItemAnimatedState extends State<_MessageItemAnimated>
       curve: Curves.easeOutBack,
     ));
 
-    // 滑动动画：根据消息方向决定滑动方向
-    // 用户消息从右边滑入，客服消息从左边滑入
+    // Slide animation: direction depends on the message direction
+    // User messages slide in from the right, agent messages from the left
     _slideAnimation = Tween<Offset>(
       begin: Offset(widget.isUser ? 0.15 : -0.15, 0.1),
       end: Offset.zero,
@@ -526,11 +526,11 @@ class _MessageItemAnimatedState extends State<_MessageItemAnimated>
       curve: Curves.easeOutCubic,
     ));
 
-    // 只有新消息才播放动画
+    // Only new messages play the animation
     if (widget.shouldAnimate) {
       _controller.forward();
     } else {
-      // 已存在的消息直接显示完成状态
+      // Existing messages show the completed state directly
       _controller.value = 1.0;
     }
   }
@@ -543,7 +543,7 @@ class _MessageItemAnimatedState extends State<_MessageItemAnimated>
 
   @override
   Widget build(BuildContext context) {
-    // 如果不需要动画，直接返回子组件
+    // If no animation is needed, return the child directly
     if (!widget.shouldAnimate && _controller.value == 1.0) {
       return widget.child;
     }

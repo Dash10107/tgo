@@ -9,10 +9,10 @@ import {
 import type { ToolStoreCategory } from '@/types';
 import { STORAGE_KEYS } from '@/constants';
 
-// 获取商店 API 地址 (通过 tgo-api 代理)
+// Get the store API address (via the tgo-api proxy)
 const PROXY_PATH = '/v1/store/proxy';
 
-// 获取商店的 access token（从 localStorage 中的 Zustand 存储读取）
+// Get the store's access token (read from the Zustand store in localStorage)
 const getStoreAccessToken = (): string | null => {
   try {
     const authDataStr = localStorage.getItem(STORAGE_KEYS.TOOLSTORE_AUTH);
@@ -26,20 +26,20 @@ const getStoreAccessToken = (): string | null => {
   return null;
 };
 
-// 获取 API base URL
+// Get the API base URL
 const getApiBaseUrl = (): string => {
-  // 优先使用运行时配置 (由 docker-entrypoint.sh 设置)
+  // Prefer the runtime config (set by docker-entrypoint.sh)
   if (typeof window !== 'undefined' && (window as any).ENV?.VITE_API_BASE_URL) {
     return (window as any).ENV.VITE_API_BASE_URL;
   }
-  // 其次使用构建时环境变量
+  // Then the build-time environment variable
   if (import.meta.env.VITE_API_BASE_URL) {
     return import.meta.env.VITE_API_BASE_URL;
   }
   return '/api';
 };
 
-// 带商店认证的请求函数
+// Request function with store authentication
 const storeAuthFetch = async <T>(
   endpoint: string,
   options: RequestInit = {}
@@ -50,13 +50,13 @@ const storeAuthFetch = async <T>(
     ...options.headers,
   };
 
-  // 添加 TGO API 的 token
+  // Add the Pelatis API token
   const tgoToken = localStorage.getItem('tgo-auth-token');
   if (tgoToken) {
     (headers as Record<string, string>)['Authorization'] = `Bearer ${tgoToken}`;
   }
 
-  // 添加商店的 token 作为自定义头
+  // Add the store's token as a custom header
   const storeToken = getStoreAccessToken();
   if (storeToken) {
     (headers as Record<string, string>)['X-Store-Authorization'] = `Bearer ${storeToken}`;
@@ -77,7 +77,7 @@ const storeAuthFetch = async <T>(
 };
 
 export const storeApi = {
-  // --- 认证相关 ---
+  // --- Authentication ---
   
   login: async (credentials: { username: string; password: string }): Promise<ToolStoreLoginResponse> => {
     const response = await storeAuthFetch<ToolStoreLoginResponse>(`${PROXY_PATH}/auth/login`, {
@@ -88,7 +88,7 @@ export const storeApi = {
       }),
     });
 
-    // 登录成功后自动绑定到当前项目
+    // Automatically bind to the current project after a successful login
     try {
       await apiClient.post('/v1/store/bind', {
         access_token: response.access_token
@@ -105,7 +105,7 @@ export const storeApi = {
       method: 'POST',
     });
 
-    // 交换成功后自动绑定到当前项目
+    // Automatically bind to the current project after a successful exchange
     try {
       await apiClient.post('/v1/store/bind', {
         access_token: response.access_token
@@ -137,7 +137,7 @@ export const storeApi = {
     return response;
   },
 
-  // --- 工具相关 ---
+  // --- Tools ---
 
   getToolCategories: async (): Promise<ToolStoreCategory[]> => {
     const response = await storeAuthFetch<ToolStoreCategory[]>(`${PROXY_PATH}/tools/categories`, {
@@ -167,18 +167,18 @@ export const storeApi = {
   },
 
   installTool: async (id: string) => {
-    // 调用 TGO API 同步工具到本地项目 (TGO API 内部会处理商店状态)
+    // Call the Pelatis API to sync the tool to the local project (the Pelatis API handles store state internally)
     const response = await apiClient.post<any>('/v1/store/install-tool', { resource_id: id });
     return response;
   },
 
   uninstallTool: async (id: string) => {
-    // 调用 TGO API 卸载 (TGO API 内部会处理商店状态)
+    // Call the Pelatis API to uninstall (the Pelatis API handles store state internally)
     const response = await apiClient.delete<any>(`/v1/store/uninstall-tool/${id}`);
     return response;
   },
 
-  // --- 模型相关 ---
+  // --- Models ---
 
   getModelCategories: async (): Promise<any[]> => {
     const response = await storeAuthFetch<any[]>(`${PROXY_PATH}/models/categories`, {
@@ -215,24 +215,24 @@ export const storeApi = {
   },
 
   installModel: async (id: string) => {
-    // 调用 TGO API 同步模型到本地项目 (TGO API 内部会处理商店状态)
+    // Call the Pelatis API to sync the model to the local project (the Pelatis API handles store state internally)
     const response = await apiClient.post<any>('/v1/store/install-model', { resource_id: id });
     return response;
   },
 
   uninstallModel: async (id: string) => {
-    // 调用 TGO API 卸载 (TGO API 内部会处理商店状态)
+    // Call the Pelatis API to uninstall (the Pelatis API handles store state internally)
     const response = await apiClient.delete<any>(`/v1/store/uninstall-model/${id}`);
     return response;
   },
 
   getInstalledModels: async (): Promise<string[]> => {
-    // 从本地 TGO API 获取已安装模型列表 (model_id 列表)
+    // Get the list of installed models (model_id list) from the local Pelatis API
     const response = await apiClient.get<string[]>('/v1/store/installed-models');
     return response;
   },
 
-  // --- 员工模板相关 ---
+  // --- Agent templates ---
 
   getAgentCategories: async (): Promise<any[]> => {
     const response = await storeAuthFetch<any[]>(`${PROXY_PATH}/agents/categories`, {
@@ -266,7 +266,7 @@ export const storeApi = {
   },
 
   installAgent: async (id: string, options?: { install_tool_ids?: string[], install_model?: boolean }) => {
-    // 调用 TGO API 招聘员工到本地项目
+    // Call the Pelatis API to hire the agent into the local project
     const response = await apiClient.post<any>('/v1/store/install-agent', { 
       resource_id: id,
       ...options

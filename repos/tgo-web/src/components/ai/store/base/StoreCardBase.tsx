@@ -32,7 +32,7 @@ const StoreCardBase: React.FC<StoreCardBaseProps> = ({
       {featured && (
         <div className="absolute top-0 right-0">
           <div className={`text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl shadow-sm ${badgeClasses[themeColor]}`}>
-            {t('tools.store.featured', '精选')}
+            {t('tools.store.featured', 'Featured')}
           </div>
         </div>
       )}

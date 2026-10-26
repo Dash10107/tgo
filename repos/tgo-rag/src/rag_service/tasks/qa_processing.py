@@ -17,6 +17,7 @@ from .document_processing_errors import DocumentProcessingError, ProcessingStep
 from ..database import get_db_session, reset_db_state
 from ..logging_config import get_logger
 from ..models import FileDocument, QAPair
+from ..services.text_utils import estimate_tokens
 from ..services.embedding import get_embedding_service_for_project
 from ..services.vector_store import get_vector_store_service
 
@@ -25,7 +26,7 @@ logger = get_logger(__name__)
 
 def build_qa_content(question: str, answer: str) -> str:
     """Build combined content from question and answer for embedding."""
-    return f"问题: {question}\n\n答案: {answer}"
+    return f"Question: {question}\n\nAnswer: {answer}"
 
 
 async def process_qa_pair_async(
@@ -134,7 +135,7 @@ async def process_qa_pair_async(
             "chunk_id": str(document_id),
             "chunk_index": 0,
             "character_count": len(content),
-            "token_count": len(content.split()),
+            "token_count": estimate_tokens(content),
             "document_type": "qa_pair",
             "source_type": "qa",
             "category": qa_pair.category,

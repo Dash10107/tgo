@@ -1,4 +1,4 @@
-# TGO 文档网站
+# Pelatis 文档网站
 
 基于 [Fumadocs](https://fumadocs.dev) 构建的多语言文档网站，支持中文和英文。
 

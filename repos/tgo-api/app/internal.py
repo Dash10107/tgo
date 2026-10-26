@@ -66,7 +66,7 @@ internal_app.include_router(internal_router, prefix="/internal")
 async def internal_root() -> dict[str, str]:
     """Internal service root endpoint."""
     return {
-        "message": "TGO-Tech Internal Services",
+        "message": "Pelatis Internal Services",
         "version": settings.PROJECT_VERSION,
         "note": "This service is for internal use only. No authentication required.",
     }
@@ -84,7 +84,7 @@ async def internal_startup_event():
     from app.core.logging import startup_log
 
     startup_log("═" * 64)
-    startup_log("🔧 TGO-Tech Internal Services Starting...")
+    startup_log("🔧 Pelatis Internal Services Starting...")
     startup_log("═" * 64)
     startup_log(f"   📍 Listening on: {settings.INTERNAL_SERVICE_HOST}:{settings.INTERNAL_SERVICE_PORT}")
     startup_log(f"   📚 API Docs: http://localhost:{settings.INTERNAL_SERVICE_PORT}/internal/docs")

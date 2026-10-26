@@ -23,11 +23,11 @@ const AgentDeviceSection: React.FC<AgentDeviceSectionProps> = ({
       <div className="flex items-center justify-between mb-4 gap-3">
         <div className="flex items-center gap-2 min-w-0">
           <span className="text-sm font-medium text-gray-700 truncate">
-            {t('agents.deviceSection.title', '绑定设备')}
+            {t('agents.deviceSection.title', 'Bound Device')}
           </span>
           {device && (
             <span className="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded-full whitespace-nowrap">
-              {t('agents.deviceSection.boundCount', '1 已绑定')}
+              {t('agents.deviceSection.boundCount', '1 Bound')}
             </span>
           )}
         </div>
@@ -38,7 +38,7 @@ const AgentDeviceSection: React.FC<AgentDeviceSectionProps> = ({
           disabled={disabled}
         >
           <Plus className="w-4 h-4" />
-          <span>{t('agents.deviceSection.addButton', '选择设备')}</span>
+          <span>{t('agents.deviceSection.addButton', 'Select Device')}</span>
         </button>
       </div>
 
@@ -75,15 +75,15 @@ const AgentDeviceSection: React.FC<AgentDeviceSectionProps> = ({
                 }`}
               />
               {device.status === 'online'
-                ? t('agents.deviceSelectModal.statusOnline', '在线')
-                : t('agents.deviceSelectModal.statusOffline', '离线')}
+                ? t('agents.deviceSelectModal.statusOnline', 'Online')
+                : t('agents.deviceSelectModal.statusOffline', 'Offline')}
             </span>
             <button
               type="button"
               onClick={onRemove}
               disabled={disabled}
               className="p-1 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 transition-colors disabled:opacity-50"
-              title={t('agents.deviceSection.unbind', '解绑设备')}
+              title={t('agents.deviceSection.unbind', 'Unbind Device')}
             >
               <X className="w-4 h-4" />
             </button>
@@ -93,10 +93,10 @@ const AgentDeviceSection: React.FC<AgentDeviceSectionProps> = ({
         <div className="text-center py-8 text-gray-500">
           <Monitor className="w-12 h-12 mx-auto mb-3 opacity-30" />
           <p className="text-sm font-medium">
-            {t('agents.deviceSection.emptyTitle', '暂未绑定设备')}
+            {t('agents.deviceSection.emptyTitle', 'No device bound')}
           </p>
           <p className="text-xs mt-1">
-            {t('agents.deviceSection.emptyDescription', '点击「选择设备」按钮绑定一个远程设备')}
+            {t('agents.deviceSection.emptyDescription', 'Click "Select Device" to bind a remote device')}
           </p>
         </div>
       )}

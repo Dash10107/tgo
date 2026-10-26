@@ -46,7 +46,7 @@ const AgentNode: React.FC<NodeProps<AgentNodeData>> = ({ id, data, selected }) =
             {data.label || defaultLabel}
           </div>
           <div className="text-[10px] text-blue-600 dark:text-blue-400 font-bold uppercase tracking-widest mt-0.5 bg-blue-50 dark:bg-blue-900/30 px-1.5 py-0.5 rounded-md inline-block border border-blue-100/50 dark:border-blue-800/30">
-            {hasAgent ? (data.agent_name || data.agent_id) : t('workflow.node_display.not_configured_agent', '未配置员工')}
+            {hasAgent ? (data.agent_name || data.agent_id) : t('workflow.node_display.not_configured_agent', 'Agent Not Configured')}
           </div>
         </div>
       </div>
@@ -60,7 +60,7 @@ const AgentNode: React.FC<NodeProps<AgentNodeData>> = ({ id, data, selected }) =
         </div>
         {!hasAgent && (
           <span className="text-[9px] bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded-lg font-bold border border-amber-100 dark:border-amber-800/50 animate-pulse">
-            {t('common.required', '配置未完成')}
+            {t('common.required', 'Required')}
           </span>
         )}
       </div>

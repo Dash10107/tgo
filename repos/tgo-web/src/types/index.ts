@@ -36,14 +36,14 @@ export type PlatformStatus = 'connected' | 'pending' | 'unconfigured' | 'disable
 export type PlatformAIMode = 'auto' | 'assist' | 'off';
 
 /**
- * Agent 高级配置 (agno 框架参数)
+ * Agent advanced configuration (agno framework parameters)
  */
 export interface AgentAdvancedConfig {
-  profession?: string;               // 职业/角色 (UI 字段)
-  markdown?: boolean;                // 是否使用 markdown 格式输出
-  add_datetime_to_context?: boolean; // 是否添加日期时间到上下文
-  tool_call_limit?: number;          // 单次运行工具调用次数限制
-  num_history_runs?: number;         // 历史会话轮数限制
+  profession?: string;               // Profession / role (UI field)
+  markdown?: boolean;                // Whether to use markdown output
+  add_datetime_to_context?: boolean; // Whether to add the date and time to the context
+  tool_call_limit?: number;          // Tool call limit per run
+  num_history_runs?: number;         // Limit on the number of history runs
 }
 
 export enum PlatformType {
@@ -124,33 +124,33 @@ export interface Agent {
   successRate: number;
   responseTime: string;
   tags: string[];
-  tools: string[]; // 工具ID列表
-  toolConfigs?: Record<string, Record<string, any>>; // 工具配置
-  knowledgeBases: string[]; // 知识库ID列表 (for backward compatibility)
+  tools: string[]; // List of tool IDs
+  toolConfigs?: Record<string, Record<string, any>>; // Tool configs
+  knowledgeBases: string[]; // List of knowledge base IDs (for backward compatibility)
   collections?: AICollectionResponse[]; // Full collection objects from API
   agentTools?: AgentToolResponse[]; // Full tool objects from API
   workflows?: any[]; // Full workflow objects from API
-  config?: AgentAdvancedConfig; // 高级配置
-  skills_enabled?: boolean; // 是否启用技能发现（独立字段，默认 true）
-  boundDeviceId?: string; // 绑定的设备ID
-  boundDevice?: import('./deviceControl').Device | null; // 绑定的设备完整对象
+  config?: AgentAdvancedConfig; // Advanced configuration
+  skills_enabled?: boolean; // Whether skill discovery is enabled (separate field, default true)
+  boundDeviceId?: string; // Bound device ID
+  boundDevice?: import('./deviceControl').Device | null; // Full bound device object
 }
 
 export type AgentStatus = 'active' | 'inactive' | 'training' | 'error';
 export type AgentType = 'coordinator' | 'expert';
 
-// AI员工创建表单数据类型
+// AI agent creation form data type
 export interface CreateAgentFormData {
   name: string;
-  profession: string; // 职业/角色字段
+  profession: string; // Profession / role field
   description: string;
   llmModel: string;
   tools: string[];
-  toolConfigs: Record<string, Record<string, any>>; // 工具配置
+  toolConfigs: Record<string, Record<string, any>>; // Tool configs
   knowledgeBases: string[];
-  workflows: string[]; // 工作流ID列表
-  boundDeviceId: string; // 绑定的设备ID（空字符串表示未绑定）
-  // 高级配置
+  workflows: string[]; // List of workflow IDs
+  boundDeviceId: string; // Bound device ID (empty string means not bound)
+  // Advanced configuration
   markdown?: boolean;
   add_datetime_to_context?: boolean;
   skills_enabled?: boolean;
@@ -159,7 +159,7 @@ export interface CreateAgentFormData {
   num_history_runs?: number;
 }
 
-// 表单验证错误类型
+// Form validation error type
 export interface FormValidationErrors {
   name?: string;
   profession?: string;
@@ -254,9 +254,9 @@ export interface AgentWithDetailsResponse {
   tools: AgentToolResponse[];
   collections: AICollectionResponse[];
   workflows?: any[];
-  bound_device_id?: string | null; // 绑定的设备ID
-  bound_device?: import('./deviceControl').Device | null; // 绑定的设备完整对象（由 tgo-api 聚合）
-  skills_enabled?: boolean; // 是否启用技能发现（默认 true）
+  bound_device_id?: string | null; // Bound device ID
+  bound_device?: import('./deviceControl').Device | null; // Full bound device object (aggregated by tgo-api)
+  skills_enabled?: boolean; // Whether skill discovery is enabled (default true)
 }
 
 // Agent Tool Create Request Type (based on API spec)
@@ -278,8 +278,8 @@ export interface AgentCreateRequest {
   tools?: AgentToolCreateRequest[] | null;
   collections?: string[] | null; // Collection IDs (UUID strings)
   workflows?: string[] | null; // Workflow IDs
-  bound_device_id?: string | null; // 绑定的设备ID
-  skills_enabled?: boolean; // 是否启用技能发现（默认 true）
+  bound_device_id?: string | null; // Bound device ID
+  skills_enabled?: boolean; // Whether skill discovery is enabled (default true)
 }
 
 // Agent Update Request Type (based on API spec - all fields optional)
@@ -293,8 +293,8 @@ export interface AgentUpdateRequest {
   tools?: AgentToolCreateRequest[] | null;
   collections?: string[] | null; // Collection IDs (UUID strings)
   workflows?: string[] | null; // Workflow IDs
-  bound_device_id?: string | null; // 绑定的设备ID
-  skills_enabled?: boolean; // 是否启用技能发现
+  bound_device_id?: string | null; // Bound device ID
+  skills_enabled?: boolean; // Whether skill discovery is enabled
 }
 
 // Agent List Response Type (now returns detailed agents with tools and collections)
@@ -761,7 +761,7 @@ export interface VisitorTag {
 
 export interface Chat {
   id: string;
-  platform: string; // 渠道平台（wechat/tiktok/website等）
+  platform: string; // Channel platform (wechat/tiktok/website, etc.)
   lastMessage: string;
   timestamp: string; // ISO string for display formatting
   // Numeric timestamp in seconds for sorting (from WuKongIM API)
@@ -780,8 +780,8 @@ export interface Chat {
   // Additional presentation and business fields
   tags: ChatTag[];
   priority: ChatPriority;
-  visitorStatus?: VisitorStatus; // 访客在线状态
-  lastSeenMinutes?: number; // 最后在线时间（分钟前）
+  visitorStatus?: VisitorStatus; // Visitor online status
+  lastSeenMinutes?: number; // Last seen time (minutes ago)
 
   // Keep metadata but remove nested wukongim object
   metadata?: {
@@ -814,36 +814,36 @@ export enum MessagePayloadType {
   FILE = 3,
   RICH_TEXT = 12,
   COMMAND = 99,
-  STREAM = 100,  // 流消息类型（AI 流式输出开始）
-  JSON_RENDER = 200, // json-render 富交互消息
-  // 系统消息类型范围：1000-2000
+  STREAM = 100,  // Stream message type (start of AI streaming output)
+  JSON_RENDER = 200, // json-render rich interactive message
+  // System message type range: 1000-2000
   SYSTEM_MIN = 1000,
-  SYSTEM_STAFF_ASSIGNED = 1000,  // 已分配到客服
-  SYSTEM_SESSION_CLOSED = 1001,  // 会话关闭
-  SESSION_TRANSFERRED = 1002,  // 会话转接
-  MEMORY_CLEARED = 1003, // 清除记忆
+  SYSTEM_STAFF_ASSIGNED = 1000,  // Assigned to an agent
+  SYSTEM_SESSION_CLOSED = 1001,  // Session closed
+  SESSION_TRANSFERRED = 1002,  // Session transferred
+  MEMORY_CLEARED = 1003, // Memory cleared
   SYSTEM_MAX = 2000,
 }
 
 /**
- * 检查是否是需要刷新频道信息的系统消息类型
- * 1000 - 已分配到客服
- * 1001 - 会话关闭
+ * Check whether this is a system message type that requires refreshing channel info
+ * 1000 - assigned to an agent
+ * 1001 - session closed
  */
 export function isChannelRefreshSystemMessage(type: number): boolean {
   return type === MessagePayloadType.SYSTEM_STAFF_ASSIGNED || type === MessagePayloadType.SYSTEM_SESSION_CLOSED;
 }
 
 /**
- * 检查消息类型是否为系统消息
- * 系统消息的 payload.type 范围在 1000-2000 之间
+ * Check whether the message type is a system message
+ * The payload.type of system messages is in the range 1000-2000
  */
 export function isSystemMessageType(type: number): boolean {
   return type >= MessagePayloadType.SYSTEM_MIN && type <= MessagePayloadType.SYSTEM_MAX;
 }
 
 /**
- * 系统消息中的额外信息项
+ * Extra info item in a system message
  */
 export interface SystemMessageExtraItem {
   uid?: string;
@@ -852,11 +852,11 @@ export interface SystemMessageExtraItem {
 }
 
 /**
- * 系统消息 Payload
+ * System message payload
  */
 export interface PayloadSystem {
   type: number; // 1000-2000
-  content: string; // 模板字符串，如 "您已接入人工客服，客服{0} 将为您服务"
+  content: string; // Template string, e.g. "You have been connected to a human agent; agent {0} will assist you"
   extra?: SystemMessageExtraItem[];
 }
 
@@ -1040,8 +1040,8 @@ export interface ChannelStaffExtra {
 }
 
 export interface ChannelAIInsights {
-  satisfaction_score: number | null; // 0-5；0 表示未知；越大越好
-  emotion_score: number | null; // 0-5；0 表示未知；越大越好
+  satisfaction_score: number | null; // 0-5; 0 means unknown; higher is better
+  emotion_score: number | null; // 0-5; 0 means unknown; higher is better
   intent: string | null;
   insight_summary: string | null;
 }
@@ -1088,7 +1088,7 @@ export interface ChannelVisitorExtra {
   language?: string; // Visitor's browser language (e.g., 'zh-CN', 'en-US')
   timezone?: string; // Visitor's timezone (e.g., 'Asia/Shanghai', 'America/New_York')
   ip_address?: string; // Visitor's IP address
-  display_location?: string; // Display location (e.g., "中国 广东省 深圳市 电信")
+  display_location?: string; // Display location (e.g., "China Guangdong Shenzhen Telecom")
 }
 
 export type ChannelExtra = ChannelVisitorExtra | ChannelStaffExtra | null;
@@ -1227,7 +1227,7 @@ export interface KnowledgeFile {
   sizeBytes: number; // Raw bytes for sorting
   type: string; // File type like 'pdf', 'doc', 'txt'
   uploadDate: string;
-  status: string; // Display status like "已处理", "处理中", "错误"
+  status: string; // Display status like "Processed", "Processing", "Error"
   statusType: 'success' | 'processing' | 'error';
   knowledgeBaseId: string;
   url?: string;

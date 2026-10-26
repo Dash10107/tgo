@@ -7,10 +7,10 @@ interface SystemMessageProps {
 }
 
 /**
- * 解析系统消息模板，将 {0}, {1} 等占位符替换为 extra 中的对应名称
- * @param template 模板字符串，如 "您已接入人工客服，客服{0} 将为您服务"
- * @param extra 额外信息数组，如 [{ uid: "xxx", name: "Administrator" }]
- * @returns 解析后的内容片段数组
+ * Parse a system message template, replacing placeholders such as {0}, {1} with the matching names in extra
+ * @param template Template string, e.g. "You have been connected to a human agent; agent {0} will assist you"
+ * @param extra Array of extra info, e.g. [{ uid: "xxx", name: "Administrator" }]
+ * @returns Array of parsed content fragments
  */
 function parseSystemMessageContent(
   template: string,
@@ -21,23 +21,23 @@ function parseSystemMessageContent(
   }
 
   const result: React.ReactNode[] = [];
-  // 匹配 {0}, {1}, {2} 等占位符
+  // Match placeholders such as {0}, {1}, {2}
   const regex = /\{(\d+)\}/g;
   let lastIndex = 0;
   let match;
 
   while ((match = regex.exec(template)) !== null) {
-    // 添加占位符之前的普通文本
+    // Add the plain text before the placeholder
     if (match.index > lastIndex) {
       result.push(template.slice(lastIndex, match.index));
     }
 
-    // 获取占位符索引
+    // Get the placeholder index
     const placeholderIndex = parseInt(match[1], 10);
     const extraItem = extra[placeholderIndex];
 
     if (extraItem?.name) {
-      // 用高亮样式包裹名称
+      // Wrap the name in a highlight style
       result.push(
         <span
           key={`extra-${placeholderIndex}`}
@@ -47,14 +47,14 @@ function parseSystemMessageContent(
         </span>
       );
     } else {
-      // 如果没有找到对应的 extra，保留原占位符
+      // If no matching extra is found, keep the original placeholder
       result.push(match[0]);
     }
 
     lastIndex = regex.lastIndex;
   }
 
-  // 添加最后一段普通文本
+  // Add the last piece of plain text
   if (lastIndex < template.length) {
     result.push(template.slice(lastIndex));
   }
@@ -63,8 +63,8 @@ function parseSystemMessageContent(
 }
 
 /**
- * 系统消息组件
- * 显示类似微信的 "xxx加入群聊" 风格的系统通知
+ * System message component
+ * Shows WeChat-style system notifications such as "xxx joined the group chat"
  */
 const SystemMessage: React.FC<SystemMessageProps> = ({ payload }) => {
   const { t } = useTranslation();

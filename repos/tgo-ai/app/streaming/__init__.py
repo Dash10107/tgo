@@ -1,5 +1,5 @@
 """
-Streaming infrastructure for TGO Supervisor Agent.
+Streaming infrastructure for Pelatis Supervisor Agent.
 
 This module provides the core streaming functionality for real-time
 coordination workflow events.

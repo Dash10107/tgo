@@ -177,7 +177,7 @@ if service_is_running tgo-device-control-agentos; then
   add_line TOOLS_SECTION "AgentOS: http://localhost:${AGENTOS_PORT_VALUE} (health: http://localhost:${AGENTOS_PORT_VALUE}/health)"
 fi
 
-printf 'TGO dev environment is ready.\n\n'
+printf 'Pelatis dev environment is ready.\n\n'
 
 if [ -z "$WEB_SECTION$API_SECTION$INFRA_SECTION$TOOLS_SECTION" ]; then
   printf 'No running services detected.\n'

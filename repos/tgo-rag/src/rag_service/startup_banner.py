@@ -180,7 +180,7 @@ def print_startup_summary(
     print_section_header("Service Ready", Symbols.ROCKET)
     
     print(f"{Colors.HEADER}│{Colors.RESET}")
-    print(f"{Colors.HEADER}│{Colors.RESET}   {Symbols.SPARKLES} {Colors.BRIGHT}{Colors.SUCCESS}TGO RAG Service is now running!{Colors.RESET}")
+    print(f"{Colors.HEADER}│{Colors.RESET}   {Symbols.SPARKLES} {Colors.BRIGHT}{Colors.SUCCESS}Pelatis RAG Service is now running!{Colors.RESET}")
     print(f"{Colors.HEADER}│{Colors.RESET}")
     print(f"{Colors.HEADER}│{Colors.RESET}   {Colors.INFO}Service Endpoints:{Colors.RESET}")
     print(f"{Colors.HEADER}│{Colors.RESET}     {Symbols.NETWORK} Health Check: {Colors.BRIGHT}{base_url}/health{Colors.RESET}")

@@ -36,7 +36,7 @@ class MCPServiceClient:
         """Get headers for MCP service requests (no authentication)."""
         headers = {
             "Content-Type": "application/json",
-            "User-Agent": "TGO-AI-Service/1.0"
+            "User-Agent": "Pelatis-AI-Service/1.0"
         }
 
         # Add any additional headers

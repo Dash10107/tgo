@@ -2,8 +2,8 @@ import pytest
 from app.engine.context import ExecutionContext
 
 def test_context_get_set():
-    ctx = ExecutionContext({"start.name": "TGO"})
-    assert ctx.get_variable("start.name") == "TGO"
+    ctx = ExecutionContext({"start.name": "Pelatis"})
+    assert ctx.get_variable("start.name") == "Pelatis"
     
     ctx.set_variable("llm", "output", "Success")
     assert ctx.get_variable("llm.output") == "Success"

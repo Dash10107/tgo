@@ -32,7 +32,7 @@ export const TagInput: React.FC<TagInputProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Use i18n for default placeholder
-  const displayPlaceholder = placeholder || t('tagInput.placeholder', '输入标签并按回车键添加');
+  const displayPlaceholder = placeholder || t('tagInput.placeholder', 'Enter tag and press Enter to add');
 
   // Clear error after a delay
   const clearError = () => {
@@ -45,25 +45,25 @@ export const TagInput: React.FC<TagInputProps> = ({
 
     // Validation checks
     if (!trimmedTag) {
-      setError(t('tagInput.errors.empty', '标签名称不能为空'));
+      setError(t('tagInput.errors.empty', 'Tag name cannot be empty'));
       clearError();
       return false;
     }
 
     if (trimmedTag.length > maxTagLength) {
-      setError(t('tagInput.errors.tooLong', { max: maxTagLength, defaultValue: `标签名称不能超过${maxTagLength}个字符` }));
+      setError(t('tagInput.errors.tooLong', { max: maxTagLength, defaultValue: `Tag name cannot exceed {{max}} characters` }));
       clearError();
       return false;
     }
 
     if (tags.includes(trimmedTag)) {
-      setError(t('tagInput.errors.duplicate', '该标签已存在'));
+      setError(t('tagInput.errors.duplicate', 'This tag already exists'));
       clearError();
       return false;
     }
 
     if (tags.length >= maxTags) {
-      setError(t('tagInput.errors.maxReached', { max: maxTags, defaultValue: `最多只能添加${maxTags}个标签` }));
+      setError(t('tagInput.errors.maxReached', { max: maxTags, defaultValue: `Maximum of {{max}} tags allowed` }));
       clearError();
       return false;
     }
@@ -130,7 +130,7 @@ export const TagInput: React.FC<TagInputProps> = ({
     let addedCount = 0;
     for (const tag of potentialTags) {
       if (tags.length + addedCount >= maxTags) {
-        setError(t('tagInput.errors.maxReached', { max: maxTags, defaultValue: `最多只能添加${maxTags}个标签` }));
+        setError(t('tagInput.errors.maxReached', { max: maxTags, defaultValue: `Maximum of {{max}} tags allowed` }));
         clearError();
         break;
       }
@@ -179,7 +179,7 @@ export const TagInput: React.FC<TagInputProps> = ({
                     removeTag(index);
                   }}
                   className="flex-shrink-0 hover:bg-black/10 dark:hover:bg-white/10 rounded-full p-0.5 transition-colors"
-                  title={t('tagInput.removeTag', '删除标签')}
+                  title={t('tagInput.removeTag', 'Remove tag')}
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -211,15 +211,15 @@ export const TagInput: React.FC<TagInputProps> = ({
             <span className="text-red-600 dark:text-red-400">{error}</span>
           ) : (
             <span>
-              {t('tagInput.count', { current: tags.length, max: maxTags, defaultValue: `${tags.length}/${maxTags} 个标签` })}
-              {inputValue && ` • ${t('tagInput.currentInput', { current: inputValue.length, max: maxTagLength, defaultValue: `当前输入: ${inputValue.length}/${maxTagLength} 字符` })}`}
+              {t('tagInput.count', { current: tags.length, max: maxTags, defaultValue: `{{current}}/{{max}} tags` })}
+              {inputValue && ` • ${t('tagInput.currentInput', { current: inputValue.length, max: maxTagLength, defaultValue: `Current input: {{current}}/{{max}} characters` })}`}
             </span>
           )}
         </div>
 
         {!disabled && (
           <div className="text-gray-400 dark:text-gray-500">
-            {t('tagInput.hint', '回车或逗号添加标签')}
+            {t('tagInput.hint', 'Press Enter or comma to add tag')}
           </div>
         )}
       </div>

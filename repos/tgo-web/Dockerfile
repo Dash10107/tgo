@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.7
-# TGO Web (React + Vite) - build and serve via Nginx
+# Pelatis Web (React + Vite) - build and serve via Nginx
 #
 # Runtime Configuration:
 # All VITE_* environment variables are configured at runtime, not build time.

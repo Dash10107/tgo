@@ -64,9 +64,9 @@ class StoreRemoteAgent(RemoteAgent):
     """
     Custom RemoteAgent that allows overriding id and name for direct agent runs.
     
-    支持本地工具绑定：
-    - tools: 与本地 Agent 一致的工具属性
-    - 内部透明执行：arun 内部自动处理工具执行循环，对调用者无感知
+    Supports local tool binding:
+    - tools: tool attributes consistent with a local Agent
+    - Transparent internal execution: arun handles the tool execution loop internally, invisible to the caller
     """
     
     def __init__(self, *args, **kwargs):
@@ -78,7 +78,7 @@ class StoreRemoteAgent(RemoteAgent):
         # Some agno versions expect knowledge_filters on RemoteAgent
         self.knowledge_filters = kwargs.pop("knowledge_filters", None)
         
-        # 新增：与本地 Agent 一致的工具属性，重命名为 local_tools 以避免与 RemoteAgent.tools 冲突
+        # New: tool attributes consistent with a local Agent, renamed to local_tools to avoid clashing with RemoteAgent.tools
         self.local_tools: List[Union[Function, Callable]] = kwargs.pop("tools", [])
         self._tool_map: Dict[str, Function] = {}
         self._build_tool_map()
@@ -86,25 +86,25 @@ class StoreRemoteAgent(RemoteAgent):
         super().__init__(*args, **kwargs)
     
     def _build_tool_map(self) -> None:
-        """构建工具名称到工具对象的映射，支持 Toolkit 和普通 Function"""
+        """Build a name -> tool object mapping; supports Toolkit and plain Function"""
         self._tool_map = {}
         for tool in self.local_tools:
             if isinstance(tool, Function):
                 self._tool_map[tool.name] = tool
             elif isinstance(tool, Toolkit):
-                # 如果是 Toolkit (如 MCPTools)，获取其内部所有工具
-                # get_async_functions 返回合并了同步和异步工具的字典
+                # For a Toolkit (e.g. MCPTools), get all of its inner tools
+                # get_async_functions returns a dict merging sync and async tools
                 toolkit_tools = tool.get_async_functions()
                 for name, func in toolkit_tools.items():
                     self._tool_map[name] = func
             elif callable(tool):
-                # 如果是普通函数，包装成 Function
+                # For a plain function, wrap it into a Function
                 name = getattr(tool, "__name__", str(tool))
                 self._tool_map[name] = tool
         _logger.debug(f"Built tool map with {len(self._tool_map)} tools: {list(self._tool_map.keys())}")
     
     def _build_tools_schema(self) -> List[Dict[str, Any]]:
-        """将本地工具转换为 JSON Schema 格式，发送给远程 Agent"""
+        """Convert local tools to JSON Schema format to send to the remote Agent"""
         schemas = []
         for tool in self.local_tools:
             if isinstance(tool, Function):
@@ -114,7 +114,7 @@ class StoreRemoteAgent(RemoteAgent):
                     "parameters": tool.parameters or {"type": "object", "properties": {}},
                 })
             elif callable(tool):
-                # 简单处理普通函数
+                # Simple handling of plain functions
                 name = getattr(tool, "__name__", str(tool))
                 doc = getattr(tool, "__doc__", "") or ""
                 schemas.append({
@@ -125,10 +125,10 @@ class StoreRemoteAgent(RemoteAgent):
         return schemas
     
     def _has_pending_tool_calls(self, result: Any) -> bool:
-        """检查结果中是否有需要外部执行的工具调用"""
+        """Check whether the result contains tool calls that require external execution"""
         _logger.debug(f"Checking for pending tool calls in: {type(result)}")
         
-        # 兼容字典格式
+        # Compatible with dict format
         tools = []
         if isinstance(result, dict):
             tools = result.get('tools', [])
@@ -140,7 +140,7 @@ class StoreRemoteAgent(RemoteAgent):
             return False
         
         for tool_exec in tools:
-            # 兼容对象和字典
+            # Compatible with objects and dicts
             if isinstance(tool_exec, dict):
                 is_ext = tool_exec.get('external_execution_required', False)
                 tool_name = tool_exec.get('tool_name', 'unknown')
@@ -156,23 +156,23 @@ class StoreRemoteAgent(RemoteAgent):
 
     async def _execute_tools_locally(self, tool_calls: List[Union[ToolExecution, Dict[str, Any]]]) -> List[ToolExecution]:
         """
-        本地执行工具，与本地 Agent 行为一致。
-        执行后填充结果并清除 external_execution_required 标志。
+        Execute tools locally, consistent with local Agent behavior.
+        After execution, fill in the results and clear the external_execution_required flag.
         """
         updated_tool_calls: List[ToolExecution] = []
 
         print("_execute_tools_locally--->", tool_calls)
         
         for tc_raw in tool_calls:
-            # 统一转换为 ToolExecution 对象进行处理
+            # Convert uniformly to ToolExecution objects for processing
             if isinstance(tc_raw, dict):
                 tc = ToolExecution(**tc_raw)
             else:
                 tc = tc_raw
                 
             if not (hasattr(tc, 'external_execution_required') and tc.external_execution_required):
-                # 跳过已处理的工具，不添加到返回列表
-                # 这是修复 400 错误的关键：避免将已处理的工具重复发送给 store-api
+                # Skip tools that were already handled; do not add them to the returned list
+                # This is the key to fixing the 400 error: avoid sending already-handled tools to store-api again
                 _logger.debug(f"Skipping already processed tool: {getattr(tc, 'tool_name', 'unknown')}")
                 continue
             
@@ -191,7 +191,7 @@ class StoreRemoteAgent(RemoteAgent):
             print("tool--->", tool)
             try:
                 if isinstance(tool, Function):
-                    # Function 对象
+                    # Function object
                     if tool.entrypoint:
                         if asyncio.iscoroutinefunction(tool.entrypoint):
                             result = await tool.entrypoint(**tool_args)
@@ -200,7 +200,7 @@ class StoreRemoteAgent(RemoteAgent):
                     else:
                         result = f"Tool {tool_name} has no entrypoint"
                 elif callable(tool):
-                    # 普通函数
+                    # Plain function
                     if asyncio.iscoroutinefunction(tool):
                         result = await tool(**tool_args)
                     else:
@@ -208,7 +208,7 @@ class StoreRemoteAgent(RemoteAgent):
                 else:
                     result = f"Tool {tool_name} is not callable"
                 print("tool-result--->", result)
-                # 将结果转换为字符串
+                # Convert the result to a string
                 if not isinstance(result, str):
                     try:
                         result = json.dumps(result, ensure_ascii=False, default=str)
@@ -222,10 +222,10 @@ class StoreRemoteAgent(RemoteAgent):
                 error_detail = traceback.format_exc()
                 _logger.error(f"Error executing tool {tool_name}: {e}\n{error_detail}")
                 
-                # 特殊处理 ExceptionGroup (Python 3.11+) 以获取更详细的子错误
+                # Special handling of ExceptionGroup (Python 3.11+) to get more detailed sub-errors
                 error_msg = f"Error executing tool: {str(e)}"
                 try:
-                    # 检查是否是 ExceptionGroup
+                    # Check whether it is an ExceptionGroup
                     if hasattr(e, 'exceptions'):
                         sub_errors = [f"{type(ex).__name__}: {str(ex)}" for ex in e.exceptions]
                         error_msg += f" (Sub-errors: {', '.join(sub_errors)})"
@@ -372,59 +372,59 @@ class StoreRemoteAgent(RemoteAgent):
         **kwargs
     ) -> Union[RunOutput, AsyncIterator[RunOutputEvent]]:
         """
-        运行远程 Agent，支持本地工具透明执行。
+        Run the remote Agent, with transparent local tool execution.
         
-        如果绑定了本地工具：
-        1. 将工具 schema 发送给远程 Agent
-        2. 检查返回结果中是否有需要外部执行的工具
-        3. 本地执行这些工具，然后调用 continue_run 继续
-        4. 循环直到完成
+        If local tools are bound:
+        1. Send the tool schemas to the remote Agent
+        2. Check whether the returned result contains tools requiring external execution
+        3. Execute those tools locally, then call continue_run to continue
+        4. Loop until finished
         """
         _logger.info(f"StoreRemoteAgent.arun called with stream={stream}")
-        # 如果有本地工具，注入工具 schema 到请求中
+        # If there are local tools, inject the tool schemas into the request
         if self.local_tools:
             tools_schema = self._build_tools_schema()
-            # 显式序列化为 JSON 字符串数组，确保跨语言/跨服务调用格式标准
+            # Explicitly serialize to a JSON string array to keep the format standard across languages/services
             kwargs["tools"] = json.dumps(tools_schema)
             _logger.debug(f"Injecting {len(tools_schema)} local tools to remote agent call")
         
-        # 调用父类的 arun
+        # Call the parent class's arun
         result = super().arun(input, stream=stream, **kwargs)
         
-        # 处理流式和非流式情况
+        # Handle streaming and non-streaming cases
         if stream:
-            # 流式输出 - 需要包装以处理工具执行
+            # Streaming output - needs wrapping to handle tool execution
             return self._wrap_stream_with_tool_execution(result, **kwargs)
         else:
-            # 非流式输出 - 包装协程以处理工具执行循环
+            # Non-streaming output - wrap the coroutine to handle the tool execution loop
             if asyncio.iscoroutine(result):
                 return self._wrap_coro_with_tool_execution(result, **kwargs)
             return result
     
     async def _wrap_coro_with_tool_execution(self, coro, **kwargs) -> RunOutput:
-        """包装协程，添加工具执行循环"""
+        """Wrap the coroutine, adding the tool execution loop"""
         run_output = await coro
         
-        # 映射 ID
+        # Map IDs
         self._map_ids(run_output)
         
-        # 如果没有本地工具，直接返回
+        # If there are no local tools, return directly
         if not self.local_tools:
             return run_output
         
-        # 工具执行循环
-        max_iterations = 10  # 防止无限循环
+        # Tool execution loop
+        max_iterations = 10  # Prevent infinite loops
         iteration = 0
         
         while self._has_pending_tool_calls(run_output) and iteration < max_iterations:
             iteration += 1
             _logger.debug(f"Tool execution loop iteration {iteration}")
             
-            # 本地执行工具
+            # Execute tools locally
             if hasattr(run_output, 'tools') and run_output.tools:
                 updated_tools = await self._execute_tools_locally(run_output.tools)
                 
-                # 调用 continue_run 继续远程 Agent
+                # Call continue_run to continue the remote Agent
                 run_id = getattr(run_output, 'run_id', None)
                 session_id = kwargs.get('session_id')
                 
@@ -447,17 +447,17 @@ class StoreRemoteAgent(RemoteAgent):
         return run_output
     
     async def _wrap_stream_with_tool_execution(self, stream_result, **kwargs) -> AsyncIterator[RunOutputEvent]:
-        """包装流式结果，添加工具执行支持"""
+        """Wrap the streaming result, adding tool execution support"""
         collected_output = None
         print("_wrap_stream_with_tool_execution-->")
         async for event in stream_result:
-            # 映射 ID
+            # Map IDs
             if hasattr(event, "agent_id") and self._override_id:
                 event.agent_id = self._override_id
             if hasattr(event, "agent_name") and self._override_name:
                 event.agent_name = self._override_name
             
-            # 收集最终输出用于工具执行检查
+            # Collect the final output for the tool execution check
             if hasattr(event, 'run_id'):
                 collected_output = event
             
@@ -465,7 +465,7 @@ class StoreRemoteAgent(RemoteAgent):
         
         _logger.debug(f"Stream finished. collected_output type: {type(collected_output)}")
         
-        # 流式输出完成后，检查是否需要工具执行
+        # After streaming completes, check whether tool execution is needed
         print("collected_output-->", collected_output)
         if self.local_tools and collected_output and self._has_pending_tool_calls(collected_output):
             _logger.debug("Stream completed with pending tool calls, entering tool execution loop")
@@ -476,7 +476,7 @@ class StoreRemoteAgent(RemoteAgent):
             while self._has_pending_tool_calls(collected_output) and iteration < max_iterations:
                 iteration += 1
                 
-                # 本地执行工具
+                # Execute tools locally
                 if hasattr(collected_output, 'tools') and collected_output.tools:
                     updated_tools = await self._execute_tools_locally(collected_output.tools)
                     
@@ -484,7 +484,7 @@ class StoreRemoteAgent(RemoteAgent):
                     session_id = kwargs.get('session_id')
                     
                     if run_id:
-                        # 以流式方式继续
+                        # Continue in streaming mode
                         async for event in self.acontinue_run(
                             run_id=run_id,
                             updated_tools=updated_tools,
@@ -500,7 +500,7 @@ class StoreRemoteAgent(RemoteAgent):
                         break
     
     def _map_ids(self, result: Any) -> None:
-        """映射 ID 到覆盖值"""
+        """Map IDs to override values"""
         if self._override_id:
             if hasattr(result, "agent_id"):
                 result.agent_id = self._override_id
@@ -557,7 +557,7 @@ class AgentBuilder:
         internal_agent: "InternalAgent",
     ) -> StoreRemoteAgent:
         """Helper to construct a StoreRemoteAgent."""
-        # 获取商店 API Key
+        # Get the store API key
         api_key = None
         if request.project_id:
             try:
@@ -570,7 +570,7 @@ class AgentBuilder:
         if not api_key:
             api_key = settings.store_api_key
 
-        # 为远程 Agent 加载本地工具
+        # Load local tools for the remote Agent
         local_tools = []
         if internal_agent.tools:
             try:
@@ -1115,23 +1115,23 @@ class AgentBuilder:
         requested_tools: Optional[set[str]] = None,
     ) -> List[Function]:
         """
-        从 MCP 网关获取工具定义并创建 Function 对象。
+        Fetch tool definitions from the MCP gateway and create Function objects.
         
-        此方法通过 REST API 从 store-api 的 MCP 网关动态获取工具的真实定义，
-        包括准确的 inputSchema，而不是依赖数据库中可能过时的静态配置。
+        This method dynamically fetches the real tool definitions from store-api's MCP gateway via the REST API,
+        including the accurate inputSchema, instead of relying on static configuration in the database that may be stale.
         
         Args:
-            endpoint: MCP 服务器地址（如 http://store-api/api/v1/mcp/{tool_id}/http）
-            headers: 请求头（如认证信息）
-            requested_tools: 指定要获取的工具名称集合，None 表示获取全部
+            endpoint: MCP server address (e.g. http://store-api/api/v1/mcp/{tool_id}/http)
+            headers: Request headers (e.g. authentication info)
+            requested_tools: Set of tool names to fetch; None means fetch all
         
         Returns:
-            Function 对象列表
+            List of Function objects
         """
         tools: List[Function] = []
         server_url = endpoint.rstrip("/")
         
-        # 将 /http 端点转换为 /tools 端点
+        # Convert the /http endpoint to the /tools endpoint
         # http://store-api/api/v1/mcp/{tool_id}/http -> http://store-api/api/v1/mcp/{tool_id}/tools
         if server_url.endswith("/http"):
             tools_url = server_url[:-5] + "/tools"
@@ -1171,11 +1171,11 @@ class AgentBuilder:
                 for tool_def in tool_list:
                     tool_name = tool_def.get("name")
                     
-                    # 如果指定了工具列表，只获取指定的工具
+                    # If a tool list is specified, only fetch the specified tools
                     if requested_tools and tool_name not in requested_tools:
                         continue
                     
-                    # 创建一个类似 MCP Tool 的对象
+                    # Create an object similar to an MCP Tool
                     mcp_tool = types.SimpleNamespace(
                         name=tool_name,
                         description=tool_def.get("description", ""),

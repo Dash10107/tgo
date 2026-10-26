@@ -1,6 +1,6 @@
-# TGO Widget Example
+# Pelatis Widget Example
 
-This example demonstrates how to integrate the TGO Widget into a Flutter application.
+This example demonstrates how to integrate the Pelatis Widget into a Flutter application.
 
 ## Getting Started
 

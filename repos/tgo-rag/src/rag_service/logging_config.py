@@ -1,5 +1,5 @@
 """
-Centralized logging configuration for TGO RAG Service.
+Centralized logging configuration for Pelatis RAG Service.
 
 This module provides a unified logging interface with:
 - Structured logging using Python's standard library logging

@@ -63,7 +63,7 @@ export const formatDateTime = (
 };
 
 /**
- * Format timestamp for knowledge base "最近更新" display
+ * Format timestamp for knowledge base "Recently updated" display
  * Shows date and time up to minutes precision in user's local timezone
  * @param timestamp - ISO timestamp string or Date object
  * @returns Formatted string like "2024-01-15 14:30"
@@ -137,22 +137,22 @@ export const formatRelativeTime = (timestamp: string | Date): string => {
 
     // If less than 1 minute ago
     if (diffMinutes < 1) {
-      return i18n.t('time.relative.justNow', { defaultValue: '刚刚' });
+      return i18n.t('time.relative.justNow', { defaultValue: 'Just now' });
     }
 
     // If less than 1 hour ago
     if (diffMinutes < 60) {
-      return i18n.t('time.relative.minutes', { count: diffMinutes, defaultValue: `${diffMinutes}分钟前` });
+      return i18n.t('time.relative.minutes', { count: diffMinutes, defaultValue: `{{count}} minutes ago` });
     }
 
     // If less than 24 hours ago
     if (diffHours < 24) {
-      return i18n.t('time.relative.hours', { count: diffHours, defaultValue: `${diffHours}小时前` });
+      return i18n.t('time.relative.hours', { count: diffHours, defaultValue: `{{count}} hours ago` });
     }
 
     // If less than 7 days ago
     if (diffDays < 7) {
-      return i18n.t('time.relative.days', { count: diffDays, defaultValue: `${diffDays}天前` });
+      return i18n.t('time.relative.days', { count: diffDays, defaultValue: `{{count}} days ago` });
     }
 
     // For older dates, show the actual date and time
@@ -210,8 +210,8 @@ export const formatSmartTime = (timestamp: string | Date): string => {
   try {
     const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
 
-    const todayLabel = i18n.t('time.today', { defaultValue: '今天' });
-    const yesterdayLabel = i18n.t('time.yesterday', { defaultValue: '昨天' });
+    const todayLabel = i18n.t('time.today', { defaultValue: 'Today' });
+    const yesterdayLabel = i18n.t('time.yesterday', { defaultValue: 'Yesterday' });
     if (isToday(date)) {
       return `${todayLabel} ${formatTimeOnly(date)}`;
     } else if (isYesterday(date)) {
@@ -258,9 +258,9 @@ export const getCurrentTimestamp = (): string => {
 /**
  * Format timestamp according to WeChat conversation list rules
  * - Today: HH:mm
- * - Yesterday: 昨天 HH:mm
- * - 2-6 days ago: 星期一..星期日
- * - 7+ days ago: M月D日
+ * - Yesterday: Yesterday HH:mm
+ * - 2-6 days ago: Monday..Sunday
+ * - 7+ days ago: MMM D
  */
 export const formatWeChatConversationTime = (
   timestamp: string | Date | number
@@ -306,7 +306,7 @@ export const formatWeChatConversationTime = (
 
     // Yesterday
     if (diffDays === 1) {
-      return `${i18n.t('time.yesterday', { defaultValue: '昨天' })} ${formatTimeOnly(date)}`;
+      return `${i18n.t('time.yesterday', { defaultValue: 'Yesterday' })} ${formatTimeOnly(date)}`;
     }
 
     // Within past week (2-6 days): show weekday name

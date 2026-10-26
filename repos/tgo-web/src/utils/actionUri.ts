@@ -1,45 +1,45 @@
 /**
- * Action URI 解析和处理
+ * Action URI parsing and handling
  * 
- * 支持的协议：
- * - url://  打开外部链接
- * - msg://  发送消息到聊天
- * - copy:// 复制到剪贴板
+ * Supported protocols:
+ * - url://  open an external link
+ * - msg://  send a message to the chat
+ * - copy:// copy to the clipboard
  */
 
 /**
- * Action 协议类型
+ * Action protocol type
  */
 export type ActionProtocol = 'url' | 'msg' | 'copy';
 
 /**
- * 解析后的 Action URI
+ * Parsed Action URI
  */
 export interface ParsedActionURI {
-  /** 协议类型 */
+  /** Protocol type */
   protocol: ActionProtocol | string;
-  /** 内容部分 */
+  /** Content part */
   content: string;
-  /** 原始 URI */
+  /** Original URI */
   raw: string;
-  /** 是否为有效的 Action URI */
+  /** Whether this is a valid Action URI */
   isValid: boolean;
 }
 
 /**
- * Action URI 正则表达式
+ * Action URI regular expression
  */
 const ACTION_URI_REGEX = /^([a-z]+):\/\/(.*)$/i;
 
 /**
- * 有效的协议列表
+ * List of valid protocols
  */
 const VALID_PROTOCOLS: ActionProtocol[] = ['url', 'msg', 'copy'];
 
 /**
- * 解析 Action URI
- * @param uri Action URI 字符串
- * @returns 解析结果
+ * Parse an Action URI
+ * @param uri Action URI string
+ * @returns Parse result
  */
 export function parseActionURI(uri: string): ParsedActionURI {
   if (!uri) {
@@ -64,25 +64,25 @@ export function parseActionURI(uri: string): ParsedActionURI {
 }
 
 /**
- * 构建 Action URI
- * @param protocol 协议类型
- * @param content 内容
- * @returns Action URI 字符串
+ * Build an Action URI
+ * @param protocol Protocol type
+ * @param content Content
+ * @returns Action URI string
  */
 export function buildActionURI(protocol: ActionProtocol, content: string): string {
   return `${protocol}://${content}`;
 }
 
 /**
- * 检查是否为有效的 Action URI
- * @param uri URI 字符串
+ * Check whether a string is a valid Action URI
+ * @param uri URI string
  */
 export function isValidActionURI(uri: string): boolean {
   return parseActionURI(uri).isValid;
 }
 
 /**
- * Action 处理结果
+ * Action handling result
  */
 export interface ActionResult {
   success: boolean;
@@ -91,26 +91,26 @@ export interface ActionResult {
 }
 
 /**
- * Action 处理器配置
+ * Action handler configuration
  */
 export interface ActionHandlerConfig {
-  /** 发送消息的回调 */
+  /** Callback for sending a message */
   onSendMessage?: (message: string) => void;
-  /** 复制成功的回调 */
+  /** Callback for a successful copy */
   onCopySuccess?: (text: string) => void;
-  /** 复制失败的回调 */
+  /** Callback for a failed copy */
   onCopyError?: (error: Error) => void;
-  /** 打开链接前的回调（返回 false 可阻止打开） */
+  /** Callback before opening a link (return false to block it) */
   onBeforeOpenUrl?: (url: string) => boolean;
-  /** 处理未知协议的回调 */
+  /** Callback for unknown protocols */
   onUnknownProtocol?: (uri: ParsedActionURI) => void;
 }
 
 /**
- * 执行 Action
+ * Execute an Action
  * @param uri Action URI
- * @param config 处理器配置
- * @returns 处理结果
+ * @param config Handler configuration
+ * @returns Handling result
  */
 export async function executeAction(
   uri: string,
@@ -121,22 +121,22 @@ export async function executeAction(
   console.log('[executeAction] Parsed:', parsed);
 
   if (!parsed.isValid) {
-    // 尝试作为旧格式处理（直接的 action 名称）
+    // Try to handle it as the legacy format (a bare action name)
     console.warn('[executeAction] Invalid URI, calling onUnknownProtocol');
     config.onUnknownProtocol?.(parsed);
     return {
       success: false,
-      error: `无效的 Action URI: ${uri}`,
+      error: `Invalid Action URI: ${uri}`,
     };
   }
 
   switch (parsed.protocol as ActionProtocol) {
     case 'url': {
-      // 打开外部链接
+      // Open an external link
       const url = parsed.content;
       console.log('[executeAction] Opening URL:', url);
       if (config.onBeforeOpenUrl && !config.onBeforeOpenUrl(url)) {
-        return { success: false, message: '链接打开被阻止' };
+        return { success: false, message: 'Link opening was blocked' };
       }
       try {
         const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
@@ -144,52 +144,52 @@ export async function executeAction(
         if (!newWindow) {
           console.warn('[executeAction] Popup may have been blocked');
         }
-        return { success: true, message: `已打开链接: ${url}` };
+        return { success: true, message: `Opened link: ${url}` };
       } catch (error) {
         console.error('[executeAction] Failed to open URL:', error);
-        return { success: false, error: `无法打开链接: ${error}` };
+        return { success: false, error: `Unable to open link: ${error}` };
       }
     }
 
     case 'msg': {
-      // 发送消息到聊天
+      // Send a message to the chat
       const message = decodeURIComponent(parsed.content);
       console.log('[executeAction] Sending message:', message);
       if (config.onSendMessage) {
         config.onSendMessage(message);
-        return { success: true, message: `已发送消息` };
+        return { success: true, message: `Message sent` };
       }
       console.warn('[executeAction] onSendMessage not configured');
-      return { success: false, error: '未配置消息发送处理器' };
+      return { success: false, error: 'No message handler configured' };
     }
 
     case 'copy': {
-      // 复制到剪贴板
+      // Copy to the clipboard
       const text = decodeURIComponent(parsed.content);
       console.log('[executeAction] Copying text:', text);
       try {
         await navigator.clipboard.writeText(text);
         console.log('[executeAction] Copy success');
         config.onCopySuccess?.(text);
-        return { success: true, message: `已复制: ${text}` };
+        return { success: true, message: `Copied: ${text}` };
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
         console.error('[executeAction] Copy failed:', err);
         config.onCopyError?.(err);
-        return { success: false, error: `复制失败: ${err.message}` };
+        return { success: false, error: `Copy failed: ${err.message}` };
       }
     }
 
     default:
       console.warn('[executeAction] Unknown protocol:', parsed.protocol);
       config.onUnknownProtocol?.(parsed);
-      return { success: false, error: `未知协议: ${parsed.protocol}` };
+      return { success: false, error: `Unknown protocol: ${parsed.protocol}` };
   }
 }
 
 /**
- * 创建 Action 处理器
- * 用于在组件中处理 Widget 操作按钮点击
+ * Create an Action handler
+ * Used by components to handle Widget action button clicks
  */
 export function createActionHandler(config: ActionHandlerConfig = {}) {
   return async (actionUri: string): Promise<ActionResult> => {

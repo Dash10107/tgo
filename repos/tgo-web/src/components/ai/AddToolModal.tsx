@@ -54,13 +54,13 @@ const AddToolModal: React.FC<AddToolModalProps> = ({ isOpen, onClose }) => {
     const newErrors: FormErrors = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = t('tools.addToolModal.errors.nameRequired', '请输入工具名称');
+      newErrors.name = t('tools.addToolModal.errors.nameRequired', 'Please enter tool name');
     } else if (!/^[a-zA-Z0-9_-]+$/.test(formData.name.trim())) {
-      newErrors.name = t('tools.addToolModal.errors.invalidName', '工具名称只能包含英文字母、数字、下划线和连字符');
+      newErrors.name = t('tools.addToolModal.errors.invalidName', 'Tool name can only contain letters, numbers, underscores and hyphens');
     }
 
     if (!formData.endpoint.trim()) {
-      newErrors.endpoint = t('tools.addToolModal.errors.endpointRequired', '请输入端点地址');
+      newErrors.endpoint = t('tools.addToolModal.errors.endpointRequired', 'Please enter endpoint');
     }
 
     setErrors(newErrors);
@@ -75,7 +75,7 @@ const AddToolModal: React.FC<AddToolModalProps> = ({ isOpen, onClose }) => {
     }
 
     if (!user?.project_id) {
-      showToast('error', t('common.error', '错误'), t('tools.addToolModal.errors.noProject', '未选择项目'));
+      showToast('error', t('common.error', 'Error'), t('tools.addToolModal.errors.noProject', 'No project selected'));
       return;
     }
 
@@ -96,8 +96,8 @@ const AddToolModal: React.FC<AddToolModalProps> = ({ isOpen, onClose }) => {
 
       showToast(
         'success',
-        t('tools.addToolModal.success.title', '添加成功'),
-        t('tools.addToolModal.success.message', '{{name}} 已成功添加', { name: formData.name })
+        t('tools.addToolModal.success.title', 'Added Successfully'),
+        t('tools.addToolModal.success.message', '{{name}} has been successfully added', { name: formData.name })
       );
 
       // Refresh tool list
@@ -116,8 +116,8 @@ const AddToolModal: React.FC<AddToolModalProps> = ({ isOpen, onClose }) => {
       console.error('Failed to add tool:', error);
       showToast(
         'error',
-        t('tools.addToolModal.error.title', '添加失败'),
-        error instanceof Error ? error.message : t('tools.addToolModal.error.message', '添加工具失败，请稍后重试')
+        t('tools.addToolModal.error.title', 'Add Failed'),
+        error instanceof Error ? error.message : t('tools.addToolModal.error.message', 'Failed to add tool, please try again later')
       );
     } finally {
       setIsSubmitting(false);
@@ -150,10 +150,10 @@ const AddToolModal: React.FC<AddToolModalProps> = ({ isOpen, onClose }) => {
             </div>
             <div>
               <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                {t('tools.addToolModal.title', '添加 MCP 工具')}
+                {t('tools.addToolModal.title', 'Add MCP Tool')}
               </h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                {t('tools.addToolModal.subtitle', '通过 MCP 协议连接外部能力服务器')}
+                {t('tools.addToolModal.subtitle', 'Connect to external capability servers via MCP protocol')}
               </p>
             </div>
           </div>
@@ -171,7 +171,7 @@ const AddToolModal: React.FC<AddToolModalProps> = ({ isOpen, onClose }) => {
           {/* Tool Name */}
           <div className="space-y-2">
             <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">
-              {t('tools.addToolModal.fields.name', '工具名称')}
+              {t('tools.addToolModal.fields.name', 'Tool Name')}
               <span className="text-red-500 ml-1">*</span>
             </label>
             <input
@@ -181,7 +181,7 @@ const AddToolModal: React.FC<AddToolModalProps> = ({ isOpen, onClose }) => {
               className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all dark:text-white outline-none ${
                 errors.name ? 'border-red-500' : 'border-gray-200 dark:border-gray-700'
               }`}
-              placeholder={t('tools.addToolModal.placeholders.name', '例如：weather-api')}
+              placeholder={t('tools.addToolModal.placeholders.name', 'e.g., weather-api')}
               disabled={isSubmitting}
             />
             {errors.name && (
@@ -195,14 +195,14 @@ const AddToolModal: React.FC<AddToolModalProps> = ({ isOpen, onClose }) => {
           {/* Description */}
           <div className="space-y-2">
             <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">
-              {t('tools.addToolModal.fields.description', '工具描述')}
+              {t('tools.addToolModal.fields.description', 'Tool Description')}
             </label>
             <textarea
               value={formData.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
               rows={3}
               className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all dark:text-white outline-none min-h-[100px]"
-              placeholder={t('tools.addToolModal.placeholders.description', '简要描述该工具的功能')}
+              placeholder={t('tools.addToolModal.placeholders.description', 'Brief description of the tool\'s functionality')}
               disabled={isSubmitting}
             />
           </div>
@@ -211,7 +211,7 @@ const AddToolModal: React.FC<AddToolModalProps> = ({ isOpen, onClose }) => {
             {/* Transport Type */}
             <div className="space-y-2">
               <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">
-                {t('tools.addToolModal.fields.transportType', '传输类型')}
+                {t('tools.addToolModal.fields.transportType', 'Transport Type')}
               </label>
               <select
                 value={formData.transport_type}
@@ -227,7 +227,7 @@ const AddToolModal: React.FC<AddToolModalProps> = ({ isOpen, onClose }) => {
             {/* Endpoint */}
             <div className="sm:col-span-2 space-y-2">
               <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">
-                {t('tools.addToolModal.fields.endpoint', '端点地址')}
+                {t('tools.addToolModal.fields.endpoint', 'Endpoint')}
                 <span className="text-red-500 ml-1">*</span>
               </label>
               <input
@@ -237,7 +237,7 @@ const AddToolModal: React.FC<AddToolModalProps> = ({ isOpen, onClose }) => {
                 className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all dark:text-white outline-none ${
                   errors.endpoint ? 'border-red-500' : 'border-gray-200 dark:border-gray-700'
                 }`}
-                placeholder={t('tools.addToolModal.placeholders.endpoint', '例如：https://api.example.com/tool')}
+                placeholder={t('tools.addToolModal.placeholders.endpoint', 'e.g., https://api.example.com/tool')}
                 disabled={isSubmitting}
               />
               {errors.endpoint && (
@@ -258,7 +258,7 @@ const AddToolModal: React.FC<AddToolModalProps> = ({ isOpen, onClose }) => {
             disabled={isSubmitting}
             className="px-6 py-2.5 text-sm font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all active:scale-95"
           >
-            {t('common.cancel', '取消')}
+            {t('common.cancel', 'Cancel')}
           </button>
           <button
             type="submit"
@@ -272,9 +272,9 @@ const AddToolModal: React.FC<AddToolModalProps> = ({ isOpen, onClose }) => {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                {t('common.submitting', '提交中...')}
+                {t('common.submitting', 'Submitting...')}
               </div>
-            ) : t('tools.addToolModal.confirm', '确认创建')}
+            ) : t('tools.addToolModal.confirm', 'Confirm Create')}
           </button>
         </div>
       </div>

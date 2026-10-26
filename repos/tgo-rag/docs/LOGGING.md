@@ -2,7 +2,7 @@
 
 ## Overview
 
-The TGO RAG Service uses a centralized logging system built on **Python's standard library `logging`** that provides:
+The Pelatis RAG Service uses a centralized logging system built on **Python's standard library `logging`** that provides:
 
 - **Structured logging** with JSON output for production and human-readable output for development
 - **Automatic context propagation** (request_id, project_id, user_id) across async operations

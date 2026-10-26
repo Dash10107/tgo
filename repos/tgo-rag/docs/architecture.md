@@ -1,8 +1,8 @@
-# TGO-Tech RAG Service Architecture
+# Pelatis RAG Service Architecture
 
 ## Overview
 
-The TGO-Tech RAG (Retrieval-Augmented Generation) Service is a microservice-based system designed to handle document processing, vector embedding generation, and semantic search capabilities for AI-powered customer service operations. The architecture follows a distributed design pattern with clear separation of concerns across multiple services.
+The Pelatis RAG (Retrieval-Augmented Generation) Service is a microservice-based system designed to handle document processing, vector embedding generation, and semantic search capabilities for AI-powered customer service operations. The architecture follows a distributed design pattern with clear separation of concerns across multiple services.
 
 ## System Architecture
 

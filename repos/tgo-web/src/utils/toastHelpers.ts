@@ -5,6 +5,7 @@
 
 import { ToastType } from '@/components/ui/Toast';
 
+import i18n from '@/i18n';
 // Type for the toast function from useToast hook
 export type ShowToastFunction = (type: ToastType, title: string, message?: string, duration?: number) => void;
 
@@ -12,38 +13,38 @@ export type ShowToastFunction = (type: ToastType, title: string, message?: strin
  * Show API error with appropriate message
  */
 export const showApiError = (showToast: ShowToastFunction, error: unknown): void => {
-  let title = '操作失败';
-  let message = '请稍后重试';
+  let title = i18n.t('toast.operationFailed', 'Operation failed');
+  let message = i18n.t('toast.tryAgainLater', 'Please try again later');
   
   if (error instanceof Error) {
-    title = '操作失败';
+    title = i18n.t('toast.operationFailed', 'Operation failed');
     message = error.message;
     
     // Handle authentication errors specially
-    if (message.includes('身份验证失败') || message.includes('401')) {
-      title = '身份验证失败';
-      message = '请重新登录后再试';
+    if (message.includes('Authentication failed') || message.includes('401')) {
+      title = i18n.t('toast.authFailed', 'Authentication failed');
+      message = i18n.t('toast.loginAgain', 'Please log in again and retry');
       // Show error with longer duration for auth issues
       showToast('error', title, message, 8000);
       return;
     }
     
     // Handle specific error types
-    if (message.includes('网络连接失败') || message.includes('Network')) {
-      title = '网络错误';
-      message = '请检查网络连接后重试';
-    } else if (message.includes('权限不足') || message.includes('403')) {
-      title = '权限不足';
-      message = '无法执行此操作';
-    } else if (message.includes('文件过大') || message.includes('413')) {
-      title = '文件过大';
-      message = '请选择较小的文件';
-    } else if (message.includes('不支持的文件类型') || message.includes('415')) {
-      title = '文件类型错误';
-      message = '不支持的文件类型';
-    } else if (message.includes('服务器') || message.includes('500')) {
-      title = '服务器错误';
-      message = '服务暂时不可用，请稍后重试';
+    if (message.includes('Network connection failed') || message.includes('Network')) {
+      title = i18n.t('toast.networkError', 'Network error');
+      message = i18n.t('toast.checkNetwork', 'Please check your network connection and try again');
+    } else if (message.includes('Insufficient permissions') || message.includes('403')) {
+      title = i18n.t('toast.permissionDenied', 'Insufficient permissions');
+      message = i18n.t('toast.cannotPerform', 'Unable to perform this action');
+    } else if (message.includes('too large') || message.includes('413')) {
+      title = i18n.t('toast.fileTooLarge', 'File too large');
+      message = i18n.t('toast.chooseSmallerFile', 'Please choose a smaller file');
+    } else if (message.includes('Unsupported file type') || message.includes('415')) {
+      title = i18n.t('toast.fileTypeError', 'File type error');
+      message = i18n.t('errors.unsupportedFileType', 'Unsupported file type');
+    } else if (message.includes('Server') || message.includes('server') || message.includes('500')) {
+      title = i18n.t('toast.serverError', 'Server error');
+      message = i18n.t('toast.serviceUnavailable', 'The service is temporarily unavailable, please try again later');
     }
   }
   
@@ -54,7 +55,7 @@ export const showApiError = (showToast: ShowToastFunction, error: unknown): void
  * Show network error
  */
 export const showNetworkError = (showToast: ShowToastFunction): void => {
-  showToast('error', '网络错误', '网络连接失败，请检查网络连接后重试');
+  showToast('error', i18n.t('toast.networkError', 'Network error'), i18n.t('errors.networkFailed', 'Network connection failed, please check your network and try again'));
 };
 
 /**
@@ -82,8 +83,8 @@ export const showInfo = (showToast: ShowToastFunction, message: string, details?
  * Show authentication error with special handling
  */
 export const showAuthError = (showToast: ShowToastFunction, message?: string): void => {
-  const title = '身份验证失败';
-  const authMessage = message || '请重新登录后再试';
+  const title = i18n.t('toast.authFailed', 'Authentication failed');
+  const authMessage = message || i18n.t('toast.loginAgain', 'Please log in again and retry');
   showToast('error', title, authMessage, 8000);
   
   // Log for potential redirect logic
@@ -95,13 +96,13 @@ export const showAuthError = (showToast: ShowToastFunction, message?: string): v
  */
 export const showFileSuccess = (showToast: ShowToastFunction, operation: string, fileName: string): void => {
   const messages = {
-    upload: '上传成功',
-    delete: '删除成功',
-    download: '下载完成',
+    upload: i18n.t('toast.file.uploadSuccess', 'Upload successful'),
+    delete: i18n.t('toast.file.deleteSuccess', 'Deleted successfully'),
+    download: i18n.t('toast.file.downloadDone', 'Download complete'),
   };
   
-  const title = messages[operation as keyof typeof messages] || '操作成功';
-  showToast('success', title, `文件 "${fileName}" ${title.replace('成功', '').replace('完成', '')}`);
+  const title = messages[operation as keyof typeof messages] || i18n.t('toast.operationSuccess', 'Operation successful');
+  showToast('success', title, i18n.t('toast.file.detail', { fileName, title, defaultValue: 'File "{{fileName}}": {{title}}' }));
 };
 
 /**
@@ -109,13 +110,13 @@ export const showFileSuccess = (showToast: ShowToastFunction, operation: string,
  */
 export const showFileError = (showToast: ShowToastFunction, operation: string, fileName: string, error?: unknown): void => {
   const messages = {
-    upload: '上传失败',
-    delete: '删除失败',
-    download: '下载失败',
+    upload: i18n.t('toast.file.uploadFailed', 'Upload failed'),
+    delete: i18n.t('toast.file.deleteFailed', 'Delete failed'),
+    download: i18n.t('toast.file.downloadFailed', 'Download failed'),
   };
   
-  const title = messages[operation as keyof typeof messages] || '操作失败';
-  let message = `文件 "${fileName}" ${title}`;
+  const title = messages[operation as keyof typeof messages] || i18n.t('toast.operationFailed', 'Operation failed');
+  let message = i18n.t('toast.file.detail', { fileName, title, defaultValue: 'File "{{fileName}}": {{title}}' });
   
   if (error instanceof Error) {
     message += `：${error.message}`;
@@ -129,13 +130,13 @@ export const showFileError = (showToast: ShowToastFunction, operation: string, f
  */
 export const showKnowledgeBaseSuccess = (showToast: ShowToastFunction, operation: string, name?: string): void => {
   const messages = {
-    create: '创建成功',
-    update: '更新成功',
-    delete: '删除成功',
+    create: i18n.t('toast.kb.createSuccess', 'Created successfully'),
+    update: i18n.t('toast.kb.updateSuccess', 'Updated successfully'),
+    delete: i18n.t('toast.kb.deleteSuccess', 'Deleted successfully'),
   };
   
-  const title = messages[operation as keyof typeof messages] || '操作成功';
-  const message = name ? `知识库 "${name}" ${title}` : `知识库${title}`;
+  const title = messages[operation as keyof typeof messages] || i18n.t('toast.operationSuccess', 'Operation successful');
+  const message = name ? i18n.t('toast.kb.detailNamed', { name, title, defaultValue: 'Knowledge base "{{name}}": {{title}}' }) : i18n.t('toast.kb.detail', { title, defaultValue: 'Knowledge base: {{title}}' });
   showToast('success', title, message);
 };
 
@@ -144,14 +145,14 @@ export const showKnowledgeBaseSuccess = (showToast: ShowToastFunction, operation
  */
 export const showKnowledgeBaseError = (showToast: ShowToastFunction, operation: string, error?: unknown, name?: string): void => {
   const messages = {
-    create: '创建失败',
-    update: '更新失败',
-    delete: '删除失败',
-    load: '加载失败',
+    create: i18n.t('toast.kb.createFailed', 'Creation failed'),
+    update: i18n.t('toast.kb.updateFailed', 'Update failed'),
+    delete: i18n.t('toast.kb.deleteFailed', 'Delete failed'),
+    load: i18n.t('toast.kb.loadFailed', 'Load failed'),
   };
   
-  const title = messages[operation as keyof typeof messages] || '操作失败';
-  let message = name ? `知识库 "${name}" ${title}` : `知识库${title}`;
+  const title = messages[operation as keyof typeof messages] || i18n.t('toast.operationFailed', 'Operation failed');
+  let message = name ? i18n.t('toast.kb.detailNamed', { name, title, defaultValue: 'Knowledge base "{{name}}": {{title}}' }) : i18n.t('toast.kb.detail', { title, defaultValue: 'Knowledge base: {{title}}' });
   
   if (error instanceof Error) {
     message += `：${error.message}`;

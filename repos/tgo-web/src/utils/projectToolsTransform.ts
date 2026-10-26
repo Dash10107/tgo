@@ -75,19 +75,19 @@ export const transformAiToolResponse = (aiTool: AiToolResponse): AiTool => {
 
   if (aiTool.transport_type === 'plugin') {
     category = 'integration'; // Or a dedicated category if added to ToolCategory type
-    author = '插件';
+    author = 'Plugin';
   } else if (aiTool.transport_type === 'http_webhook') {
     category = 'integration';
-    author = 'HTTP 工具';
+    author = 'HTTP Tool';
   }
 
   return {
     id: aiTool.id,
-    name: aiTool.name || '未知工具',
+    name: aiTool.name || 'Unknown tool',
     title: aiTool.title || undefined,
     title_zh: aiTool.title_zh || undefined,
     title_en: aiTool.title_en || undefined,
-    description: aiTool.description || '暂无描述',
+    description: aiTool.description || 'No description',
     category: category,
     status: isActive ? 'active' : 'inactive', // Use deleted_at to determine status
     version: 'v1.0.0', // New API doesn't have version field
@@ -196,12 +196,12 @@ export const sortProjectTools = (tools: AiTool[], sortBy: 'name' | 'recent' | 'r
  */
 export const getEnabledStatusDisplayName = (enabledFilter: 'all' | 'enabled' | 'disabled'): string => {
   const statusNames: Record<'all' | 'enabled' | 'disabled', string> = {
-    'all': '全部',
-    'enabled': '已启用',
-    'disabled': '已禁用',
+    'all': 'All',
+    'enabled': 'Enabled',
+    'disabled': 'Disabled',
   };
   
-  return statusNames[enabledFilter] || '全部';
+  return statusNames[enabledFilter] || 'All';
 };
 
 /**
@@ -218,15 +218,15 @@ export const getEnabledStatusColorClass = (isEnabled: boolean): string => {
  */
 export const getCategoryDisplayName = (category: ToolCategory): string => {
   const categoryNames: Record<ToolCategory, string> = {
-    'all': '全部',
-    'productivity': '效率工具',
-    'communication': '通信工具',
-    'data': '数据分析',
-    'ai': 'AI工具',
-    'integration': '集成服务',
+    'all': 'All',
+    'productivity': 'Productivity',
+    'communication': 'Communication',
+    'data': 'Data Analysis',
+    'ai': 'AI Tools',
+    'integration': 'Integrations',
   };
   
-  return categoryNames[category] || '未知分类';
+  return categoryNames[category] || 'Unknown category';
 };
 
 /**
@@ -253,8 +253,8 @@ export const getProjectToolActionText = (_tool: AiTool, action: 'delete' | 'unin
   switch (action) {
     case 'delete':
     case 'uninstall':
-      return '删除';
+      return 'Delete';
     default:
-      return '操作';
+      return 'Operation';
   }
 };

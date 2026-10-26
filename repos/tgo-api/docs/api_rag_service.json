@@ -1,8 +1,8 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "TGO RAG Service",
-    "description": "TGO-Tech RAG (Retrieval-Augmented Generation) Service for document processing and semantic search",
+    "title": "Pelatis RAG Service",
+    "description": "Pelatis RAG (Retrieval-Augmented Generation) Service for document processing and semantic search",
     "version": "0.1.0"
   },
   "paths": {
@@ -5359,7 +5359,7 @@
             "title": "Question",
             "description": "The question text",
             "examples": [
-              "如何重置密码？"
+              "How do I reset my password?"
             ]
           },
           "answer": {
@@ -5369,7 +5369,7 @@
             "title": "Answer",
             "description": "The answer text",
             "examples": [
-              "您可以通过以下步骤重置密码：1. 点击登录页面的'忘记密码'..."
+              "You can reset your password with these steps: 1. Click 'Forgot password' on the login page..."
             ]
           },
           "category": {
@@ -5385,7 +5385,7 @@
             "title": "Category",
             "description": "Category for organizing QA pairs",
             "examples": [
-              "账户管理"
+              "Account management"
             ]
           },
           "subcategory": {
@@ -5401,7 +5401,7 @@
             "title": "Subcategory",
             "description": "Subcategory for finer organization",
             "examples": [
-              "密码相关"
+              "Password"
             ]
           },
           "tags": {
@@ -5420,9 +5420,9 @@
             "description": "Tags for filtering and search",
             "examples": [
               [
-                "密码",
-                "重置",
-                "账户"
+                "password",
+                "reset",
+                "account"
               ]
             ]
           },

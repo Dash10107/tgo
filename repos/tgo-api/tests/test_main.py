@@ -7,7 +7,7 @@ def test_root_endpoint(client):
     data = response.json()
     assert "message" in data
     assert "version" in data
-    assert data["message"] == "TGO-Tech API Service"
+    assert data["message"] == "Pelatis API Service"
 
 
 def test_health_endpoint(client):

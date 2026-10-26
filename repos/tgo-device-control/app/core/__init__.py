@@ -1,1 +1,1 @@
-"""Core module for TGO Device Control Service."""
+"""Core module for Pelatis Device Control Service."""

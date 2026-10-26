@@ -21,7 +21,7 @@ const StreamingCursor: React.FC<{ isWhite?: boolean }> = ({ isWhite }) => (
 export interface MessageComponentProps {
   message: Message;
   isStaff: boolean; // true for staff (right), false for visitor (left)
-  /** 发送消息回调（用于 Widget 中的 msg:// 协议） */
+  /** Callback for sending a message (used by the msg:// protocol in Widgets) */
   onSendMessage?: (message: string) => void;
 }
 
@@ -64,8 +64,8 @@ const TextMessage: React.FC<MessageComponentProps> = ({ message, isStaff, onSend
           <p className="text-sm break-words">
             {hasLink ? (
               <>
-                {textContent.split('耳机连接指南')[0]}
-                <a href="#" className="underline">耳机连接指南</a>
+                {textContent.split('Headphone connection guide')[0]}
+                <a href="#" className="underline">Headphone connection guide</a>
               </>
             ) : (
               textContent

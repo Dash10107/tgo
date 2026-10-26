@@ -450,7 +450,7 @@ const SetupWizard: React.FC = () => {
           className="w-full px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300 cursor-not-allowed"
         />
         <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-          {t('setup.admin.usernameFixed', '默认管理员用户名，不可修改')}
+          {t('setup.admin.usernameFixed', 'Default admin username, cannot be modified')}
         </p>
       </div>
 
@@ -941,7 +941,7 @@ const SetupWizard: React.FC = () => {
         {/* Logo and Title */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <img src="/logo.svg" alt="Tgo CS Logo" className="w-12 h-12" />
+            <img src="/logo.svg" alt="Pelatis CS Logo" className="w-12 h-12" />
           </div>
           <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">{t('setup.title')}</h1>
           <p className="text-sm text-gray-600 dark:text-gray-400">{t('setup.subtitle')}</p>

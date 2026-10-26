@@ -970,21 +970,21 @@ async def _llm_assign_staff(
     system_prompt = assignment_rule.effective_prompt
     
     # Build the user message
-    user_message = f"""请根据以下信息，选择最合适的客服人员来处理此访客。
+    user_message = f"""Based on the information below, select the most suitable staff member to handle this visitor.
 
-## 访客信息
+## Visitor information
 {visitor_info}
 
-## 可用客服列表
+## Available staff list
 {staff_info}
 
-请返回JSON格式的结果：
+Return the result in JSON format:
 {{
-  "selected_staff_id": "选中的客服ID",
-  "reasoning": "选择理由"
+  "selected_staff_id": "ID of the selected staff member",
+  "reasoning": "Reason for the selection"
 }}
 
-只返回JSON，不要其他内容。"""
+Return JSON only, with no other content."""
 
     result["prompt_used"] = f"System: {system_prompt}\n\nUser: {user_message}"
     result["model_used"] = assignment_rule.model

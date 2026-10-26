@@ -8,10 +8,10 @@
 >
   <!-- Loading indicator -->
   <view wx:if="{{historyLoading}}" class="status-row">
-    <text class="status-text">加载中...</text>
+    <text class="status-text">{{labels.loading}}</text>
   </view>
   <view wx:elif="{{!historyHasMore}}" class="status-row">
-    <text class="status-text-muted">没有更多消息</text>
+    <text class="status-text-muted">{{labels.noMore}}</text>
   </view>
 
   <!-- Message rows -->
@@ -95,10 +95,10 @@
 
       <!-- Status indicators -->
       <view wx:if="{{item.status === 'sending'}}" class="msg-status">
-        <text class="status-text-small">发送中...</text>
+        <text class="status-text-small">{{labels.sending}}</text>
       </view>
       <view wx:elif="{{item.status === 'uploading'}}" class="msg-status">
-        <text class="status-text-small">上传中 {{item.uploadProgress || 0}}%</text>
+        <text class="status-text-small">{{labels.uploadingPrefix}} {{item.uploadProgress || 0}}%</text>
       </view>
 
       <!-- Time label -->

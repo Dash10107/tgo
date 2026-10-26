@@ -24,59 +24,59 @@ interface TagManagerProps {
   className?: string;
 }
 
-// 颜色选项 - hex 值使用大写格式，用于提交到后端
-// bgHex: 背景色（浅色），textHex: 文本色（深色），用于动态样式
+// Color options - hex values are uppercase, for submission to the backend
+// bgHex: background (light), textHex: text (dark), used for dynamic styles
 const COLOR_OPTIONS = [
-  { name: 'red', label: '红色', hex: '#EF4444', bgHex: '#FEE2E2', textHex: '#B91C1C' },
-  { name: 'orange', label: '橙色', hex: '#F97316', bgHex: '#FFEDD5', textHex: '#C2410C' },
-  { name: 'yellow', label: '黄色', hex: '#EAB308', bgHex: '#FEF9C3', textHex: '#A16207' },
-  { name: 'green', label: '绿色', hex: '#22C55E', bgHex: '#DCFCE7', textHex: '#15803D' },
-  { name: 'emerald', label: '翠绿', hex: '#10B981', bgHex: '#D1FAE5', textHex: '#047857' },
-  { name: 'teal', label: '青色', hex: '#14B8A6', bgHex: '#CCFBF1', textHex: '#0F766E' },
-  { name: 'blue', label: '蓝色', hex: '#3B82F6', bgHex: '#DBEAFE', textHex: '#1D4ED8' },
-  { name: 'indigo', label: '靛蓝', hex: '#6366F1', bgHex: '#E0E7FF', textHex: '#4338CA' },
-  { name: 'purple', label: '紫色', hex: '#A855F7', bgHex: '#F3E8FF', textHex: '#7E22CE' },
-  { name: 'pink', label: '粉色', hex: '#EC4899', bgHex: '#FCE7F3', textHex: '#BE185D' },
-  { name: 'gray', label: '灰色', hex: '#6B7280', bgHex: '#F3F4F6', textHex: '#374151' }
+  { name: 'red', label: 'Red', hex: '#EF4444', bgHex: '#FEE2E2', textHex: '#B91C1C' },
+  { name: 'orange', label: 'Orange', hex: '#F97316', bgHex: '#FFEDD5', textHex: '#C2410C' },
+  { name: 'yellow', label: 'Yellow', hex: '#EAB308', bgHex: '#FEF9C3', textHex: '#A16207' },
+  { name: 'green', label: 'Green', hex: '#22C55E', bgHex: '#DCFCE7', textHex: '#15803D' },
+  { name: 'emerald', label: 'Emerald', hex: '#10B981', bgHex: '#D1FAE5', textHex: '#047857' },
+  { name: 'teal', label: 'Teal', hex: '#14B8A6', bgHex: '#CCFBF1', textHex: '#0F766E' },
+  { name: 'blue', label: 'Blue', hex: '#3B82F6', bgHex: '#DBEAFE', textHex: '#1D4ED8' },
+  { name: 'indigo', label: 'Indigo', hex: '#6366F1', bgHex: '#E0E7FF', textHex: '#4338CA' },
+  { name: 'purple', label: 'Purple', hex: '#A855F7', bgHex: '#F3E8FF', textHex: '#7E22CE' },
+  { name: 'pink', label: 'Pink', hex: '#EC4899', bgHex: '#FCE7F3', textHex: '#BE185D' },
+  { name: 'gray', label: 'Gray', hex: '#6B7280', bgHex: '#F3F4F6', textHex: '#374151' }
 ];
 
-// 默认颜色（蓝色）
+// Default color (blue)
 const DEFAULT_COLOR = COLOR_OPTIONS.find(c => c.name === 'blue')!;
 
 /**
- * 将颜色值转换为大写十六进制格式
- * 支持输入：颜色名称（如 'blue'）、十六进制（如 '#3b82f6' 或 '3B82F6'）
- * 输出：大写十六进制格式（如 '#3B82F6'）
+ * Convert a color value to uppercase hexadecimal format
+ * Accepts: a color name (e.g. 'blue'), or hex (e.g. '#3b82f6' or '3B82F6')
+ * Outputs: uppercase hex (e.g. '#3B82F6')
  */
 const toUppercaseHex = (color: string | null | undefined): string => {
   if (!color) return DEFAULT_COLOR.hex;
   
   const trimmed = color.trim();
   
-  // 如果已经是十六进制格式，转换为大写
+  // If it is already hex, convert it to uppercase
   if (/^#?[0-9A-Fa-f]{6}$/.test(trimmed)) {
     const hex = trimmed.startsWith('#') ? trimmed : `#${trimmed}`;
     return hex.toUpperCase();
   }
   
-  // 如果是颜色名称，查找对应的 hex 值
+  // If it is a color name, look up the matching hex value
   const found = COLOR_OPTIONS.find(c => c.name.toLowerCase() === trimmed.toLowerCase());
   return found ? found.hex : DEFAULT_COLOR.hex;
 };
 
 /**
- * 根据颜色值获取颜色配置（支持颜色名称和 hex 值）
+ * Get the color config from a color value (supports color names and hex values)
  */
 const getColorConfig = (color: string | null | undefined) => {
   if (!color) return DEFAULT_COLOR;
   
   const trimmed = color.trim().toLowerCase();
   
-  // 先尝试按名称匹配
+  // First try to match by name
   const byName = COLOR_OPTIONS.find(c => c.name === trimmed);
   if (byName) return byName;
   
-  // 再尝试按 hex 匹配（忽略大小写）
+  // Then try to match by hex (case-insensitive)
   const normalizedHex = trimmed.startsWith('#') ? trimmed : `#${trimmed}`;
   const byHex = COLOR_OPTIONS.find(c => c.hex.toLowerCase() === normalizedHex);
   if (byHex) return byHex;
@@ -84,13 +84,13 @@ const getColorConfig = (color: string | null | undefined) => {
   return DEFAULT_COLOR;
 };
 
-// 获取权重样式
+// Get the weight style
 const getWeightStyle = (weight: number): string => {
-  if (weight >= 9) return 'ring-2 ring-offset-1 font-bold'; // 高权重：双环边框 + 粗体
-  if (weight >= 7) return 'border-2 font-semibold'; // 中高权重：粗边框 + 半粗体
-  if (weight >= 4) return 'font-medium'; // 中权重：中等字体
-  if (weight >= 1) return ''; // 低权重：默认样式
-  return 'opacity-60'; // 权重为0：半透明显示
+  if (weight >= 9) return 'ring-2 ring-offset-1 font-bold'; // High weight: double ring border + bold
+  if (weight >= 7) return 'border-2 font-semibold'; // Medium-high weight: thick border + semi-bold
+  if (weight >= 4) return 'font-medium'; // Medium weight: medium font
+  if (weight >= 1) return ''; // Low weight: default style
+  return 'opacity-60'; // Weight 0: semi-transparent display
 };
 
 /**
@@ -124,7 +124,7 @@ const TagManager: React.FC<TagManagerProps> = ({
   const editPanelRef = useRef<HTMLDivElement>(null);
   const tagRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
-  // 点击外部关闭编辑面板
+  // Close the edit panel when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (editingId && editPanelRef.current && !editPanelRef.current.contains(event.target as Node)) {
@@ -150,7 +150,7 @@ const TagManager: React.FC<TagManagerProps> = ({
     return undefined;
   }, [editingId]);
 
-  // 计算编辑面板位置
+  // Compute the edit panel position
   useEffect(() => {
     if (editingId && tagRefs.current[editingId]) {
       const tagElement = tagRefs.current[editingId];
@@ -159,11 +159,11 @@ const TagManager: React.FC<TagManagerProps> = ({
         const visitorPanelRect = tagElement.closest('aside')?.getBoundingClientRect();
 
         if (visitorPanelRect) {
-          // 计算相对于访客面板的位置
+          // Compute the position relative to the visitor panel
           const relativeTop = rect.top - visitorPanelRect.top;
           setPanelPosition({
-            top: Math.max(16, relativeTop + 32), // 确保不会超出顶部，标签下方32px
-            left: 16 // 固定在访客面板左侧16px
+            top: Math.max(16, relativeTop + 32), // Make sure it does not exceed the top; 32px below the tag
+            left: 16 // Fixed 16px from the left of the visitor panel
           });
         }
       }
@@ -178,14 +178,14 @@ const TagManager: React.FC<TagManagerProps> = ({
     setShowPresets(true);
     setShowColorPicker(false);
 
-    // 获取常用标签（后端接口）
+    // Get the common tags (backend API)
     try {
       setSuggestionsLoading(true);
       setSuggestionsError(null);
       const data = await fetchCommonTags();
       setSuggestions(data);
     } catch (e) {
-      setSuggestionsError(t('visitor.tags.common.loadFailed', '获取常用标签失败'));
+      setSuggestionsError(t('visitor.tags.common.loadFailed', 'Failed to fetch common tags'));
     } finally {
       setSuggestionsLoading(false);
     }
@@ -202,7 +202,7 @@ const TagManager: React.FC<TagManagerProps> = ({
     if (newTag.trim() && !tags.some(tag => tag.name === newTag.trim()) && tags.length < maxTags) {
       onAddTag({
         name: newTag.trim(),
-        // 转换为大写十六进制格式提交到后端
+        // Convert to uppercase hex format before submitting to the backend
         color: toUppercaseHex(newColor),
         weight: newWeight
       });
@@ -212,7 +212,7 @@ const TagManager: React.FC<TagManagerProps> = ({
 
   const handlePresetSelect = (preset: SuggestedTag) => {
     if (!tags.some(tag => tag.name === preset.name) && tags.length < maxTags) {
-      // 选择常用标签：直接建立关联
+      // Selecting a common tag: link it directly
       onAssociateExistingTag(preset.id);
       handleCancelAdd();
     }
@@ -227,7 +227,7 @@ const TagManager: React.FC<TagManagerProps> = ({
   };
 
   const handleUpdateColor = (id: string, color: string) => {
-    // 转换为大写十六进制格式提交到后端
+    // Convert to uppercase hex format before submitting to the backend
     onUpdateTag(id, { color: toUppercaseHex(color) });
   };
 
@@ -241,13 +241,13 @@ const TagManager: React.FC<TagManagerProps> = ({
     }
   };
 
-  // 过滤出未使用的建议标签（来自后端）
+  // Filter the unused suggested tags (from the backend)
   const availablePresets = suggestions
     .filter(preset => !tags.some(tag => tag.name === preset.name))
     .filter(preset => preset.name.toLowerCase().includes(newTag.toLowerCase()))
     .slice(0, 6);
 
-  // 只在tags数据变化时重新计算排序，避免编辑状态切换时的不必要计算
+  // Recompute the ordering only when the tags data changes, avoiding unnecessary computation when toggling edit state
   const sortedTags = useMemo(() => {
     return [...tags].sort((a, b) => b.weight - a.weight);
   }, [tags]);
@@ -255,7 +255,7 @@ const TagManager: React.FC<TagManagerProps> = ({
 
   return (
     <div className={className}>
-      {/* 现有标签 */}
+      {/* Existing tags */}
       <div className="flex flex-wrap gap-1.5">
         {sortedTags.map((tag) => {
           const colorConfig = getColorConfig(tag.color);
@@ -270,7 +270,7 @@ const TagManager: React.FC<TagManagerProps> = ({
               style={{
                 backgroundColor: colorConfig.bgHex,
                 color: colorConfig.textHex,
-                borderColor: colorConfig.hex + '40' // 添加透明度
+                borderColor: colorConfig.hex + '40' // Add transparency
               }}
             >
               {tag.name}
@@ -279,25 +279,25 @@ const TagManager: React.FC<TagManagerProps> = ({
               )}
             </span>
 
-            {/* 编辑和删除按钮 */}
+            {/* Edit and delete buttons */}
             <div className="absolute -top-1 -right-1 flex space-x-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
               <button
                 onClick={() => handleStartEdit(tag)}
                 className="w-3.5 h-3.5 bg-blue-500 text-white rounded-full flex items-center justify-center"
-                title={t('visitor.tags.editTagTitle', '编辑标签')}
+                title={t('visitor.tags.editTagTitle', 'Edit Tag')}
               >
                 <Edit3 className="w-2 h-2" />
               </button>
               <button
                 onClick={() => onRemoveTag(tag.id)}
                 className="w-3.5 h-3.5 bg-red-500 text-white rounded-full flex items-center justify-center"
-                title={t('visitor.tags.deleteTagTitle', '删除标签')}
+                title={t('visitor.tags.deleteTagTitle', 'Delete Tag')}
               >
                 <X className="w-2 h-2" />
               </button>
             </div>
 
-            {/* 编辑面板 */}
+            {/* Edit panel */}
             {editingId === tag.id && (
               <div
                 ref={editPanelRef}
@@ -310,7 +310,7 @@ const TagManager: React.FC<TagManagerProps> = ({
               >
                 <div className="space-y-2">
                   <div>
-                    <label className="text-[10px] text-gray-500 dark:text-gray-400 block mb-1">{t('visitor.tags.editPanel.weightLabel', '权重 (0-10)')}</label>
+                    <label className="text-[10px] text-gray-500 dark:text-gray-400 block mb-1">{t('visitor.tags.editPanel.weightLabel', 'Weight (0-10)')}</label>
                     <input
                       type="range"
                       min="0"
@@ -323,10 +323,10 @@ const TagManager: React.FC<TagManagerProps> = ({
                   </div>
 
                   <div>
-                    <label className="text-[10px] text-gray-500 dark:text-gray-400 block mb-1">{t('visitor.tags.editPanel.colorLabel', '颜色')}</label>
+                    <label className="text-[10px] text-gray-500 dark:text-gray-400 block mb-1">{t('visitor.tags.editPanel.colorLabel', 'Color')}</label>
                     <div className="flex flex-wrap gap-1.5">
                       {COLOR_OPTIONS.map((color) => {
-                        // 比较颜色：支持颜色名称和 hex 值
+                        // Compare colors: supports color names and hex values
                         const currentColorConfig = getColorConfig(tag.color);
                         const isSelected = currentColorConfig.name === color.name;
                         return (
@@ -350,7 +350,7 @@ const TagManager: React.FC<TagManagerProps> = ({
                     onClick={() => setEditingId(null)}
                     className="w-full text-[10px] text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 py-1"
                   >
-                    {t('common.done', '完成')}
+                    {t('common.done', 'Done')}
                   </button>
                 </div>
               </div>
@@ -359,7 +359,7 @@ const TagManager: React.FC<TagManagerProps> = ({
         );
         })}
 
-        {/* 添加标签按钮/输入框 */}
+        {/* Add-tag button / input */}
         {isAdding ? (
           <div className="relative">
             <div className="flex items-center space-x-1 mb-2">
@@ -368,14 +368,14 @@ const TagManager: React.FC<TagManagerProps> = ({
                 value={newTag}
                 onChange={(e) => setNewTag(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder={t('visitor.tags.inputPlaceholder', '输入标签名称')}
+                placeholder={t('visitor.tags.inputPlaceholder', 'Enter tag name')}
                 className="w-20 px-2 py-1 text-[11px] border border-gray-300 dark:border-gray-600 rounded-full focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-700 dark:text-gray-200"
                 autoFocus
               />
               <button
                 onClick={() => setShowColorPicker(!showColorPicker)}
                 className="p-1 border border-gray-300 dark:border-gray-600 rounded-full"
-                title={t('visitor.tags.colorPicker.title', '选择颜色')}
+                title={t('visitor.tags.colorPicker.title', 'Choose color')}
               >
                 <div
                   className="w-3 h-3 rounded-full"
@@ -389,26 +389,26 @@ const TagManager: React.FC<TagManagerProps> = ({
                 value={newWeight}
                 onChange={(e) => setNewWeight(parseInt(e.target.value))}
                 className="w-8 h-1 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer"
-                title={t('visitor.tags.weightTitle', { weight: newWeight, defaultValue: '权重: {{weight}}' })}
+                title={t('visitor.tags.weightTitle', { weight: newWeight, defaultValue: 'Weight: {{weight}}' })}
               />
               <button
                 onClick={handleSaveAdd}
                 disabled={!newTag.trim() || tags.some(tag => tag.name === newTag.trim()) || tags.length >= maxTags}
                 className="p-0.5 text-green-600 hover:bg-green-50 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                title={t('common.save', '保存')}
+                title={t('common.save', 'Save')}
               >
                 <Check className="w-3 h-3" />
               </button>
               <button
                 onClick={handleCancelAdd}
                 className="p-0.5 text-gray-500 hover:bg-gray-50 rounded transition-colors"
-                title={t('common.cancel', '取消')}
+                title={t('common.cancel', 'Cancel')}
               >
                 <X className="w-3 h-3" />
               </button>
             </div>
 
-            {/* 颜色选择器 */}
+            {/* Color picker */}
             {showColorPicker && (
               <div className="absolute top-8 left-0 z-10 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-2.5">
                 <div className="grid grid-cols-4 gap-1.5">
@@ -438,20 +438,20 @@ const TagManager: React.FC<TagManagerProps> = ({
               onClick={handleStartAdd}
               className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 px-2 py-1 rounded-full transition-colors font-medium"
             >
-              + {t('visitor.tags.addButton', '添加')}
+              + {t('visitor.tags.addButton', 'Add')}
             </button>
           )
         )}
       </div>
 
-      {/* 预设标签选择 */}
+      {/* Preset tag selection */}
       {isAdding && showPresets && (
         <div className="mt-2 space-y-1">
           <div className="flex items-center justify-between">
-            <div className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">{t('visitor.tags.common.title', '常用标签:')}</div>
+            <div className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">{t('visitor.tags.common.title', 'Common Tags:')}</div>
             {suggestionsLoading && (
               <div className="flex items-center text-[10px] text-gray-400 dark:text-gray-500">
-                <RefreshCw className="w-3 h-3 mr-1 animate-spin" /> {t('visitor.tags.common.loading', '加载中')}
+                <RefreshCw className="w-3 h-3 mr-1 animate-spin" /> {t('visitor.tags.common.loading', 'Loading')}
               </div>
             )}
           </div>
@@ -480,16 +480,16 @@ const TagManager: React.FC<TagManagerProps> = ({
               );
             })}
             {!suggestionsLoading && availablePresets.length === 0 && (
-              <div className="text-[10px] text-gray-400 dark:text-gray-500">{t('visitor.tags.common.empty', '暂无可用标签')}</div>
+              <div className="text-[10px] text-gray-400 dark:text-gray-500">{t('visitor.tags.common.empty', 'No available tags')}</div>
             )}
           </div>
         </div>
       )}
 
-      {/* 标签数量提示 */}
+      {/* Tag count hint */}
       {tags.length >= maxTags && (
         <div className="mt-1 text-[10px] text-gray-400 dark:text-gray-500">
-          {t('visitor.tags.limitReached', { max: maxTags, defaultValue: '已达到标签数量上限 ({{max}}个)' })}
+          {t('visitor.tags.limitReached', { max: maxTags, defaultValue: 'Tag limit reached ({{max}} max)' })}
         </div>
       )}
     </div>

@@ -75,9 +75,9 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent, onAction, onToolClick }) =
     try {
       const newStatus = agent.status === 'active' ? 'inactive' : 'active';
       await updateAgent(agent.id, { status: newStatus });
-      showToast('success', t('agents.messages.statusUpdateSuccess', '刷新成功'), t('agents.messages.statusUpdateSuccessDesc', `AI员工 "${agent.name}" 状态已更新`, { name: agent.name }));
+      showToast('success', t('agents.messages.statusUpdateSuccess', 'Refresh Successful'), t('agents.messages.statusUpdateSuccessDesc', `Agent "{{name}}" status has been updated`, { name: agent.name }));
     } catch (error) {
-      showToast('error', t('agents.messages.statusUpdateFailed', '刷新失败'), t('agents.messages.statusUpdateFailedDesc', '更新AI员工状态时发生错误'));
+      showToast('error', t('agents.messages.statusUpdateFailed', 'Refresh Failed'), t('agents.messages.statusUpdateFailedDesc', 'An error occurred while updating agent status'));
     }
   };
 
@@ -96,7 +96,7 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent, onAction, onToolClick }) =
           textColor: 'text-green-600 dark:text-green-400',
           bgColor: 'bg-green-50 dark:bg-green-900/20',
           borderColor: 'border-green-200 dark:border-green-800',
-          title: t('agents.card.status.active', '运行中') 
+          title: t('agents.card.status.active', 'Active') 
         };
       case 'inactive':
         return { 
@@ -104,7 +104,7 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent, onAction, onToolClick }) =
           textColor: 'text-gray-500 dark:text-gray-400',
           bgColor: 'bg-gray-50 dark:bg-gray-700/30',
           borderColor: 'border-gray-200 dark:border-gray-700',
-          title: t('agents.card.status.inactive', '已停止') 
+          title: t('agents.card.status.inactive', 'Inactive') 
         };
       case 'error':
         return { 
@@ -112,7 +112,7 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent, onAction, onToolClick }) =
           textColor: 'text-red-600 dark:text-red-400',
           bgColor: 'bg-red-50 dark:bg-red-900/20',
           borderColor: 'border-red-200 dark:border-red-800',
-          title: t('agents.card.status.error', '错误') 
+          title: t('agents.card.status.error', 'Error') 
         };
       default:
         return { 
@@ -120,7 +120,7 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent, onAction, onToolClick }) =
           textColor: 'text-gray-500 dark:text-gray-400',
           bgColor: 'bg-gray-50 dark:bg-gray-700/30',
           borderColor: 'border-gray-200 dark:border-gray-700',
-          title: t('agents.card.status.unknown', '未知') 
+          title: t('agents.card.status.unknown', 'Unknown') 
         };
     }
   };
@@ -166,7 +166,7 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent, onAction, onToolClick }) =
                   {status.title}
                 </span>
                 <span className="mx-1.5 text-gray-300 dark:text-gray-600">•</span>
-                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium truncate max-w-[100px]">{agent.role || t('agents.card.defaultRole', 'AI员工')}</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium truncate max-w-[100px]">{agent.role || t('agents.card.defaultRole', 'Agent')}</span>
               </div>
             </div>
           </div>
@@ -182,18 +182,18 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent, onAction, onToolClick }) =
             {showMenu && (
               <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-1 z-20 animate-in fade-in zoom-in-95 duration-200">
                 <button onClick={() => handleAction('edit')} className="w-full flex items-center px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                  <Pencil className="w-4 h-4 mr-2" /> {t('agents.actions.edit', '编辑')}
+                  <Pencil className="w-4 h-4 mr-2" /> {t('agents.actions.edit', 'Edit')}
                 </button>
                 <button onClick={() => handleAction('copy')} className="w-full flex items-center px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                  <Copy className="w-4 h-4 mr-2" /> {t('agents.actions.copy', '复制')}
+                  <Copy className="w-4 h-4 mr-2" /> {t('agents.actions.copy', 'Copy')}
                 </button>
                 <button onClick={handleToggleStatus} className="w-full flex items-center px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                   <Power className={`w-4 h-4 mr-2 ${agent.status === 'active' ? 'text-orange-500' : 'text-green-500'}`} /> 
-                  {agent.status === 'active' ? t('agents.actions.disable', '停止') : t('agents.actions.enable', '启用')}
+                  {agent.status === 'active' ? t('agents.actions.disable', 'Stop') : t('agents.actions.enable', 'Enable')}
                 </button>
                 <div className="h-px bg-gray-100 dark:bg-gray-700 my-1"></div>
                 <button onClick={() => handleAction('delete')} className="w-full flex items-center px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
-                  <Trash2 className="w-4 h-4 mr-2" /> {t('agents.actions.delete', '删除')}
+                  <Trash2 className="w-4 h-4 mr-2" /> {t('agents.actions.delete', 'Delete')}
                 </button>
               </div>
             )}
@@ -201,7 +201,7 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent, onAction, onToolClick }) =
         </div>
 
         <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4 line-clamp-2 h-10 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
-          {agent.description || t('agents.card.noDescription', '暂无描述信息')}
+          {agent.description || t('agents.card.noDescription', 'No description available')}
         </p>
 
         <div className="space-y-3">
@@ -211,7 +211,7 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent, onAction, onToolClick }) =
             <span className="font-mono truncate">{agent.llmModel || 'gemini-1.5-pro'}</span>
           </div>
 
-          {/* 工具显示 */}
+          {/* Tools display */}
           <div className="min-h-[24px]">
             {agent.agentTools && agent.agentTools.length > 0 ? (
               <div className="flex flex-wrap gap-1.5">
@@ -220,14 +220,14 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent, onAction, onToolClick }) =
                 ))}
                 {agent.agentTools && agent.agentTools.length > 2 && (
                   <button onClick={() => setShowAllTools(!showAllTools)} className="text-[10px] text-blue-500 hover:text-blue-600 font-medium px-1 underline-offset-2 hover:underline">
-                    {showAllTools ? t('agents.actions.collapse', '收起') : `+${agent.agentTools.length - 2}`}
+                    {showAllTools ? t('agents.actions.collapse', 'Collapse') : `+${agent.agentTools.length - 2}`}
                   </button>
                 )}
               </div>
             ) : null}
           </div>
 
-          {/* 工作流显示 */}
+          {/* Workflows display */}
           <div className="min-h-[24px]">
             {agent.workflows && agent.workflows.length > 0 ? (
               <div className="flex flex-wrap gap-1.5">
@@ -241,14 +241,14 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent, onAction, onToolClick }) =
                 ))}
                 {agent.workflows.length > 2 && (
                   <button onClick={() => setShowAllWorkflows(!showAllWorkflows)} className="text-[10px] text-purple-500 hover:text-purple-600 font-medium px-1 underline-offset-2 hover:underline">
-                    {showAllWorkflows ? t('agents.actions.collapse', '收起') : `+${agent.workflows.length - 2}`}
+                    {showAllWorkflows ? t('agents.actions.collapse', 'Collapse') : `+${agent.workflows.length - 2}`}
                   </button>
                 )}
               </div>
             ) : null}
           </div>
 
-          {/* 知识库标签 */}
+          {/* Knowledge base tags */}
           <div className="min-h-[24px]">
             {agent.collections && agent.collections.length > 0 ? (
               <div className="flex flex-wrap gap-1.5">
@@ -257,14 +257,14 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent, onAction, onToolClick }) =
                 ))}
                 {agent.collections.length > 3 && (
                   <button onClick={() => setShowAllCollections(!showAllCollections)} className="text-[10px] text-green-500 hover:text-green-600 font-medium px-1 underline-offset-2 hover:underline">
-                    {showAllCollections ? t('agents.actions.collapse', '收起') : `+${agent.collections.length - 3}`}
+                    {showAllCollections ? t('agents.actions.collapse', 'Collapse') : `+${agent.collections.length - 3}`}
                   </button>
                 )}
               </div>
             ) : null}
           </div>
 
-          {/* 绑定设备 */}
+          {/* Bound devices */}
           {agent.boundDevice && (
             <div className="min-h-[24px]">
               <div className="flex flex-wrap gap-1.5">
@@ -281,12 +281,12 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent, onAction, onToolClick }) =
           className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-blue-200 dark:shadow-none transition-all duration-200 active:scale-95"
         >
           <MessageCircle className="w-3.5 h-3.5" />
-          {t('agents.card.chatAction', '开始对话')}
+          {t('agents.card.chatAction', 'Start Chat')}
         </button>
         <button
           onClick={() => handleAction('edit')}
           className="p-2 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl border border-gray-100 dark:border-gray-600 transition-all duration-200 hover:bg-blue-50 dark:hover:bg-blue-900/30"
-          title={t('agents.actions.edit', '编辑')}
+          title={t('agents.actions.edit', 'Edit')}
         >
           <Pencil className="w-4 h-4" />
         </button>

@@ -1,5 +1,6 @@
 import { apiClient } from './api';
 
+import i18n from '@/i18n';
 export interface UploadImageResponse {
   url: string; // public URL
   id?: string;
@@ -19,7 +20,7 @@ export async function uploadImage(file: File): Promise<UploadImageResponse> {
     formData.append('file', file);
     return await apiClient.postFormData<UploadImageResponse>(endpoint, formData);
   } catch (error) {
-    const message = error instanceof Error ? error.message : '上传失败，请稍后重试';
+    const message = error instanceof Error ? error.message : i18n.t('upload.failedRetry', 'Upload failed, please try again later');
     throw new Error(message);
   }
 }

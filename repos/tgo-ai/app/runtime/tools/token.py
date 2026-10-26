@@ -1,4 +1,4 @@
-"""MCP访问Token工具函数."""
+"""MCP access token helpers."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ async def get_mcp_access_token(
     supabase_token: str,
     base_mcp_url: str,
 ) -> Optional[Dict[str, Any]]:
-    """通过Supabase令牌交换MCP访问Token."""
+    """Exchange a Supabase token for an MCP access token."""
 
     form_data = {
         "client_id": "mcp_default",

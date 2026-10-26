@@ -25,10 +25,10 @@ const AgentToolsSection: React.FC<AgentToolsSectionProps> = ({
       <div className="flex items-center justify-between mb-4 gap-3">
         <div className="flex items-center gap-2 min-w-0">
           <span className="text-sm font-medium text-gray-700 truncate">
-            {t('agents.toolsSection.selectedTitle', '已选择工具')}
+            {t('agents.toolsSection.selectedTitle', 'Selected Tools')}
           </span>
           <span className="px-2 py-1 text-xs font-medium bg-orange-100 text-orange-800 rounded-full whitespace-nowrap">
-            {t('agents.toolsSection.selectedCount', '{{count}} 已选择', { count: tools.length })}
+            {t('agents.toolsSection.selectedCount', '{{count}} Selected', { count: tools.length })}
           </span>
         </div>
         {onAdd && (
@@ -39,7 +39,7 @@ const AgentToolsSection: React.FC<AgentToolsSectionProps> = ({
             disabled={disabled}
           >
             <Plus className="w-4 h-4" />
-            <span>{t('agents.toolsSection.addButton', '添加工具')}</span>
+            <span>{t('agents.toolsSection.addButton', 'Add Tool')}</span>
           </button>
         )}
       </div>
@@ -58,10 +58,10 @@ const AgentToolsSection: React.FC<AgentToolsSectionProps> = ({
           <div className="text-center py-8 text-gray-500">
             <Wrench className="w-12 h-12 mx-auto mb-3 opacity-30" />
             <p className="text-sm font-medium">
-              {t('agents.toolsSection.emptyTitle', '暂未添加工具')}
+              {t('agents.toolsSection.emptyTitle', 'No tools added')}
             </p>
             <p className="text-xs mt-1">
-              {t('agents.toolsSection.emptyDescription', '点击「添加工具」按钮选择工具')}
+              {t('agents.toolsSection.emptyDescription', 'Click "Add Tool" to select tools')}
             </p>
           </div>
         )}

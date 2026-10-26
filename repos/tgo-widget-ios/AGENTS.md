@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-iOS (Swift) SDK for TGO customer service widget. SwiftUI-based chat UI with UIKit bridging via UIHostingController.
+iOS (Swift) SDK for Pelatis customer service widget. SwiftUI-based chat UI with UIKit bridging via UIHostingController.
 
 ## Tech Stack
 

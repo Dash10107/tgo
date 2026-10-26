@@ -21,16 +21,16 @@ const TABS_BAR_HEIGHT = 56;
 type CategoryKey = 'smileys' | 'animals' | 'food' | 'activities' | 'travel' | 'objects' | 'symbols' | 'flags';
 
 const CATEGORY_LIST: { key: CategoryKey; label: string; icon: string }[] = [
-  { key: 'smileys', label: '表情', icon: '😊' },
-  { key: 'animals', label: '动物', icon: '🐻' },
-  { key: 'food', label: '美食', icon: '🍔' },
-  { key: 'activities', label: '活动', icon: '⚽️' },
-  { key: 'travel', label: '旅行', icon: '🚗' },
-  { key: 'objects', label: '物品', icon: '🔧' },
-  { key: 'symbols', label: '符号', icon: '🔣' },
+  { key: 'smileys', label: 'Smileys', icon: '😊' },
+  { key: 'animals', label: 'Animals', icon: '🐻' },
+  { key: 'food', label: 'Food', icon: '🍔' },
+  { key: 'activities', label: 'Activities', icon: '⚽️' },
+  { key: 'travel', label: 'Travel', icon: '🚗' },
+  { key: 'objects', label: 'Objects', icon: '🔧' },
+  { key: 'symbols', label: 'Symbols', icon: '🔣' },
 
 
-  { key: 'flags', label: '旗帜', icon: '🏳️' },
+  { key: 'flags', label: 'Flags', icon: '🏳️' },
 ];
 
 const EMOJI_DATA: Record<CategoryKey, string> = {
@@ -115,7 +115,7 @@ const EmojiPickerPopover: React.FC<EmojiPickerPopoverProps> = ({
                 key={emoji}
                 className="h-9 w-9 flex items-center justify-center rounded hover:bg-gray-100 dark:hover:bg-gray-800"
                 onClick={() => onSelect(emoji)}
-                aria-label={`插入 ${emoji}`}
+                aria-label={`Insert ${emoji}`}
               >
                 <span>{emoji}</span>
               </button>

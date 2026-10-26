@@ -1,7 +1,7 @@
 {
   "name": "tgo-widget-cli",
   "version": "0.1.0",
-  "description": "TGO Widget CLI - Visitor-facing CLI + MCP Server for customer service",
+  "description": "Pelatis Widget CLI - Visitor-facing CLI + MCP Server for customer service",
   "type": "module",
   "bin": {
     "tgo-widget": "./bin/tgo-widget.js"

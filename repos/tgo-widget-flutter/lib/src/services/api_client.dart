@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
-/// 统一的 API 客户端封装
+/// Unified API client wrapper
 class ApiClient {
   static Dio createDio({
     required String apiBase,
@@ -20,14 +20,14 @@ class ApiClient {
       },
     ));
 
-    // 添加日志拦截器
+    // Add the logging interceptor
     dio.interceptors.add(TgoApiLogger());
 
     return dio;
   }
 }
 
-/// 接口日志拦截器
+/// API logging interceptor
 class TgoApiLogger extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {

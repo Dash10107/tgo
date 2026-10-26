@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ImgBox, ImgEl } from './messageStyles'
 import { imagePreviewManager } from '../ImagePreview'
 
@@ -6,9 +7,9 @@ export interface ImageMessageProps {
   url: string
   w: number
   h: number
-  /** 所有相关图片列表（用于多图预览导航） */
+  /** List of all related images (for multi-image preview navigation) */
   allImages?: string[]
-  /** 当前图片在列表中的索引 */
+  /** Index of the current image in the list */
   imageIndex?: number
 }
 
@@ -29,6 +30,7 @@ function getMaxWidth(): number {
 }
 
 export default function ImageMessage({ url, w, h, allImages, imageIndex = 0 }: ImageMessageProps){
+  const { t } = useTranslation()
   const [error, setError] = useState(false)
   const [maxW, setMaxW] = useState(280)
 
@@ -57,14 +59,14 @@ export default function ImageMessage({ url, w, h, allImages, imageIndex = 0 }: I
     <ImgBox
       style={{ width: dw, height: dh }}
       onClick={handleClick}
-      title="点击查看大图"
+      title={t('image.clickToViewLarge')}
       role="button"
-      aria-label="查看大图"
+      aria-label={t('image.viewLarge')}
     >
       {!error ? (
-        <ImgEl src={url} alt="[图片]" loading="lazy" onError={()=>setError(true)} />
+        <ImgEl src={url} alt={t('image.placeholder')} loading="lazy" onError={()=>setError(true)} />
       ) : (
-        <div style={{width:'100%',height:'100%',display:'grid',placeItems:'center', color:'#9ca3af', fontSize:12}}>图片加载失败</div>
+        <div style={{width:'100%',height:'100%',display:'grid',placeItems:'center', color:'#9ca3af', fontSize:12}}>{t('image.loadFailed')}</div>
       )}
     </ImgBox>
   )

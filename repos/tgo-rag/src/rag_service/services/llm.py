@@ -90,20 +90,21 @@ class LLMService:
             return []
 
         prompt = f"""
-你是一个专业的知识库问答对生成专家。请根据以下文本生成高质量的问答对。
+You are an expert at generating question-answer pairs for a knowledge base. Generate high-quality Q&A pairs from the text below.
 
-## 生成规则
-1. **问题多样性**：使用不同问法（什么是/如何/为什么/哪些/何时/在哪里）
-2. **问题具体性**：问题必须具体明确，直接指向知识点
-3. **答案完整性**：答案必须完整准确，可直接回答问题
-4. **独立可理解**：问题和答案脱离原文依然可理解，避免使用代词
-5. **关键词覆盖**：确保文本中的关键实体、概念、数字、专有名词都被覆盖
-6. **数量要求**：尽可能多地提取，只要是独立知识点都应生成问答对
+## Rules
+1. **Question variety**: use different question forms (what is / how / why / which / when / where)
+2. **Specific questions**: each question must be specific and point directly at one piece of knowledge
+3. **Complete answers**: each answer must be complete and accurate, and answer the question directly
+4. **Self-contained**: question and answer must be understandable without the source text; avoid pronouns
+5. **Keyword coverage**: cover every key entity, concept, number and proper noun in the text
+6. **Quantity**: extract as many pairs as possible; every independent piece of knowledge should get a pair
+7. **Language**: write the questions and answers in the same language as the source text (English, Hindi, Marathi, etc.); never translate
 
-## 输出格式
-返回JSON对象: {{"qa_pairs": [{{"question": "...", "answer": "..."}}]}}
+## Output format
+Return a JSON object: {{"qa_pairs": [{{"question": "...", "answer": "..."}}]}}
 
-## 待处理文本
+## Text to process
 ---
 {text}
 ---
@@ -121,7 +122,7 @@ class LLMService:
                 lambda: self.client.chat.completions.create(
                     model=self.model,
                     messages=[
-                        {"role": "system", "content": "你是一个资深的文档分析专家，擅长从文本中提取详尽的知识点。你必须始终返回有效的 JSON 对象，包含 'qa_pairs' 字段。"},
+                        {"role": "system", "content": "You are a senior document analyst who extracts thorough knowledge points from text. You must always return a valid JSON object containing a 'qa_pairs' field."},
                         {"role": "user", "content": prompt}
                     ],
                     response_format={"type": "json_object"} if is_json_supported else None,

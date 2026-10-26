@@ -199,7 +199,7 @@ const OnboardingSidebarPanel: React.FC = () => {
         <div className="flex items-center gap-2">
           <Rocket className="w-4 h-4 text-blue-500" />
           <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            {t('onboarding.panel.title', '快速开始')}
+            {t('onboarding.panel.title', 'Quick Start')}
           </span>
         </div>
         <div className="flex items-center gap-2">
@@ -232,7 +232,7 @@ const OnboardingSidebarPanel: React.FC = () => {
           {/* Progress bar */}
           <div className="px-1 pb-2">
             <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
-              <span>{t('onboarding.panel.progress', '完成进度')}</span>
+              <span>{t('onboarding.panel.progress', 'Progress')}</span>
               <span>{progressPercentage}%</span>
             </div>
             <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
@@ -263,13 +263,13 @@ const OnboardingSidebarPanel: React.FC = () => {
               className="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 transition-colors flex items-center gap-1"
             >
               <X className="w-3 h-3" />
-              {t('onboarding.panel.skip', '跳过')}
+              {t('onboarding.panel.skip', 'Skip')}
             </button>
             <button
               onClick={handleShowWelcome}
               className="text-xs text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
             >
-              {t('onboarding.panel.viewAll', '查看全部')}
+              {t('onboarding.panel.viewAll', 'View All')}
             </button>
           </div>
         </div>

@@ -1,4 +1,4 @@
-# TGO Skills
+# Pelatis Skills
 
 Deterministic scripts for AI agents to call during development. Each skill lives in its own directory with a `SKILL.md` (description + trigger conditions) and `scripts/` (executable scripts).
 

@@ -1,5 +1,5 @@
 {
   "title": "Configuration",
-  "description": "How to configure the domain and SSL certificate for the TGO system.",
+  "description": "How to configure the domain and SSL certificate for the Pelatis system.",
   "pages": ["env-vars", "domain-ssl"]
 }

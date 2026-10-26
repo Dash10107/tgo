@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional, List
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "TGO Workflow Engine"
+    PROJECT_NAME: str = "Pelatis Workflow Engine"
     API_V1_STR: str = "/v1"
     
     # CORS

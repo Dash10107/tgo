@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// 微信风格表情面板
+/// WeChat-style emoji panel
 class EmojiPicker extends StatefulWidget {
   final void Function(String emoji) onEmojiSelected;
   final VoidCallback onDelete;
@@ -57,13 +57,13 @@ class _EmojiPickerState extends State<EmojiPicker> {
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.of(context).padding.bottom;
     
-    // 不设置固定高度，让父容器控制
+    // Do not set a fixed height; let the parent container control it
     return Container(
       width: double.infinity,
       color: const Color(0xFFF6F6F6),
       child: Column(
         children: [
-          // 表情网格 - 使用 Expanded 填充剩余空间
+          // Emoji grid - use Expanded to fill the remaining space
           Expanded(
             child: GridView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -86,7 +86,7 @@ class _EmojiPickerState extends State<EmojiPicker> {
             ),
           ),
 
-          // 底部工具栏
+          // Bottom toolbar
           Container(
             padding: EdgeInsets.only(
               left: 12,
@@ -102,7 +102,7 @@ class _EmojiPickerState extends State<EmojiPicker> {
             ),
             child: Row(
               children: [
-                // 分类标签
+                // Category tabs
                 _EmojiTab(
                   icon: Icons.face_rounded,
                   isSelected: _selectedTab == 0,
@@ -121,7 +121,7 @@ class _EmojiPickerState extends State<EmojiPicker> {
                 
                 const Spacer(),
                 
-                // 删除按钮
+                // Delete button
                 _ToolButton(
                   onPressed: widget.onDelete,
                   child: const Icon(
@@ -133,7 +133,7 @@ class _EmojiPickerState extends State<EmojiPicker> {
                 
                 const SizedBox(width: 8),
                 
-                // 发送按钮
+                // Send button
                 _SendButton(
                   onPressed: widget.onSend,
                   enabled: widget.onSend != null,
@@ -309,7 +309,7 @@ class _SendButtonState extends State<_SendButton> {
           borderRadius: BorderRadius.circular(4),
         ),
         child: const Text(
-          '发送',
+          'Send',
           style: TextStyle(
             color: Colors.white,
             fontSize: 14,

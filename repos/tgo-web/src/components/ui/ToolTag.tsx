@@ -14,8 +14,8 @@ interface ToolTagProps {
 }
 
 /**
- * 工具标签组件
- * 用于显示AI员工关联的工具
+ * Tool tag component
+ * Shows the tools linked to an AI agent
  */
 const ToolTag: React.FC<ToolTagProps> = ({
   toolId,
@@ -35,7 +35,7 @@ const ToolTag: React.FC<ToolTagProps> = ({
     return undefined;
   })();
 
-  // 根据工具状态确定颜色主题
+  // Determine the color theme from the tool state
   const getColorTheme = (status: string) => {
     switch (status) {
       case 'active':
@@ -49,7 +49,7 @@ const ToolTag: React.FC<ToolTagProps> = ({
     }
   };
 
-  // 根据工具类型确定图标颜色
+  // Determine the icon color from the tool type
   const getIconColor = (status: string) => {
     switch (status) {
       case 'active':
@@ -94,12 +94,12 @@ const ToolTag: React.FC<ToolTagProps> = ({
         ${className}
       `}
       onClick={handleClick}
-      title={resolvedTool ? `${resolvedTool.name} - ${resolvedTool.description}` : (toolId || '未知工具')}
+      title={resolvedTool ? `${resolvedTool.name} - ${resolvedTool.description}` : (toolId || 'Unknown tool')}
     >
       {showIcon && (
         <Wrench className={`${iconSizeClasses[size]} mr-1 ${iconColor}`} />
       )}
-      <span className="font-medium truncate max-w-[9rem]">{resolvedTool ? resolvedTool.name : (toolId || '未知工具')}</span>
+      <span className="font-medium truncate max-w-[9rem]">{resolvedTool ? resolvedTool.name : (toolId || 'Unknown tool')}</span>
       {onClick && resolvedTool && (
         <ExternalLink className={`${iconSizeClasses[size]} ml-1 opacity-60`} />
       )}

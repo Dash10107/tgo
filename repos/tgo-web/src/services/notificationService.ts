@@ -1,35 +1,36 @@
 /**
- * NotificationService - 浏览器通知服务
+ * NotificationService - browser notification service
  * 
- * 负责：
- * - 检查通知条件（页面可见性、当前会话、消息来源）
- * - 发送浏览器桌面通知
- * - 播放通知铃声
- * - 点击通知跳转到对应会话
+ * Responsible for:
+ * - Checking notification conditions (page visibility, current conversation, message source)
+ * - Sending browser desktop notifications
+ * - Playing notification sounds
+ * - Navigating to the matching conversation when a notification is clicked
  */
 
 import type { Message, Chat } from '@/types';
 import { MESSAGE_SENDER_TYPE } from '@/constants';
 import { useAuthStore } from '@/stores/authStore';
 
+import i18n from '@/i18n';
 /**
- * 通知偏好设置接口
+ * Notification preferences interface
  */
 export interface NotificationPreferences {
-  /** 是否启用桌面通知 */
+  /** Whether desktop notifications are enabled */
   notificationEnabled: boolean;
-  /** 是否播放声音 */
+  /** Whether to play a sound */
   notificationSound: boolean;
-  /** 页面不可见时通知 */
+  /** Notify when the page is not visible */
   notifyOnBackground: boolean;
-  /** 其他会话消息通知 */
+  /** Notify for messages from other conversations */
   notifyOnOtherConversation: boolean;
-  /** 新访客通知 */
+  /** Notify for new visitors */
   notifyOnNewVisitor: boolean;
 }
 
 /**
- * 默认通知设置
+ * Default notification settings
  */
 export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
   notificationEnabled: true,
@@ -40,38 +41,38 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
 };
 
 /**
- * 通知权限状态
+ * Notification permission state
  */
 export type NotificationPermission = 'default' | 'granted' | 'denied';
 
 /**
- * 通知服务类
+ * Notification service class
  */
 class NotificationService {
   private audio: HTMLAudioElement | null = null;
   private audioContext: AudioContext | null = null;
   private lastNotificationTime = 0;
-  private readonly DEBOUNCE_MS = 1000; // 防抖时间：1秒内只发送一次通知
-  private readonly NOTIFICATION_DURATION = 5000; // 通知显示时间：5秒
+  private readonly DEBOUNCE_MS = 1000; // Debounce time: send at most one notification per second
+  private readonly NOTIFICATION_DURATION = 5000; // Notification display time: 5 seconds
 
   constructor() {
     this.initAudio();
   }
 
   /**
-   * 初始化音频对象
-   * 优先尝试加载音频文件，失败则使用 Web Audio API 生成音效
+   * Initialize the audio object
+   * Try to load the audio file first; if that fails, generate the sound with the Web Audio API
    */
   private initAudio(): void {
     if (typeof window === 'undefined') return;
     
     try {
-      // 尝试加载音频文件
+      // Try to load the audio file
       this.audio = new Audio('/sounds/notification.mp3');
       this.audio.preload = 'auto';
       this.audio.volume = 0.5;
       
-      // 监听加载错误，准备使用 Web Audio API 作为备选
+      // Listen for load errors and prepare to fall back to the Web Audio API
       this.audio.addEventListener('error', () => {
         console.log('🔔 NotificationService: Audio file not found, will use Web Audio API');
         this.audio = null;
@@ -82,7 +83,7 @@ class NotificationService {
   }
 
   /**
-   * 获取或创建 AudioContext
+   * Get or create the AudioContext
    */
   private getAudioContext(): AudioContext | null {
     if (typeof window === 'undefined') return null;
@@ -102,22 +103,22 @@ class NotificationService {
   }
 
   /**
-   * 使用 Web Audio API 播放简单的通知音效
-   * 播放两个短促的音调，类似于常见的消息提示音
+   * Play a simple notification sound using the Web Audio API
+   * Plays two short tones, similar to a common message alert
    */
   private async playWebAudioNotification(): Promise<void> {
     const ctx = this.getAudioContext();
     if (!ctx) return;
 
     try {
-      // 确保 AudioContext 处于运行状态
+      // Make sure the AudioContext is running
       if (ctx.state === 'suspended') {
         await ctx.resume();
       }
 
       const currentTime = ctx.currentTime;
       
-      // 创建两个短促的音调
+      // Create two short tones
       const playTone = (frequency: number, startTime: number, duration: number) => {
         const oscillator = ctx.createOscillator();
         const gainNode = ctx.createGain();
@@ -128,7 +129,7 @@ class NotificationService {
         oscillator.type = 'sine';
         oscillator.frequency.setValueAtTime(frequency, startTime);
         
-        // 音量淡入淡出
+        // Volume fade in/out
         gainNode.gain.setValueAtTime(0, startTime);
         gainNode.gain.linearRampToValueAtTime(0.3, startTime + 0.02);
         gainNode.gain.linearRampToValueAtTime(0.3, startTime + duration - 0.02);
@@ -138,7 +139,7 @@ class NotificationService {
         oscillator.stop(startTime + duration);
       };
 
-      // 播放两个音调：C5 和 E5
+      // Play two tones: C5 and E5
       playTone(523.25, currentTime, 0.1);       // C5
       playTone(659.25, currentTime + 0.12, 0.15); // E5
       
@@ -149,7 +150,7 @@ class NotificationService {
   }
 
   /**
-   * 获取当前通知权限状态
+   * Get the current notification permission state
    */
   getPermission(): NotificationPermission {
     if (typeof window === 'undefined' || !('Notification' in window)) {
@@ -159,14 +160,14 @@ class NotificationService {
   }
 
   /**
-   * 检查浏览器是否支持通知
+   * Check whether the browser supports notifications
    */
   isSupported(): boolean {
     return typeof window !== 'undefined' && 'Notification' in window;
   }
 
   /**
-   * 请求通知权限
+   * Request notification permission
    */
   async requestPermission(): Promise<NotificationPermission> {
     if (!this.isSupported()) {
@@ -185,7 +186,7 @@ class NotificationService {
   }
 
   /**
-   * 检查页面是否可见
+   * Check whether the page is visible
    */
   private isPageVisible(): boolean {
     if (typeof document === 'undefined') return true;
@@ -193,7 +194,7 @@ class NotificationService {
   }
 
   /**
-   * 检查消息是否来自当前活跃会话
+   * Check whether the message comes from the currently active conversation
    */
   private isFromActiveChat(message: Message, activeChat: Chat | null): boolean {
     if (!activeChat) return false;
@@ -202,51 +203,51 @@ class NotificationService {
   }
 
   /**
-   * 检查是否是自己发送的消息
+   * Check whether the message was sent by the user themselves
    */
   private isOwnMessage(message: Message): boolean {
-    // staff 类型的消息是自己发送的
+    // Messages of type staff are sent by the user themselves
     const currentUid = useAuthStore.getState().user?.id + "-staff";
     return message.fromUid === currentUid;
   }
 
   /**
-   * 检查是否是系统消息
+   * Check whether it is a system message
    */
   private isSystemMessage(message: Message): boolean {
     return message.type === MESSAGE_SENDER_TYPE.SYSTEM;
   }
 
   /**
-   * 检查是否应该发送通知
+   * Check whether a notification should be sent
    * 
-   * 触发通知的条件（参考钉钉、企业微信、Intercom）：
-   * 1. 页面不可见时收到新消息
-   * 2. 页面可见但消息来自非当前活跃会话
-   * 3. 不是自己发送的消息
-   * 4. 默认不通知系统消息
+   * Conditions that trigger a notification (modeled on DingTalk, WeCom and Intercom):
+   * 1. A new message is received while the page is not visible
+   * 2. The page is visible but the message comes from a non-active conversation
+   * 3. The message was not sent by the user themselves
+   * 4. System messages do not notify by default
    */
   shouldNotify(
     message: Message,
     activeChat: Chat | null,
     preferences: NotificationPreferences
   ): boolean {
-    // 1. 检查通知是否启用
+    // 1. Check whether notifications are enabled
     if (!preferences.notificationEnabled) {
       return false;
     }
 
-    // 2. 检查是否是自己发送的消息
+    // 2. Check whether the message was sent by the user themselves
     if (this.isOwnMessage(message)) {
       return false;
     }
 
-    // 3. 系统消息默认不通知
+    // 3. System messages do not notify by default
     if (this.isSystemMessage(message)) {
       return false;
     }
 
-    // 4. 检查权限
+    // 4. Check the permission
     if (this.getPermission() !== 'granted') {
       return false;
     }
@@ -254,12 +255,12 @@ class NotificationService {
     const pageVisible = this.isPageVisible();
     const isFromActive = this.isFromActiveChat(message, activeChat);
 
-    // 5. 页面不可见时
+    // 5. When the page is not visible
     if (!pageVisible && preferences.notifyOnBackground) {
       return true;
     }
 
-    // 6. 页面可见但消息来自其他会话
+    // 6. When the page is visible but the message comes from another conversation
     if (pageVisible && !isFromActive && preferences.notifyOnOtherConversation) {
       return true;
     }
@@ -268,24 +269,24 @@ class NotificationService {
   }
 
   /**
-   * 检查是否应该播放声音
+   * Check whether a sound should be played
    */
   shouldPlaySound(
     message: Message,
     activeChat: Chat | null,
     preferences: NotificationPreferences
   ): boolean {
-    // 声音播放的条件与通知类似，但额外检查声音设置
+    // The conditions for playing a sound are similar to notifications, but the sound setting is also checked
     if (!preferences.notificationSound) {
       return false;
     }
 
-    // 自己的消息不播放声音
+    // Do not play a sound for the user's own messages
     if (this.isOwnMessage(message)) {
       return false;
     }
 
-    // 系统消息不播放声音
+    // Do not play a sound for system messages
     if (this.isSystemMessage(message)) {
       return false;
     }
@@ -293,12 +294,12 @@ class NotificationService {
     const pageVisible = this.isPageVisible();
     const isFromActive = this.isFromActiveChat(message, activeChat);
 
-    // 页面不可见时播放声音
+    // Play a sound when the page is not visible
     if (!pageVisible && preferences.notifyOnBackground) {
       return true;
     }
 
-    // 页面可见但消息来自其他会话时播放声音
+    // Play a sound when the page is visible but the message comes from another conversation
     if (pageVisible && !isFromActive && preferences.notifyOnOtherConversation) {
       return true;
     }
@@ -307,7 +308,7 @@ class NotificationService {
   }
 
   /**
-   * 发送桌面通知
+   * Send a desktop notification
    */
   sendDesktopNotification(
     message: Message,
@@ -317,7 +318,7 @@ class NotificationService {
       return;
     }
 
-    // 防抖：1秒内只发送一次通知
+    // Debounce: send at most one notification per second
     const now = Date.now();
     if (now - this.lastNotificationTime < this.DEBOUNCE_MS) {
       console.log('🔔 NotificationService: Debouncing notification');
@@ -326,19 +327,19 @@ class NotificationService {
     this.lastNotificationTime = now;
 
     try {
-      // 构建通知内容
-      const senderName = message.fromInfo?.name || '访客';
+      // Build the notification content
+      const senderName = message.fromInfo?.name || i18n.t('visitor.defaultName', 'Visitor');
       const content = this.truncateContent(message.content, 50);
       
       const notification = new Notification(senderName, {
         body: content,
         icon: message.fromInfo?.avatar || '/logo.svg',
-        tag: `msg-${message.channelId}`, // 相同 tag 的通知会合并
-        requireInteraction: false, // 自动关闭
-        silent: true, // 我们自己控制声音
+        tag: `msg-${message.channelId}`, // Notifications with the same tag are merged
+        requireInteraction: false, // Close automatically
+        silent: true, // We control the sound ourselves
       });
 
-      // 点击通知跳转到对应会话
+      // Navigate to the matching conversation when the notification is clicked
       notification.onclick = () => {
         window.focus();
         if (onClick && message.channelId && message.channelType !== undefined) {
@@ -347,7 +348,7 @@ class NotificationService {
         notification.close();
       };
 
-      // 自动关闭通知
+      // Close the notification automatically
       setTimeout(() => {
         notification.close();
       }, this.NOTIFICATION_DURATION);
@@ -359,11 +360,11 @@ class NotificationService {
   }
 
   /**
-   * 播放通知音效
-   * 优先使用音频文件，失败时使用 Web Audio API 生成音效
+   * Play the notification sound
+   * Prefer the audio file; if that fails, generate the sound with the Web Audio API
    */
   async playNotificationSound(): Promise<void> {
-    // 优先尝试使用音频文件
+    // Prefer trying the audio file
     if (this.audio) {
       try {
         this.audio.currentTime = 0;
@@ -371,12 +372,12 @@ class NotificationService {
         console.log('🔔 NotificationService: Sound played (audio file)');
         return;
       } catch (error) {
-        // 音频文件播放失败，使用 Web Audio API
+        // The audio file failed to play; use the Web Audio API
         console.log('🔔 NotificationService: Audio file playback failed, using Web Audio API');
       }
     }
 
-    // 使用 Web Audio API 作为备选
+    // Use the Web Audio API as the fallback
     try {
       await this.playWebAudioNotification();
     } catch (error) {
@@ -385,7 +386,7 @@ class NotificationService {
   }
 
   /**
-   * 检查并发送通知（统一入口）
+   * Check and send notifications (unified entry point)
    */
   checkAndNotify(
     message: Message,
@@ -393,19 +394,19 @@ class NotificationService {
     preferences: NotificationPreferences,
     onNotificationClick?: (channelId: string, channelType: number) => void
   ): void {
-    // 检查是否应该发送桌面通知
+    // Check whether a desktop notification should be sent
     if (this.shouldNotify(message, activeChat, preferences)) {
       this.sendDesktopNotification(message, onNotificationClick);
     }
 
-    // 检查是否应该播放声音
+    // Check whether a sound should be played
     if (this.shouldPlaySound(message, activeChat, preferences)) {
       this.playNotificationSound();
     }
   }
 
   /**
-   * 发送测试通知
+   * Send a test notification
    */
   sendTestNotification(): void {
     if (!this.isSupported() || this.getPermission() !== 'granted') {
@@ -414,8 +415,8 @@ class NotificationService {
     }
 
     try {
-      const notification = new Notification('测试通知', {
-        body: '这是一条测试通知，用于验证通知功能是否正常工作。',
+      const notification = new Notification(i18n.t('notification.testTitle', 'Test notification'), {
+        body: i18n.t('notification.testBody', 'This is a test notification used to verify that notifications work correctly.'),
         icon: '/logo.svg',
         tag: 'test-notification',
         requireInteraction: false,
@@ -425,7 +426,7 @@ class NotificationService {
         notification.close();
       }, this.NOTIFICATION_DURATION);
 
-      // 播放声音
+      // Play the sound
       this.playNotificationSound();
 
       console.log('🔔 NotificationService: Test notification sent');
@@ -435,7 +436,7 @@ class NotificationService {
   }
 
   /**
-   * 截断内容
+   * Truncate content
    */
   private truncateContent(content: string, maxLength: number): string {
     if (!content) return '';
@@ -444,12 +445,12 @@ class NotificationService {
   }
 
   /**
-   * 更新页面标题显示未读数
+   * Update the page title to show the unread count
    */
   updatePageTitle(unreadCount: number, originalTitle?: string): void {
     if (typeof document === 'undefined') return;
     
-    const baseTitle = originalTitle || 'TGO 客服';
+    const baseTitle = originalTitle || 'Pelatis Customer Service';
     
     if (unreadCount > 0) {
       document.title = `(${unreadCount}) ${baseTitle}`;
@@ -459,5 +460,5 @@ class NotificationService {
   }
 }
 
-// 导出单例
+// Export the singleton
 export const notificationService = new NotificationService();

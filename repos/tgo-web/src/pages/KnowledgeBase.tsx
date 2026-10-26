@@ -47,7 +47,7 @@ const KnowledgeBase: React.FC = () => {
   const clearError = useKnowledgeStore(state => state.clearError);
   const retry = useKnowledgeStore(state => state.retry);
 
-  // 初始化时获取知识库数据
+  // Fetch the knowledge base data on init
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -61,7 +61,7 @@ const KnowledgeBase: React.FC = () => {
     loadData();
   }, [fetchKnowledgeBases]);
 
-  // 搜索变化时重新获取数据
+  // Re-fetch the data when the search changes
   useEffect(() => {
     const loadFilteredData = async () => {
       try {
@@ -78,11 +78,11 @@ const KnowledgeBase: React.FC = () => {
     loadFilteredData();
   }, [searchQuery, fetchKnowledgeBases]);
 
-  // 在组件中计算过滤和排序（移除分页和状态过滤）
+  // Compute filtering and sorting in the component (pagination and status filtering removed)
   const filteredKnowledgeBases = React.useMemo(() => {
     let filtered = knowledgeBases;
 
-    // 搜索过滤
+    // Search filtering
     if (searchQuery.trim()) {
       filtered = filtered.filter((kb: KnowledgeBaseItem) =>
         kb.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -90,7 +90,7 @@ const KnowledgeBase: React.FC = () => {
       );
     }
 
-    // 排序 - 按最近更新时间降序排列
+    // Sorting - descending by most recent update time
     filtered.sort((a: KnowledgeBaseItem, b: KnowledgeBaseItem) => {
       const aDate = new Date(a.updatedAt);
       const bDate = new Date(b.updatedAt);
@@ -123,8 +123,8 @@ const KnowledgeBase: React.FC = () => {
       if (data.type === 'website' && data.crawlConfig) {
         showToast(
           'info',
-          t('knowledge.crawl.started', '爬取已开始'),
-          t('knowledge.crawl.startedDesc', '网站爬取任务已启动')
+          t('knowledge.crawl.started', 'Crawl Started'),
+          t('knowledge.crawl.startedDesc', 'Website crawl job has been started')
         );
       }
     } catch (error) {
@@ -137,7 +137,7 @@ const KnowledgeBase: React.FC = () => {
   // Check if embedding model is configured before opening create modal
   const handleOpenCreateModal = useCallback(async (): Promise<void> => {
     if (!currentProjectId) {
-      showToast('error', t('knowledge.embedding.error', '错误'), t('knowledge.embedding.noProject', '未找到当前项目'));
+      showToast('error', t('knowledge.embedding.error', 'Error'), t('knowledge.embedding.noProject', 'Current project not found'));
       return;
     }
 
@@ -160,8 +160,8 @@ const KnowledgeBase: React.FC = () => {
       // If API call fails, show error toast but still allow creating (fail-open)
       showToast(
         'warning',
-        t('knowledge.embedding.checkFailed', '检查失败'),
-        t('knowledge.embedding.checkFailedDesc', '无法验证嵌入模型配置，请确保已配置嵌入模型')
+        t('knowledge.embedding.checkFailed', 'Check Failed'),
+        t('knowledge.embedding.checkFailedDesc', 'Unable to verify embedding model configuration. Please ensure an embedding model is configured.')
       );
       setIsCreateModalOpen(true);
     } finally {
@@ -226,7 +226,7 @@ const KnowledgeBase: React.FC = () => {
         handleOpenEditModal(knowledgeBase);
         break;
       case 'delete':
-        if (confirm(t('knowledge.confirmDelete.message', { name: knowledgeBase.title, defaultValue: `确定要删除知识库 "${knowledgeBase.title}" 吗？此操作无法撤销。` }))) {
+        if (confirm(t('knowledge.confirmDelete.message', { name: knowledgeBase.title, defaultValue: `Are you sure you want to delete knowledge base "{{name}}"? This action cannot be undone.` }))) {
           try {
             await deleteKnowledgeBase(knowledgeBase.id);
             showKnowledgeBaseSuccess(showToast, 'delete', knowledgeBase.title);
@@ -264,13 +264,13 @@ const KnowledgeBase: React.FC = () => {
       <header className="px-6 py-4 border-b border-gray-200/80 dark:border-gray-700/80 sticky top-0 bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg z-10">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">{t('knowledge.manage', '知识库管理')}</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{t('knowledge.subtitle', '管理可供AI员工使用的知识来源。')}</p>
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">{t('knowledge.manage', 'Manage Knowledge Base')}</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{t('knowledge.subtitle', 'Manage knowledge sources available to agents.')}</p>
           </div>
           <div className="flex items-center space-x-3">
             <button
               className="p-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-200/70 dark:hover:bg-gray-700/70 rounded-md transition-colors duration-200"
-              title={t('knowledge.detail.refresh', '刷新')}
+              title={t('knowledge.detail.refresh', 'Refresh')}
               onClick={handleRefresh}
             >
               <RefreshCw className="w-5 h-5" />
@@ -285,7 +285,7 @@ const KnowledgeBase: React.FC = () => {
               ) : (
                 <Plus className="w-4 h-4 mr-1" />
               )}
-              <span>{t('knowledge.create', '创建知识库')}</span>
+              <span>{t('knowledge.create', 'Create Knowledge Base')}</span>
             </button>
           </div>
         </div>
@@ -295,7 +295,7 @@ const KnowledgeBase: React.FC = () => {
           <div className="relative flex-grow max-w-xs">
             <input
               type="text"
-              placeholder={t('knowledge.selectModal.searchPlaceholder', '搜索知识库...')}
+              placeholder={t('knowledge.selectModal.searchPlaceholder', 'Search knowledge bases...')}
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
               className="w-full pl-9 pr-3 py-1.5 text-sm border border-gray-300/70 dark:border-gray-600 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white/80 dark:bg-gray-700/80 dark:text-gray-100 dark:placeholder-gray-400"
@@ -314,19 +314,19 @@ const KnowledgeBase: React.FC = () => {
           {/* Table Header */}
           <div className="grid grid-cols-[minmax(0,_3fr)_80px_1fr_1fr_auto] gap-4 px-4 py-2 border-b border-gray-200/60 dark:border-gray-700/60 bg-gray-50/50 dark:bg-gray-900/50">
             <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center cursor-pointer hover:text-gray-700 dark:hover:text-gray-200">
-              {t('knowledge.list.columns.name', '名称')} <ArrowUpDown className="w-3 h-3 ml-1" />
+              {t('knowledge.list.columns.name', 'Name')} <ArrowUpDown className="w-3 h-3 ml-1" />
             </div>
             <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center">
-              {t('knowledge.list.columns.type', '类型')}
+              {t('knowledge.list.columns.type', 'Type')}
             </div>
             <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center cursor-pointer hover:text-gray-700 dark:hover:text-gray-200">
-              {t('knowledge.list.columns.documents', '文档数量')} <ArrowUpDown className="w-3 h-3 ml-1" />
+              {t('knowledge.list.columns.documents', 'Documents')} <ArrowUpDown className="w-3 h-3 ml-1" />
             </div>
             <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center cursor-pointer hover:text-gray-700 dark:hover:text-gray-200">
-              {t('knowledge.list.columns.lastUpdated', '最近更新')} <ArrowUpDown className="w-3 h-3 ml-1" />
+              {t('knowledge.list.columns.lastUpdated', 'Last Updated')} <ArrowUpDown className="w-3 h-3 ml-1" />
             </div>
             <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right pr-2">
-              {t('knowledge.list.columns.actions', '操作')}
+              {t('knowledge.list.columns.actions', 'Actions')}
             </div>
           </div>
 
@@ -336,7 +336,7 @@ const KnowledgeBase: React.FC = () => {
               <div className="text-center py-12">
                 <div className="inline-flex items-center">
                   <RefreshCw className="w-5 h-5 animate-spin text-blue-500 dark:text-blue-400 mr-2" />
-                  <span className="text-gray-500 dark:text-gray-400">{t('common.loading', '加载中...')}</span>
+                  <span className="text-gray-500 dark:text-gray-400">{t('common.loading', 'Loading...')}</span>
                 </div>
               </div>
             ) : hasError ? (
@@ -346,29 +346,29 @@ const KnowledgeBase: React.FC = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-medium text-gray-800 dark:text-gray-100 mb-2">{t('common.loadFailed', '加载失败')}</h3>
-                <p className="text-gray-500 dark:text-gray-400 mb-4">{error || t('knowledge.list.loadFailedDesc', '获取知识库列表时发生错误')}</p>
+                <h3 className="text-lg font-medium text-gray-800 dark:text-gray-100 mb-2">{t('common.loadFailed', 'Load Failed')}</h3>
+                <p className="text-gray-500 dark:text-gray-400 mb-4">{error || t('knowledge.list.loadFailedDesc', 'An error occurred while fetching knowledge bases')}</p>
                 <div className="flex justify-center space-x-3">
                   <button
                     onClick={retry}
                     className="inline-flex items-center px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 transition-colors"
                   >
                     <RefreshCw className="w-4 h-4 mr-2" />
-                    {t('common.retry', '重试')}
+                    {t('common.retry', 'Retry')}
                   </button>
                   <button
                     onClick={clearError}
                     className="inline-flex items-center px-4 py-2 bg-gray-500 dark:bg-gray-600 text-white rounded-lg hover:bg-gray-600 dark:hover:bg-gray-700 transition-colors"
                   >
-                    {t('knowledge.error.clear', '清除错误')}
+                    {t('knowledge.error.clear', 'Clear Error')}
                   </button>
                 </div>
               </div>
             ) : filteredKnowledgeBases.length === 0 ? (
               <div className="text-center py-12">
                 <FolderOpen className="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600 mb-4" />
-                <h3 className="text-lg font-medium text-gray-800 dark:text-gray-100 mb-2">{t('knowledge.empty.title', '暂无知识库')}</h3>
-                <p className="text-gray-500 dark:text-gray-400 mb-4">{t('knowledge.empty.description', '创建您的第一个知识库开始使用')}</p>
+                <h3 className="text-lg font-medium text-gray-800 dark:text-gray-100 mb-2">{t('knowledge.empty.title', 'No Knowledge Bases')}</h3>
+                <p className="text-gray-500 dark:text-gray-400 mb-4">{t('knowledge.empty.description', 'Create your first knowledge base to get started')}</p>
                 <button
                   onClick={handleOpenCreateModal}
                   disabled={isCheckingEmbedding}
@@ -379,7 +379,7 @@ const KnowledgeBase: React.FC = () => {
                   ) : (
                     <Plus className="w-4 h-4 mr-2" />
                   )}
-                  {t('knowledge.create', '创建知识库')}
+                  {t('knowledge.create', 'Create Knowledge Base')}
                 </button>
               </div>
             ) : (
@@ -438,23 +438,23 @@ const KnowledgeBase: React.FC = () => {
                         {isWebsite ? (
                           <>
                             <Globe className="w-3.5 h-3.5 text-blue-500" />
-                            <span className="text-xs text-gray-600 dark:text-gray-300">{t('knowledge.typeWebsite', '网站')}</span>
+                            <span className="text-xs text-gray-600 dark:text-gray-300">{t('knowledge.typeWebsite', 'Website')}</span>
                           </>
                         ) : isQA ? (
                           <>
                             <MessageSquare className="w-3.5 h-3.5 text-purple-500" />
-                            <span className="text-xs text-gray-600 dark:text-gray-300">{t('knowledge.typeQA', '问答对')}</span>
+                            <span className="text-xs text-gray-600 dark:text-gray-300">{t('knowledge.typeQA', 'QA Pairs')}</span>
                           </>
                         ) : (
                           <>
                             <FileText className="w-3.5 h-3.5 text-green-500" />
-                            <span className="text-xs text-gray-600 dark:text-gray-300">{t('knowledge.typeFile', '文件')}</span>
+                            <span className="text-xs text-gray-600 dark:text-gray-300">{t('knowledge.typeFile', 'File')}</span>
                           </>
                         )}
                       </div>
                     </div>
 
-                    <div className="text-sm text-gray-600 dark:text-gray-300">{t('knowledge.filesCount', { count: kb.fileCount, defaultValue: `${kb.fileCount} 文件` })}</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-300">{t('knowledge.filesCount', { count: kb.fileCount, defaultValue: `{{count}} files` })}</div>
                     <div className="text-sm text-gray-600 dark:text-gray-300 flex items-center">
                       <Clock className="w-3.5 h-3.5 mr-1 text-gray-400 dark:text-gray-500" />
                       {formatKnowledgeBaseUpdatedTime(kb.updatedAt)}
@@ -463,7 +463,7 @@ const KnowledgeBase: React.FC = () => {
                     <div className="flex justify-end space-x-2">
                       <button
                         className="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                        title={t('common.details', '详情')}
+                        title={t('common.details', 'Details')}
                         onClick={() => handleKnowledgeBaseClick(kb)}
                       >
                         <Eye className="w-4 h-4" />
@@ -471,7 +471,7 @@ const KnowledgeBase: React.FC = () => {
 
                       <button
                         className="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                        title={t('common.edit', '编辑')}
+                        title={t('common.edit', 'Edit')}
                         onClick={() => handleKnowledgeBaseAction('edit', kb)}
                       >
                         <Pencil className="w-4 h-4" />
@@ -479,7 +479,7 @@ const KnowledgeBase: React.FC = () => {
 
                       <button
                         className="text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-                        title={t('common.delete', '删除')}
+                        title={t('common.delete', 'Delete')}
                         onClick={() => handleKnowledgeBaseAction('delete', kb)}
                       >
                         <Trash2 className="w-4 h-4" />
@@ -531,7 +531,7 @@ const KnowledgeBase: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                    {t('knowledge.embedding.requiredTitle', '需要配置嵌入模型')}
+                    {t('knowledge.embedding.requiredTitle', 'Embedding Model Required')}
                   </h3>
                 </div>
               </div>
@@ -540,17 +540,17 @@ const KnowledgeBase: React.FC = () => {
             {/* Content */}
             <div className="px-6 py-5">
               <p className="text-gray-600 dark:text-gray-300 mb-4">
-                {t('knowledge.embedding.requiredDesc', '创建知识库需要先配置默认的嵌入模型（Embedding Model）。嵌入模型用于将文档内容转换为向量，以便进行语义搜索。')}
+                {t('knowledge.embedding.requiredDesc', 'Creating a knowledge base requires a default embedding model to be configured. The embedding model is used to convert document content into vectors for semantic search.')}
               </p>
               <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
                 <div className="flex items-start gap-3">
                   <Settings className="w-5 h-5 text-gray-500 dark:text-gray-400 mt-0.5 flex-shrink-0" />
                   <div>
                     <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                      {t('knowledge.embedding.configPath', '配置路径')}
+                      {t('knowledge.embedding.configPath', 'Configuration Path')}
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                      {t('knowledge.embedding.configPathDesc', '设置 → 模型供应商 → 选择嵌入模型')}
+                      {t('knowledge.embedding.configPathDesc', 'Settings → Model Providers → Set Default Embedding Model')}
                     </p>
                   </div>
                 </div>
@@ -563,14 +563,14 @@ const KnowledgeBase: React.FC = () => {
                 onClick={handleCloseEmbeddingWarning}
                 className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
               >
-                {t('common.cancel', '取消')}
+                {t('common.cancel', 'Cancel')}
               </button>
               <button
                 onClick={handleGoToAIConfig}
                 className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 rounded-lg transition-colors flex items-center gap-2"
               >
                 <Settings className="w-4 h-4" />
-                {t('knowledge.embedding.goToConfig', '前往配置')}
+                {t('knowledge.embedding.goToConfig', 'Go to Configuration')}
               </button>
             </div>
           </div>

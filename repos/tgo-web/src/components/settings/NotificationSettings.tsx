@@ -5,14 +5,14 @@ import { useNotification } from '@/hooks/useNotification';
 import Toggle from '@/components/ui/Toggle';
 
 /**
- * 通知设置页面
+ * Notification settings page
  * 
- * 功能：
- * - 通知权限状态显示和申请按钮
- * - 桌面通知开关
- * - 声音通知开关
- * - 通知场景配置
- * - 测试通知按钮
+ * Features:
+ * - Display of notification permission status and a request button
+ * - Desktop notification toggle
+ * - Sound notification toggle
+ * - Notification scenario configuration
+ * - Test notification button
  */
 const NotificationSettings: React.FC = () => {
   const { t } = useTranslation();
@@ -26,91 +26,91 @@ const NotificationSettings: React.FC = () => {
     sendTestNotification,
   } = useNotification();
 
-  // 权限状态对应的图标和颜色
+  // Icon and color for each permission status
   const permissionConfig = {
     granted: {
       icon: CheckCircle,
       color: 'text-green-500',
       bgColor: 'bg-green-50 dark:bg-green-900/30',
       borderColor: 'border-green-200 dark:border-green-800',
-      label: t('settings.notifications.permission.granted', '已授权'),
+      label: t('settings.notifications.permission.granted', 'Authorized'),
     },
     denied: {
       icon: XCircle,
       color: 'text-red-500',
       bgColor: 'bg-red-50 dark:bg-red-900/30',
       borderColor: 'border-red-200 dark:border-red-800',
-      label: t('settings.notifications.permission.denied', '已拒绝'),
+      label: t('settings.notifications.permission.denied', 'Denied'),
     },
     default: {
       icon: AlertCircle,
       color: 'text-yellow-500',
       bgColor: 'bg-yellow-50 dark:bg-yellow-900/30',
       borderColor: 'border-yellow-200 dark:border-yellow-800',
-      label: t('settings.notifications.permission.default', '未设置'),
+      label: t('settings.notifications.permission.default', 'Not Set'),
     },
   };
 
   const currentPermission = permissionConfig[permission] || permissionConfig.default;
   const PermissionIcon = currentPermission.icon;
 
-  // 处理请求权限
+  // Handle permission request
   const handleRequestPermission = async () => {
     await requestPermission();
   };
 
-  // 通知场景设置项
+  // Notification scenario settings
   const notificationScenarios = [
     {
       key: 'notifyOnBackground' as const,
       icon: Eye,
-      title: t('settings.notifications.scenarios.background.title', '后台通知'),
-      description: t('settings.notifications.scenarios.background.description', '当页面不可见（切换标签页或最小化）时发送通知'),
+      title: t('settings.notifications.scenarios.background.title', 'Background Notifications'),
+      description: t('settings.notifications.scenarios.background.description', 'Send notifications when page is not visible (tab switched or minimized)'),
       enabled: preferences.notifyOnBackground,
     },
     {
       key: 'notifyOnOtherConversation' as const,
       icon: MessageSquare,
-      title: t('settings.notifications.scenarios.otherConversation.title', '其他会话消息'),
-      description: t('settings.notifications.scenarios.otherConversation.description', '当收到非当前查看会话的消息时发送通知'),
+      title: t('settings.notifications.scenarios.otherConversation.title', 'Other Conversation Messages'),
+      description: t('settings.notifications.scenarios.otherConversation.description', 'Send notifications when receiving messages from conversations other than the current one'),
       enabled: preferences.notifyOnOtherConversation,
     },
     {
       key: 'notifyOnNewVisitor' as const,
       icon: Users,
-      title: t('settings.notifications.scenarios.newVisitor.title', '新访客通知'),
-      description: t('settings.notifications.scenarios.newVisitor.description', '当有新访客进入排队时发送通知'),
+      title: t('settings.notifications.scenarios.newVisitor.title', 'New Visitor Notifications'),
+      description: t('settings.notifications.scenarios.newVisitor.description', 'Send notifications when new visitors enter the queue'),
       enabled: preferences.notifyOnNewVisitor,
     },
   ];
 
   return (
     <div className="p-6 space-y-6">
-      {/* 页面标题 */}
+      {/* Page title */}
       <div className="flex items-center gap-2">
         <Bell className="w-5 h-5 text-gray-600 dark:text-gray-400" />
         <h2 className="text-lg font-medium text-gray-800 dark:text-gray-200">
-          {t('settings.notifications.title', '消息通知')}
+          {t('settings.notifications.title', 'Notifications')}
         </h2>
       </div>
 
-      {/* 浏览器不支持提示 */}
+      {/* Browser not supported notice */}
       {!isSupported && (
         <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
           <div className="flex items-center gap-2">
             <AlertCircle className="w-5 h-5 text-yellow-500" />
             <p className="text-sm text-yellow-700 dark:text-yellow-300">
-              {t('settings.notifications.notSupported', '您的浏览器不支持桌面通知功能')}
+              {t('settings.notifications.notSupported', 'Your browser does not support desktop notifications')}
             </p>
           </div>
         </div>
       )}
 
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-6">
-        {/* 权限状态 */}
+        {/* Permission status */}
         <div>
           <div className="text-sm font-medium text-gray-800 dark:text-gray-200 mb-3">
-            {t('settings.notifications.permission.title', '通知权限')}
+            {t('settings.notifications.permission.title', 'Notification Permission')}
           </div>
           <div className={`p-4 rounded-lg border ${currentPermission.bgColor} ${currentPermission.borderColor}`}>
             <div className="flex items-center justify-between">
@@ -122,10 +122,10 @@ const NotificationSettings: React.FC = () => {
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                     {permission === 'granted'
-                      ? t('settings.notifications.permission.grantedDesc', '可以接收桌面通知')
+                      ? t('settings.notifications.permission.grantedDesc', 'You can receive desktop notifications')
                       : permission === 'denied'
-                      ? t('settings.notifications.permission.deniedDesc', '请在浏览器设置中允许通知权限')
-                      : t('settings.notifications.permission.defaultDesc', '点击按钮请求通知权限')}
+                      ? t('settings.notifications.permission.deniedDesc', 'Please allow notification permission in browser settings')
+                      : t('settings.notifications.permission.defaultDesc', 'Click the button to request notification permission')}
                   </p>
                 </div>
               </div>
@@ -142,21 +142,21 @@ const NotificationSettings: React.FC = () => {
                   `}
                 >
                   {isRequesting
-                    ? t('settings.notifications.permission.requesting', '请求中...')
-                    : t('settings.notifications.permission.request', '请求权限')}
+                    ? t('settings.notifications.permission.requesting', 'Requesting...')
+                    : t('settings.notifications.permission.request', 'Request Permission')}
                 </button>
               )}
             </div>
           </div>
         </div>
 
-        {/* 通知开关 */}
+        {/* Notification toggles */}
         <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
           <div className="text-sm font-medium text-gray-800 dark:text-gray-200 mb-4">
-            {t('settings.notifications.toggles.title', '通知设置')}
+            {t('settings.notifications.toggles.title', 'Notification Settings')}
           </div>
           <div className="space-y-4">
-            {/* 桌面通知开关 */}
+            {/* Desktop notification toggle */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
@@ -164,10 +164,10 @@ const NotificationSettings: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                    {t('settings.notifications.toggles.desktop.title', '桌面通知')}
+                    {t('settings.notifications.toggles.desktop.title', 'Desktop Notifications')}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {t('settings.notifications.toggles.desktop.description', '收到新消息时在系统通知中心显示通知')}
+                    {t('settings.notifications.toggles.desktop.description', 'Show notifications in system notification center when new messages arrive')}
                   </p>
                 </div>
               </div>
@@ -175,11 +175,11 @@ const NotificationSettings: React.FC = () => {
                 checked={preferences.notificationEnabled}
                 onChange={(checked) => updatePreferences({ notificationEnabled: checked })}
                 disabled={permission !== 'granted'}
-                aria-label={t('settings.notifications.toggles.desktop.title', '桌面通知')}
+                aria-label={t('settings.notifications.toggles.desktop.title', 'Desktop Notifications')}
               />
             </div>
 
-            {/* 声音提醒开关 */}
+            {/* Sound alert toggle */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-purple-50 dark:bg-purple-900/30 rounded-lg">
@@ -187,26 +187,26 @@ const NotificationSettings: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                    {t('settings.notifications.toggles.sound.title', '声音提醒')}
+                    {t('settings.notifications.toggles.sound.title', 'Sound Alerts')}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {t('settings.notifications.toggles.sound.description', '收到新消息时播放提示音')}
+                    {t('settings.notifications.toggles.sound.description', 'Play notification sound when new messages arrive')}
                   </p>
                 </div>
               </div>
               <Toggle
                 checked={preferences.notificationSound}
                 onChange={(checked) => updatePreferences({ notificationSound: checked })}
-                aria-label={t('settings.notifications.toggles.sound.title', '声音提醒')}
+                aria-label={t('settings.notifications.toggles.sound.title', 'Sound Alerts')}
               />
             </div>
           </div>
         </div>
 
-        {/* 通知场景 */}
+        {/* Notification scenarios */}
         <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
           <div className="text-sm font-medium text-gray-800 dark:text-gray-200 mb-4">
-            {t('settings.notifications.scenarios.title', '通知场景')}
+            {t('settings.notifications.scenarios.title', 'Notification Scenarios')}
           </div>
           <div className="space-y-4">
             {notificationScenarios.map((scenario) => {
@@ -238,15 +238,15 @@ const NotificationSettings: React.FC = () => {
           </div>
         </div>
 
-        {/* 测试通知 */}
+        {/* Test notification */}
         <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                {t('settings.notifications.test.title', '测试通知')}
+                {t('settings.notifications.test.title', 'Test Notification')}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                {t('settings.notifications.test.description', '发送一条测试通知以验证功能是否正常')}
+                {t('settings.notifications.test.description', 'Send a test notification to verify the feature is working correctly')}
               </p>
             </div>
             <button
@@ -260,16 +260,16 @@ const NotificationSettings: React.FC = () => {
                 }
               `}
             >
-              {t('settings.notifications.test.button', '发送测试')}
+              {t('settings.notifications.test.button', 'Send Test')}
             </button>
           </div>
         </div>
       </div>
 
-      {/* 提示信息 */}
+      {/* Hint */}
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
         <p className="text-sm text-blue-700 dark:text-blue-300">
-          💡 {t('settings.notifications.tip', '提示：通知功能需要浏览器授权。如果您拒绝了权限请求，需要在浏览器设置中手动允许本站点的通知权限。')}
+          💡 {t('settings.notifications.tip', 'Tip: Notification feature requires browser permission. If you denied the permission request, you need to manually allow notifications for this site in your browser settings.')}
         </p>
       </div>
     </div>

@@ -1,8 +1,8 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "TGO-Tech AI Service",
-    "description": "AI/ML Operations Microservice for TGO-Tech customer service platform",
+    "title": "Pelatis AI Service",
+    "description": "AI/ML Operations Microservice for Pelatis customer service platform",
     "version": "1.0.0"
   },
   "paths": {

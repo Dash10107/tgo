@@ -53,7 +53,7 @@ def test_configuration():
         from app.core.config import settings
         
         # Test basic settings
-        assert settings.PROJECT_NAME == "TGO-Tech API Service"
+        assert settings.PROJECT_NAME == "Pelatis API Service"
         assert settings.API_V1_STR == "/v1"
         assert settings.ACCESS_TOKEN_EXPIRE_MINUTES > 0
         
@@ -168,7 +168,7 @@ def test_security():
 
 def main():
     """Run all tests."""
-    print("🚀 TGO-Tech API Setup Test")
+    print("🚀 Pelatis API Setup Test")
     print("=" * 50)
     
     tests = [

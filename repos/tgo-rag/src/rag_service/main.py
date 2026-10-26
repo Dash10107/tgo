@@ -1,5 +1,5 @@
 """
-Main FastAPI application for TGO RAG Service.
+Main FastAPI application for Pelatis RAG Service.
 """
 
 import time
@@ -64,7 +64,7 @@ async def lifespan(app: FastAPI):
 
     # Startup process
     print_section_header("Initialization", Symbols.GEAR)
-    log_startup_step("Starting TGO RAG Service initialization", version=settings.app_version, environment=settings.environment)
+    log_startup_step("Starting Pelatis RAG Service initialization", version=settings.app_version, environment=settings.environment)
 
     try:
         # Initialize database
@@ -97,7 +97,7 @@ async def lifespan(app: FastAPI):
     finally:
         # Shutdown
         print_section_header("Shutdown", Symbols.GEAR)
-        log_startup_step("Shutting down TGO RAG Service")
+        log_startup_step("Shutting down Pelatis RAG Service")
         await close_database()
         log_startup_success("Application shutdown complete")
         print_section_footer()
@@ -116,7 +116,7 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title=settings.app_name,
         version=settings.app_version,
-        description="TGO-Tech RAG (Retrieval-Augmented Generation) Service for document processing and semantic search",
+        description="Pelatis RAG (Retrieval-Augmented Generation) Service for document processing and semantic search",
         docs_url="/docs",
         redoc_url="/redoc",
         openapi_url="/openapi.json",

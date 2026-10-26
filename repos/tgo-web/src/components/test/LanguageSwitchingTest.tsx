@@ -10,12 +10,12 @@ const LanguageSwitchingTest: React.FC = () => {
   const { t, i18n } = useTranslation();
 
   const testTranslations = [
-    { key: 'common.settings', expected: { zh: '设置', en: 'Settings' } },
-    { key: 'common.about', expected: { zh: '关于', en: 'About' } },
-    { key: 'auth.logout', expected: { zh: '退出登录', en: 'Logout' } },
-    { key: 'settings.title', expected: { zh: '设置', en: 'Settings' } },
-    { key: 'settings.language.title', expected: { zh: '语言设置', en: 'Language Settings' } },
-    { key: 'about.version', expected: { zh: '版本', en: 'Version' } },
+    { key: 'common.settings', expected: { zh: 'Settings', en: 'Settings' } },
+    { key: 'common.about', expected: { zh: 'About', en: 'About' } },
+    { key: 'auth.logout', expected: { zh: 'Logout', en: 'Logout' } },
+    { key: 'settings.title', expected: { zh: 'Settings', en: 'Settings' } },
+    { key: 'settings.language.title', expected: { zh: 'Language Settings', en: 'Language Settings' } },
+    { key: 'about.version', expected: { zh: 'Version', en: 'Version' } },
   ];
 
   const currentLang = i18n.language?.split('-')[0] || 'zh';
@@ -44,7 +44,7 @@ const LanguageSwitchingTest: React.FC = () => {
                     : 'bg-gray-50 text-gray-700 border-gray-300 hover:bg-gray-100'
                 }`}
               >
-                中文 (Chinese)
+                Chinese
               </button>
               <button
                 onClick={() => switchLanguage('en')}

@@ -44,7 +44,7 @@ const ChatToolbarPluginButtons: React.FC<ChatToolbarPluginButtonsProps> = ({ con
           disabled={disabled}
           className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label={btn.title}
-          title={disabled ? t('chat.input.disabled.tooltip', 'AI助手已启用，手动输入已禁用') : (btn.tooltip || btn.title)}
+          title={disabled ? t('chat.input.disabled.tooltip', 'AI assistant enabled, manual input disabled') : (btn.tooltip || btn.title)}
         >
           {renderIcon(btn.icon)}
         </button>

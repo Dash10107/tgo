@@ -112,7 +112,7 @@ const TelegramPlatformConfig: React.FC<Props> = ({ platform }) => {
                     resetPlatformConfig(platform.id);
                 }
             }
-            showSuccess(showToast, t('platforms.telegram.messages.saveSuccess', '保存成功'), t('platforms.telegram.messages.saveSuccessMessage', 'Telegram 配置已更新'));
+            showSuccess(showToast, t('platforms.telegram.messages.saveSuccess', 'Saved Successfully'), t('platforms.telegram.messages.saveSuccessMessage', 'Telegram configuration has been updated'));
         } catch (e) {
             showApiError(showToast, e);
         }
@@ -124,8 +124,8 @@ const TelegramPlatformConfig: React.FC<Props> = ({ platform }) => {
         <main className="flex flex-col flex-1 min-h-0 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
             <header className="px-6 py-4 border-b border-gray-200/80 dark:border-gray-700/80 flex justify-between items-center bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg sticky top-0 z-10">
                 <div>
-                    <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">{t('platforms.telegram.header.title', { name: displayName, defaultValue: '{{name}} 配置' })}</h2>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{t('platforms.telegram.header.subtitle', '配置 Telegram Bot 所需的凭据与回调。')}</p>
+                    <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">{t('platforms.telegram.header.title', { name: displayName, defaultValue: '{{name}} Config' })}</h2>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{t('platforms.telegram.header.subtitle', 'Configure credentials and callbacks for Telegram Bot.')}</p>
                 </div>
                 <div className="flex items-center gap-3">
                     <button
@@ -133,7 +133,7 @@ const TelegramPlatformConfig: React.FC<Props> = ({ platform }) => {
                         onClick={() => setConfirmOpen(true)}
                         className={`px-3 py-1.5 text-sm rounded-md ${isDeleting ? 'bg-red-400 text-white' : 'bg-red-600 dark:bg-red-500 text-white hover:bg-red-700 dark:hover:bg-red-600'}`}
                     >
-                        {isDeleting ? t('platforms.telegram.buttons.deleting', '删除中…') : t('platforms.telegram.buttons.delete', '删除')}
+                        {isDeleting ? t('platforms.telegram.buttons.deleting', 'Deleting...') : t('platforms.telegram.buttons.delete', 'Delete')}
                     </button>
                     <button
                         disabled={isUpdating || isDeleting || isToggling}
@@ -143,10 +143,10 @@ const TelegramPlatformConfig: React.FC<Props> = ({ platform }) => {
                             try {
                                 if (isEnabled) {
                                     await disablePlatform(platform.id);
-                                    showSuccess(showToast, t('platforms.telegram.messages.disabled', '平台已禁用'));
+                                    showSuccess(showToast, t('platforms.telegram.messages.disabled', 'Platform disabled'));
                                 } else {
                                     await enablePlatform(platform.id);
-                                    showSuccess(showToast, t('platforms.telegram.messages.enabled', '平台已启用'));
+                                    showSuccess(showToast, t('platforms.telegram.messages.enabled', 'Platform enabled'));
                                 }
                             } catch (e) {
                                 showApiError(showToast, e);
@@ -156,7 +156,7 @@ const TelegramPlatformConfig: React.FC<Props> = ({ platform }) => {
                         }}
                         className={`px-3 py-1.5 text-sm rounded-md text-white ${isEnabled ? 'bg-gray-600 dark:bg-gray-500 hover:bg-gray-700 dark:hover:bg-gray-600' : 'bg-green-600 dark:bg-green-500 hover:bg-green-700 dark:hover:bg-green-600'} ${isToggling ? 'opacity-70 cursor-not-allowed' : ''}`}
                     >
-                        {isToggling ? (isEnabled ? t('platforms.telegram.buttons.disabling', '禁用中…') : t('platforms.telegram.buttons.enabling', '启用中…')) : (isEnabled ? t('platforms.telegram.buttons.disable', '禁用') : t('platforms.telegram.buttons.enable', '启用'))}
+                        {isToggling ? (isEnabled ? t('platforms.telegram.buttons.disabling', 'Disabling...') : t('platforms.telegram.buttons.enabling', 'Enabling...')) : (isEnabled ? t('platforms.telegram.buttons.disable', 'Disable') : t('platforms.telegram.buttons.enable', 'Enable'))}
                     </button>
 
                     <button
@@ -164,7 +164,7 @@ const TelegramPlatformConfig: React.FC<Props> = ({ platform }) => {
                         onClick={handleSave}
                         className={`px-3 py-1.5 text-sm rounded-md ${canSave ? 'bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600' : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'}`}
                     >
-                        {isUpdating ? t('platforms.telegram.buttons.saving', '保存中…') : t('platforms.telegram.buttons.save', '保存')}
+                        {isUpdating ? t('platforms.telegram.buttons.saving', 'Saving...') : t('platforms.telegram.buttons.save', 'Save')}
                     </button>
                 </div>
             </header>
@@ -172,19 +172,19 @@ const TelegramPlatformConfig: React.FC<Props> = ({ platform }) => {
             <div className="flex flex-1 min-h-0 flex-col lg:flex-row gap-4 p-6">
                 {/* Left: form */}
                 <section className="lg:w-2/5 w-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-5 rounded-lg shadow-sm border border-gray-200/60 dark:border-gray-700/60 space-y-4 overflow-y-auto min-h-0 auto-hide-scrollbar">
-                    {/* 平台名称 */}
+                    {/* Platform name */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.telegram.form.name', '平台名称')}</label>
+                        <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.telegram.form.name', 'Platform Name')}</label>
                         <input
                             type="text"
                             value={platformName}
                             onChange={(e) => setPlatformName(e.target.value)}
-                            placeholder={t('platforms.telegram.form.namePlaceholder', '请输入平台名称')}
+                            placeholder={t('platforms.telegram.form.namePlaceholder', 'Please enter platform name')}
                             className="w-full text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-700/50 dark:text-gray-200"
                         />
                     </div>
 
-                    {/* 回调URL（只读，需设置到 Telegram） */}
+                    {/* Callback URL (read-only; set it in Telegram) */}
                     <div>
                         <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.telegram.form.callbackUrl', 'Webhook URL')}</label>
                         <div className="flex items-center gap-2">
@@ -192,7 +192,7 @@ const TelegramPlatformConfig: React.FC<Props> = ({ platform }) => {
                                 type="text"
                                 value={formValues.callbackUrl}
                                 readOnly
-                                placeholder={t('platforms.telegram.form.callbackUrlPlaceholder', '平台创建后会生成 Webhook URL')}
+                                placeholder={t('platforms.telegram.form.callbackUrlPlaceholder', 'Webhook URL will be generated after creation')}
                                 className="flex-1 text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md bg-gray-100/70 dark:bg-gray-700/50 dark:text-gray-200 focus:outline-none font-mono"
                             />
                             <button
@@ -202,17 +202,17 @@ const TelegramPlatformConfig: React.FC<Props> = ({ platform }) => {
                                     try {
                                         if (!formValues.callbackUrl) return;
                                         await navigator.clipboard.writeText(formValues.callbackUrl);
-                                        showSuccess(showToast, t('platforms.telegram.messages.urlCopied', 'Webhook URL 已复制'));
+                                        showSuccess(showToast, t('platforms.telegram.messages.urlCopied', 'Webhook URL copied'));
                                     } catch (e) {
                                         showApiError(showToast, e);
                                     }
                                 }}
                                 className={`px-2 py-1 text-xs rounded-md ${formValues.callbackUrl ? 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'}`}
                             >
-                                {t('platforms.telegram.buttons.copy', '复制')}
+                                {t('platforms.telegram.buttons.copy', 'Copy')}
                             </button>
                         </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('platforms.telegram.form.callbackUrlHint', '使用 setWebhook API 将此 URL 设置为 Bot 的 Webhook 地址。')}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('platforms.telegram.form.callbackUrlHint', 'Use the setWebhook API to set this URL as your Bot\'s Webhook address.')}</p>
                     </div>
 
                     {/* Bot Token */}
@@ -222,23 +222,23 @@ const TelegramPlatformConfig: React.FC<Props> = ({ platform }) => {
                             type="password"
                             value={formValues.botToken}
                             onChange={(e) => handleChange({ botToken: e.target.value })}
-                            placeholder={t('platforms.telegram.form.botTokenPlaceholder', '例如: 123456789:ABCdefGHIjklMNOpqrsTUVwxyz')}
+                            placeholder={t('platforms.telegram.form.botTokenPlaceholder', 'e.g.: 123456789:ABCdefGHIjklMNOpqrsTUVwxyz')}
                             className="w-full text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-700/50 dark:text-gray-200"
                         />
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('platforms.telegram.form.botTokenHint', '通过 @BotFather 创建 Bot 后获取的 Token，请妥善保管。')}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('platforms.telegram.form.botTokenHint', 'Obtain the Token after creating your Bot via @BotFather, and keep it safe.')}</p>
                     </div>
 
-                    {/* Webhook Secret (可选) */}
+                    {/* Webhook Secret (optional) */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.telegram.form.webhookSecret', 'Webhook Secret（可选）')}</label>
+                        <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.telegram.form.webhookSecret', 'Webhook Secret (Optional)')}</label>
                         <input
                             type="text"
                             value={formValues.webhookSecret}
                             onChange={(e) => handleChange({ webhookSecret: e.target.value })}
-                            placeholder={t('platforms.telegram.form.webhookSecretPlaceholder', '用于验证 webhook 请求来源')}
+                            placeholder={t('platforms.telegram.form.webhookSecretPlaceholder', 'Used to verify webhook request source')}
                             className="w-full text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-700/50 dark:text-gray-200"
                         />
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('platforms.telegram.form.webhookSecretHint', '在 setWebhook 时通过 secret_token 参数设置相同的值，用于验证请求来源。')}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('platforms.telegram.form.webhookSecretHint', 'Set the same value via the secret_token parameter when calling setWebhook to verify request authenticity.')}</p>
                     </div>
 
                     {/* AI Settings */}
@@ -255,49 +255,49 @@ const TelegramPlatformConfig: React.FC<Props> = ({ platform }) => {
 
                 {/* Right: comprehensive guide */}
                 <section className="lg:w-3/5 w-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-5 rounded-lg shadow-sm border border-gray-200/60 dark:border-gray-700/60 min-h-0 overflow-y-auto auto-hide-scrollbar space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">{t('platforms.telegram.guide.title', 'Telegram Bot 配置指南')}</h3>
+                    <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">{t('platforms.telegram.guide.title', 'Telegram Bot Configuration Guide')}</h3>
 
                     <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 text-green-800 dark:text-green-200 text-sm rounded-md p-3">
-                        <p className="font-medium">{t('platforms.telegram.guide.overview', '✨ 极简配置')}</p>
-                        <p className="mt-1">{t('platforms.telegram.guide.overviewText', '只需：①创建 Bot 获取 Token → ②填入 Token → ③点击「启用」。系统会自动配置 Webhook！')}</p>
+                        <p className="font-medium">{t('platforms.telegram.guide.overview', '✨ Quick Start')}</p>
+                        <p className="mt-1">{t('platforms.telegram.guide.overviewText', 'Steps: ①Create Bot & get Token → ②Enter Token → ③Click \'Enable\'. System auto-configures Webhook!')}</p>
                     </div>
 
                     <details className="rounded-md border border-gray-200 dark:border-gray-600 p-3 bg-white/70 dark:bg-gray-700/50" open>
-                        <summary className="cursor-pointer font-semibold text-gray-800 dark:text-gray-100">{t('platforms.telegram.guide.step1Title', '1️⃣ 创建 Telegram Bot')}</summary>
+                        <summary className="cursor-pointer font-semibold text-gray-800 dark:text-gray-100">{t('platforms.telegram.guide.step1Title', '1️⃣ Create Telegram Bot')}</summary>
                         <div className="text-sm text-gray-700 dark:text-gray-300 mt-2 space-y-2">
                             <ol className="list-decimal pl-5 space-y-1">
-                                <li dangerouslySetInnerHTML={{ __html: t('platforms.telegram.guide.step1Item1', '在 Telegram 中搜索 <a class="text-blue-600 hover:underline" href="https://t.me/BotFather" target="_blank" rel="noreferrer">@BotFather</a> 并打开对话。') }} />
-                                <li>{t('platforms.telegram.guide.step1Item2', '发送 /newbot 命令开始创建机器人。')}</li>
-                                <li>{t('platforms.telegram.guide.step1Item3', '按提示输入机器人名称（显示名）和用户名（以 _bot 结尾）。')}</li>
-                                <li>{t('platforms.telegram.guide.step1Item4', 'BotFather 将返回 Bot Token，复制备用。')}</li>
+                                <li dangerouslySetInnerHTML={{ __html: t('platforms.telegram.guide.step1Item1', 'Search for <a class="text-blue-600 hover:underline" href="https://t.me/BotFather" target="_blank" rel="noreferrer">@BotFather</a> in Telegram and start a chat.') }} />
+                                <li>{t('platforms.telegram.guide.step1Item2', 'Send /newbot command to begin creating your robot.')}</li>
+                                <li>{t('platforms.telegram.guide.step1Item3', 'Enter a display name and a unique username (ending in _bot) as prompted.')}</li>
+                                <li>{t('platforms.telegram.guide.step1Item4', 'BotFather will return a Bot Token. Copy it for the next step.')}</li>
                             </ol>
                         </div>
                     </details>
 
                     <details className="rounded-md border border-gray-200 dark:border-gray-600 p-3 bg-white/70 dark:bg-gray-700/50" open>
-                        <summary className="cursor-pointer font-semibold text-gray-800 dark:text-gray-100">{t('platforms.telegram.guide.step2Title', '2️⃣ 配置并启用')}</summary>
+                        <summary className="cursor-pointer font-semibold text-gray-800 dark:text-gray-100">{t('platforms.telegram.guide.step2Title', '2️⃣ Configure and Enable')}</summary>
                         <div className="text-sm text-gray-700 dark:text-gray-300 mt-2 space-y-2">
                             <ol className="list-decimal pl-5 space-y-1">
-                                <li>{t('platforms.telegram.guide.step2Item1', '在左侧「Bot Token」输入框中粘贴 Token。')}</li>
-                                <li>{t('platforms.telegram.guide.step2Item2', '（可选）填写「Webhook Secret」增强安全性。')}</li>
-                                <li>{t('platforms.telegram.guide.step2Item3', '点击「保存」后，再点击右上角的「启用」按钮。')}</li>
+                                <li>{t('platforms.telegram.guide.step2Item1', 'Paste the Token into the \'Bot Token\' field on the left.')}</li>
+                                <li>{t('platforms.telegram.guide.step2Item2', '(Optional) Enter a \'Webhook Secret\' for enhanced security.')}</li>
+                                <li>{t('platforms.telegram.guide.step2Item3', 'Click \'Save\', then click the \'Enable\' button in the top right.')}</li>
                             </ol>
                             <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded p-2 text-xs text-blue-800 dark:text-blue-200 mt-2">
-                                <p className="font-semibold">{t('platforms.telegram.guide.step2AutoConfigTitle', '💡 自动配置')}</p>
-                                <p>{t('platforms.telegram.guide.step2AutoConfig', '点击「启用」后，系统会自动向 Telegram 注册 Webhook 地址，无需手动操作。')}</p>
+                                <p className="font-semibold">{t('platforms.telegram.guide.step2AutoConfigTitle', '💡 Auto Configuration')}</p>
+                                <p>{t('platforms.telegram.guide.step2AutoConfig', 'After enabling, the system automatically registers the Webhook address with Telegram. No manual setup needed.')}</p>
                             </div>
                         </div>
                     </details>
 
                     <details className="rounded-md border border-gray-200 dark:border-gray-600 p-3 bg-white/70 dark:bg-gray-700/50">
-                        <summary className="cursor-pointer font-semibold text-gray-800 dark:text-gray-100">{t('platforms.telegram.guide.step3Title', '3️⃣ 测试机器人')}</summary>
+                        <summary className="cursor-pointer font-semibold text-gray-800 dark:text-gray-100">{t('platforms.telegram.guide.step3Title', '3️⃣ Test Your Bot')}</summary>
                         <div className="text-sm text-gray-700 dark:text-gray-300 mt-2 space-y-2">
                             <ol className="list-decimal pl-5 space-y-1">
-                                <li>{t('platforms.telegram.guide.step3Item1', '在 Telegram 中搜索你的 Bot 用户名并开始对话。')}</li>
-                                <li>{t('platforms.telegram.guide.step3Item2', '发送任意消息，AI 将自动回复。')}</li>
-                                <li>{t('platforms.telegram.guide.step3Item3', '如需将 Bot 添加到群组，确保在 BotFather 中开启「Allow Groups」选项。')}</li>
+                                <li>{t('platforms.telegram.guide.step3Item1', 'Search for your Bot\'s username in Telegram and start a conversation.')}</li>
+                                <li>{t('platforms.telegram.guide.step3Item2', 'Send any message, and the AI will reply automatically.')}</li>
+                                <li>{t('platforms.telegram.guide.step3Item3', 'To add your Bot to groups, ensure \'Allow Groups\' is enabled in BotFather.')}</li>
                             </ol>
-                            <a className="text-blue-600 dark:text-blue-400 hover:underline" href="https://core.telegram.org/bots/api" target="_blank" rel="noreferrer">{t('platforms.telegram.guide.docsLink', 'Telegram Bot API 文档')}</a>
+                            <a className="text-blue-600 dark:text-blue-400 hover:underline" href="https://core.telegram.org/bots/api" target="_blank" rel="noreferrer">{t('platforms.telegram.guide.docsLink', 'Telegram Bot API Docs')}</a>
                         </div>
                     </details>
 
@@ -313,10 +313,10 @@ const TelegramPlatformConfig: React.FC<Props> = ({ platform }) => {
       `}</style>
             <ConfirmDialog
                 isOpen={confirmOpen}
-                title={t('platforms.telegram.dialog.deleteTitle', '确认删除')}
-                message={t('platforms.telegram.dialog.deleteMessage', '确定要删除此 Telegram Bot 平台吗？此操作不可撤销。')}
-                confirmText={t('platforms.telegram.dialog.confirmDelete', '删除')}
-                cancelText={t('platforms.telegram.dialog.cancel', '取消')}
+                title={t('platforms.telegram.dialog.deleteTitle', 'Confirm Delete')}
+                message={t('platforms.telegram.dialog.deleteMessage', 'Are you sure you want to delete this Telegram Bot platform? This action cannot be undone.')}
+                confirmText={t('platforms.telegram.dialog.confirmDelete', 'Delete')}
+                cancelText={t('platforms.telegram.dialog.cancel', 'Cancel')}
                 confirmVariant="danger"
                 isLoading={isDeleting}
                 onCancel={() => setConfirmOpen(false)}
@@ -329,7 +329,7 @@ const TelegramPlatformConfig: React.FC<Props> = ({ platform }) => {
                             ? (idx < platforms.length - 1 ? platforms[idx + 1]?.id : (idx > 0 ? platforms[idx - 1]?.id : null))
                             : null;
                         await deletePlatform(platform.id);
-                        showSuccess(showToast, t('platforms.telegram.messages.deleteSuccess', '删除成功'), t('platforms.telegram.messages.deleteSuccessMessage', 'Telegram Bot 平台已删除'));
+                        showSuccess(showToast, t('platforms.telegram.messages.deleteSuccess', 'Deleted Successfully'), t('platforms.telegram.messages.deleteSuccessMessage', 'Telegram Bot platform has been deleted'));
                         setConfirmOpen(false);
                         if (nextId) navigate(`/platforms/${nextId}`);
                         else navigate('/platforms');

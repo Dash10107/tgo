@@ -53,7 +53,7 @@ const AgentStoreModal: React.FC<AgentStoreModalProps> = ({ isOpen, onClose, onIn
       { 
         id: 'all', 
         slug: 'all', 
-        name_zh: '全部员工', 
+        name_zh: 'All Agents', 
         name_en: 'All Agents', 
         icon: 'Grid3X3'
       },
@@ -118,7 +118,7 @@ const AgentStoreModal: React.FC<AgentStoreModalProps> = ({ isOpen, onClose, onIn
     }
 
     if (installedAgentNames.has(agent.title_zh?.toLowerCase() || agent.name.toLowerCase())) {
-      showSuccess(t('common.info'), t('agents.store.alreadyInstalled', '该员工已在团队中'));
+      showSuccess(t('common.info'), t('agents.store.alreadyInstalled', 'This agent is already on your team'));
       return;
     }
 
@@ -139,7 +139,7 @@ const AgentStoreModal: React.FC<AgentStoreModalProps> = ({ isOpen, onClose, onIn
       await loadAgents();
       if (onInstalled) onInstalled();
     } catch (error) {
-      showError(t('common.error'), t('agents.store.installFailed', '招聘失败，请重试'));
+      showError(t('common.error'), t('agents.store.installFailed', 'Hiring failed, please try again'));
     } finally {
       setInstallingId(null);
     }
@@ -159,7 +159,7 @@ const AgentStoreModal: React.FC<AgentStoreModalProps> = ({ isOpen, onClose, onIn
       await loadAgents();
       if (onInstalled) onInstalled();
     } catch (error) {
-      showError(t('common.error'), t('agents.store.installFailed', '招聘失败，请重试'));
+      showError(t('common.error'), t('agents.store.installFailed', 'Hiring failed, please try again'));
     } finally {
       setInstallingId(null);
     }
@@ -170,7 +170,7 @@ const AgentStoreModal: React.FC<AgentStoreModalProps> = ({ isOpen, onClose, onIn
       <StoreModalBase isOpen={isOpen} onClose={onClose}
         sidebar={
           <StoreSidebar 
-            title={t('agents.store.title', '员工商店')}
+            title={t('agents.store.title', 'Agent Store')}
             icon={<Bot className="w-5 h-5" />}
             categories={categories}
             selectedCategory={selectedCategory}
@@ -182,7 +182,7 @@ const AgentStoreModal: React.FC<AgentStoreModalProps> = ({ isOpen, onClose, onIn
           <StoreHeader 
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
-            searchPlaceholder={t('agents.store.searchPlaceholder', '搜索员工名称或职责...')}
+            searchPlaceholder={t('agents.store.searchPlaceholder', 'Search agent name or responsibilities...')}
             onClose={onClose}
             themeColor="indigo"
             userStatus={
@@ -198,7 +198,7 @@ const AgentStoreModal: React.FC<AgentStoreModalProps> = ({ isOpen, onClose, onIn
           loading={loading} 
           isEmpty={!agents || agents.length === 0}
           emptyIcon={<Bot className="w-10 h-10" />}
-          emptyTitle={t('agents.store.noResults', '未找到匹配的员工')}
+          emptyTitle={t('agents.store.noResults', 'No matching agents found')}
           themeColor="indigo"
         >
           {agents.map(agent => (

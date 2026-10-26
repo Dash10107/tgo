@@ -12,7 +12,7 @@ import NodeExecutionOverlay from '../overlays/NodeExecutionOverlay';
 
 const EventNode: React.FC<NodeProps<EventNodeData>> = ({ id, data, selected }) => {
   const { t } = useTranslation();
-  const defaultLabel = t('workflow.node_types.event.label', '事件触发');
+  const defaultLabel = t('workflow.node_types.event.label', 'Event Trigger');
 
   return (
     <div

@@ -6,7 +6,7 @@ sidebar_position: 1
 
 # 一键部署
 
-本页介绍如何使用一键部署脚本快速安装 TGO。
+本页介绍如何使用一键部署脚本快速安装 Pelatis。
 
 ## 海外网络（GitHub）
 
@@ -33,7 +33,7 @@ REF=latest curl -fsSL https://gitee.com/tgoai/tgo/raw/main/bootstrap_cn.sh | bas
 
 ## 端口配置
 
-TGO 默认使用以下端口：
+Pelatis 默认使用以下端口：
 
 | 端口 | 用途 |
 |------|------|

@@ -6,7 +6,7 @@ sidebar_position: 4
 
 # 扩展点详解
 
-TGO 提供多个扩展点，允许插件在不同位置扩展客服系统功能。
+Pelatis 提供多个扩展点，允许插件在不同位置扩展客服系统功能。
 
 ## 访客面板 (visitor_panel)
 

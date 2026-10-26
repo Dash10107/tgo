@@ -20,13 +20,13 @@ interface RecentActivitySectionProps {
 function formatDuration(seconds?: number | null, t?: any): string | null {
   if (seconds == null || !Number.isFinite(seconds)) return null;
   const s = Math.floor(seconds);
-  if (s < 60) return t ? t('visitor.activity.duration.seconds', { count: s, defaultValue: `\u6301\u7eed ${s}\u79d2` }) : `持续 ${s}秒`;
+  if (s < 60) return t ? t('visitor.activity.duration.seconds', { count: s, defaultValue: 'Lasted {{count}}s' }) : `Lasted ${s}s`;
   const m = Math.floor(s / 60);
   const rs = s % 60;
   if (rs) {
-    return t ? t('visitor.activity.duration.minutesSeconds', { m, s: rs, defaultValue: `\u6301\u7eed ${m}\u5206${rs}\u79d2` }) : `持续 ${m}分${rs}秒`;
+    return t ? t('visitor.activity.duration.minutesSeconds', { m, s: rs, defaultValue: 'Lasted {{m}}m {{s}}s' }) : `Lasted ${m}m ${rs}s`;
   }
-  return t ? t('visitor.activity.duration.minutes', { count: m, defaultValue: `\u6301\u7eed ${m}\u5206\u949f` }) : `持续 ${m}分钟`;
+  return t ? t('visitor.activity.duration.minutes', { count: m, defaultValue: 'Lasted {{count}} min' }) : `Lasted ${m} min`;
 }
 
 function getActivityIconAndColor(type: string) {
@@ -51,7 +51,7 @@ function getActivityIconAndColor(type: string) {
 }
 
 /**
- * 最近活动模块组件（使用渠道详情 API 的 recent_activities 数据）
+ * Recent activity module component (uses the recent_activities data from the channel detail API)
  */
 const RecentActivitySection: React.FC<RecentActivitySectionProps> = ({ 
   activities, 
@@ -73,7 +73,7 @@ const RecentActivitySection: React.FC<RecentActivitySectionProps> = ({
 
   return (
     <CollapsibleSection
-      title={t('visitor.sections.recentActivity', '最近活动')}
+      title={t('visitor.sections.recentActivity', 'Recent Activity')}
       className={className}
       defaultExpanded={false}
       expanded={expanded}
@@ -135,7 +135,7 @@ const RecentActivitySection: React.FC<RecentActivitySectionProps> = ({
         {(!list || list.length === 0) && (
           <div className="py-8 text-center bg-gray-50/50 dark:bg-gray-900/30 rounded-lg border border-dashed border-gray-200 dark:border-gray-800">
             <History className="w-5 h-5 mx-auto mb-2 text-gray-300 dark:text-gray-600" />
-            <div className="text-[12px] text-gray-400 dark:text-gray-500 italic">{t('visitor.activity.noActivity', '暂无活动记录')}</div>
+            <div className="text-[12px] text-gray-400 dark:text-gray-500 italic">{t('visitor.activity.noActivity', 'No activity yet')}</div>
           </div>
         )}
       </div>

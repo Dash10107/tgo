@@ -21,7 +21,7 @@ interface VisitorHeaderProps {
 }
 
 /**
- * 访客头部信息组件
+ * Visitor header info component
  */
 const VisitorHeader: React.FC<VisitorHeaderProps> = ({
   name,
@@ -37,7 +37,7 @@ const VisitorHeader: React.FC<VisitorHeaderProps> = ({
   const { t } = useTranslation();
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'online': return t('chat.status.online', '在线');
+      case 'online': return t('chat.status.online', 'Online');
       default: return undefined;
     }
   };
@@ -63,7 +63,7 @@ const VisitorHeader: React.FC<VisitorHeaderProps> = ({
         imageClassName={onAvatarClick ? 'group-hover:opacity-75 transition-opacity' : undefined}
         fallbackClassName={onAvatarClick ? 'group-hover:opacity-75 transition-opacity' : undefined}
         onClick={onAvatarClick}
-        title={onAvatarClick ? t('visitor.avatar.uploadTitle', '点击上传头像') : undefined}
+        title={onAvatarClick ? t('visitor.avatar.uploadTitle', 'Click to upload avatar') : undefined}
         overlay={
           onAvatarClick ? (
             isUploading ? (

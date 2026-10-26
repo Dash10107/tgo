@@ -1,8 +1,8 @@
-# TGO-Tech RAG Service API Workflows
+# Pelatis RAG Service API Workflows
 
 ## Overview
 
-This document describes the complete API workflows and user journeys for the TGO-Tech RAG Service. It demonstrates how the various endpoints work together to provide a comprehensive document management and search experience.
+This document describes the complete API workflows and user journeys for the Pelatis RAG Service. It demonstrates how the various endpoints work together to provide a comprehensive document management and search experience.
 
 ## Complete RAG Workflow
 

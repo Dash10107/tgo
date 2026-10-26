@@ -120,7 +120,7 @@ const RegisterPage: React.FC = () => {
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <Link to="/" className="flex items-center space-x-2">
-            <img src="/logo.svg" alt="Tgo CS Logo" className="w-10 h-10" />
+            <img src="/logo.svg" alt="Pelatis CS Logo" className="w-10 h-10" />
             <span className="font-semibold text-2xl text-gray-800 dark:text-gray-200">{t('brand.name')}</span>
           </Link>
         </div>

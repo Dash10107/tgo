@@ -156,15 +156,15 @@ export const uploadFileWithProgress = (
 
         // Handle specific status codes
         if (xhr.status === 401) {
-          errorMessage = '身份验证失败，请重新登录';
+          errorMessage = i18n.t('errors.unauthorized', 'Authentication failed, please log in again');
         } else if (xhr.status === 403) {
-          errorMessage = '权限不足，无法上传文件';
+          errorMessage = i18n.t('upload.forbidden', 'Insufficient permissions, unable to upload files');
         } else if (xhr.status === 413) {
-          errorMessage = '文件过大，请选择较小的文件';
+          errorMessage = i18n.t('errors.fileTooLarge', 'File is too large, please choose a smaller file');
         } else if (xhr.status === 415) {
-          errorMessage = '不支持的文件类型';
+          errorMessage = i18n.t('errors.unsupportedFileType', 'Unsupported file type');
         } else if (xhr.status >= 500) {
-          errorMessage = '服务器错误，请稍后重试';
+          errorMessage = i18n.t('errors.serverError', 'Server error, please try again later');
         }
 
         const uploadError = new Error(errorMessage);
@@ -192,13 +192,13 @@ export const uploadFileWithProgress = (
       responseHandled = true;
       
       // Try to determine error type - 413 from nginx may close connection before response
-      let errorMessage = '网络连接失败，请检查网络连接后重试';
+      let errorMessage = i18n.t('errors.networkFailed', 'Network connection failed, please check your network and try again');
       
       // Check if the status is available (may be 0 for network errors)
       if (xhr.status === 413) {
-        errorMessage = '文件过大，请选择较小的文件';
+        errorMessage = i18n.t('errors.fileTooLarge', 'File is too large, please choose a smaller file');
       } else if (xhr.status >= 400) {
-        errorMessage = `上传失败 (${xhr.status})`;
+        errorMessage = i18n.t('upload.failedWithStatus', { status: xhr.status, defaultValue: 'Upload failed ({{status}})' });
       }
       
       const networkError = new Error(errorMessage);
@@ -224,7 +224,7 @@ export const uploadFileWithProgress = (
       if (responseHandled) return;
       responseHandled = true;
       
-      const abortError = new Error('上传已取消');
+      const abortError = new Error(i18n.t('upload.aborted', 'Upload cancelled'));
       
       const errorEvent: UploadProgressEvent = {
         fileId,
@@ -247,13 +247,13 @@ export const uploadFileWithProgress = (
       if (xhr.readyState >= 2 && xhr.status >= 400 && !responseHandled) {
         responseHandled = true;
         
-        let errorMessage = `上传失败 (${xhr.status})`;
+        let errorMessage = i18n.t('upload.failedWithStatus', { status: xhr.status, defaultValue: 'Upload failed ({{status}})' });
         if (xhr.status === 413) {
-          errorMessage = '文件过大，服务器拒绝接收。请选择较小的文件或联系管理员调整上传限制。';
+          errorMessage = i18n.t('upload.fileTooLargeServer', 'File is too large and the server rejected it. Please choose a smaller file or ask an administrator to raise the upload limit.');
         } else if (xhr.status === 401) {
-          errorMessage = '身份验证失败，请重新登录';
+          errorMessage = i18n.t('errors.unauthorized', 'Authentication failed, please log in again');
         } else if (xhr.status === 403) {
-          errorMessage = '权限不足，无法上传文件';
+          errorMessage = i18n.t('upload.forbidden', 'Insufficient permissions, unable to upload files');
         }
         
         const uploadError = new Error(errorMessage);

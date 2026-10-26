@@ -10,7 +10,7 @@ import base64
 
 
 MANUAL_SERVICE_TAG_NAME: str = "Manual Service"
-MANUAL_SERVICE_TAG_NAME_ZH: str = "转人工"
+MANUAL_SERVICE_TAG_NAME_ZH: str = "转人工"  # Chinese display name of the "Manual Service" tag
 
 # TagCategory.VISITOR.value == "visitor"
 MANUAL_SERVICE_TAG_ID: str = base64.b64encode(f"{MANUAL_SERVICE_TAG_NAME}@visitor".encode()).decode()

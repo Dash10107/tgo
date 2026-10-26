@@ -20,7 +20,6 @@ Features:
 - Performance optimization for large documents
 """
 
-import re
 from typing import Any, Dict, List
 from uuid import UUID, uuid4
 
@@ -36,6 +35,7 @@ from .document_processing_types import (
 )
 from ..config import get_settings
 from ..logging_config import get_logger
+from ..services.text_utils import estimate_tokens
 
 logger = get_logger(__name__)
 
@@ -137,13 +137,22 @@ def _create_text_splitter(settings: Any) -> RecursiveCharacterTextSplitter:
         chunk_size=settings.chunk_size,
         chunk_overlap=settings.chunk_overlap,
         length_function=len,
+        # Ordered from coarsest to finest boundary. Sentence terminators come before
+        # word breaks so sentences are kept intact; they include the Devanagari
+        # danda (Hindi/Marathi) and CJK full stops.
         separators=[
-            "\n\n",  # Paragraph breaks
-            "\n",    # Line breaks
-            " ",     # Word breaks
-            ".",     # Sentence breaks
-            ",",     # Clause breaks
-            ""       # Character breaks (fallback)
+            "\n\n",      # Paragraph breaks
+            "\n",        # Line breaks
+            "\u0964",    # Devanagari danda (sentence end)
+            "\u0965",    # Devanagari double danda
+            "\u3002",    # CJK full stop
+            ". ",        # Sentence breaks
+            "! ",
+            "? ",
+            "; ",        # Clause breaks
+            ", ",
+            " ",         # Word breaks
+            ""           # Character breaks (fallback)
         ],
         keep_separator=True,
         add_start_index=True
@@ -207,9 +216,9 @@ def estimate_token_count(text: str) -> int:
     """
     Estimate token count for a given text.
     
-    This provides a rough estimation of tokens based on word count and
-    character patterns. For more accurate token counting, consider using
-    the actual tokenizer from your embedding model.
+    This provides a rough estimation that accounts for Latin words, Devanagari
+    (Hindi/Marathi) and CJK characters. For more accurate token counting,
+    consider using the actual tokenizer from your embedding model.
     
     Args:
         text: Text to estimate tokens for
@@ -217,23 +226,7 @@ def estimate_token_count(text: str) -> int:
     Returns:
         Estimated number of tokens
     """
-    if not text:
-        return 0
-    
-    # Simple estimation: roughly 4 characters per token for English text
-    # This is a conservative estimate that works reasonably well for most content
-    
-    # Count words (more accurate for token estimation)
-    words = len(text.split())
-    
-    # Count special characters and punctuation (often separate tokens)
-    special_chars = len(re.findall(r'[^\w\s]', text))
-    
-    # Estimate tokens: words + some fraction of special characters
-    estimated_tokens = words + (special_chars // 2)
-    
-    # Ensure minimum of 1 token for non-empty text
-    return max(1, estimated_tokens)
+    return estimate_tokens(text)
 
 
 def get_chunking_stats(chunks: List[Dict[str, Any]]) -> ChunkingStats:

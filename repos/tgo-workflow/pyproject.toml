@@ -2,7 +2,7 @@
 name = "tgo-workflow"
 version = "0.1.0"
 description = "AI Agent Workflow Engine"
-authors = ["TGO Team"]
+authors = ["Pelatis Team"]
 readme = "README.md"
 packages = [{include = "app"}]
 

@@ -1,5 +1,5 @@
 -- =====================================================
--- TGO-TECH API SERVICE DATABASE SCHEMA
+-- PELATIS API SERVICE DATABASE SCHEMA
 -- =====================================================
 -- Service: API Service (Core Business Logic)
 -- Responsibilities: User management, visitor interactions, business operations

@@ -1,5 +1,6 @@
 var types = require('../../core/types')
 var timeUtil = require('../../utils/time')
+var i18n = require('../../core/i18n')
 
 Component({
   properties: {
@@ -30,6 +31,7 @@ Component({
 
   data: {
     displayMessages: [],
+    labels: { loading: '', noMore: '', sending: '', uploadingPrefix: '' },
     scrollTop: 0,
     scrollAnimated: true,
     _prevLen: 0,
@@ -38,6 +40,14 @@ Component({
 
   lifetimes: {
     attached: function () {
+      this.setData({
+        labels: {
+          loading: i18n.t('messageList.loadingHistory'),
+          noMore: i18n.t('messageList.noMoreMessages'),
+          sending: i18n.t('messageList.sending'),
+          uploadingPrefix: i18n.t('messageList.uploading').replace(/[.…]+$/, '')
+        }
+      })
       if (this.properties.messages.length) {
         this._processMessages(this.properties.messages)
       }

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Successfully refactored the TGO RAG Service logging architecture to create a unified, centralized logging system that provides consistent structured logging across all modules with automatic context propagation.
+Successfully refactored the Pelatis RAG Service logging architecture to create a unified, centralized logging system that provides consistent structured logging across all modules with automatic context propagation.
 
 ## What Was Changed
 

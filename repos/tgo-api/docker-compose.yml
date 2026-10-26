@@ -39,7 +39,7 @@ services:
     networks:
       - tgo-network
 
-  # TGO API Service (Main + Internal)
+  # Pelatis API Service (Main + Internal)
   tgo-api:
     build: .
     container_name: tgo-api

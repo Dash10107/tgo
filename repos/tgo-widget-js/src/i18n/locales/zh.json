@@ -41,12 +41,54 @@
     "networkError": "网络异常或超时，请检查网络后重试"
   },
   "file": {
-    "download": "下载"
+    "download": "下载",
+    "downloadFile": "下载文件：{{name}}",
+    "unknownSize": "未知大小",
+    "placeholder": "[文件]"
   },
   "system": {
     "staffAssigned": "已为您接入人工客服，客服 {{name0}} 为您服务。",
     "sessionTransferred": "会话已转接。客服 {{name0}} 已将您转接给客服 {{name1}}。",
     "sessionClosed": "会话已结束。客服 {{name0}} 已完成本次服务。",
     "sessionClosedNoAgent": "会话已结束。"
+  },
+  "time": {
+    "justNow": "刚才",
+    "minutesAgo": "{{count}}分钟前",
+    "yesterday": "昨天 {{time}}"
+  },
+  "image": {
+    "close": "关闭 (Esc)",
+    "previous": "上一张 (←)",
+    "next": "下一张 (→)",
+    "loadFailed": "图片加载失败",
+    "previewAlt": "预览图片 {{index}}",
+    "viewLarge": "查看大图",
+    "clickToViewLarge": "点击查看大图",
+    "placeholder": "[图片]"
+  },
+  "message": {
+    "generic": "[消息]"
+  },
+  "upload": {
+    "uploadingImage": "图片上传中…",
+    "uploadingFile": "文件上传中…",
+    "cancelled": "已取消",
+    "failed": "上传失败"
+  },
+  "stream": {
+    "endedAbnormally": "流异常结束",
+    "unknownError": "未知错误"
+  },
+  "actions": {
+    "invalid": "无效的 Action URI: {{uri}}",
+    "blocked": "链接打开被阻止",
+    "opened": "已打开链接: {{url}}",
+    "openFailed": "无法打开链接: {{error}}",
+    "sent": "已发送消息",
+    "noSender": "未配置消息发送处理器",
+    "copied": "已复制: {{text}}",
+    "copyFailed": "复制失败: {{error}}",
+    "unknownProtocol": "未知协议: {{protocol}}"
   }
 }

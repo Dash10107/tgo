@@ -36,7 +36,7 @@ interface EditAgentModalProps {
 }
 
 /**
- * AI员工编辑模态框组件
+ * AI agent edit modal component
  */
 const EditAgentModal: React.FC<EditAgentModalProps> = ({
   agentId,
@@ -71,7 +71,7 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
           setLlmOptions(options);
         }
       } catch (e: any) {
-        if (!cancelled) setLlmError(e?.message || t('agents.create.models.error', '加载模型失败'));
+        if (!cancelled) setLlmError(e?.message || t('agents.create.models.error', 'Failed to load models'));
       } finally {
         if (!cancelled) setLlmLoading(false);
       }
@@ -85,7 +85,7 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
   const [isLoadingAgent, setIsLoadingAgent] = useState(false);
   const [agentError, setAgentError] = useState<string | null>(null);
 
-  // 表单状态（通过通用 hook 管理）
+  // Form state (managed by a shared hook)
   const {
     formData,
     setFormData,
@@ -133,9 +133,9 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
       setAgent(agentData);
     } catch (error) {
       console.error('Failed to fetch agent:', error);
-      const errorMessage = error instanceof Error ? error.message : t('agents.edit.loadAgentError', '无法加载AI员工详情');
+      const errorMessage = error instanceof Error ? error.message : t('agents.edit.loadAgentError', 'Unable to load agent details, please try again later');
       setAgentError(errorMessage);
-      showToast('error', t('common.loadFailed', '加载失败'), t('agents.edit.loadAgentError', '无法加载AI员工详情，请稍后重试'));
+      showToast('error', t('common.loadFailed', 'Load Failed'), t('agents.edit.loadAgentError', 'Unable to load agent details, please try again later'));
     } finally {
       setIsLoadingAgent(false);
     }
@@ -152,7 +152,7 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
     }
   }, [isOpen, agentId]);
 
-  // 不再在编辑弹窗内主动拉取工具列表，直接使用 agent.tools 进行展示
+  // The tool list is no longer fetched inside the edit modal; agent.tools is used directly for display
 
   // Ensure knowledge bases are loaded when modal opens (for display of selected items)
   useEffect(() => {
@@ -183,10 +183,10 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
     }
   }, [isOpen, workflows.length, loadWorkflows]);
 
-  // 初始化表单数据（直接基于 agent.tools，无需依赖工具商店列表）
+  // Initialize form data (based directly on agent.tools, no dependency on the tool store list)
   useEffect(() => {
     if (agent && !isLoadingAgent) {
-      // 直接使用 Agent 返回的工具详情
+      // Use the tool details returned by the Agent directly
       const toolIds: string[] = agent.tools || [];
 
       // Handle knowledge bases - use collections if available, fallback to knowledgeBases
@@ -197,7 +197,7 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
 
       reset({
         name: agent.name,
-        profession: agent.role || t('agents.copy.defaultProfession', '专家'),
+        profession: agent.role || t('agents.copy.defaultProfession', 'Expert'),
         description: agent.description,
         llmModel: agent.llmModel || 'gemini-1.5-pro',
         tools: toolIds,
@@ -205,7 +205,7 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
         knowledgeBases: kbIds,
         workflows: workflowIds,
         boundDeviceId: agent.boundDeviceId || '',
-        // 高级配置
+        // Advanced configuration
         markdown: agent.config?.markdown ?? true,
         add_datetime_to_context: agent.config?.add_datetime_to_context ?? true,
         skills_enabled: agent.skills_enabled ?? true,
@@ -227,7 +227,7 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
 
 
 
-  // 将 AgentToolResponse 转为用于展示的 AiTool 结构（最小化依赖）
+  // Convert AgentToolResponse into the AiTool structure used for display (minimal dependencies)
   const agentToolToAiTool = (t: AgentToolUnion): AiTool => {
     // Branch 1: legacy AgentToolResponse shape with tool_name
     if ((t as AgentToolResponse) && typeof (t as AgentToolResponse).tool_name === 'string') {
@@ -278,7 +278,7 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
     } as AiTool;
   };
 
-  // 已添加的Tool工具列表 - 结合 agent.tools 和 AI tools 数据
+  // List of added tools - combines agent.tools and AI tools data
   const addedAiTools = useMemo(() => {
     const byId = new Map<string, AgentToolUnion>();
     ((agent?.agentTools as AgentToolUnion[]) || []).forEach((t) => byId.set(t.id, t));
@@ -287,18 +287,18 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
       .map(id => byId.get(id))
       .filter(Boolean) as AgentToolUnion[];
 
-    // 对于不在 agent.tools 中的工具ID，从 AI tools 获取完整信息
+    // For tool IDs not in agent.tools, get the full info from AI tools
     const missingIds = formData.tools.filter(id => !byId.has(id));
     const toolsFromStore = transformAiToolResponseList(aiTools)
       .filter((tool: AiTool) => missingIds.includes(tool.id));
 
-    // 对于既不在 agent.tools 也不在工具商店中的工具ID，创建占位符
+    // For tool IDs in neither agent.tools nor the tool store, create a placeholder
     const foundStoreIds = toolsFromStore.map(t => t.id);
     const stillMissingIds = missingIds.filter(id => !foundStoreIds.includes(id));
     const placeholderTools: AiTool[] = stillMissingIds.map(id => ({
       id,
       name: id,
-      description: t('agents.edit.tools.pendingNewTool', '待保存的新工具'),
+      description: t('agents.edit.tools.pendingNewTool', 'Pending new tool'),
       category: 'integration',
       status: 'active',
       version: 'v1.0.0',
@@ -316,30 +316,30 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
     ];
   }, [agent?.agentTools, formData.tools, aiTools]);
 
-  // 知识库启用状态：后端暂不支持单独启用/禁用，选中即关联
+  // Knowledge base enabled state: the backend does not support enabling/disabling individually yet; selecting means linking
 
-  // 已添加的知识库列表 - 显示所有已添加的知识库（包括启用和禁用的）
+  // List of added knowledge bases - shows all added knowledge bases (enabled and disabled)
   const addedKnowledgeBases = useMemo(() => {
     return (knowledgeBases as KnowledgeBaseItem[]).filter((kb: KnowledgeBaseItem) => formData.knowledgeBases.includes(kb.id));
   }, [knowledgeBases, formData.knowledgeBases]);
 
-  // 已添加的工作流列表
+  // List of added workflows
   const addedWorkflows = useMemo<WorkflowSummary[]>(() => {
     return workflows.filter((wf) => formData.workflows.includes(wf.id));
   }, [workflows, formData.workflows]);
 
-  // 输入处理由 hook 提供
+  // Input handling is provided by the hook
 
-  // 处理工具移除
+  // Handle tool removal
   const handleToolRemove = (toolId: string) => { removeTool(toolId); };
 
-  // 处理知识库移除
+  // Handle knowledge base removal
   const handleKnowledgeBaseRemove = (kbId: string) => { removeKnowledgeBase(kbId); };
 
-  // 处理工作流移除
+  // Handle workflow removal
   const handleWorkflowRemove = (workflowId: string) => { removeWorkflow(workflowId); };
 
-  // 知识库图标颜色由通用组件处理
+  // Knowledge base icon colors are handled by the shared component
 
 
 
@@ -358,7 +358,7 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
 
     setIsUpdating(true);
     try {
-      // 合并可用工具来源：AI tools + 当前已添加/选择的工具（包含 short_no）
+      // Merge available tool sources: AI tools + currently added/selected tools (including short_no)
       const extraSummaries: ToolSummary[] = addedAiTools.map((t) => ({
         id: t.id,
         name: t.name,
@@ -412,7 +412,7 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
         // Try to resolve readable names from addedAiTools
         const nameMap = new Map(addedAiTools.map(t => [t.id, t.title || t.name || t.id] as const));
         const missingNames = missing.map(id => nameMap.get(id) || id).join(t('common.separator', '、'));
-        showToast('error', t('agents.edit.tools.missingTitle', '工具信息缺失'), t('agents.edit.tools.missingDesc', '以下工具缺少名称：{{names}}，请重新选择后重试', { names: missingNames }));
+        showToast('error', t('agents.edit.tools.missingTitle', 'Tool Information Missing'), t('agents.edit.tools.missingDesc', 'The following tools are missing name: {{names}}, please reselect and try again', { names: missingNames }));
         setIsUpdating(false);
         return;
       }
@@ -426,7 +426,7 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
         if (match) {
           normalized = match.value;
         } else {
-          showToast('error', t('agents.create.models.selectPlaceholder', '请选择模型'), t('agents.edit.modelProviderRequired', '请重新选择一个有效的模型（需要包含提供商）'));
+          showToast('error', t('agents.create.models.selectPlaceholder', 'Please select a model'), t('agents.edit.modelProviderRequired', 'Please reselect a valid model (a provider is required)'));
           setIsUpdating(false);
           return;
         }
@@ -453,14 +453,14 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
         skills_enabled: formData.skills_enabled,
         config: configForUpdate,
       }, mergedAvailable);
-      // 强制刷新列表，确保卡片立即展示最新 tools/collections
+      // Force-refresh the list so cards immediately show the latest tools/collections
       await refreshAgents();
-      showToast('success', t('agents.messages.updateSuccess', '更新成功'), t('agents.messages.updateSuccessDesc', 'AI员工 "{{name}}" 已成功更新', { name: formData.name }));
+      showToast('success', t('agents.messages.updateSuccess', 'Update Successful'), t('agents.messages.updateSuccessDesc', 'Agent "{{name}}" has been successfully updated', { name: formData.name }));
       onClose();
     } catch (error) {
       console.error('Failed to update agent:', error);
-      const errorMessage = error instanceof Error ? error.message : t('agents.edit.updateFailedUnknown', '更新AI员工时发生未知错误');
-      showToast('error', t('agents.messages.updateFailed', '更新失败'), errorMessage);
+      const errorMessage = error instanceof Error ? error.message : t('agents.edit.updateFailedUnknown', 'An unknown error occurred while updating the agent');
+      showToast('error', t('agents.messages.updateFailed', 'Update Failed'), errorMessage);
     } finally {
       setIsUpdating(false);
     }
@@ -479,7 +479,7 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
 
       reset({
         name: agent.name,
-        profession: agent.role || t('agents.copy.defaultProfession', '专家'),
+        profession: agent.role || t('agents.copy.defaultProfession', 'Expert'),
         description: agent.description,
         llmModel: agent.llmModel || 'gemini-1.5-pro',
         tools: toolIds,
@@ -487,7 +487,7 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
         knowledgeBases: kbIds,
         workflows: workflowIds,
         boundDeviceId: agent.boundDeviceId || '',
-        // 高级配置
+        // Advanced configuration
         markdown: agent.config?.markdown ?? true,
         add_datetime_to_context: agent.config?.add_datetime_to_context ?? true,
         skills_enabled: agent.skills_enabled ?? true,
@@ -516,8 +516,8 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
               <Bot className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-bold">{t('agents.modal.edit.title', '编辑AI员工')}</h2>
-              <p className="text-blue-100 text-xs mt-0.5 opacity-80">{t('agents.modal.edit.subtitle', '优化AI员工的行为和配置')}</p>
+              <h2 className="text-xl font-bold">{t('agents.modal.edit.title', 'Edit Agent')}</h2>
+              <p className="text-blue-100 text-xs mt-0.5 opacity-80">{t('agents.modal.edit.subtitle', 'Optimize agent behavior and configuration')}</p>
             </div>
           </div>
           <button
@@ -536,7 +536,7 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
               <div className="w-16 h-16 border-4 border-blue-100 dark:border-blue-900/30 rounded-full" />
               <div className="absolute inset-0 w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
             </div>
-            <p className="mt-4 text-gray-500 font-medium">{t('agents.edit.loading', '正在获取AI员工配置...')}</p>
+            <p className="mt-4 text-gray-500 font-medium">{t('agents.edit.loading', 'Loading agent details...')}</p>
           </div>
         )}
 
@@ -546,13 +546,13 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
             <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-full mb-4">
               <XCircle className="w-12 h-12 text-red-500" />
             </div>
-            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">{t('common.loadFailed', '配置加载失败')}</h3>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">{t('common.loadFailed', 'Load Failed')}</h3>
             <p className="text-gray-500 text-center max-w-md mb-6">{agentError}</p>
             <button
               onClick={() => agentId && fetchAgent(agentId)}
               className="px-8 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all active:scale-95 shadow-lg shadow-blue-200 dark:shadow-none"
             >
-              {t('common.retry', '重新加载')}
+              {t('common.retry', 'Retry')}
             </button>
           </div>
         )}
@@ -562,43 +562,43 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
           <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-0">
             <div className="flex-1 overflow-y-auto custom-scrollbar bg-gray-50 dark:bg-gray-950">
               <div className="p-8 space-y-8">
-                {/* 基本信息 Section */}
+                {/* Basic info section */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 px-1">
                     <User className="w-5 h-5 text-blue-600" />
                     <h3 className="font-bold text-gray-900 dark:text-gray-100 uppercase tracking-tight text-sm">
-                      {t('agents.detail.basicInfo', '基本信息')}
+                      {t('agents.detail.basicInfo', 'Basic Info')}
                     </h3>
                   </div>
                   <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* AI员工名称 */}
+                      {/* AI agent name */}
                       <div className="space-y-2">
                         <label className="text-xs font-bold text-gray-500 dark:text-gray-400 ml-1 uppercase">
-                          {t('agents.form.name', 'AI员工名称')} <span className="text-red-500">*</span>
+                          {t('agents.form.name', 'Agent Name')} <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="text"
                           value={formData.name}
                           onChange={(e) => handleInputChange('name', e.target.value)}
                           className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none"
-                          placeholder={t('agents.create.placeholders.name', '请输入AI员工名称')}
+                          placeholder={t('agents.create.placeholders.name', 'Please enter agent name')}
                           required
                           disabled={isUpdating}
                         />
                       </div>
 
-                      {/* 职业/角色 */}
+                      {/* Profession / role */}
                       <div className="space-y-2">
                         <label className="text-xs font-bold text-gray-500 dark:text-gray-400 ml-1 uppercase">
-                          {t('agents.form.profession', '职业/角色')} <span className="text-red-500">*</span>
+                          {t('agents.form.profession', 'Profession')} <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="text"
                           value={formData.profession}
                           onChange={(e) => handleInputChange('profession', e.target.value)}
                           className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none"
-                          placeholder={t('agents.create.placeholders.profession', '例如：客服专员、技术支持')}
+                          placeholder={t('agents.create.placeholders.profession', 'e.g. Customer Support, Technical Support, Sales Consultant')}
                           required
                           disabled={isUpdating}
                         />
@@ -607,18 +607,18 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
                   </div>
                 </div>
 
-                {/* 模型配置 Section */}
+                {/* Model configuration section */}
                 <div className="space-y-4">
                     <div className="flex items-center gap-2 px-1">
                       <Layout className="w-5 h-5 text-purple-600" />
                       <h3 className="font-bold text-gray-900 dark:text-gray-100 uppercase tracking-tight text-sm">
-                        {t('agents.create.sections.modelConfig', '模型配置')}
+                        {t('agents.create.sections.modelConfig', 'Model Configuration')}
                       </h3>
                     </div>
                     <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
                       <div className="space-y-2">
                         <label className="text-xs font-bold text-gray-500 dark:text-gray-400 ml-1 uppercase">
-                          {t('agents.form.llmModel', 'LLM模型')} <span className="text-red-500">*</span>
+                          {t('agents.form.llmModel', 'LLM Model')} <span className="text-red-500">*</span>
                         </label>
                         <div className="relative">
                           <select
@@ -628,15 +628,15 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
                             disabled={isUpdating || llmLoading}
                           >
                             {llmLoading ? (
-                              <option value="">{t('agents.create.models.loading', '正在加载模型...')}</option>
+                              <option value="">{t('agents.create.models.loading', 'Loading models...')}</option>
                             ) : llmError ? (
-                              <option value="">{t('agents.create.models.error', '加载模型失败')}</option>
+                              <option value="">{t('agents.create.models.error', 'Failed to load models')}</option>
                             ) : llmOptions.length === 0 ? (
-                              <option value="">{t('agents.create.models.empty', '暂无可用模型')}</option>
+                              <option value="">{t('agents.create.models.empty', 'No models available')}</option>
                             ) : (
                               <>
                                 {!resolvedLlmModel && (
-                                  <option value="">{t('agents.create.models.selectPlaceholder', '请选择模型')}</option>
+                                  <option value="">{t('agents.create.models.selectPlaceholder', 'Please select a model')}</option>
                                 )}
                                 {/* Fallback option in case current value is a providerKey:model not present in options */}
                                 {formData.llmModel && !llmOptions.some(o => o.value === formData.llmModel) && formData.llmModel.includes(':') && (
@@ -658,32 +658,32 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
                         </div>
                         {llmError && (
                           <p className="text-[11px] text-red-500 flex items-center gap-1 mt-1 ml-1">
-                            <XCircle className="w-3 h-3" /> {t('agents.create.models.loadFailedInline', '模型加载失败: {{error}}', { error: llmError })}
+                            <XCircle className="w-3 h-3" /> {t('agents.create.models.loadFailedInline', 'Model load failed: {{error}}', { error: llmError })}
                           </p>
                         )}
                       </div>
                     </div>
                   </div>
 
-                {/* 能力描述 Section */}
+                {/* Capability description section */}
                 <div className="space-y-4">
                     <div className="flex items-center gap-2 px-1">
                       <Sparkles className="w-5 h-5 text-green-600" />
                       <h3 className="font-bold text-gray-900 dark:text-gray-100 uppercase tracking-tight text-sm">
-                        {t('agents.create.sections.description', '能力描述')}
+                        {t('agents.create.sections.description', 'Capability Description')}
                       </h3>
                     </div>
                     <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
                       <div className="space-y-2">
                         <label className="text-xs font-bold text-gray-500 dark:text-gray-400 ml-1 uppercase">
-                          {t('agents.form.detailedDescription', '详细提示词/指令')} <span className="text-red-500">*</span>
+                          {t('agents.form.detailedDescription', 'Detailed Description')} <span className="text-red-500">*</span>
                         </label>
                         <textarea
                           value={formData.description}
                           onChange={(e) => handleInputChange('description', e.target.value)}
                           rows={6}
                           className="w-full px-4 py-4 bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 rounded-2xl focus:ring-4 focus:ring-green-500/10 focus:border-green-500 transition-all outline-none resize-none"
-                          placeholder={t('agents.create.placeholders.description', '请详细描述AI员工的功能、职责和特点...')}
+                          placeholder={t('agents.create.placeholders.description', 'Please describe the agent’s functions, responsibilities and characteristics, e.g., handling customer inquiries, providing product information and technical support...')}
                           required
                         disabled={isUpdating}
                       />
@@ -701,7 +701,7 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
                     <div className="flex items-center gap-3">
                       <Settings className={`w-5 h-5 ${isAdvancedOpen ? 'text-blue-600' : 'text-gray-400'} transition-colors`} />
                       <h3 className="font-bold text-gray-900 dark:text-gray-100 uppercase tracking-tight text-sm">
-                        {t('agents.config.advanced', '高级配置')}
+                        {t('agents.config.advanced', 'Advanced Configuration')}
                       </h3>
                     </div>
                     {isAdvancedOpen ? (
@@ -717,8 +717,8 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
                         {/* Markdown */}
                         <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-50 dark:border-gray-700">
                           <div>
-                            <p className="text-sm font-bold text-gray-700 dark:text-gray-200">{t('config.markdown', 'Markdown 格式')}</p>
-                            <p className="text-xs text-gray-500">{t('config.markdownDesc', '使用 Markdown 格式化输出内容')}</p>
+                            <p className="text-sm font-bold text-gray-700 dark:text-gray-200">{t('config.markdown', 'Markdown Format')}</p>
+                            <p className="text-xs text-gray-500">{t('config.markdownDesc', 'Use Markdown to format output content')}</p>
                           </div>
                           <Toggle
                             checked={!!formData.markdown}
@@ -729,8 +729,8 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
                         {/* Add Datetime */}
                         <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-50 dark:border-gray-700">
                           <div>
-                            <p className="text-sm font-bold text-gray-700 dark:text-gray-200">{t('config.addDatetime', '添加日期时间')}</p>
-                            <p className="text-xs text-gray-500">{t('config.addDatetimeDesc', '在上下文中包含当前日期时间')}</p>
+                            <p className="text-sm font-bold text-gray-700 dark:text-gray-200">{t('config.addDatetime', 'Add Datetime')}</p>
+                            <p className="text-xs text-gray-500">{t('config.addDatetimeDesc', 'Include current date and time in the context')}</p>
                           </div>
                           <Toggle
                             checked={!!formData.add_datetime_to_context}
@@ -741,8 +741,8 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
                         {/* Skills Enabled */}
                         <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-50 dark:border-gray-700">
                           <div>
-                            <p className="text-sm font-bold text-gray-700 dark:text-gray-200">{t('config.skillsEnabled', '启用技能')}</p>
-                            <p className="text-xs text-gray-500">{t('config.skillsEnabledDesc', '允许 AI 员工自动发现并使用项目中的专业技能')}</p>
+                            <p className="text-sm font-bold text-gray-700 dark:text-gray-200">{t('config.skillsEnabled', 'Enable Skills')}</p>
+                            <p className="text-xs text-gray-500">{t('config.skillsEnabledDesc', 'Allow AI agents to discover and use project skills')}</p>
                           </div>
                           <Toggle
                             checked={!!formData.skills_enabled}
@@ -753,7 +753,7 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
                         {/* History Runs */}
                         <div className="space-y-2">
                           <label className="text-xs font-bold text-gray-500 dark:text-gray-400 ml-1 uppercase">
-                            {t('config.numHistoryRuns', '历史会话轮数')}
+                            {t('config.numHistoryRuns', 'History Session Runs')}
                           </label>
                           <input
                             type="number"
@@ -768,7 +768,7 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
                         {/* Tool Call Limit */}
                         <div className="space-y-2">
                           <label className="text-xs font-bold text-gray-500 dark:text-gray-400 ml-1 uppercase">
-                            {t('config.toolCallLimit', '工具调用限制')}
+                            {t('config.toolCallLimit', 'Tool Call Limit')}
                           </label>
                           <input
                             type="number"
@@ -784,18 +784,18 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
                   )}
                 </div>
 
-              {/* 资源关联 Section */}
+              {/* Resource linking section */}
                 <div className="space-y-4">
                     <div className="flex items-center gap-2 px-1">
                       <Briefcase className="w-5 h-5 text-orange-600" />
                       <h3 className="font-bold text-gray-900 dark:text-gray-100 uppercase tracking-tight text-sm">
-                        {t('agents.create.sections.resources', '资源关联')}
+                        {t('agents.create.sections.resources', 'Resource Association')}
                       </h3>
                     </div>
                     <div className="grid grid-cols-1 gap-6">
-                      {/* Tool工具 */}
+                      {/* Tools */}
                       <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
-                        <SectionHeader icon={<Wrench className="w-4 h-4 text-orange-600" />} title={t('agents.create.sections.tools', 'Tool工具')} />
+                        <SectionHeader icon={<Wrench className="w-4 h-4 text-orange-600" />} title={t('agents.create.sections.tools', 'Tools')} />
                         <AgentToolsSection
                           tools={addedAiTools}
                           toolConfigs={formData.toolConfigs}
@@ -805,9 +805,9 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
                         />
                       </div>
 
-                      {/* 知识库 */}
+                      {/* Knowledge bases */}
                       <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
-                        <SectionHeader icon={<FolderOpen className="w-4 h-4 text-teal-600" />} title={t('agents.form.knowledge_bases', '知识库')} />
+                        <SectionHeader icon={<FolderOpen className="w-4 h-4 text-teal-600" />} title={t('agents.form.knowledge_bases', 'Knowledge Bases')} />
                         <AgentKnowledgeBasesSection
                           items={addedKnowledgeBases}
                           onAdd={() => setShowKnowledgeBaseSelectionModal(true)}
@@ -816,9 +816,9 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
                         />
                       </div>
 
-                      {/* 工作流 */}
+                      {/* Workflows */}
                       <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
-                        <SectionHeader icon={<GitBranch className="w-4 h-4 text-purple-600" />} title={t('workflow.title', '工作流')} />
+                        <SectionHeader icon={<GitBranch className="w-4 h-4 text-purple-600" />} title={t('workflow.title', 'Workflows')} />
                         <AgentWorkflowsSection
                           workflows={addedWorkflows}
                           onAdd={() => setShowWorkflowSelectionModal(true)}
@@ -827,9 +827,9 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
                         />
                       </div>
 
-                      {/* 绑定设备 */}
+                      {/* Bound devices */}
                       <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
-                        <SectionHeader icon={<Monitor className="w-4 h-4 text-purple-600" />} title={t('agents.deviceSection.title', '绑定设备')} />
+                        <SectionHeader icon={<Monitor className="w-4 h-4 text-purple-600" />} title={t('agents.deviceSection.title', 'Bound Device')} />
                         <AgentDeviceSection
                           device={boundDevice}
                           onAdd={() => setShowDeviceSelectionModal(true)}
@@ -850,7 +850,7 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
                 className="flex items-center px-6 py-2.5 text-sm font-bold text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all"
                 disabled={isUpdating}
               >
-                {t('common.cancel', '取消')}
+                {t('common.cancel', 'Cancel')}
               </button>
               <button
                 type="button"
@@ -859,7 +859,7 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
                 disabled={isUpdating}
               >
                 <RotateCcw className="w-4 h-4" />
-                {t('common.reset', '重置')}
+                {t('common.reset', 'Reset')}
               </button>
               <button
                 type="submit"
@@ -871,7 +871,7 @@ const EditAgentModal: React.FC<EditAgentModalProps> = ({
                 ) : (
                 <Save className="w-4 h-4" />
               )}
-              {t('agents.edit.saveButton', '保存修改')}
+              {t('agents.edit.saveButton', 'Save Changes')}
             </button>
             </div>
           </form>

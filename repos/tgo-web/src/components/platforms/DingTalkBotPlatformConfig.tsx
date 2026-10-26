@@ -125,7 +125,7 @@ const DingTalkBotPlatformConfig: React.FC<Props> = ({ platform }) => {
           resetPlatformConfig(platform.id);
         }
       }
-      showSuccess(showToast, t('platforms.dingtalkBot.messages.saveSuccess', '保存成功'), t('platforms.dingtalkBot.messages.saveSuccessMessage', '钉钉机器人配置已更新'));
+      showSuccess(showToast, t('platforms.dingtalkBot.messages.saveSuccess', 'Saved Successfully'), t('platforms.dingtalkBot.messages.saveSuccessMessage', 'DingTalk Bot configuration has been updated'));
     } catch (e) {
       showApiError(showToast, e);
     }
@@ -137,8 +137,8 @@ const DingTalkBotPlatformConfig: React.FC<Props> = ({ platform }) => {
     <main className="flex flex-col flex-1 min-h-0 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <header className="px-6 py-4 border-b border-gray-200/80 dark:border-gray-700/80 flex justify-between items-center bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg sticky top-0 z-10">
         <div>
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">{t('platforms.dingtalkBot.header.title', { name: displayName, defaultValue: '{{name}} 配置' })}</h2>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{t('platforms.dingtalkBot.header.subtitle', '配置钉钉机器人对接所需的凭据与回调。')}</p>
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">{t('platforms.dingtalkBot.header.title', { name: displayName, defaultValue: '{{name}} Config' })}</h2>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{t('platforms.dingtalkBot.header.subtitle', 'Configure credentials and callbacks for DingTalk Bot integration.')}</p>
         </div>
         <div className="flex items-center gap-3">
           <button
@@ -146,7 +146,7 @@ const DingTalkBotPlatformConfig: React.FC<Props> = ({ platform }) => {
             onClick={() => setConfirmOpen(true)}
             className={`px-3 py-1.5 text-sm rounded-md ${isDeleting ? 'bg-red-400 text-white' : 'bg-red-600 dark:bg-red-500 text-white hover:bg-red-700 dark:hover:bg-red-600'}`}
           >
-            {isDeleting ? t('platforms.dingtalkBot.buttons.deleting', '删除中…') : t('platforms.dingtalkBot.buttons.delete', '删除')}
+            {isDeleting ? t('platforms.dingtalkBot.buttons.deleting', 'Deleting...') : t('platforms.dingtalkBot.buttons.delete', 'Delete')}
           </button>
           <button
             disabled={isUpdating || isDeleting || isToggling}
@@ -156,10 +156,10 @@ const DingTalkBotPlatformConfig: React.FC<Props> = ({ platform }) => {
               try {
                 if (isEnabled) {
                   await disablePlatform(platform.id);
-                  showSuccess(showToast, t('platforms.dingtalkBot.messages.disabled', '平台已禁用'));
+                  showSuccess(showToast, t('platforms.dingtalkBot.messages.disabled', 'Platform disabled'));
                 } else {
                   await enablePlatform(platform.id);
-                  showSuccess(showToast, t('platforms.dingtalkBot.messages.enabled', '平台已启用'));
+                  showSuccess(showToast, t('platforms.dingtalkBot.messages.enabled', 'Platform enabled'));
                 }
               } catch (e) {
                 showApiError(showToast, e);
@@ -169,7 +169,7 @@ const DingTalkBotPlatformConfig: React.FC<Props> = ({ platform }) => {
             }}
             className={`px-3 py-1.5 text-sm rounded-md text-white ${isEnabled ? 'bg-gray-600 dark:bg-gray-500 hover:bg-gray-700 dark:hover:bg-gray-600' : 'bg-green-600 dark:bg-green-500 hover:bg-green-700 dark:hover:bg-green-600'} ${isToggling ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
-            {isToggling ? (isEnabled ? t('platforms.dingtalkBot.buttons.disabling', '禁用中…') : t('platforms.dingtalkBot.buttons.enabling', '启用中…')) : (isEnabled ? t('platforms.dingtalkBot.buttons.disable', '禁用') : t('platforms.dingtalkBot.buttons.enable', '启用'))}
+            {isToggling ? (isEnabled ? t('platforms.dingtalkBot.buttons.disabling', 'Disabling...') : t('platforms.dingtalkBot.buttons.enabling', 'Enabling...')) : (isEnabled ? t('platforms.dingtalkBot.buttons.disable', 'Disable') : t('platforms.dingtalkBot.buttons.enable', 'Enable'))}
           </button>
 
           <button
@@ -177,7 +177,7 @@ const DingTalkBotPlatformConfig: React.FC<Props> = ({ platform }) => {
             onClick={handleSave}
             className={`px-3 py-1.5 text-sm rounded-md ${canSave ? 'bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600' : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'}`}
           >
-            {isUpdating ? t('platforms.dingtalkBot.buttons.saving', '保存中…') : t('platforms.dingtalkBot.buttons.save', '保存')}
+            {isUpdating ? t('platforms.dingtalkBot.buttons.saving', 'Saving...') : t('platforms.dingtalkBot.buttons.save', 'Save')}
           </button>
         </div>
       </header>
@@ -185,27 +185,27 @@ const DingTalkBotPlatformConfig: React.FC<Props> = ({ platform }) => {
       <div className="flex flex-1 min-h-0 flex-col lg:flex-row gap-4 p-6">
         {/* Left: form */}
         <section className="lg:w-2/5 w-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-5 rounded-lg shadow-sm border border-gray-200/60 dark:border-gray-700/60 space-y-4 overflow-y-auto min-h-0 auto-hide-scrollbar">
-          {/* 平台名称 */}
+          {/* Platform name */}
           <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.dingtalkBot.form.name', '平台名称')}</label>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.dingtalkBot.form.name', 'Platform Name')}</label>
             <input
               type="text"
               value={platformName}
               onChange={(e) => setPlatformName(e.target.value)}
-              placeholder={t('platforms.dingtalkBot.form.namePlaceholder', '请输入平台名称')}
+              placeholder={t('platforms.dingtalkBot.form.namePlaceholder', 'Please enter platform name')}
               className="w-full text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-700/50 dark:text-gray-200"
             />
           </div>
 
-          {/* 回调URL（只读，需填入钉钉） */}
+          {/* Callback URL (read-only; enter it in DingTalk) */}
           <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.dingtalkBot.form.callbackUrl', '消息接收地址')}</label>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.dingtalkBot.form.callbackUrl', 'Message Receiver URL')}</label>
             <div className="flex items-center gap-2">
               <input
                 type="text"
                 value={formValues.callbackUrl}
                 readOnly
-                placeholder={t('platforms.dingtalkBot.form.callbackUrlPlaceholder', '平台创建后会生成消息接收地址')}
+                placeholder={t('platforms.dingtalkBot.form.callbackUrlPlaceholder', 'Receiver URL will be generated after creation')}
                 className="flex-1 text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md bg-gray-100/70 dark:bg-gray-700/50 dark:text-gray-200 focus:outline-none font-mono"
               />
               <button
@@ -215,17 +215,17 @@ const DingTalkBotPlatformConfig: React.FC<Props> = ({ platform }) => {
                   try {
                     if (!formValues.callbackUrl) return;
                     await navigator.clipboard.writeText(formValues.callbackUrl);
-                    showSuccess(showToast, t('platforms.dingtalkBot.messages.urlCopied', '消息接收地址已复制'));
+                    showSuccess(showToast, t('platforms.dingtalkBot.messages.urlCopied', 'Receiver URL copied'));
                   } catch (e) {
                     showApiError(showToast, e);
                   }
                 }}
                 className={`px-2 py-1 text-xs rounded-md ${formValues.callbackUrl ? 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'}`}
               >
-                {t('platforms.dingtalkBot.buttons.copy', '复制')}
+                {t('platforms.dingtalkBot.buttons.copy', 'Copy')}
               </button>
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('platforms.dingtalkBot.form.callbackUrlHint', '将此 URL 填入钉钉机器人的「消息接收地址」配置中。')}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('platforms.dingtalkBot.form.callbackUrlHint', 'Fill this URL into the \'Message Receiver URL\' in DingTalk Bot configuration.')}</p>
           </div>
 
           {/* App Key */}
@@ -235,10 +235,10 @@ const DingTalkBotPlatformConfig: React.FC<Props> = ({ platform }) => {
               type="text"
               value={formValues.appKey}
               onChange={(e) => handleChange({ appKey: e.target.value })}
-              placeholder={t('platforms.dingtalkBot.form.appKeyPlaceholder', '钉钉应用的 AppKey')}
+              placeholder={t('platforms.dingtalkBot.form.appKeyPlaceholder', 'DingTalk App Key')}
               className="w-full text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-700/50 dark:text-gray-200"
             />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('platforms.dingtalkBot.form.appKeyHint', '可在钉钉开放平台应用详情的「凭证与基础信息」中获取。')}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('platforms.dingtalkBot.form.appKeyHint', 'Found in \'Credentials & Basic Info\' of the app details on DingTalk Open Platform.')}</p>
           </div>
 
           {/* App Secret */}
@@ -248,49 +248,49 @@ const DingTalkBotPlatformConfig: React.FC<Props> = ({ platform }) => {
               type="password"
               value={formValues.appSecret}
               onChange={(e) => handleChange({ appSecret: e.target.value })}
-              placeholder={t('platforms.dingtalkBot.form.appSecretPlaceholder', '钉钉应用的 AppSecret')}
+              placeholder={t('platforms.dingtalkBot.form.appSecretPlaceholder', 'DingTalk App Secret')}
               className="w-full text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-700/50 dark:text-gray-200"
             />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('platforms.dingtalkBot.form.appSecretHint', '可在钉钉开放平台应用详情的「凭证与基础信息」中获取，请妥善保管。')}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('platforms.dingtalkBot.form.appSecretHint', 'Found in \'Credentials & Basic Info\' on DingTalk Open Platform, keep it safe.')}</p>
           </div>
 
           {/* Robot Code */}
           <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.dingtalkBot.form.robotCode', 'Robot Code（机器人编码）')}</label>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.dingtalkBot.form.robotCode', 'Robot Code')}</label>
             <input
               type="text"
               value={formValues.robotCode}
               onChange={(e) => handleChange({ robotCode: e.target.value })}
-              placeholder={t('platforms.dingtalkBot.form.robotCodePlaceholder', '钉钉机器人的唯一编码')}
+              placeholder={t('platforms.dingtalkBot.form.robotCodePlaceholder', 'Unique code for the DingTalk robot')}
               className="w-full text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-700/50 dark:text-gray-200"
             />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('platforms.dingtalkBot.form.robotCodeHint', '可在钉钉开放平台机器人配置页面获取。')}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('platforms.dingtalkBot.form.robotCodeHint', 'Obtain from the robot configuration page on DingTalk Open Platform.')}</p>
           </div>
 
-          {/* AES Key（加密密钥） */}
+          {/* AES Key (encryption key) */}
           <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.dingtalkBot.form.aesKey', 'AES Key（加密密钥）')}</label>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.dingtalkBot.form.aesKey', 'AES Key')}</label>
             <input
               type="text"
               value={formValues.aesKey}
               onChange={(e) => handleChange({ aesKey: e.target.value })}
-              placeholder={t('platforms.dingtalkBot.form.aesKeyPlaceholder', '用于消息加解密的密钥')}
+              placeholder={t('platforms.dingtalkBot.form.aesKeyPlaceholder', 'Key for message encryption/decryption')}
               className="w-full text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-700/50 dark:text-gray-200"
             />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('platforms.dingtalkBot.form.aesKeyHint', '用于解密钉钉推送的事件消息，可在钉钉开放平台获取。')}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('platforms.dingtalkBot.form.aesKeyHint', 'Used to decrypt event messages from DingTalk, obtain from Open Platform.')}</p>
           </div>
 
-          {/* Token（签名校验令牌） */}
+          {/* Token (signature verification token) */}
           <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.dingtalkBot.form.token', 'Token（签名校验令牌）')}</label>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.dingtalkBot.form.token', 'Token')}</label>
             <input
               type="text"
               value={formValues.token}
               onChange={(e) => handleChange({ token: e.target.value })}
-              placeholder={t('platforms.dingtalkBot.form.tokenPlaceholder', '用于消息签名校验的令牌')}
+              placeholder={t('platforms.dingtalkBot.form.tokenPlaceholder', 'Token for signature verification')}
               className="w-full text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-700/50 dark:text-gray-200"
             />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('platforms.dingtalkBot.form.tokenHint', '用于验证事件订阅请求的来源，可在钉钉开放平台获取。')}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('platforms.dingtalkBot.form.tokenHint', 'Used to verify event subscription request source, obtain from Open Platform.')}</p>
           </div>
 
           {/* AI Settings */}
@@ -307,51 +307,51 @@ const DingTalkBotPlatformConfig: React.FC<Props> = ({ platform }) => {
 
         {/* Right: comprehensive guide */}
         <section className="lg:w-3/5 w-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-5 rounded-lg shadow-sm border border-gray-200/60 dark:border-gray-700/60 min-h-0 overflow-y-auto auto-hide-scrollbar space-y-4">
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">{t('platforms.dingtalkBot.guide.title', '钉钉机器人配置指南')}</h3>
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">{t('platforms.dingtalkBot.guide.title', 'DingTalk Bot Configuration Guide')}</h3>
 
           <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-200 text-sm rounded-md p-3">
-            <p className="font-medium">{t('platforms.dingtalkBot.guide.overview', '快速概览')}</p>
-            <p className="mt-1">{t('platforms.dingtalkBot.guide.overviewText', '完成以下三步：①在钉钉开放平台创建应用/机器人 → ②配置消息接收地址并获取凭证信息 → ③将信息回填到本平台并保存。')}</p>
+            <p className="font-medium">{t('platforms.dingtalkBot.guide.overview', 'Quick Overview')}</p>
+            <p className="mt-1">{t('platforms.dingtalkBot.guide.overviewText', 'Complete three steps: ① Create app/robot on DingTalk Open Platform → ② Configure receiver URL and get credentials → ③ Fill information back here and save.')}</p>
           </div>
 
           <details className="rounded-md border border-gray-200 dark:border-gray-600 p-3 bg-white/70 dark:bg-gray-700/50" open>
-            <summary className="cursor-pointer font-semibold text-gray-800 dark:text-gray-100">{t('platforms.dingtalkBot.guide.step1Title', '1️⃣ 创建钉钉应用/机器人')}</summary>
+            <summary className="cursor-pointer font-semibold text-gray-800 dark:text-gray-100">{t('platforms.dingtalkBot.guide.step1Title', '1️⃣ Create DingTalk App/Robot')}</summary>
             <div className="text-sm text-gray-700 dark:text-gray-300 mt-2 space-y-2">
               <ol className="list-decimal pl-5 space-y-1">
-                <li dangerouslySetInnerHTML={{ __html: t('platforms.dingtalkBot.guide.step1Item1', '访问 <a class="text-blue-600 hover:underline" href="https://open.dingtalk.com/developer" target="_blank" rel="noreferrer">钉钉开放平台</a>，登录并进入开发者后台。') }} />
-                <li>{t('platforms.dingtalkBot.guide.step1Item2', '点击「应用开发」→「企业内部开发」→「创建应用」。')}</li>
-                <li>{t('platforms.dingtalkBot.guide.step1Item3', '填写应用名称、描述等信息，点击确认创建。')}</li>
-                <li>{t('platforms.dingtalkBot.guide.step1Item4', '在应用详情页，找到「机器人」功能，点击「创建机器人」。')}</li>
+                <li dangerouslySetInnerHTML={{ __html: t('platforms.dingtalkBot.guide.step1Item1', 'Visit <a class="text-blue-600 hover:underline" href="https://open.dingtalk.com/developer" target="_blank" rel="noreferrer">DingTalk Open Platform</a>, log in and enter developer backend.') }} />
+                <li>{t('platforms.dingtalkBot.guide.step1Item2', 'Click \'App Development\' → \'Internal Development\' → \'Create App\'.')}</li>
+                <li>{t('platforms.dingtalkBot.guide.step1Item3', 'Fill in app name, description, etc., and confirm creation.')}</li>
+                <li>{t('platforms.dingtalkBot.guide.step1Item4', 'In app details, find \'Robot\' and click \'Create Robot\'.')}</li>
               </ol>
             </div>
           </details>
 
           <details className="rounded-md border border-gray-200 dark:border-gray-600 p-3 bg-white/70 dark:bg-gray-700/50">
-            <summary className="cursor-pointer font-semibold text-gray-800 dark:text-gray-100">{t('platforms.dingtalkBot.guide.step2Title', '2️⃣ 配置消息接收与安全设置')}</summary>
+            <summary className="cursor-pointer font-semibold text-gray-800 dark:text-gray-100">{t('platforms.dingtalkBot.guide.step2Title', '2️⃣ Configure Receiver and Security')}</summary>
             <div className="text-sm text-gray-700 dark:text-gray-300 mt-2 space-y-2">
               <ol className="list-decimal pl-5 space-y-1">
-                <li>{t('platforms.dingtalkBot.guide.step2Item1', '在机器人配置页面，找到「消息接收模式」，选择「HTTP模式」。')}</li>
-                <li>{t('platforms.dingtalkBot.guide.step2Item2', '复制左侧「消息接收地址」，粘贴到钉钉的「消息接收地址」输入框中。')}</li>
-                <li>{t('platforms.dingtalkBot.guide.step2Item3', '在「凭证与基础信息」页面，复制「AppKey」和「AppSecret」，填入左侧对应输入框。')}</li>
-                <li>{t('platforms.dingtalkBot.guide.step2Item4', '在机器人配置页面，复制「RobotCode」，填入左侧「Robot Code」输入框。')}</li>
-                <li>{t('platforms.dingtalkBot.guide.step2Item5', '在「开发配置」→「事件订阅」中，复制「AES Key」和「Token」，填入左侧对应输入框。')}</li>
+                <li>{t('platforms.dingtalkBot.guide.step2Item1', 'In robot configuration, find \'Message Receiver Mode\' and select \'HTTP Mode\'.')}</li>
+                <li>{t('platforms.dingtalkBot.guide.step2Item2', 'Copy the \'Message Receiver URL\' from the left and paste it into DingTalk.')}</li>
+                <li>{t('platforms.dingtalkBot.guide.step2Item3', 'In \'Credentials & Basic Info\', copy \'AppKey\' and \'AppSecret\' and fill them on the left.')}</li>
+                <li>{t('platforms.dingtalkBot.guide.step2Item4', 'In robot configuration, copy \'RobotCode\' and fill it into \'Robot Code\' on the left.')}</li>
+                <li>{t('platforms.dingtalkBot.guide.step2Item5', 'In \'Dev Config\' → \'Event Subscription\', copy \'AES Key\' and \'Token\' and fill them on the left.')}</li>
               </ol>
               <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 rounded p-2 text-xs text-yellow-800 dark:text-yellow-200">
-                <p className="font-semibold">{t('platforms.dingtalkBot.guide.step2SecurityTitle', '安全提示')}</p>
-                <p>{t('platforms.dingtalkBot.guide.step2SecurityText', '请妥善保管 AppSecret、AES Key 和 Token，它们用于验证消息来源和加解密消息内容。')}</p>
+                <p className="font-semibold">{t('platforms.dingtalkBot.guide.step2SecurityTitle', 'Security Tip')}</p>
+                <p>{t('platforms.dingtalkBot.guide.step2SecurityText', 'Keep AppSecret, AES Key, and Token safe; they are used for verification and encryption.')}</p>
               </div>
             </div>
           </details>
 
           <details className="rounded-md border border-gray-200 dark:border-gray-600 p-3 bg-white/70 dark:bg-gray-700/50">
-            <summary className="cursor-pointer font-semibold text-gray-800 dark:text-gray-100">{t('platforms.dingtalkBot.guide.step3Title', '3️⃣ 发布应用')}</summary>
+            <summary className="cursor-pointer font-semibold text-gray-800 dark:text-gray-100">{t('platforms.dingtalkBot.guide.step3Title', '3️⃣ Publish App')}</summary>
             <div className="text-sm text-gray-700 dark:text-gray-300 mt-2 space-y-2">
               <ol className="list-decimal pl-5 space-y-1">
-                <li>{t('platforms.dingtalkBot.guide.step3Item1', '在本平台点击「保存」按钮保存配置。')}</li>
-                <li>{t('platforms.dingtalkBot.guide.step3Item2', '回到钉钉开放平台，点击「版本管理与发布」→「创建版本」。')}</li>
-                <li>{t('platforms.dingtalkBot.guide.step3Item3', '提交版本审核，等待管理员审批后即可使用。')}</li>
+                <li>{t('platforms.dingtalkBot.guide.step3Item1', 'Click \'Save\' on this platform.')}</li>
+                <li>{t('platforms.dingtalkBot.guide.step3Item2', 'Go back to DingTalk, click \'Version Management & Release\' → \'Create Version\'.')}</li>
+                <li>{t('platforms.dingtalkBot.guide.step3Item3', 'Submit for review; it will be ready after admin approval.')}</li>
               </ol>
-              <a className="text-blue-600 dark:text-blue-400 hover:underline" href="https://open.dingtalk.com/document/orgapp/robot-overview" target="_blank" rel="noreferrer">{t('platforms.dingtalkBot.guide.docsLink', '钉钉机器人开发文档')}</a>
+              <a className="text-blue-600 dark:text-blue-400 hover:underline" href="https://open.dingtalk.com/document/orgapp/robot-overview" target="_blank" rel="noreferrer">{t('platforms.dingtalkBot.guide.docsLink', 'DingTalk Bot Dev Docs')}</a>
             </div>
           </details>
 
@@ -367,10 +367,10 @@ const DingTalkBotPlatformConfig: React.FC<Props> = ({ platform }) => {
       `}</style>
       <ConfirmDialog
         isOpen={confirmOpen}
-        title={t('platforms.dingtalkBot.dialog.deleteTitle', '确认删除')}
-        message={t('platforms.dingtalkBot.dialog.deleteMessage', '确定要删除此钉钉机器人平台吗？此操作不可撤销。')}
-        confirmText={t('platforms.dingtalkBot.dialog.confirmDelete', '删除')}
-        cancelText={t('platforms.dingtalkBot.dialog.cancel', '取消')}
+        title={t('platforms.dingtalkBot.dialog.deleteTitle', 'Confirm Delete')}
+        message={t('platforms.dingtalkBot.dialog.deleteMessage', 'Are you sure you want to delete this DingTalk Bot platform? This action cannot be undone.')}
+        confirmText={t('platforms.dingtalkBot.dialog.confirmDelete', 'Delete')}
+        cancelText={t('platforms.dingtalkBot.dialog.cancel', 'Cancel')}
         confirmVariant="danger"
         isLoading={isDeleting}
         onCancel={() => setConfirmOpen(false)}
@@ -383,7 +383,7 @@ const DingTalkBotPlatformConfig: React.FC<Props> = ({ platform }) => {
               ? (idx < platforms.length - 1 ? platforms[idx + 1]?.id : (idx > 0 ? platforms[idx - 1]?.id : null))
               : null;
             await deletePlatform(platform.id);
-            showSuccess(showToast, t('platforms.dingtalkBot.messages.deleteSuccess', '删除成功'), t('platforms.dingtalkBot.messages.deleteSuccessMessage', '钉钉机器人平台已删除'));
+            showSuccess(showToast, t('platforms.dingtalkBot.messages.deleteSuccess', 'Deleted Successfully'), t('platforms.dingtalkBot.messages.deleteSuccessMessage', 'DingTalk Bot platform has been deleted'));
             setConfirmOpen(false);
             if (nextId) navigate(`/platforms/${nextId}`);
             else navigate('/platforms');

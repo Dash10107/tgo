@@ -1,4 +1,4 @@
-# TGO Widget App (Vite) - build and serve via Nginx
+# Pelatis Widget App (Vite) - build and serve via Nginx
 
 # --- Build stage ---
 FROM node:20-alpine AS builder

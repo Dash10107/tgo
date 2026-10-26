@@ -25,7 +25,7 @@ class WorkflowServiceClient:
         """Get headers for Workflow service requests."""
         headers = {
             "Content-Type": "application/json",
-            "User-Agent": "TGO-API-Service/0.1.0",
+            "User-Agent": "Pelatis-API-Service/0.1.0",
         }
         if self.api_key:
             headers["Authorization"] = f"Bearer {self.api_key}"

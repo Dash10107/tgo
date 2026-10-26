@@ -1,6 +1,7 @@
 import React from 'react';
 import type { MessageAIInfo } from '@/types';
 
+import { useTranslation } from 'react-i18next';
 interface AIInfoCardProps {
   aiInfo?: MessageAIInfo;
 }
@@ -9,16 +10,17 @@ interface AIInfoCardProps {
  * AI Information Card component for displaying order info, suggestions, etc.
  */
 const AIInfoCard: React.FC<AIInfoCardProps> = ({ aiInfo }) => {
+  const { t } = useTranslation();
   if (!aiInfo) return null;
 
   const getDetailLabel = (key: string): string => {
     switch (key) {
       case 'status':
-        return '状态: ';
+        return t('aiInfoCard.status', 'Status') + ': ';
       case 'product':
-        return '商品: ';
+        return t('aiInfoCard.product', 'Product') + ': ';
       case 'tracking':
-        return '物流: ';
+        return t('aiInfoCard.tracking', 'Tracking') + ': ';
       default:
         return '';
     }

@@ -10,9 +10,9 @@
   <a href="https://tgo.ai">Website</a> | <a href="https://tgo.ai">Documentation</a>
 </p>
 
-## TGO Introduction
+## Pelatis Introduction
 
-TGO is an open-source AI agent customer service platform dedicated to helping enterprises "Build AI Agent Teams for Customer Service". It integrates multi-channel access, agent orchestration, knowledge base management (RAG), and human agent collaboration.
+Pelatis is an open-source AI agent customer service platform dedicated to helping enterprises "Build AI Agent Teams for Customer Service". It integrates multi-channel access, agent orchestration, knowledge base management (RAG), and human agent collaboration.
 
 <img src="resources/home_en.png" width="100%">
 
@@ -119,7 +119,7 @@ For more details, please visit the [Documentation](https://tgo.ai).
 ## 🏗️ System Architecture
 
 <p align="center">
-  <img src="resources/architecture_en.svg" width="100%" alt="TGO System Architecture">
+  <img src="resources/architecture_en.svg" width="100%" alt="Pelatis System Architecture">
 </p>
 
 ## Product Preview

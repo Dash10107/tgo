@@ -1,6 +1,6 @@
 import Foundation
 
-/// Unified HTTP client for TGO API
+/// Unified HTTP client for Pelatis API
 final class APIClient {
     let baseURL: String
     let apiKey: String

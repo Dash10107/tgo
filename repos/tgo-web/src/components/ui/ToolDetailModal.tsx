@@ -9,7 +9,7 @@ interface AiToolDetailModalProps {
 }
 
 /**
- * Tool工具详情模态框组件
+ * Tool detail modal component
  */
 const AiToolDetailModal: React.FC<AiToolDetailModalProps> = ({
   tool,

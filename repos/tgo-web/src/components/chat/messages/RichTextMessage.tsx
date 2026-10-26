@@ -15,17 +15,19 @@ import Lightbox from 'yet-another-react-lightbox';
 import Zoom from 'yet-another-react-lightbox/plugins/zoom';
 import 'yet-another-react-lightbox/styles.css';
 
+import { useTranslation } from 'react-i18next';
 /**
  * RichTextMessage renders text + images grid and optional attached file.
  */
 export interface MessageComponentProps {
   message: Message;
   isStaff: boolean;
-  /** 发送消息回调（用于 Widget 中的 msg:// 协议） */
+  /** Callback for sending a message (used by the msg:// protocol in Widgets) */
   onSendMessage?: (message: string) => void;
 }
 
 const RichTextMessage: React.FC<MessageComponentProps> = ({ message, isStaff, onSendMessage }) => {
+  const { t } = useTranslation();
   const typedPayload = message.payload as any | undefined;
   const isStream = Boolean(message.metadata?.has_stream_data);
   // Prefer live message.content when streaming; otherwise fall back to payload content
@@ -77,7 +79,7 @@ const RichTextMessage: React.FC<MessageComponentProps> = ({ message, isStaff, on
       if (fileMaybe && typeof fileMaybe === 'object' && (fileMaybe.url || fileMaybe.file_url)) {
         return {
           url: (fileMaybe.url || fileMaybe.file_url) as string,
-          name: fileMaybe.name || fileMaybe.file_name || '未命名文件',
+          name: fileMaybe.name || fileMaybe.file_name || t('richText.unnamedFile', 'Unnamed file'),
           size: typeof fileMaybe.size === 'number' ? fileMaybe.size : (typeof fileMaybe.file_size === 'number' ? fileMaybe.file_size : undefined),
         } as any;
       }
@@ -85,7 +87,7 @@ const RichTextMessage: React.FC<MessageComponentProps> = ({ message, isStaff, on
     if (message.metadata?.file_url || message.metadata?.file_name) {
       return {
         url: message.metadata.file_url || '',
-        name: message.metadata.file_name || '未命名文件',
+        name: message.metadata.file_name || t('richText.unnamedFile', 'Unnamed file'),
         size: typeof message.metadata.file_size === 'number' ? message.metadata.file_size : undefined,
         upload_status: message.metadata.upload_status,
         upload_progress: typeof message.metadata.upload_progress === 'number' ? message.metadata.upload_progress : undefined,
@@ -195,11 +197,11 @@ const RichTextMessage: React.FC<MessageComponentProps> = ({ message, isStaff, on
         </div>
         {richFile.upload_status === 'uploading' && (
           <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
-            {typeof richFile.upload_progress === 'number' ? `${richFile.upload_progress}%` : '上传中'}
+            {typeof richFile.upload_progress === 'number' ? `${richFile.upload_progress}%` : t('richText.uploading', 'Uploading')}
           </span>
         )}
         {richFile.upload_status === 'error' && (
-          <span className="text-xs text-red-500 dark:text-red-400 flex-shrink-0">上传失败</span>
+          <span className="text-xs text-red-500 dark:text-red-400 flex-shrink-0">{t('richText.uploadFailed', 'Upload failed')}</span>
         )}
         {richFile.url && richFile.upload_status !== 'uploading' && (
           <a
@@ -209,7 +211,7 @@ const RichTextMessage: React.FC<MessageComponentProps> = ({ message, isStaff, on
             className="text-xs text-blue-500 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 flex-shrink-0"
             onClick={(e) => e.stopPropagation()}
           >
-            打开
+            {t('richText.open', 'Open')}
           </a>
         )}
       </div>
@@ -273,7 +275,7 @@ const RichTextMessage: React.FC<MessageComponentProps> = ({ message, isStaff, on
                 {im.url ? (
                   <img
                     src={im.url}
-                    alt={`图片${idx + 1}`}
+                    alt={`${t('richText.image', 'Image')} ${idx + 1}`}
                     className="w-[100px] h-[100px] object-cover"
                     loading="lazy"
                   />
@@ -282,12 +284,12 @@ const RichTextMessage: React.FC<MessageComponentProps> = ({ message, isStaff, on
                 )}
                 {im.upload_status === 'uploading' && (
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-xs">
-                    {typeof im.upload_progress === 'number' ? `${im.upload_progress}%` : '上传中'}
+                    {typeof im.upload_progress === 'number' ? `${im.upload_progress}%` : t('richText.uploading', 'Uploading')}
                   </div>
                 )}
                 {im.upload_status === 'error' && (
                   <div className="absolute inset-0 bg-red-500/20 flex items-center justify-center text-red-700 text-xs text-center px-1 leading-5">
-                    上传失败\n点击重试
+                    {t('richText.uploadFailedClickRetry', 'Upload failed') + '\n' + t('richText.clickToRetry', 'Click to retry')}
 
 
 

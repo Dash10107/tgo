@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     )
 
     # Application settings
-    app_name: str = Field(default="TGO RAG Service", description="Application name")
+    app_name: str = Field(default="Pelatis RAG Service", description="Application name")
     app_version: str = Field(default="0.1.0", description="Application version")
     environment: str = Field(default="development", description="Environment name")
     debug: bool = Field(default=False, description="Debug mode")

@@ -1,4 +1,4 @@
-"""工具智能体运行时服务."""
+"""Tool agent runtime service."""
 
 from __future__ import annotations
 
@@ -37,7 +37,7 @@ from app.runtime.core.exceptions import (
 
 
 class ToolsRuntimeService:
-    """封装工具智能体执行逻辑."""
+    """Encapsulates the tool agent execution logic."""
 
     def __init__(self, runtime_settings: ToolsRuntimeSettings | None = None) -> None:
         self._settings = runtime_settings or settings.tools_runtime
@@ -45,7 +45,7 @@ class ToolsRuntimeService:
         self._logger = get_logger(__name__)
 
     async def run_agent(self, request: AgentRunRequest) -> AgentRunResponse:
-        """执行非流式智能体调用.
+        """Execute a non-streaming agent call.
 
         Args:
             request: Agent run request with message and configuration
@@ -153,7 +153,7 @@ class ToolsRuntimeService:
         )
 
     async def stream_agent(self, request: AgentRunRequest) -> AsyncIterator[StreamEventType]:
-        """执行流式智能体调用, 返回事件流.
+        """Execute a streaming agent call and return an event stream.
 
         Args:
             request: Agent run request with message and configuration

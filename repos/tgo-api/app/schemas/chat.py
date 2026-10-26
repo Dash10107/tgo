@@ -41,77 +41,77 @@ class ChatFileUploadResponse(BaseSchema):
 
 
 class ChatCompletionRequest(BaseSchema):
-    """流式聊天请求参数。"""
+    """Streaming chat request parameters."""
 
     api_key: str = Field(
         ...,
-        description="平台 API Key，用于验证请求来源",
+        description="Platform API key, used to verify the request source",
         examples=["pk_live_xxxxxxxxxxxx"]
     )
     message: str = Field(
         ...,
-        description="用户发送的消息内容",
-        examples=["你好，请问有什么可以帮助您的？"]
+        description="Message content sent by the user",
+        examples=["Hello, how can I help you?"]
     )
     from_uid: str = Field(
         ...,
-        description="平台用户唯一标识，用于识别访客身份（注意：非访客ID）",
+        description="Unique platform user identifier, used to identify the visitor (note: not the visitor ID)",
         examples=["user_12345", "wx_openid_xxx"]
     )
     extra: Optional[Dict[str, Any]] = Field(
         None,
-        description="额外数据，会随消息一起转发到 WuKongIM",
+        description="Extra data, forwarded to WuKongIM together with the message",
         examples=[{"source": "web", "page": "/product/123"}]
     )
     visitor_name: Optional[str] = Field(
         None,
-        description="访客昵称/姓名"
+        description="Visitor nickname/name"
     )
     visitor_avatar: Optional[str] = Field(
         None,
-        description="访客头像URL"
+        description="Visitor avatar URL"
     )
     msg_type: Optional[MessageType] = Field(
         MessageType.TEXT,
-        description="消息类型：1-文本，2-图片，3-文件，4-语音，5-视频",
+        description="Message type: 1-text, 2-image, 3-file, 4-voice, 5-video",
         examples=[MessageType.TEXT, MessageType.IMAGE]
     )
     forward_user_message_to_wukongim: bool = Field(
         default=True,
-        description="是否将用户消息同时转发一份到 WuKongIM（默认开启）",
+        description="Whether to also forward the user message to WuKongIM (enabled by default)",
         examples=[True],
     )
     timeout_seconds: Optional[int] = Field(
         120,
         ge=10,
         le=300,
-        description="SSE 流超时时间（秒），默认120秒，范围10-300"
+        description="SSE stream timeout in seconds, default 120, range 10-300"
     )
     channel_id: Optional[str] = Field(
         None,
-        description="自定义频道ID，不填则自动生成（格式: {visitor_id}-vtr 的编码形式）"
+        description="Custom channel ID; generated automatically if omitted (encoded form of {visitor_id}-vtr)"
     )
     channel_type: Optional[int] = Field(
         None,
-        description="频道类型，默认251（客服频道）"
+        description="Channel type, default 251 (customer service channel)"
     )
     system_message: Optional[str] = Field(
         None,
-        description="AI系统提示词，用于指导AI的回复风格和行为",
-        examples=["你是一个专业的客服助手，请用简洁友好的语气回复用户问题。"]
+        description="AI system prompt, used to guide the AI's reply style and behavior",
+        examples=["You are a professional customer-service assistant. Reply to users concisely and in a friendly tone."]
     )
     expected_output: Optional[str] = Field(
         None,
-        description="期望的输出格式描述，帮助AI生成符合要求的响应",
-        examples=["请用JSON格式回复，包含answer和confidence字段"]
+        description="Description of the expected output format, to help the AI produce a conforming response",
+        examples=["Reply in JSON format with answer and confidence fields"]
     )
     wukongim_only: bool = Field(
         False,
-        description="是否仅发送到WuKongIM而不返回流响应给客户端。设为true时，接口会立即返回accepted事件，AI处理在后台进行"
+        description="Whether to send only to WuKongIM without returning a stream response to the client. When true, the endpoint returns an accepted event immediately and AI processing runs in the background"
     )
     stream: Optional[bool] = Field(
         True,
-        description="是否使用流式响应。true（默认）返回SSE流，false返回完整JSON响应"
+        description="Whether to use streaming responses. true (default) returns an SSE stream; false returns a complete JSON response"
     )
 
 

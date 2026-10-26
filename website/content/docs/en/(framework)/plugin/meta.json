@@ -1,6 +1,6 @@
 {
   "title": "Plugins",
-  "description": "How to develop plugins and extensions for the TGO system.",
+  "description": "How to develop plugins and extensions for the Pelatis system.",
   "pages": [
     "overview",
     "quickstart",

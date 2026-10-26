@@ -1,6 +1,7 @@
 import React from 'react';
 import { useWuKongIMWebSocket } from '../../hooks/useWuKongIMWebSocket';
 
+import { useTranslation } from 'react-i18next';
 interface ConnectionStatusProps {
   className?: string;
   showText?: boolean;
@@ -14,6 +15,7 @@ export const ConnectionStatus: React.FC<ConnectionStatusProps> = React.memo(({
   className = '',
   showText = true,
 }) => {
+  const { t } = useTranslation();
   const { connectionStatus, connect } = useWuKongIMWebSocket();
   const { isConnected, isConnecting, error } = connectionStatus;
 
@@ -25,10 +27,10 @@ export const ConnectionStatus: React.FC<ConnectionStatusProps> = React.memo(({
   };
 
   const getStatusText = () => {
-    if (isConnected) return '已连接';
-    if (isConnecting) return '连接中...';
-    if (error) return '连接失败';
-    return '未连接';
+    if (isConnected) return t('connectionStatus.connected', 'Connected');
+    if (isConnecting) return t('connectionStatus.connecting', 'Connecting...');
+    if (error) return t('connectionStatus.failed', 'Connection failed');
+    return t('connectionStatus.disconnected', 'Not connected');
   };
 
   const handleRetryConnection = async () => {
@@ -67,9 +69,9 @@ export const ConnectionStatus: React.FC<ConnectionStatusProps> = React.memo(({
         <button
           onClick={handleRetryConnection}
           className="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline"
-          title="重新连接"
+          title={t('connectionStatus.reconnect', 'Reconnect')}
         >
-          重试
+          {t('common.retry', 'Retry')}
         </button>
       )}
 

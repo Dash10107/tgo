@@ -22,10 +22,10 @@ def create_user_tag_tool(
     client = EventClient(ctx)
 
     error_messages = {
-        "not_configured": "抱歉，当前无法为用户添加标签，我们已记录该问题并会尽快处理。请稍后再试或直接联系客服。",
-        "api_error": "抱歉，用户标签添加未能成功提交。请稍后重试或联系技术支持。",
-        "http_error": "抱歉，网络异常导致用户标签添加未能提交。请稍后重试或联系技术支持。",
-        "unexpected_error": "抱歉，出现异常，暂时无法为用户添加标签。请稍后重试或联系技术支持。",
+        "not_configured": "Sorry, a tag cannot be added to the user right now. We have logged the issue and will handle it soon. Please try again later or contact support directly.",
+        "api_error": "Sorry, the user tag could not be submitted. Please try again later or contact technical support.",
+        "http_error": "Sorry, a network error prevented the user tag from being submitted. Please try again later or contact technical support.",
+        "unexpected_error": "Sorry, something went wrong and a tag cannot be added to the user right now. Please try again later or contact technical support.",
     }
 
     async def add_user_tags(
@@ -40,17 +40,17 @@ def create_user_tag_tool(
             metadata: Optional additional context
         """
         if not tags:
-            return "请至少提供一个标签。"
+            return "Please provide at least one tag."
 
         # Validate and normalize tags
         normalized_tags = []
         for tag in tags:
             if not isinstance(tag, dict):
-                return "标签格式错误，每个标签应包含 name 字段。"
+                return "Invalid tag format; each tag must contain a name field."
 
             name = tag.get("name", "").strip()
             if not name:
-                return "标签的 name 字段不能为空。"
+                return "The tag's name field must not be empty."
 
             normalized_tag = {"name": name}
             name_zh = tag.get("name_zh", "").strip()
@@ -69,32 +69,32 @@ def create_user_tag_tool(
             return result.message
 
         tag_names = ", ".join(t["name"] for t in normalized_tags)
-        return f"已为用户添加标签：{tag_names}。"
+        return f"Tags added to the user: {tag_names}."
 
     return Function(
         name="add_user_tags",
         description=(
-            "当你识别出用户具有某些特征或属于某个分类时，调用此工具为用户添加标签。"
-            "标签用于用户分类和后续营销/服务策略。"
-            "常见标签示例：VIP（重要客户）、High Intent（高意向）、Price Sensitive（价格敏感）、"
-            "Tech Support（技术支持）、New User（新用户）、Returning（回访客户）等。"
+            "Call this tool to add tags to the user when you identify that the user has certain characteristics or belongs to a category. "
+            "Tags are used for user classification and follow-up marketing/service strategies. "
+            "Common tag examples: VIP (important customer), High Intent, Price Sensitive, "
+            "Tech Support, New User, Returning (returning customer), etc."
         ),
         parameters={
             "type": "object",
             "properties": {
                 "tags": {
                     "type": "array",
-                    "description": "标签列表，每个标签包含 name（英文名，必填）和 name_zh（中文名，建议提供）",
+                    "description": "List of tags; each tag contains name (English name, required) and name_zh (Chinese name, recommended)",
                     "items": {
                         "type": "object",
                         "properties": {
-                            "name": {"type": "string", "description": "标签英文名（必填）"},
-                            "name_zh": {"type": "string", "description": "标签中文名（建议提供）"},
+                            "name": {"type": "string", "description": "Tag English name (required)"},
+                            "name_zh": {"type": "string", "description": "Tag Chinese name (recommended)"},
                         },
                         "required": ["name"],
                     },
                 },
-                "metadata": {"type": "object", "description": "其他上下文字段（可选）"},
+                "metadata": {"type": "object", "description": "Other context fields (optional)"},
             },
             "required": ["tags"],
         },

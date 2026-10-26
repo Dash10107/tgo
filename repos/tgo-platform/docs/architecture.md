@@ -56,7 +56,7 @@ flowchart LR
     TG[Telegram]
   end
 
-  subgraph TGO[tgo-platform]
+  subgraph Pelatis[tgo-platform]
     L[渠道监听器]
     N[消息标准化]
     R[路由/触发 tgo-api]

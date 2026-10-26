@@ -50,8 +50,8 @@ class TransferSessionResponse(BaseModel):
 @router.post(
     "/{session_id}/close",
     response_model=VisitorSessionResponse,
-    summary="通过会话ID关闭会话",
-    description="关闭指定的会话，更新会话状态和最后消息信息，并发送系统通知。",
+    summary="Close session by session ID",
+    description="Close the given session, update its status and last-message info, and send a system notification.",
 )
 async def close_session_by_id(
     session_id: UUID,
@@ -59,9 +59,9 @@ async def close_session_by_id(
     current_user: Staff = Depends(get_current_active_user),
 ) -> VisitorSessionResponse:
     """
-    通过会话ID关闭会话。
+    Close a session by session ID.
     
-    只有会话负责人或管理员可以关闭会话。
+    Only the session owner or an admin can close a session.
     """
     # Query session
     session = (
@@ -106,8 +106,8 @@ async def close_session_by_id(
 @router.post(
     "/visitor/{visitor_id}/close",
     response_model=VisitorSessionResponse,
-    summary="通过访客ID关闭会话",
-    description="关闭指定访客当前进行中的会话。如果访客有多个进行中的会话，关闭最新的一个。",
+    summary="Close session by visitor ID",
+    description="Close the visitor's current open session. If the visitor has several open sessions, the latest one is closed.",
 )
 async def close_session_by_visitor_id(
     visitor_id: UUID,
@@ -115,11 +115,11 @@ async def close_session_by_visitor_id(
     current_user: Staff = Depends(get_current_active_user),
 ) -> VisitorSessionResponse:
     """
-    通过访客ID关闭会话。
+    Close a session by visitor ID.
     
-    关闭指定访客当前进行中（status=open）的会话。
-    如果访客有多个进行中的会话，关闭最新创建的一个。
-    只有会话负责人或管理员可以关闭会话。
+    Closes the visitor's current open (status=open) session.
+    If the visitor has several open sessions, the most recently created one is closed.
+    Only the session owner or an admin can close a session.
     """
     # Check visitor exists and belongs to project
     visitor = db.query(Visitor).filter(
@@ -176,14 +176,14 @@ async def close_session_by_visitor_id(
 
 
 # ============================================================================
-# 转接和接入接口
+# Transfer and accept endpoints
 # ============================================================================
 
 @router.post(
     "/{session_id}/transfer",
     response_model=TransferSessionResponse,
-    summary="转接会话",
-    description="将当前会话转接给另一个客服。",
+    summary="Transfer session",
+    description="Transfer the current session to another staff member.",
 )
 async def transfer_session(
     session_id: UUID,
@@ -192,13 +192,13 @@ async def transfer_session(
     current_user: Staff = Depends(get_current_active_user),
 ) -> TransferSessionResponse:
     """
-    转接会话给另一个客服。
+    Transfer a session to another staff member.
     
-    - 将当前会话的客服更换为目标客服
-    - 保持会话不关闭
-    - 发送通知
+    - Replace the session's staff member with the target staff member
+    - Keep the session open
+    - Send a notification
     
-    只有会话负责人或管理员可以转接会话。
+    Only the session owner or an admin can transfer a session.
     """
     # Query the session
     session = (
@@ -333,8 +333,8 @@ async def transfer_session(
 @router.post(
     "/visitor/{visitor_id}/transfer",
     response_model=TransferSessionResponse,
-    summary="通过访客ID转接会话",
-    description="将指定访客的当前会话转接给另一个客服。",
+    summary="Transfer session by visitor ID",
+    description="Transfer the visitor's current session to another staff member.",
 )
 async def transfer_session_by_visitor_id(
     visitor_id: UUID,
@@ -343,13 +343,13 @@ async def transfer_session_by_visitor_id(
     current_user: Staff = Depends(get_current_active_user),
 ) -> TransferSessionResponse:
     """
-    通过访客ID转接会话。
+    Transfer a session by visitor ID.
     
-    - 查找访客当前进行中的会话
-    - 将当前会话的客服更换为目标客服
-    - 保持会话不关闭
+    - Find the visitor's current open session
+    - Replace the session's staff member with the target staff member
+    - Keep the session open
     
-    只有会话负责人或管理员可以转接会话。
+    Only the session owner or an admin can transfer a session.
     """
     # Check visitor exists
     visitor = db.query(Visitor).filter(

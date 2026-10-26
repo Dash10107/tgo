@@ -1,4 +1,4 @@
-"""FastAPI application entry point for TGO Plugin Runtime."""
+"""FastAPI application entry point for Pelatis Plugin Runtime."""
 
 import asyncio
 from contextlib import asynccontextmanager
@@ -24,7 +24,7 @@ async def lifespan(application: FastAPI):
     from app.models.plugin import InstalledPlugin
 
     startup_log("=" * 64)
-    startup_log("🔌 TGO Plugin Runtime Service Starting...")
+    startup_log("🔌 Pelatis Plugin Runtime Service Starting...")
     startup_log("=" * 64)
 
     # Setup tool sync with plugin manager
@@ -79,7 +79,7 @@ async def lifespan(application: FastAPI):
 
 app = FastAPI(
     title=settings.SERVICE_NAME,
-    description="Plugin Runtime Service for TGO - manages plugin connections and provides HTTP APIs",
+    description="Plugin Runtime Service for Pelatis - manages plugin connections and provides HTTP APIs",
     version=settings.SERVICE_VERSION,
     docs_url="/docs",
     redoc_url="/redoc",

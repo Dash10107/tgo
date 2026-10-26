@@ -1,4 +1,4 @@
-"""json-render schema manager for TGO AI."""
+"""json-render schema manager for Pelatis AI."""
 
 from __future__ import annotations
 
@@ -146,7 +146,7 @@ When generating rich UI you MUST follow these rules:
    **NEVER use `$if` or `$eq` as expression keys** — they are NOT supported.
    Full example for a toggle-style filter button:
    ```
-   {{ "type": "Button", "props": {{ "label": "高铁", "variant": {{ "$cond": {{ "$state": "/form/trainType", "eq": "G" }}, "$then": "primary", "$else": "secondary" }} }}, "on": {{ "press": {{ "action": "setState", "params": {{ "statePath": "/form/trainType", "value": "G" }} }} }} }}
+   {{ "type": "Button", "props": {{ "label": "Express", "variant": {{ "$cond": {{ "$state": "/form/trainType", "eq": "G" }}, "$then": "primary", "$else": "secondary" }} }}, "on": {{ "press": {{ "action": "setState", "params": {{ "statePath": "/form/trainType", "value": "G" }} }} }} }}
    ```
 15. Component prop conventions — all form components bind via the `value` prop:
    - `Input`/`TextField`: `{{ "value": {{ "$bindState": "/form/field" }} }}`
@@ -154,5 +154,5 @@ When generating rich UI you MUST follow these rules:
    - `DateTimeInput`: `{{ "value": {{ "$bindState": "/form/date" }} }}`
    - `MultipleChoice`: single-select dropdown. Use `value` prop (NOT `selectedValues` or `selectedValue`).
      State must be a string, NOT an array. Example:
-     `{{ "type": "MultipleChoice", "props": {{ "label": "类型", "options": [...], "value": {{ "$bindState": "/form/type" }} }} }}`
+     `{{ "type": "MultipleChoice", "props": {{ "label": "Type", "options": [...], "value": {{ "$bindState": "/form/type" }} }} }}`
 """

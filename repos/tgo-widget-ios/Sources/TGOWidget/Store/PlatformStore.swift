@@ -34,7 +34,7 @@ public final class PlatformStore: ObservableObject {
     }
 
     var title: String {
-        config?.resolvedTitle ?? "Tgo"
+        config?.resolvedTitle ?? "Pelatis"
     }
 
     var welcomeMessage: String? {

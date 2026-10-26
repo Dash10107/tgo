@@ -202,7 +202,7 @@ async def send_message(req_body: SendMessageRequest, request: Request, db: Async
                 return error_response(status.HTTP_400_BAD_REQUEST, code="UNSUPPORTED_MESSAGE_TYPE", message=f"Unsupported payload type for WeCom: {msg_type}", request_id=request_id)
 
         if platform_type == "wecom_bot":
-            # WeCom Bot (智能机器人) - direct message sending is not supported
+            # WeCom Bot (smart bot) - direct message sending is not supported
             # Messages can only be sent as replies via response_url from incoming callbacks
             return error_response(
                 status.HTTP_400_BAD_REQUEST,

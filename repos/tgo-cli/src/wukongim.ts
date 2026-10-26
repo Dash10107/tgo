@@ -265,7 +265,7 @@ export class WuKongIMClient {
   }
 
   /**
-   * Convert TGO channel type to WuKongIM SDK channel type.
+   * Convert Pelatis channel type to WuKongIM SDK channel type.
    * PERSON (1) and GROUP (2) have direct mappings; others pass through.
    */
   private convertChannelType(channelType: number): WKIMChannelType | number {

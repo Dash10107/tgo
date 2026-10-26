@@ -13,10 +13,10 @@ import NodeExecutionOverlay from '../overlays/NodeExecutionOverlay';
 const LLMNode: React.FC<NodeProps<LLMNodeData>> = ({ id, data, selected }) => {
   const { t } = useTranslation();
   const hasPrompt = Boolean(data.user_prompt);
-  const defaultLabel = t('workflow.node_types.llm.label', 'LLM调用');
+  const defaultLabel = t('workflow.node_types.llm.label', 'LLM Call');
   
   const getPromptPreview = () => {
-    if (!data.user_prompt) return t('workflow.node_display.not_configured_prompt', '未配置提示词');
+    if (!data.user_prompt) return t('workflow.node_display.not_configured_prompt', 'Prompt Not Configured');
     return data.user_prompt.length > 50 
       ? `${data.user_prompt.slice(0, 50)}...` 
       : data.user_prompt;
@@ -81,7 +81,7 @@ const LLMNode: React.FC<NodeProps<LLMNodeData>> = ({ id, data, selected }) => {
         </div>
         {!hasPrompt && (
           <span className="text-[9px] bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded-lg font-bold border border-amber-100 dark:border-amber-800/50 animate-pulse">
-            {t('common.required', '配置未完成')}
+            {t('common.required', 'Required')}
           </span>
         )}
       </div>

@@ -46,7 +46,7 @@ export const testAuthentication = async (): Promise<AuthTestResult> => {
     result.testResults.collections = 'success';
   } catch (error) {
     if (error instanceof Error) {
-      if (error.message.includes('401') || error.message.includes('身份验证失败')) {
+      if (error.message.includes('401') || error.message.includes('Authentication failed')) {
         result.testResults.collections = 'auth_error';
         result.errors.push(`Collections API: ${error.message}`);
       } else {
@@ -62,7 +62,7 @@ export const testAuthentication = async (): Promise<AuthTestResult> => {
     result.testResults.files = 'success';
   } catch (error) {
     if (error instanceof Error) {
-      if (error.message.includes('401') || error.message.includes('身份验证失败')) {
+      if (error.message.includes('401') || error.message.includes('Authentication failed')) {
         result.testResults.files = 'auth_error';
         result.errors.push(`Files API: ${error.message}`);
       } else {

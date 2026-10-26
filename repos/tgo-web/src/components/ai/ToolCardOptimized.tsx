@@ -44,7 +44,7 @@ const AiToolCardOptimized: React.FC<AiToolCardOptimizedProps> = ({
   showRating = false,
   className = '',
 }) => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const displayTitle = getToolDisplayTitle(tool, i18n.language);
 
   // Transform AiTool to BaseCardItem format
@@ -76,7 +76,7 @@ const AiToolCardOptimized: React.FC<AiToolCardOptimizedProps> = ({
       onAction(actionType, tool);
     } catch (error) {
       console.error(`Action ${actionType} failed:`, error);
-      onShowToast?.('error', '操作失败', `执行 ${actionType} 操作时发生错误`);
+      onShowToast?.('error', t('toolCard.actionFailed', 'Action failed'), t('toolCard.actionError', { action: actionType, defaultValue: 'An error occurred while performing the {{action}} action' }));
     }
   };
 

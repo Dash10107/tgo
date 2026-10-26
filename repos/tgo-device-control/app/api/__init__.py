@@ -1,1 +1,1 @@
-"""API module for TGO Device Control Service."""
+"""API module for Pelatis Device Control Service."""

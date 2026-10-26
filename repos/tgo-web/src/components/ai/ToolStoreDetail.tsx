@@ -60,7 +60,7 @@ const ToolStoreDetail: React.FC<ToolStoreDetailProps> = ({
     <StoreDetailPanel
       isOpen={isOpen}
       onClose={onClose}
-      title={t('tools.store.details', '工具详情')}
+      title={t('tools.store.details', 'Tool Details')}
       headerActions={
         <button
           onClick={() => onInstall(tool)}
@@ -74,11 +74,11 @@ const ToolStoreDetail: React.FC<ToolStoreDetailProps> = ({
           }`}
         >
           {isInstalled ? (
-            <><Check className="w-4 h-4" /> {t('tools.store.installed', '已安装')}</>
+            <><Check className="w-4 h-4" /> {t('tools.store.installed', 'Installed')}</>
           ) : isInstalling ? (
-            <>{t('tools.store.installing', '安装中...')}</>
+            <>{t('tools.store.installing', 'Installing...')}</>
           ) : (
-            t('tools.store.install', '安装')
+            t('tools.store.install', 'Install')
           )}
         </button>
       }
@@ -99,12 +99,12 @@ const ToolStoreDetail: React.FC<ToolStoreDetailProps> = ({
                 {tool.verified && (
                   <div className="flex items-center gap-1 px-2 py-0.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[10px] font-bold rounded-lg border border-blue-100 dark:border-blue-800">
                     <ShieldCheck className="w-3 h-3" />
-                    {t('tools.store.verified', '官方认证')}
+                    {t('tools.store.verified', 'Verified')}
                   </div>
                 )}
               </div>
               <p className="text-gray-500 dark:text-gray-400 font-medium text-lg mt-1">
-                {tool.author || 'TGO'} <span className="text-gray-300 dark:text-gray-600 mx-2">@</span>{tool.authorHandle || 'tgo'}
+                {tool.author || 'Pelatis'} <span className="text-gray-300 dark:text-gray-600 mx-2">@</span>{tool.authorHandle || 'tgo'}
               </p>
             </div>
 
@@ -128,14 +128,14 @@ const ToolStoreDetail: React.FC<ToolStoreDetailProps> = ({
           <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl border border-gray-100 dark:border-gray-700/50">
             <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1 flex items-center gap-1.5">
               <Info className="w-3 h-3" />
-              {t('tools.store.type', '类型')}
+              {t('tools.store.type', 'Type')}
             </div>
             <div className="text-sm font-bold text-gray-900 dark:text-gray-100 uppercase">{(tool as any).type || 'MCP'}</div>
           </div>
           <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl border border-gray-100 dark:border-gray-700/50">
             <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1 flex items-center gap-1.5">
               <Calendar className="w-3 h-3" />
-              {t('tools.store.createdAt', '发布时间')}
+              {t('tools.store.createdAt', 'Published')}
             </div>
             <div className="text-sm font-bold text-gray-900 dark:text-gray-100">
               {(tool as any).created_at ? new Date((tool as any).created_at).toLocaleDateString() : '-'}
@@ -144,10 +144,10 @@ const ToolStoreDetail: React.FC<ToolStoreDetailProps> = ({
           <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl border border-gray-100 dark:border-gray-700/50">
             <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1 flex items-center gap-1.5">
               <Calendar className="w-3 h-3" />
-              {t('tools.store.price', '费用')}
+              {t('tools.store.price', 'Price')}
             </div>
             <div className="text-sm font-bold text-gray-900 dark:text-gray-100">
-              {tool.price_per_call && tool.price_per_call > 0 ? `¥${tool.price_per_call} / 次` : t('tools.store.free', '免费')}
+              {tool.price_per_call && tool.price_per_call > 0 ? `¥${tool.price_per_call} / ${t('tools.store.perCallShort', 'call')}` : t('tools.store.free', 'Free')}
             </div>
           </div>
         </div>
@@ -155,7 +155,7 @@ const ToolStoreDetail: React.FC<ToolStoreDetailProps> = ({
         {/* Long Description */}
         <div className="max-w-none">
           <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 pb-2 border-b border-gray-100 dark:border-gray-800">
-            描述
+            {t('tools.store.description', 'Description')}
           </h3>
           <div className="text-gray-600 dark:text-gray-400 leading-relaxed">
             {tool.longDescription ? (
@@ -170,7 +170,7 @@ const ToolStoreDetail: React.FC<ToolStoreDetailProps> = ({
         {methods.length > 0 && (
           <div className="space-y-6">
             <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 pb-2 border-b border-gray-100 dark:border-gray-700">
-              可用方法 (Methods)
+              {t('tools.store.availableMethods', 'Available methods')} (Methods)
             </h3>
             <div className="space-y-4">
               {methods.map((method: ToolMethod) => {
@@ -190,7 +190,7 @@ const ToolStoreDetail: React.FC<ToolStoreDetailProps> = ({
                         <p className="text-sm text-gray-600 dark:text-gray-400">{method.description}</p>
                         {method.parameters && method.parameters.length > 0 && (
                           <div className="space-y-2">
-                            <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">参数 (Parameters)</div>
+                            <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t('tools.store.parameters', 'Parameters')}</div>
                             {method.parameters.map((param: ToolParameter) => (
                               <div key={param.name} className="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl">
                                 <code className="text-gray-900 dark:text-gray-100 font-mono font-bold text-xs">{param.name}</code>

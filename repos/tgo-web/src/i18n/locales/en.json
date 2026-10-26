@@ -74,7 +74,19 @@
     "yes": "Yes",
     "no": "No",
     "enabled": "Enabled",
-    "advancedOptions": "Advanced Options"
+    "advancedOptions": "Advanced Options",
+    "submitting": "Submitting...",
+    "official": "Official",
+    "deleting": "Deleting…",
+    "disabling": "Disabling…",
+    "enabling": "Enabling…",
+    "disable": "Disable",
+    "submit": "Submit",
+    "copySuccess": "Copied successfully",
+    "noData": "No data",
+    "processing": "Processing...",
+    "tableCreated": "Created",
+    "lastUpdated": "Last Updated"
   },
   "config": {
     "respondDirectly": "Respond Directly",
@@ -116,10 +128,10 @@
     },
     "plugins": {
       "title": "Plugins",
-      "subtitle": "View and manage plugins connected to TGO",
+      "subtitle": "View and manage plugins connected to Pelatis",
       "empty": {
         "title": "No plugins connected",
-        "description": "Plugins can connect to TGO API via Unix Socket or TCP."
+        "description": "Plugins can connect to Pelatis API via Unix Socket or TCP."
       },
       "viewDocs": "View Plugin Developer Guide",
       "status": {
@@ -194,6 +206,10 @@
           "copying": "Deploy files",
           "building": "Compile and build",
           "starting": "Start service"
+        },
+        "manual": {
+          "title": "Manual Install Mode",
+          "description": "Paste the plugin description YAML file to install. Recommended only for advanced users or development and debugging."
         }
       },
       "actions": {
@@ -238,6 +254,9 @@
         "preparing": "Preparing upgrade...",
         "confirm": "Upgrade Now",
         "error": "Upgrade failed"
+      },
+      "fetch": {
+        "error": "Unable to fetch plugin information. Please check that the URL is correct."
       }
     },
     "profile": {
@@ -631,7 +650,8 @@
       "createModelOption": "Create",
       "confirmDeleteTitle": "Delete Provider",
       "confirmDeleteMsg": "Are you sure you want to delete this provider configuration? This action cannot be undone.",
-      "empty": "No providers configured yet. Click \"Get from Store\" or \"Custom Config\" to get started."
+      "empty": "No providers configured yet. Click \"Get from Store\" or \"Custom Config\" to get started.",
+      "addModel": "Add Model"
     }
   },
   "about": {
@@ -649,7 +669,8 @@
     "loadError": "Failed to load system information",
     "systemInfo": "System Information",
     "technicalDetails": "Technical Details",
-    "links": "Links"
+    "links": "Links",
+    "apiEndpoint": "API Endpoint"
   },
   "agents": {
     "title": "Agent Team Management",
@@ -672,7 +693,9 @@
       "teamChat": "Team Chat",
       "teamChatTooltip": "Chat with agent team",
       "teamChatNoAgents": "Please create an agent first",
-      "teamInfo": "Team Info"
+      "teamInfo": "Team Info",
+      "store": "Hire Agents",
+      "defaultAgentChat": "Chat with the default AI agent"
     },
     "form": {
       "name": "Agent Name",
@@ -726,7 +749,11 @@
       "noTeam": "Team not loaded",
       "noTeamDesc": "Please try again later",
       "noAgentsForTeamChat": "Cannot start team chat",
-      "noAgentsForTeamChatDesc": "Please create at least one agent first"
+      "noAgentsForTeamChatDesc": "Please create at least one agent first",
+      "noDefaultAgent": "Default AI agent not loaded",
+      "noDefaultAgentDesc": "Please try again later",
+      "validationFailed": "Validation failed",
+      "fillRequired": "Please fill in all required fields"
     },
     "teamChat": {
       "defaultName": "Agent Team"
@@ -741,7 +768,9 @@
     },
     "empty": {
       "title": "No Agents",
-      "description": "Click the \"Create Agent\" button to start creating your first agent"
+      "description": "Click the \"Create Agent\" button to start creating your first agent",
+      "noResults": "No matching AI agents found",
+      "noResultsDesc": "Try different search keywords"
     },
     "error": {
       "title": "Load Failed",
@@ -790,6 +819,48 @@
         "message": "Are you sure you want to delete agent \"{{name}}\"? This action cannot be undone.",
         "confirm": "Delete",
         "cancel": "Cancel"
+      },
+      "apiTest": {
+        "errors": {
+          "parseResponseFailed": "Failed to parse response",
+          "requestFailed": "Request failed",
+          "networkFailed": "Network connection failed. Check that the URL is correct or whether there is a CORS issue"
+        },
+        "sections": {
+          "authMethod": "Authentication Method",
+          "testResult": "Test Result"
+        },
+        "auth": {
+          "autoDetected": "Auto-detected"
+        },
+        "labels": {
+          "param": "Parameter",
+          "value": "Value",
+          "type": "Type",
+          "format": "Format",
+          "min": "Minimum",
+          "max": "Maximum",
+          "minLength": "Minimum length",
+          "maxLength": "Maximum length",
+          "pattern": "Pattern"
+        },
+        "placeholders": {
+          "select": "Please select",
+          "enter": "Please enter"
+        },
+        "noParams": "This endpoint defines no parameters",
+        "buttons": {
+          "testing": "Testing...",
+          "test": "Test"
+        },
+        "result": {
+          "corsHintTitle": "Note: due to browser CORS restrictions, some APIs cannot be tested directly",
+          "corsHint": "CORS hint",
+          "error": "Error:",
+          "responseHeaders": "Response headers:",
+          "responseData": "Response data:",
+          "empty": "Test results will be shown here"
+        }
       }
     },
     "create": {
@@ -798,7 +869,8 @@
         "description": "Capability Description",
         "tools": "Tools",
         "skills": "Skills",
-        "resources": "Resource Association"
+        "resources": "Resource Association",
+        "toolTools": "Tools"
       },
       "placeholders": {
         "name": "Please enter agent name",
@@ -812,11 +884,14 @@
         "selectPlaceholder": "Please select a model",
         "loadFailedTitle": "Load Failed",
         "loadFailedDesc": "Unable to load model list, please try again later",
-        "loadFailedInline": "Model load failed: {{error}}"
+        "loadFailedInline": "Model load failed: {{error}}",
+        "invalid": "Please select a valid model (a provider is required)"
       },
       "tools": {
         "shortNoMissingTitle": "Missing Tool Short No",
-        "shortNoMissingDesc": "The following tools are missing short_no or name: {{names}}, please refresh the tool store or reselect and try again"
+        "shortNoMissingDesc": "The following tools are missing short_no or name: {{names}}, please refresh the tool store or reselect and try again",
+        "missingTitle": "Tool information missing",
+        "missingDesc": "The following tools are missing names: {{names}}. Please reselect and try again"
       }
     },
     "edit": {
@@ -828,7 +903,8 @@
         "pendingNewTool": "Pending new tool",
         "missingTitle": "Tool Information Missing",
         "missingDesc": "The following tools are missing name: {{names}}, please reselect and try again"
-      }
+      },
+      "modelProviderRequired": "Please reselect a valid model (a provider is required)"
     },
     "detail": {
       "basicInfo": "Basic Info",
@@ -977,6 +1053,20 @@
       },
       "cancel": "Cancel",
       "save": "Save"
+    },
+    "defaultAgent": {
+      "defaultName": "Default AI Agent",
+      "description": "The project's default AI agent handles AI conversations when no target is explicitly specified."
+    },
+    "store": {
+      "hire": "Hire",
+      "hireNow": "Hire Now",
+      "alreadyInstalled": "This agent is already on your team",
+      "installFailed": "Hiring failed, please try again",
+      "title": "Agent Store",
+      "searchPlaceholder": "Search agent name or responsibilities...",
+      "noResults": "No matching agents found",
+      "noDescription": "No description"
     }
   },
   "team": {
@@ -1022,7 +1112,10 @@
       "registerLink": "Sign up now",
       "emailPlaceholder": "you@example.com",
       "emailOrUsernamePlaceholder": "Enter email or username",
-      "passwordPlaceholder": "Enter your password"
+      "passwordPlaceholder": "Enter your password",
+      "resetAdminInstruction": "Run the following command to reset the admin user",
+      "copied": "Copied",
+      "copy": "Copy"
     },
     "register": {
       "title": "Create new account",
@@ -1066,7 +1159,9 @@
       "error": "Email verification failed",
       "noToken": "Missing verification token. Please check your verification link.",
       "goToLogin": "Go to Sign In"
-    }
+    },
+    "loginFailed": "Login failed",
+    "registerFailed": "Registration failed"
   },
   "navigation": {
     "chat": "Chat",
@@ -1255,7 +1350,9 @@
       "max_tokens": "Max Tokens",
       "workflow_info": "Workflow Info",
       "version": "Version",
-      "total_nodes": "Total Nodes"
+      "total_nodes": "Total Nodes",
+      "input_variables": "Input Parameters",
+      "cron_description": "Use standard Cron format to set an automatic execution schedule."
     },
     "placeholders": {
       "selectAgent": "Please select an AI Agent",
@@ -1335,7 +1432,8 @@
       "llm_evaluation": "LLM Evaluation",
       "not_configured_condition": "Condition Not Configured",
       "custom_event": "Custom Event",
-      "not_configured_agent": "Agent Not Configured"
+      "not_configured_agent": "Agent Not Configured",
+      "output": "Output"
     },
     "panel": {
       "nodeConfig": "Node Configuration",
@@ -1379,7 +1477,14 @@
       "description": "Create your first AI workflow"
     },
     "noMatch": "No matching workflows found",
-    "noMatch.description": "Try adjusting your search criteria"
+    "noMatch.description": "Try adjusting your search criteria",
+    "namePlaceholder": "Workflow name",
+    "settings": "Settings",
+    "loading": "Loading workflow...",
+    "tagsPlaceholder": "Separate with commas",
+    "config": {
+      "unlimited": "∞ Unlimited"
+    }
   },
   "ai": {
     "menu": {
@@ -1630,7 +1735,17 @@
         "tags": "Tags",
         "tagsPlaceholder": "Enter tags, separated by commas",
         "tagsHint": "Separate multiple tags with commas"
-      }
+      },
+      "results": "Q&A Pairs",
+      "segmentCount": "{{count}} Q&A pairs in total",
+      "searchSegments": "Search segment content...",
+      "loadingSegments": "Loading segment results...",
+      "noResults": "No matching segments found",
+      "noSegments": "This file has no Q&A segment results yet",
+      "tryDifferentSearch": "Try a different keyword",
+      "ensureQaMode": "Make sure Q&A split mode was enabled when uploading",
+      "chars": "characters",
+      "editSegment": "Edit Segment"
     },
     "icons": {
       "book": "Book",
@@ -1716,7 +1831,8 @@
         "title": "Knowledge Base Not Found",
         "description": "Please check if the link is correct"
       },
-      "fileServiceNotInitialized": "File service not initialized"
+      "fileServiceNotInitialized": "File service not initialized",
+      "viewQA": "View Q&A pairs"
     },
     "upload": {
       "title": "Drag files here or click to upload",
@@ -1748,6 +1864,115 @@
       "configPath": "Configuration Path",
       "configPathDesc": "Settings → Model Providers → Set Default Embedding Model",
       "goToConfig": "Go to Configuration"
+    },
+    "update": "Update Knowledge Base",
+    "search": {
+      "failed": "Search failed",
+      "title": "Search Test",
+      "query": "Test text",
+      "placeholder": "Enter a question to test...",
+      "mode": "Search mode",
+      "results": "Search Results"
+    },
+    "tabs": {
+      "documents": "Documents",
+      "searchTest": "Search Test"
+    },
+    "table": {
+      "statusColumn": "Status",
+      "status": {
+        "published": "Published",
+        "draft": "Draft",
+        "archived": "Archived",
+        "unknown": "Unknown"
+      },
+      "emptyTitle": "No knowledge bases yet",
+      "emptyHint": "Click the \"New Knowledge Base\" button to create your first knowledge base",
+      "title": "Title",
+      "category": "Category",
+      "views": "Views",
+      "updatedAt": "Updated",
+      "actions": "Actions",
+      "more": "More"
+    },
+    "documentList": {
+      "downloading": "Downloading...",
+      "download": "Download file",
+      "deleting": "Deleting...",
+      "deleteFile": "Delete file"
+    },
+    "fileUpload": {
+      "uploading": "Uploading..."
+    },
+    "filters": {
+      "searchPlaceholder": "Search knowledge bases...",
+      "filter": "Filter",
+      "quickFilter": "Quick filter"
+    },
+    "fileTypes": {
+      "text": "Text"
+    },
+    "row": {
+      "files": "files",
+      "share": "Share"
+    },
+    "searchTest": {
+      "subtitle": "Test knowledge base retrieval and simulate the search behavior used when the AI replies",
+      "searching": "Searching...",
+      "startSearch": "Start search",
+      "resultCount": "Result count",
+      "recommended": "Recommended",
+      "contentTypes": "Content types",
+      "deselectAll": "Deselect all",
+      "selectAll": "Select all",
+      "selectAtLeastOne": "Please select at least one content type",
+      "aboutScore": "About the Score",
+      "scoreHigh": "most relevant, ranked first",
+      "scoreMid": "highly relevant",
+      "scoreLow": "moderately relevant",
+      "scoreNote": "Scores are normalized to the 0-1 range. Hybrid search combines semantic similarity and keyword matching, fused and ranked with the RRF algorithm.",
+      "elapsed": "Elapsed",
+      "total": "Total",
+      "items": "items",
+      "noMatches": "No matching results found",
+      "ready": "Ready",
+      "tryOtherKeywords": "Try different keywords or adjust the search mode",
+      "startHint": "Enter a question on the left to start testing",
+      "document": "Document",
+      "unknownSource": "Unknown source",
+      "untitled": "Untitled",
+      "semanticRank": "Semantic rank",
+      "keywordRank": "Keyword rank",
+      "modes": {
+        "hybrid": {
+          "name": "Hybrid Search",
+          "description": "Combines semantic understanding with keyword matching (recommended)"
+        },
+        "embedding": {
+          "name": "Semantic Search",
+          "description": "Based on vector similarity; understands semantic meaning"
+        },
+        "fulltext": {
+          "name": "Full-text Search",
+          "description": "Based on keyword matching for exact lookup"
+        }
+      },
+      "types": {
+        "qa_pair": "Q&A Pairs",
+        "paragraph": "Paragraph",
+        "heading": "Heading",
+        "table": "Table",
+        "list": "List",
+        "code": "Code Block"
+      }
+    },
+    "store": {
+      "fetchFailed": "Failed to fetch the knowledge base list",
+      "currentUser": "Current user",
+      "createFailed": "Failed to create the knowledge base",
+      "updateFailed": "Failed to update the knowledge base",
+      "deleteFailed": "Failed to delete the knowledge base",
+      "copySuffix": "Copy"
     }
   },
   "channels": {
@@ -1762,10 +1987,10 @@
     }
   },
   "footer": {
-    "copyright": "© 2025 Tgo CS. All rights reserved."
+    "copyright": "© 2025 Pelatis CS. All rights reserved."
   },
   "brand": {
-    "name": "Tgo CS"
+    "name": "Pelatis CS"
   },
   "comingSoon": {
     "title": "Coming soon",
@@ -2003,11 +2228,27 @@
         "notFound": "Tag not found",
         "noTagId": "Failed to get tag ID"
       }
-    }
+    },
+    "defaultName": "Visitor"
   },
   "errors": {
     "incompleteVisitorInfo": "Visitor information is incomplete",
-    "missingVisitorId": "Missing visitor_id"
+    "missingVisitorId": "Missing visitor_id",
+    "networkFailed": "Network connection failed, please check your network and try again",
+    "timeout": "Request timed out, please try again later",
+    "badRequest": "Invalid request parameters, please check your input",
+    "unauthorized": "Authentication failed, please log in again",
+    "forbidden": "Insufficient permissions, unable to perform this action",
+    "notFound": "The requested resource does not exist",
+    "conflict": "Resource conflict, please refresh the page and try again",
+    "fileTooLarge": "File is too large, please choose a smaller file",
+    "unsupportedFileType": "Unsupported file type",
+    "serverError": "Server error, please try again later",
+    "unauthorizedRetry": "Authentication failed, please log in again and retry",
+    "tooManyRequests": "Too many requests, please try again later",
+    "internalServerError": "Internal server error, please try again later",
+    "serviceUnavailable": "Service temporarily unavailable, please try again later",
+    "unknown": "An unknown error occurred, please try again later"
   },
   "search": {
     "tabs": {
@@ -2065,7 +2306,13 @@
       "hours": "{{count}} hours ago",
       "hoursAgo": "{{count}} hours ago",
       "yesterdayAt": "Yesterday {{time}}",
-      "days": "{{count}} days ago"
+      "days": "{{count}} days ago",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "daysAgo": "{{count}} days ago",
+      "weeksAgo": "{{count}} weeks ago",
+      "monthsAgo": "{{count}} months ago",
+      "yearsAgo": "{{count}} years ago"
     },
     "lastSeen": {
       "justNow": "Online just now",
@@ -2182,7 +2429,12 @@
       "clearMemoryTooltip": "Clear AI conversation memory and restart",
       "clearMemoryConfirm": "Are you sure you want to clear the AI memory for this session? The AI will no longer remember previous conversations.",
       "clearMemorySuccess": "Memory cleared",
-      "clearMemoryError": "Failed to clear memory"
+      "clearMemoryError": "Failed to clear memory",
+      "endChatSuccess": "Chat ended",
+      "endChatError": "Failed to end chat",
+      "loadStaffError": "Failed to load the agent list",
+      "noAvailableStaff": "No agents available",
+      "endChatTooltip": "End the current chat"
     },
     "suggestions": {
       "label": "✨ Suggestions:"
@@ -2226,7 +2478,9 @@
         "sessionClosed": "Session ended. Agent {0} has completed the service.",
         "sessionClosedEmpty": "Session ended.",
         "memoryCleared": "Memory cleared, AI will restart the conversation"
-      }
+      },
+      "aiThinking": "AI is thinking...",
+      "aiReply": "[AI Reply]"
     },
     "input": {
       "placeholder": "Type a message...",
@@ -2324,8 +2578,24 @@
       },
       "closed": "Conversation ended",
       "notMyVisitor": "This visitor is assigned to {{name}}",
-      "otherAgent": "another agent"
-    }
+      "otherAgent": "another agent",
+      "accept": {
+        "successTitle": "Accepted",
+        "successMessage": "Visitor accepted successfully",
+        "hint": "This visitor is waiting to be accepted",
+        "accepting": "Accepting...",
+        "button": "Accept Visitor"
+      },
+      "streaming": {
+        "cancelledTitle": "Paused",
+        "cancelledMessage": "Streaming message paused",
+        "pauseTooltip": "Pause streaming message",
+        "pause": "Pause"
+      }
+    },
+    "aiTyping": "AI is typing...",
+    "agentRole": "Support Agent",
+    "userRole": "User"
   },
   "tools": {
     "title": "Tools",
@@ -2397,7 +2667,7 @@
         "initLoginFailed": "Failed to initiate login process",
         "missingVerifier": "Missing local verification key, please try again",
         "invalidCode": "Invalid or expired authorization code",
-        "usageNotice": "Once enabled, it will be available on the TGO platform, with real-time billing based on actual Token consumption.",
+        "usageNotice": "Once enabled, it will be available on the Pelatis platform, with real-time billing based on actual Token consumption.",
         "noResults": "No matching models found",
         "noResultsDesc": "Try searching for other keywords or switch categories",
         "allModels": "All Models",
@@ -2436,7 +2706,15 @@
         "type": "Model Type",
         "documentation": "Provider API Docs",
         "loading": "Searching for the world's most advanced AI models..."
-      }
+      },
+      "type": "Type",
+      "createdAt": "Published",
+      "noResultsDesc": "Try other keywords or switch categories",
+      "perCall": "call",
+      "perCallShort": "call",
+      "description": "Description",
+      "availableMethods": "Available methods",
+      "parameters": "Parameters"
     },
     "newTool": "New Tool",
     "selectModal": {
@@ -2478,7 +2756,7 @@
       "ai": "AI Tools",
       "integration": "Integration",
       "plugin": "Plugin Tool",
-      "unknown": "Unknown Category"
+      "unknown": "Unknown category"
     },
     "page": {
       "customTool": "Custom Tool"
@@ -2677,6 +2955,14 @@
         "number": "Please enter a valid number"
       },
       "save": "Save Configuration"
+    },
+    "endpointCopied": "Endpoint address copied to clipboard",
+    "copyEndpointFailed": "Unable to copy endpoint address",
+    "noDescription": "No description",
+    "list": {
+      "emptyTitle": "No tools yet",
+      "emptyDescriptionAll": "Click the \"Add Tool\" button to add your first tool",
+      "emptyAction": "Start adding tools"
     }
   },
   "platforms": {
@@ -2755,6 +3041,10 @@
         "title": "Platform Configuration",
         "comingSoon": "Specific configuration options for this platform will be provided in future versions.",
         "currentStatus": "Current Status: {{status}}"
+      },
+      "aiSettings": {
+        "saveSuccess": "AI settings saved",
+        "saveButton": "Save AI Settings"
       }
     },
     "website": {
@@ -2787,7 +3077,7 @@
         "successDesc": "Example file has been downloaded, open it in a browser to see the result",
         "demoTitle": "Widget Demo",
         "welcomeTitle": "Welcome!",
-        "welcomeDesc": "Your TGO chat widget is now integrated! Click the chat button in the bottom-right corner to start a conversation.",
+        "welcomeDesc": "Your Pelatis chat widget is now integrated! Click the chat button in the bottom-right corner to start a conversation.",
         "integrationCode": "Integration Code",
         "securityWarning": "Security Notice: This file contains your API key. Do not share it publicly or commit it to public repositories."
       },
@@ -2811,7 +3101,10 @@
         "displayModeBig": "Big Window",
         "apiKey": "API Key",
         "apiKeyPlaceholder": "No API Key",
-        "apiKeyHint": "Authentication identifier for website integration script, please keep it safe."
+        "apiKeyHint": "Authentication identifier for website integration script, please keep it safe.",
+        "uploadLogo": "Upload Logo",
+        "uploading": "Uploading…",
+        "noApiKey": "No API Key yet"
       },
       "embed": {
         "title": "Website Integration Code",
@@ -2840,18 +3133,31 @@
         "uploadSuccessMessage": "Logo has been updated",
         "uploadError": "Upload failed, please try again",
         "deleteSuccess": "Platform Deleted",
-        "deleteSuccessMessage": "Platform has been deleted"
+        "deleteSuccessMessage": "Platform has been deleted",
+        "disabled": "Platform disabled",
+        "enabled": "Platform enabled",
+        "copied": "Copied",
+        "updated": "Updated",
+        "logoUpdated": "Logo updated"
       },
       "confirm": {
         "deleteTitle": "Delete Platform",
         "deleteMessage": "Are you sure you want to delete this platform?",
         "confirmText": "Delete",
-        "cancelText": "Cancel"
+        "cancelText": "Cancel",
+        "regenerateApiKey": "Are you sure you want to regenerate the API Key? Existing embed scripts will need to be updated."
       },
       "defaults": {
         "widgetTitle": "Welcome",
         "welcomeMessage": "Hello! How can I help you?",
         "displayMode": "small"
+      },
+      "errors": {
+        "fileTooLarge": "Image size must not exceed 2MB",
+        "invalidFileType": "Only image files are supported",
+        "cropperFailed": "Unable to open the cropper",
+        "removeLogoFailed": "Removing the logo is not supported yet; upload a new image to replace it",
+        "uploadFailed": "Upload failed, please try again"
       }
     },
     "wechat": {
@@ -3455,7 +3761,8 @@
         "deleteMessage": "Are you sure you want to delete this platform?",
         "confirmText": "Delete",
         "cancelText": "Cancel"
-      }
+      },
+      "docsLink": "Douyin Open Platform documentation"
     },
     "custom": {
       "label": "Custom Platform",
@@ -3495,7 +3802,7 @@
       "integration": {
         "title": "API Integration Information",
         "guide": "Integration Guide",
-        "chatApi": "Chat API (Send Messages to TGO)",
+        "chatApi": "Chat API (Send Messages to Pelatis)",
         "endpoint": "API Endpoint",
         "authentication": "Authentication",
         "authDesc": "Add the platform API key in the request header:",
@@ -3506,7 +3813,7 @@
         "visitorRegisterDesc": "If you need to pass detailed user information (name, avatar, etc.), you can first call the visitor registration API:",
         "simpleExample": "Simple Example",
         "responseHandling": "Response Handling",
-        "responseHandlingDesc": "After calling the chat API, TGO system will return the AI assistant's reply. The third-party platform needs to send the returned reply content to the corresponding third-party user. The response format is compatible with OpenAI ChatGPT API, supporting both streaming and non-streaming responses.",
+        "responseHandlingDesc": "After calling the chat API, Pelatis system will return the AI assistant's reply. The third-party platform needs to send the returned reply content to the corresponding third-party user. The response format is compatible with OpenAI ChatGPT API, supporting both streaming and non-streaming responses.",
         "callbackApi": "Callback API (Receive Customer Service Replies)",
         "callbackConfig": "Configure Callback URL",
         "callbackConfigDesc": "Configure your callback URL in the 'Callback URL' field on the left. When customer service replies to a message, the system will send a POST request to that address.",
@@ -3542,11 +3849,84 @@
       "timeoutHint": "Time in seconds before AI takes over when there's no reply. Set to 0 to prevent AI takeover.",
       "saveSuccess": "AI settings saved",
       "saveButton": "Save AI Settings"
+    },
+    "wecomBot": {
+      "messages": {
+        "saveSuccess": "Saved successfully",
+        "saveSuccessMessage": "WeCom bot configuration updated",
+        "disabled": "Platform disabled",
+        "enabled": "Platform enabled",
+        "urlCopied": "Callback URL copied",
+        "deleteSuccess": "Deleted successfully",
+        "deleteSuccessMessage": "WeCom bot platform deleted"
+      },
+      "header": {
+        "subtitle": "Configure the credentials and callback needed to connect the WeCom bot (Webhook).",
+        "title": "{{name}} Configuration"
+      },
+      "buttons": {
+        "deleting": "Deleting…",
+        "delete": "Delete",
+        "disabling": "Disabling…",
+        "enabling": "Enabling…",
+        "disable": "Disable",
+        "enable": "Enable",
+        "saving": "Saving…",
+        "save": "Save",
+        "copy": "Copy"
+      },
+      "form": {
+        "name": "Platform Name",
+        "namePlaceholder": "Enter the platform name",
+        "callbackUrl": "Callback URL",
+        "callbackUrlPlaceholder": "The callback URL is generated after the platform is created",
+        "callbackUrlHint": "Enter this URL in the \"URL\" setting of the WeCom smart bot.",
+        "tokenPlaceholder": "Token used for callback verification",
+        "tokenHint": "Must match the Token configured in the WeCom admin console.",
+        "encodingAESKeyPlaceholder": "43-character message encryption key",
+        "encodingAESKeyHint": "43-character message encryption key, used to encrypt and decrypt callback messages.",
+        "token": "Token",
+        "encodingAESKey": "EncodingAESKey"
+      },
+      "guide": {
+        "title": "WeCom Bot Setup Guide",
+        "overview": "Quick Overview",
+        "overviewText": "Complete three steps: ① create a smart bot in the Workbench → ② enter the callback URL in WeCom and get the Token and EncodingAESKey → ③ fill them back in on this platform and save.",
+        "step1Title": "1️⃣ Create a WeCom smart bot",
+        "step1Item1": "Log in to the WeCom app and open \"Workbench\".",
+        "step1Item2": "Find and tap the \"Smart Bot\" app.",
+        "step1Item3": "Tap the \"Create smart agent bot\" button.",
+        "step1Item4": "Scroll to the bottom of the page and click the \"Create in API mode\" link.",
+        "step2Title": "2️⃣ Configure the callback URL and security info",
+        "step2Item1": "Copy the \"Callback URL\" on the left and paste it into the \"URL\" field on the WeCom bot configuration page.",
+        "step2Item2": "Click \"Random generate\" next to \"Token\", copy the generated Token and fill it into the \"Token\" field on the left.",
+        "step2Item3": "Click \"Random generate\" next to \"EncodingAESKey\", copy the generated key and fill it into the \"EncodingAESKey\" field on the left.",
+        "step2Item4": "Important: click Save on this platform now, then go back to the WeCom app and click \"Done\" to finish creating the bot.",
+        "step2SecurityTitle": "Security Notice",
+        "step2SecurityText": "Keep the Token and EncodingAESKey safe; they are used to verify the message source and to encrypt/decrypt messages."
+      },
+      "dialog": {
+        "deleteTitle": "Confirm Deletion",
+        "deleteMessage": "Are you sure you want to delete this WeCom bot platform? This action cannot be undone.",
+        "confirmDelete": "Delete",
+        "cancel": "Cancel"
+      },
+      "label": "WeCom Bot"
+    },
+    "store": {
+      "newPlatform": "New Platform",
+      "loadDetailFailed": "Failed to load platform details"
+    },
+    "status": {
+      "notConfigured": "Not configured",
+      "connected": "Connected",
+      "disabled": "Disabled",
+      "connectionFailed": "Connection failed"
     }
   },
   "setup": {
     "title": "System Setup Wizard",
-    "subtitle": "Welcome to Tgo CS, let's configure your system",
+    "subtitle": "Welcome to Pelatis CS, let's configure your system",
     "steps": {
       "admin": "Admin Account",
       "staff": "Human Agents",
@@ -3691,7 +4071,7 @@
     "dismiss": "Close",
     "dismissButton": "Don't Show Again",
     "welcome": {
-      "title": "Welcome to TGO",
+      "title": "Welcome to Pelatis",
       "subtitle": "Complete the following steps to start your AI customer service journey",
       "progress": "Progress",
       "estimatedTime": "~2 min",
@@ -3804,6 +4184,16 @@
     "disconnect": {
       "title": "Confirm Disconnect",
       "message": "Are you sure you want to disconnect device \"{{name}}\"?"
+    },
+    "sessionMonitor": {
+      "title": "Session Monitor",
+      "modalTitle": "Computer Use Session Monitor",
+      "modalSubtitle": "View the execution status of AI-controlled devices in real time",
+      "noSession": "No active sessions",
+      "noSessionDesc": "When an AI agent starts controlling a device to perform a task, you can monitor its progress and steps here in real time.",
+      "tip1": "Make sure the device is online",
+      "tip2": "Add a remote agent in the team configuration",
+      "tip3": "Ask the AI agent in a conversation to perform device operations"
     }
   },
   "ws": {
@@ -3914,6 +4304,226 @@
         "urlRequired": "Please enter a GitHub directory URL",
         "urlFormat": "Please enter a valid GitHub URL, supports directory or file links, e.g.: https://github.com/owner/repo/tree/branch/path"
       }
+    },
+    "disable": "Disable skill",
+    "enable": "Enable skill",
+    "toggleFailed": "Failed to toggle skill status"
+  },
+  "modelDetail": {
+    "details": "Agent Details",
+    "intro": "Agent Introduction"
+  },
+  "plugin": {
+    "ui": {
+      "loading": "Loading plugin...",
+      "title": "Extensions"
+    }
+  },
+  "agentDependency": {
+    "title": "Hiring Preparation",
+    "toolsToInstall": "Tools to install",
+    "pricePerCall": "Per call",
+    "modelToBind": "Model to bind",
+    "provider": "Provider",
+    "confirmHint": "After confirmation the system will install the selected tools and models and then complete hiring the agent.",
+    "installing": "Installing and hiring...",
+    "confirmHire": "Confirm hire",
+    "installingFor": "Installing the required dependencies for <b>{{agentName}}</b>"
+  },
+  "agentStoreDetail": {
+    "hiring": "Hiring...",
+    "hireHint": "After hiring, the agent will appear in your AI agent list immediately",
+    "noDetailedDescription": "No detailed description",
+    "skillConfig": "Skill Configuration",
+    "recommendedModel": "Recommended model",
+    "generalModel": "General model",
+    "preinstalledTools": "Pre-installed tools",
+    "loadingToolDetails": "Loading tool details...",
+    "noPreinstalledTools": "This agent has no pre-installed tools"
+  },
+  "authMethod": {
+    "autoDetected": "Auto-detected",
+    "header": "Request Header",
+    "query": "Query Parameter",
+    "none": "None",
+    "enterApiKey": "Enter API Key",
+    "title": "Authentication Method",
+    "authType": "Authentication type",
+    "headerPrefix": "Authorization header prefix",
+    "key": "Key",
+    "value": "Value",
+    "autoDetectedShort": "Auto-detect"
+  },
+  "apiTestModal": {
+    "paramsAndValues": "Parameters and values"
+  },
+  "customTool": {
+    "authSourceOperation": "operation level",
+    "authSourceGlobal": "global level",
+    "authAutoConfigured": "Authentication auto-configured",
+    "errors": {
+      "nameRequired": "Please enter a tool name",
+      "nameTooLong": "Tool name cannot exceed 50 characters",
+      "schemaRequired": "Please enter the Schema configuration"
+    },
+    "createSuccess": "Created successfully",
+    "createFailed": "Creation failed",
+    "createFailedMessage": "An error occurred while creating the custom tool, please try again",
+    "title": "Create Custom Tool",
+    "name": "Name",
+    "namePlaceholder": "Enter tool name",
+    "viewOpenApiSpec": "View OpenAPI-Swagger specification",
+    "examples": "Examples",
+    "schemaPlaceholder": "Enter OpenAPI Schema configuration...",
+    "availableTools": "Available tools",
+    "parsing": "Parsing...",
+    "table": {
+      "name": "Name",
+      "description": "Description",
+      "method": "Method",
+      "path": "Path",
+      "actions": "Actions"
+    },
+    "test": "Test",
+    "noValidEndpoints": "No valid API endpoints found",
+    "enterSchemaToView": "Enter an OpenAPI Schema to view available tools",
+    "autoDetectedAuthTitle": "Authentication configuration auto-detected from the OpenAPI spec",
+    "authDetectedFromSpec": "Detected {{authType}} authentication from the OpenAPI spec ({{source}})",
+    "createSuccessMessage": "Custom tool \"{{name}}\" has been created"
+  },
+  "toolCard": {
+    "actionFailed": "Action failed",
+    "actionError": "An error occurred while performing the {{action}} action"
+  },
+  "baseCard": {
+    "verified": "Verified",
+    "featured": "Featured",
+    "version": "Version",
+    "rating": "Rating",
+    "actions": {
+      "details": "Details",
+      "edit": "Edit",
+      "delete": "Delete",
+      "installed": "Installed",
+      "install": "Install"
+    }
+  },
+  "aiInfoCard": {
+    "status": "Status",
+    "product": "Product",
+    "tracking": "Tracking"
+  },
+  "connectionStatus": {
+    "connected": "Connected",
+    "connecting": "Connecting...",
+    "failed": "Connection failed",
+    "disconnected": "Not connected",
+    "reconnect": "Reconnect"
+  },
+  "richText": {
+    "unnamedFile": "Unnamed file",
+    "uploading": "Uploading",
+    "uploadFailed": "Upload failed",
+    "open": "Open",
+    "image": "Image",
+    "uploadFailedClickRetry": "Upload failed",
+    "clickToRetry": "Click to retry"
+  },
+  "imageCrop": {
+    "adjustFirst": "Please adjust the crop area first",
+    "failed": "Crop failed, please try again",
+    "zoom": "Zoom",
+    "preview": "Preview (1:1)",
+    "previewAlt": "Preview",
+    "none": "None",
+    "recommendedSize": "Recommended size: 72x72 pixels"
+  },
+  "toolsList": {
+    "linkedTools": "Linked tools",
+    "more": "more"
+  },
+  "toolsSkeleton": {
+    "loadFailed": "Failed to load"
+  },
+  "platformConfigPage": {
+    "loading": "Loading platform configuration...",
+    "loadFailed": "Failed to load platform configuration"
+  },
+  "upload": {
+    "parseError": "Unable to parse the upload response",
+    "networkError": "Network error or the server is unavailable",
+    "aborted": "Upload cancelled",
+    "forbidden": "Insufficient permissions, unable to upload files",
+    "fileTooLargeServer": "File is too large and the server rejected it. Please choose a smaller file or ask an administrator to raise the upload limit.",
+    "failedWithStatus": "Upload failed ({{status}})",
+    "failedRetry": "Upload failed, please try again later"
+  },
+  "fileManagement": {
+    "loadFailed": "Failed to load file list",
+    "previewFile": "Preview file",
+    "featureInDevelopment": "This feature is under development..."
+  },
+  "notification": {
+    "testTitle": "Test notification",
+    "testBody": "This is a test notification used to verify that notifications work correctly."
+  },
+  "image": {
+    "placeholder": "[Image]"
+  },
+  "channel": {
+    "loadFailed": "Failed to load channel info"
+  },
+  "conversation": {
+    "newCreated": "New conversation created"
+  },
+  "messages": {
+    "loadHistoryFailed": "Failed to load message history",
+    "loadMoreFailed": "Failed to load more messages",
+    "loadNewerFailed": "Failed to load newer messages",
+    "loadContextFailed": "Failed to load message context"
+  },
+  "storeAuth": {
+    "loginFailed": "Login failed",
+    "exchangeFailed": "Failed to exchange the authorization code"
+  },
+  "sync": {
+    "noMessages": "No messages yet",
+    "failed": "Sync failed"
+  },
+  "toast": {
+    "operationFailed": "Operation failed",
+    "tryAgainLater": "Please try again later",
+    "authFailed": "Authentication failed",
+    "loginAgain": "Please log in again and retry",
+    "networkError": "Network error",
+    "checkNetwork": "Please check your network connection and try again",
+    "permissionDenied": "Insufficient permissions",
+    "cannotPerform": "Unable to perform this action",
+    "fileTooLarge": "File too large",
+    "chooseSmallerFile": "Please choose a smaller file",
+    "fileTypeError": "File type error",
+    "serverError": "Server error",
+    "serviceUnavailable": "The service is temporarily unavailable, please try again later",
+    "file": {
+      "uploadSuccess": "Upload successful",
+      "deleteSuccess": "Deleted successfully",
+      "downloadDone": "Download complete",
+      "uploadFailed": "Upload failed",
+      "deleteFailed": "Delete failed",
+      "downloadFailed": "Download failed",
+      "detail": "File \"{{fileName}}\": {{title}}"
+    },
+    "operationSuccess": "Operation successful",
+    "kb": {
+      "createSuccess": "Created successfully",
+      "updateSuccess": "Updated successfully",
+      "deleteSuccess": "Deleted successfully",
+      "createFailed": "Creation failed",
+      "updateFailed": "Update failed",
+      "deleteFailed": "Delete failed",
+      "loadFailed": "Load failed",
+      "detailNamed": "Knowledge base \"{{name}}\": {{title}}",
+      "detail": "Knowledge base: {{title}}"
     }
   }
 }

@@ -45,8 +45,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
 # Create FastAPI application
 app = FastAPI(
-    title="TGO-Tech AI Service",
-    description="AI/ML Operations Microservice for TGO-Tech customer service platform",
+    title="Pelatis AI Service",
+    description="AI/ML Operations Microservice for Pelatis customer service platform",
     version=__version__,
     docs_url="/docs" if settings.docs_enabled else None,
     redoc_url="/redoc" if settings.redoc_enabled else None,
@@ -194,7 +194,7 @@ async def log_requests(request: Request, call_next):
 async def tgo_ai_service_exception_handler(
     request: Request, exc: TGOAIServiceException
 ) -> JSONResponse:
-    """Handle custom TGO AI Service exceptions."""
+    """Handle custom Pelatis AI Service exceptions."""
     status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     
     # Map exception types to HTTP status codes
@@ -264,7 +264,7 @@ async def health_check() -> dict:
 async def root() -> dict:
     """Root endpoint with service information."""
     return {
-        "service": "TGO-Tech AI Service",
+        "service": "Pelatis AI Service",
         "version": __version__,
         "description": "AI/ML Operations Microservice",
         "docs_url": "/docs" if settings.docs_enabled else None,

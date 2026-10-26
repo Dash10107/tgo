@@ -40,12 +40,12 @@ async def bind_store(
     current_user: Staff = Depends(get_current_active_user),
 ) -> Any:
     """
-    绑定商店到当前项目
-    1. 用 access_token 调用商店 /auth/api-key 获取 api_key
-    2. 存储到 api_store_credentials
+    Bind a store to the current project
+    1. Call the store's /auth/api-key with the access_token to obtain an api_key
+    2. Save it to api_store_credentials
     """
     project_id = current_user.project_id
-    # 1. 调用商店获取 api_key
+    # 1. Call the store to obtain an api_key
     try:
         result = await store_client.get_api_key(bind_in.access_token)
     except Exception as e:
@@ -54,7 +54,7 @@ async def bind_store(
             detail=f"Failed to fetch API Key from Store: {str(e)}"
         )
 
-    # 2. 检查是否已存在凭证
+    # 2. Check whether credentials already exist
     credential = db.scalar(
         select(StoreCredential).where(StoreCredential.project_id == project_id)
     )
@@ -79,7 +79,7 @@ async def bind_store(
 
 async def _install_tool_internal(resource_id: str, project_id: UUID, api_key: str) -> Any:
     """Internal helper to install a tool from store"""
-    # 1. 调用商店 API 获取工具详情
+    # 1. Call the store API to get tool details
     try:
         tool_detail = await store_client.get_tool(resource_id, api_key)
     except Exception as e:
@@ -88,13 +88,13 @@ async def _install_tool_internal(resource_id: str, project_id: UUID, api_key: st
             detail=f"Failed to fetch tool from Store: {str(e)}"
         )
 
-    # 2. 构造本地工具创建请求
+    # 2. Build the local tool creation request
     config = tool_detail.get("config", {})
-    # 确保 config 包含 inputSchema
+    # Make sure config contains inputSchema
     if "input_schema" in tool_detail and "inputSchema" not in config:
         config["inputSchema"] = tool_detail["input_schema"]
     
-    # 存入 description 作为备份
+    # Store the description as a backup
     if (tool_detail.get("description_zh") or tool_detail.get("description")) and "description" not in config:
         config["description"] = tool_detail.get("description_zh") or tool_detail.get("description")
 
@@ -112,14 +112,14 @@ async def _install_tool_internal(resource_id: str, project_id: UUID, api_key: st
         config=config
     )
 
-    # 3. 在 tgo-ai 创建 ai_tools 记录
+    # 3. Create the ai_tools record in tgo-ai
     try:
         tool_data_dict = tool_create.model_dump(exclude_none=True)
         tool_data_dict["project_id"] = str(project_id)
         
         result = await ai_client.create_tool(tool_data=tool_data_dict)
         
-        # 记录商店安装
+        # Record the store installation
         await store_client.install_tool(resource_id, api_key)
         
         return result
@@ -132,7 +132,7 @@ async def _install_tool_internal(resource_id: str, project_id: UUID, api_key: st
 
 async def _install_model_internal(resource_id: str, project_id: UUID, api_key: str, db: Session) -> Any:
     """Internal helper to install a model from store"""
-    # 1. 调用商店 API 获取模型详情
+    # 1. Call the store API to get model details
     try:
         model_detail = await store_client.get_model(resource_id, api_key)
     except Exception as e:
@@ -141,7 +141,7 @@ async def _install_model_internal(resource_id: str, project_id: UUID, api_key: s
             detail=f"Failed to fetch model from Store: {str(e)}"
         )
 
-    # 2. 确保本地有一个 "Store" 类型的 LLMProvider
+    # 2. Make sure a local "Store" type LLMProvider exists
     from app.models import AIProvider
     provider_name = f"Store-{model_detail.provider.name}"
     local_model_id = model_detail.name
@@ -177,7 +177,7 @@ async def _install_model_internal(resource_id: str, project_id: UUID, api_key: s
     
     db.flush()
 
-    # 3. 创建本地模型记录
+    # 3. Create the local model record
     from app.models import AIModel
     existing_model = db.scalar(
         select(AIModel).where(
@@ -211,7 +211,7 @@ async def _install_model_internal(resource_id: str, project_id: UUID, api_key: s
         existing_model.store_resource_id = resource_id
         db.add(existing_model)
     
-    # 记录商店安装
+    # Record the store installation
     try:
         await store_client.install_model(resource_id, api_key)
     except Exception as e:
@@ -237,9 +237,9 @@ async def install_tool_from_store(
     db: Session = Depends(get_db),
     current_user: Staff = Depends(get_current_active_user),
 ) -> Any:
-    """从商店安装工具到项目"""
+    """Install a tool from the store into the project"""
     project_id = current_user.project_id
-    # 1. 获取项目绑定的商店凭证
+    # 1. Get the store credentials bound to the project
     credential = db.scalar(
         select(StoreCredential).where(StoreCredential.project_id == project_id)
     )
@@ -265,16 +265,16 @@ async def uninstall_tool_from_store(
     db: Session = Depends(get_db),
     current_user: Staff = Depends(get_current_active_user),
 ) -> Any:
-    """从本地项目卸载商店工具"""
+    """Uninstall a store tool from the local project"""
     project_id = current_user.project_id
-    # 1. 查找本地匹配的商店工具
+    # 1. Find the matching local store tool
     local_tools = await ai_client.list_tools(project_id=str(project_id))
     target_tool = next((t for t in local_tools if t.get("store_resource_id") == resource_id), None)
     
     if not target_tool:
         raise HTTPException(status_code=404, detail="Tool not found in this project")
 
-    # 2. 调用商店 API 记录卸载
+    # 2. Call the store API to record the uninstall
     credential = db.scalar(
         select(StoreCredential).where(StoreCredential.project_id == project_id)
     )
@@ -284,10 +284,10 @@ async def uninstall_tool_from_store(
             try:
                 await store_client.uninstall_tool(resource_id, api_key)
             except Exception:
-                # 商店卸载失败不影响本地卸载
+                # A store uninstall failure does not block the local uninstall
                 pass
 
-    # 3. 在 tgo-ai 删除 ai_tools 记录
+    # 3. Delete the ai_tools record in tgo-ai
     try:
         await ai_client.delete_tool(
             project_id=str(project_id),
@@ -308,9 +308,9 @@ async def install_model_from_store(
     db: Session = Depends(get_db),
     current_user: Staff = Depends(get_current_active_user),
 ) -> Any:
-    """从商店安装模型到项目"""
+    """Install a model from the store into the project"""
     project_id = current_user.project_id
-    # 1. 获取项目绑定的商店凭证
+    # 1. Get the store credentials bound to the project
     credential = db.scalar(
         select(StoreCredential).where(StoreCredential.project_id == project_id)
     )
@@ -336,10 +336,10 @@ async def uninstall_model_from_store(
     db: Session = Depends(get_db),
     current_user: Staff = Depends(get_current_active_user),
 ) -> Any:
-    """从本地项目卸载商店模型"""
+    """Uninstall a store model from the local project"""
     project_id = current_user.project_id
     
-    # 1. 获取项目绑定的商店凭证
+    # 1. Get the store credentials bound to the project
     credential = db.scalar(
         select(StoreCredential).where(StoreCredential.project_id == project_id)
     )
@@ -350,25 +350,25 @@ async def uninstall_model_from_store(
     if not api_key:
         raise HTTPException(status_code=500, detail="Failed to decrypt API Key")
 
-    # 2. 调用商店 API 获取模型详情以获取本地标识符 (model_name)
+    # 2. Call the store API to get model details to obtain the local identifier (model_name)
     try:
         model_detail = await store_client.get_model(resource_id, api_key)
         local_model_id = model_detail.name
     except Exception as e:
         logger.error(f"Failed to fetch model detail from store during uninstall: {str(e)}")
-        # 如果商店查不到，尝试从 resource_id 推断（这可能不准确，因为我们现在用 name 存）
-        # 或者我们可以尝试在本地数据库找有没有前缀匹配的模型，但这不靠谱
+        # If the store cannot find it, try to infer it from resource_id (this may be inaccurate, since we now store by name)
+        # Or we could look for a prefix-matching model in the local database, but that is unreliable
         raise HTTPException(status_code=502, detail="Failed to fetch model info from store")
 
-    # 3. 调用商店 API 记录卸载
+    # 3. Call the store API to record the uninstall
     try:
         await store_client.uninstall_model(resource_id, api_key)
     except Exception as e:
         logger.warning(f"Failed to record uninstallation in store: {str(e)}")
 
-    # 4. 从 AIProvider 关联的模型记录中移除
+    # 4. Remove from the model records associated with the AIProvider
     from app.models import AIProvider, AIModel
-    # 查找该项目的 Store Providers
+    # Find the Store Providers of this project
     providers = db.scalars(
         select(AIProvider).where(
             AIProvider.project_id == project_id,
@@ -378,7 +378,7 @@ async def uninstall_model_from_store(
     ).all()
     
     for provider in providers:
-        # 查找该 Provider 下的匹配模型
+        # Find the matching models under this Provider
         model = db.scalar(
             select(AIModel).where(
                 AIModel.provider_id == provider.id,
@@ -389,9 +389,9 @@ async def uninstall_model_from_store(
         if model:
             db.delete(model)
             
-            # 如果删掉的是默认模型，重新选一个或置空
+            # If the deleted one was the default model, pick another or clear it
             if provider.default_model == local_model_id:
-                db.flush() # 确保 delete 已同步
+                db.flush() # Make sure the delete is synced
                 remaining = db.scalar(
                     select(AIModel.model_id).where(
                         AIModel.provider_id == provider.id,
@@ -401,8 +401,8 @@ async def uninstall_model_from_store(
                 provider.default_model = remaining
                 db.add(provider)
             
-            # 记录需要同步的 Provider
-            db.commit() # 先提交模型删除
+            # Record the Providers that need syncing
+            db.commit() # Commit the model deletion first
             try:
                 await sync_provider_with_retry_and_update(db, provider)
             except Exception as e:
@@ -416,15 +416,15 @@ async def list_installed_models(
     db: Session = Depends(get_db),
     current_user: Staff = Depends(get_current_active_user),
 ) -> Any:
-    """列出当前项目已安装的所有商店模型 (仅返回标识符列表)"""
+    """List all store models installed in the current project (identifier list only)"""
     project_id = current_user.project_id
     
-    # 通过关联 Provider 查找已安装模型
+    # Find installed models via the associated Provider
     try:
         from app.models import AIProvider, AIModel
         
-        # 我们只需要 model_id (即商店中的 name)
-        # 显式转换为字符串列表，防止 Row 对象泄露
+        # We only need model_id (the name in the store)
+        # Explicitly convert to a list of strings to avoid leaking Row objects
         model_ids = db.scalars(
             select(AIModel.model_id)
             .join(AIProvider, AIModel.provider_id == AIProvider.id)
@@ -447,10 +447,10 @@ async def check_agent_dependencies(
     db: Session = Depends(get_db),
     current_user: Staff = Depends(get_current_active_user),
 ) -> Any:
-    """检查员工依赖的工具和模型是否已安装"""
+    """Check whether the tools and models the employee depends on are installed"""
     project_id = current_user.project_id
     
-    # 1. 获取项目绑定的商店凭证
+    # 1. Get the store credentials bound to the project
     credential = db.scalar(
         select(StoreCredential).where(StoreCredential.project_id == project_id)
     )
@@ -461,7 +461,7 @@ async def check_agent_dependencies(
     if not api_key:
         raise HTTPException(status_code=500, detail="Failed to decrypt Store API Key")
 
-    # 2. 调用商店 API 获取员工详情
+    # 2. Call the store API to get employee details
     try:
         agent_template = await store_client.get_agent(agent_id, api_key)
     except Exception as e:
@@ -470,7 +470,7 @@ async def check_agent_dependencies(
             detail=f"Failed to fetch agent template from Store: {str(e)}"
         )
 
-    # 3. 检查已安装的工具
+    # 3. Check installed tools
     local_tools = await ai_client.list_tools(project_id=str(project_id))
     installed_store_tool_ids = {t.get("store_resource_id") for t in local_tools if t.get("store_resource_id")}
     
@@ -488,18 +488,18 @@ async def check_agent_dependencies(
                     ))
                 except Exception as e:
                     logger.warning(f"Failed to fetch tool {tool_id} details: {str(e)}")
-                    # 即使获取失败也标记为缺失，只包含 ID 和基本占位
+                    # Mark as missing even if fetching failed, keeping only the ID and a basic placeholder
                     missing_tools.append(StoreToolSummary(
                         id=tool_id,
                         name="Unknown Tool",
-                        title_zh=f"未知工具 ({tool_id[:8]})"
+                        title_zh=f"Unknown Tool ({tool_id[:8]})"
                     ))
 
-    # 4. 检查已安装的模型
+    # 4. Check installed models
     from app.models import AIModel, AIProvider
     missing_model = None
     if agent_template.model_id:
-        # 必须检查模型未删除且所属的 Provider 未删除，且属于当前项目
+        # The model must not be deleted, its Provider must not be deleted, and it must belong to the current project
         existing_model = db.scalar(
             select(AIModel)
             .join(AIProvider, AIModel.provider_id == AIProvider.id)
@@ -524,9 +524,9 @@ async def install_agent_from_store(
     db: Session = Depends(get_db),
     current_user: Staff = Depends(get_current_active_user),
 ) -> Any:
-    """从商店招聘 AI 员工到项目"""
+    """Hire an AI employee from the store into the project"""
     project_id = current_user.project_id
-    # 1. 获取项目绑定的商店凭证
+    # 1. Get the store credentials bound to the project
     credential = db.scalar(
         select(StoreCredential).where(StoreCredential.project_id == project_id)
     )
@@ -543,7 +543,7 @@ async def install_agent_from_store(
             detail="Failed to decrypt Store API Key"
         )
 
-    # 2. 调用商店 API 获取 AgentTemplate 详情
+    # 2. Call the store API to get AgentTemplate details
     try:
         agent_template = await store_client.get_agent(install_in.resource_id, api_key)
     except Exception as e:
@@ -552,19 +552,19 @@ async def install_agent_from_store(
             detail=f"Failed to fetch agent template from Store: {str(e)}"
         )
 
-    # 3. 批量安装选中的依赖并收集工具 ID
+    # 3. Batch-install the selected dependencies and collect tool IDs
     installed_tool_bindings = []
     
-    # 3.1 循环安装工具
+    # 3.1 Install tools in a loop
     if agent_template.recommended_tools:
-        # 获取最新的本地工具列表，以防某些工具已经安装
+        # Get the latest local tool list in case some tools are already installed
         local_tools = await ai_client.list_tools(project_id=str(project_id))
         store_to_local_id_map = {t.get("store_resource_id"): t.get("id") for t in local_tools if t.get("store_resource_id")}
         
         for tool_id in agent_template.recommended_tools:
             local_tool_id = store_to_local_id_map.get(tool_id)
             
-            # 如果不在本地且被用户选中安装，或者已经在本地
+            # If it is not local and the user chose to install it, or it is already local
             should_install = install_in.install_tool_ids and tool_id in install_in.install_tool_ids
             
             if not local_tool_id and should_install:
@@ -574,17 +574,17 @@ async def install_agent_from_store(
                 except Exception as e:
                     logger.warning(f"Batch install: Failed to install tool {tool_id}: {str(e)}")
             
-            # 如果有了本地 ID，加入绑定列表
+            # If a local ID exists, add it to the binding list
             if local_tool_id:
                 installed_tool_bindings.append({
                     "tool_id": local_tool_id,
                     "enabled": True
                 })
     
-    # 3.2 安装模型并获取提供商 ID
+    # 3.2 Install models and get the provider ID
     associated_llm_provider_id = None
     if agent_template.model_id:
-        # 先检查本地是否已有该商店模型的记录（且 Provider 也未删除）
+        # First check whether the local record of this store model already exists (and its Provider is not deleted)
         from app.models import AIModel, AIProvider
         existing_model = db.scalar(
             select(AIModel)
@@ -595,15 +595,15 @@ async def install_agent_from_store(
             .where(AIProvider.project_id == project_id)
         )
         
-        # 如果需要安装或已存在
+        # If it needs installing or already exists
         if install_in.install_model or existing_model:
             try:
-                # _install_model_internal 会处理同步并返回包含 provider 相关信息的字典
-                # 但我们需要拿到数据库中的 provider 对象来获取它的 UUID
+                # _install_model_internal handles syncing and returns a dict with provider info
+                # but we need the provider object from the database to get its UUID
                 await _install_model_internal(agent_template.model_id, project_id, api_key, db)
                 
-                # 重新查询获取 provider_id
-                # 刚才的 internal helper 已经 commit 了，所以这里直接查最新的
+                # Query again to get provider_id
+                # The internal helper has already committed, so just query the latest here
                 model_record = db.scalar(
                     select(AIModel)
                     .join(AIProvider, AIModel.provider_id == AIProvider.id)
@@ -617,7 +617,7 @@ async def install_agent_from_store(
             except Exception as e:
                 logger.warning(f"Batch install: Failed to install/get model {agent_template.model_id}: {str(e)}")
 
-    # 4. 调用 ai_client.create_agent() 创建本地 Agent
+    # 4. Call ai_client.create_agent() to create the local Agent
     try:
         agent_data = {
             "name": agent_template.title_zh or agent_template.name,
@@ -628,8 +628,8 @@ async def install_agent_from_store(
             "instruction": agent_template.instruction_zh or agent_template.instruction,
             "model": agent_template.model.name if agent_template.model else "gpt-4o",
             "config": agent_template.default_config,
-            "tools": installed_tool_bindings,  # 自动关联已安装的工具
-            "llm_provider_id": str(associated_llm_provider_id) if associated_llm_provider_id else None  # 关联已安装的模型提供商
+            "tools": installed_tool_bindings,  # Automatically link installed tools
+            "llm_provider_id": str(associated_llm_provider_id) if associated_llm_provider_id else None  # Link the installed model provider
         }
         
         result = await ai_client.create_agent(
@@ -637,7 +637,7 @@ async def install_agent_from_store(
             agent_data=agent_data,
         )
         
-        # 5. 记录商店安装
+        # 5. Record the store installation
         try:
             await store_client.install_agent(install_in.resource_id, api_key)
         except Exception as e:
@@ -661,20 +661,20 @@ async def proxy_store_request(
     current_user: Staff = Depends(get_current_active_user),
 ):
     """
-    透明代理 Store API 请求，不解析参数，直接转发。
-    支持 GET, POST, PUT, DELETE, PATCH 等方法。
+    Transparent proxy for Store API requests: parameters are not parsed, requests are forwarded as-is.
+    Supports GET, POST, PUT, DELETE, PATCH and other methods.
     
-    认证处理:
-    - 如果请求头包含 X-Store-Authorization，则使用它作为商店的 Authorization 头
-    - 否则移除 TGO 的 Authorization 头（商店不认识）
+    Authentication handling:
+    - If the request carries X-Store-Authorization, use it as the store's Authorization header
+    - Otherwise remove Pelatis's Authorization header (the store does not recognize it)
     """
-    # 1. 构建目标 URL
+    # 1. Build the target URL
     target_url = f"{settings.STORE_SERVICE_URL.rstrip('/')}/api/v1/{path}"
     if request.query_params:
         target_url = f"{target_url}?{request.query_params}"
 
-    # 2. 准备请求头
-    # 移除可能导致远程服务器 403 的头部
+    # 2. Prepare request headers
+    # Remove headers that may cause 403 from the remote server
     excluded_headers = (
         "host", 
         "content-length", 
@@ -686,23 +686,23 @@ async def proxy_store_request(
     )
     headers = {k: v for k, v in request.headers.items() if k.lower() not in excluded_headers}
     
-    # 伪装浏览器 User-Agent，防止被 WAF 拦截
+    # Spoof a browser User-Agent to avoid being blocked by a WAF
     headers["user-agent"] = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     
-    # 3. 处理商店认证
-    # 如果前端传了 X-Store-Authorization，转换为 Authorization 头发给商店
+    # 3. Handle store authentication
+    # If the frontend sent X-Store-Authorization, convert it to an Authorization header for the store
     store_auth = request.headers.get("x-store-authorization")
     if store_auth:
         headers["authorization"] = store_auth
     
-    # 4. 获取请求体
+    # 4. Get the request body
     body = await request.body()
 
-    # 5. 发送请求
+    # 5. Send the request
     async with httpx.AsyncClient(timeout=settings.STORE_TIMEOUT) as client:
         try:
-            # 使用流式响应以处理大文件或保持性能
-            # 注意：这里为了健壮性，不解析 body，直接转发
+            # Use a streaming response to handle large files or keep performance up
+            # Note: for robustness the body is not parsed and is forwarded as-is
             proxy_response = await client.request(
                 method=request.method,
                 url=target_url,
@@ -711,7 +711,7 @@ async def proxy_store_request(
                 follow_redirects=True
             )
             
-            # 5. 返回响应
+            # 5. Return the response
             return Response(
                 content=proxy_response.content,
                 status_code=proxy_response.status_code,
@@ -735,7 +735,7 @@ async def proxy_store_request(
 async def get_store_config(
     current_user: Staff = Depends(get_current_active_user),
 ):
-    """返回 Store 服务配置（Web URL 等）"""
+    """Return the Store service config (Web URL, etc.)"""
     return {
         "store_web_url": settings.STORE_WEB_URL,
         "store_api_url": settings.STORE_SERVICE_URL,

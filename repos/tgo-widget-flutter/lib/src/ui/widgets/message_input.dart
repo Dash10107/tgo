@@ -30,9 +30,9 @@ class _MessageInputState extends State<MessageInput> {
   final FocusNode _focusNode = FocusNode();
   bool _hasText = false;
   
-  // 核心状态管理
+  // Core state management
   InputPanelState _panelState = InputPanelState.none;
-  double _cachedKeyboardHeight = 280; // 缓存键盘高度
+  double _cachedKeyboardHeight = 280; // Cached keyboard height
 
   @override
   void initState() {
@@ -54,7 +54,7 @@ class _MessageInputState extends State<MessageInput> {
 
   void _onFocusChanged() {
     if (_focusNode.hasFocus) {
-      // 获得焦点时，确保状态切换到 keyboard
+      // When focus is gained, make sure the state switches to keyboard
       if (_panelState != InputPanelState.keyboard) {
         setState(() => _panelState = InputPanelState.keyboard);
       }
@@ -74,11 +74,11 @@ class _MessageInputState extends State<MessageInput> {
 
   void _toggleEmoji() {
     if (_panelState == InputPanelState.emoji) {
-      // 正在显示表情 -> 切换到键盘
+      // Currently showing emoji -> switch to the keyboard
       setState(() => _panelState = InputPanelState.keyboard);
       _focusNode.requestFocus();
     } else {
-      // 切换到表情
+      // Switch to emoji
       setState(() => _panelState = InputPanelState.emoji);
       _focusNode.unfocus();
       SystemChannels.textInput.invokeMethod('TextInput.hide');
@@ -99,7 +99,7 @@ class _MessageInputState extends State<MessageInput> {
     _controller.clear();
     widget.onSend?.call();
     
-    // 发送后保持面板状态
+    // Keep the panel state after sending
     if (_panelState == InputPanelState.keyboard) {
       _focusNode.requestFocus();
     }
@@ -131,7 +131,7 @@ class _MessageInputState extends State<MessageInput> {
 
     if (start == end) {
       if (start == 0) return;
-      // 使用 characters 处理 UTF-16 代理对，确保一个 Emoji 只需删除一次
+      // Use characters to handle UTF-16 surrogate pairs so one emoji needs only one delete
       final textBefore = text.substring(0, start).characters;
       final textAfter = text.substring(start);
       if (textBefore.isEmpty) return;
@@ -162,15 +162,15 @@ class _MessageInputState extends State<MessageInput> {
     final viewInsetsBottom = MediaQuery.of(context).viewInsets.bottom;
     final bottomPadding = MediaQuery.of(context).padding.bottom;
     
-    // 更新键盘高度缓存：只记录“有效键盘高度”，不要在键盘收起尾段把缓存写到接近 0。
-    // iOS 键盘收起时 viewInsetsBottom 会逐帧减小到 0，如果持续写回，会导致后续 emoji 面板高度变成 ~bottomPadding，引发 overflow。
-    const double kMinValidKeyboardHeight = 80; // 阈值：小于该值视为收起尾段噪声
+    // Update the keyboard height cache: only record a "valid keyboard height" and do not write a near-0 value into the cache at the tail end of the keyboard collapsing.
+    // While the iOS keyboard collapses, viewInsetsBottom shrinks to 0 frame by frame; if it kept being written back, the emoji panel height would later become ~bottomPadding and cause an overflow.
+    const double kMinValidKeyboardHeight = 80; // Threshold: values below this are treated as end-of-collapse noise
     if (_panelState == InputPanelState.keyboard &&
         viewInsetsBottom >= kMinValidKeyboardHeight) {
       _cachedKeyboardHeight = max(_cachedKeyboardHeight, viewInsetsBottom);
     }
 
-    // 当键盘已完全收起且输入框已失焦时，把状态从 keyboard 收敛到 none，避免后续逻辑误认为“仍在键盘模式”
+    // When the keyboard is fully collapsed and the input has lost focus, converge the state from keyboard to none so later logic does not wrongly assume "still in keyboard mode"
     if (_panelState == InputPanelState.keyboard &&
         viewInsetsBottom == 0 &&
         !_focusNode.hasFocus) {
@@ -184,18 +184,18 @@ class _MessageInputState extends State<MessageInput> {
       });
     }
 
-    // 根据状态计算底部面板高度
+    // Compute the bottom panel height from the state
     double panelHeight;
     switch (_panelState) {
       case InputPanelState.none:
         panelHeight = bottomPadding;
         break;
       case InputPanelState.keyboard:
-        // 在键盘模式下，高度取 viewInsetsBottom 和 bottomPadding 的最大值
+        // In keyboard mode, the height is the max of viewInsetsBottom and bottomPadding
         panelHeight = max(viewInsetsBottom, bottomPadding);
         break;
       case InputPanelState.emoji:
-        // 在表情模式下，高度固定为缓存的键盘高度 + 底部安全距离
+        // In emoji mode, the height is fixed to the cached keyboard height plus the bottom safe inset
         panelHeight = _cachedKeyboardHeight + bottomPadding;
         break;
     }
@@ -292,14 +292,14 @@ class _MessageInputState extends State<MessageInput> {
                     child: isStreaming
                         ? _WeChatSendButton(
                             key: const ValueKey('stop'),
-                            label: '停止',
+                            label: 'Stop',
                             onPressed: _cancelStream,
                             isStop: true,
                           )
                         : _hasText
                             ? _WeChatSendButton(
                                 key: const ValueKey('send'),
-                                label: '发送',
+                                label: 'Send',
                                 onPressed: _sendMessage,
                               )
                             : _PressableButton(
@@ -320,10 +320,10 @@ class _MessageInputState extends State<MessageInput> {
             ),
           ),
 
-          // 底部面板占位
+          // Bottom panel placeholder
           AnimatedContainer(
-            // 键盘自身已经有系统级动画，这里如果再做 200ms 的缓动，会产生“尾段反向回弹/抖动”的观感。
-            // 因此：keyboard 状态下禁用该容器动画，让高度严格跟随 viewInsetsBottom；emoji/none 才做平滑动画。
+            // The keyboard already has a system-level animation; adding a 200ms easing here would produce a "reverse bounce/jitter" feel at the tail end.
+            // Therefore: disable this container's animation in keyboard state so the height strictly follows viewInsetsBottom; only emoji/none get the smooth animation.
             duration: _panelState == InputPanelState.keyboard
                 ? Duration.zero
                 : const Duration(milliseconds: 200),

@@ -57,9 +57,9 @@ hljs.registerLanguage('plaintext', plaintext);
 interface MarkdownContentProps {
   content: string;
   className?: string;
-  /** 发送消息回调（用于 msg:// 协议） */
+  /** Callback for sending a message (used by the msg:// protocol) */
   onSendMessage?: (message: string) => void;
-  /** 复制成功回调 */
+  /** Callback for a successful copy */
   onCopySuccess?: (text: string) => void;
 }
 
@@ -317,7 +317,7 @@ const MarkdownContent: React.FC<MarkdownContentProps> = ({
     return renderMarkdownToHtml(content || '');
   }, [content]);
 
-  // 处理 Markdown 中图片的点击事件
+  // Handle click events on images inside Markdown
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -329,7 +329,7 @@ const MarkdownContent: React.FC<MarkdownContentProps> = ({
         if (src) {
           e.preventDefault();
           e.stopPropagation();
-          // 收集所有可预览的图片
+          // Collect all previewable images
           const allImages = Array.from(container.querySelectorAll('img[data-preview-src]'))
             .map(img => img.getAttribute('data-preview-src'))
             .filter((s): s is string => !!s);

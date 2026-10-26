@@ -1,4 +1,4 @@
-"""工具运行时内部使用的模型."""
+"""Models used internally by the tool runtime."""
 
 from __future__ import annotations
 
@@ -8,30 +8,30 @@ from pydantic import BaseModel, Field
 
 
 class MCPConfig(BaseModel):
-    """MCP服务器配置."""
+    """MCP server configuration."""
 
-    url: Optional[str] = Field(default=None, description="MCP服务URL")
-    tools: Optional[List[str]] = Field(default=None, description="需要暴露的MCP工具列表")
-    auth_required: bool = Field(default=False, description="是否需要鉴权")
+    url: Optional[str] = Field(default=None, description="MCP service URL")
+    tools: Optional[List[str]] = Field(default=None, description="List of MCP tools to expose")
+    auth_required: bool = Field(default=False, description="Whether authentication is required")
 
 
 class RagConfig(BaseModel):
-    """RAG配置."""
+    """RAG configuration."""
 
-    api_key: Optional[str] = Field(default=None, description="RAG服务API Key")
-    rag_url: Optional[str] = Field(default=None, description="RAG服务地址")
+    api_key: Optional[str] = Field(default=None, description="RAG service API key")
+    rag_url: Optional[str] = Field(default=None, description="RAG service URL")
     project_id: Optional[str] = Field(default=None, description="Project ID for RAG service calls")
-    collections: Optional[List[str]] = Field(default=None, description="启用的集合列表")
-    filters: Optional[Dict[str, Any]] = Field(default=None, description="搜索过滤条件")
+    collections: Optional[List[str]] = Field(default=None, description="List of enabled collections")
+    filters: Optional[Dict[str, Any]] = Field(default=None, description="Search filters")
 
 
 
 class WorkflowConfig(BaseModel):
-    """工作流配置."""
+    """Workflow configuration."""
 
-    workflow_url: Optional[str] = Field(default=None, description="工作流服务地址")
+    workflow_url: Optional[str] = Field(default=None, description="Workflow service URL")
     project_id: Optional[str] = Field(default=None, description="Project ID for Workflow service calls")
-    workflows: Optional[List[str]] = Field(default=None, description="启用的工作流ID列表")
+    workflows: Optional[List[str]] = Field(default=None, description="List of enabled workflow IDs")
 
 
 
@@ -56,29 +56,29 @@ class LLMProviderCredentials(BaseModel):
     )
 
 class AgentConfig(BaseModel):
-    """单个智能体的模型配置."""
+    """Model configuration for a single agent."""
 
-    model_name: Optional[str] = Field(default=None, description="模型标识")
-    temperature: Optional[float] = Field(default=None, description="采样温度")
-    max_tokens: Optional[int] = Field(default=None, description="最大生成token数")
+    model_name: Optional[str] = Field(default=None, description="Model identifier")
+    temperature: Optional[float] = Field(default=None, description="Sampling temperature")
+    max_tokens: Optional[int] = Field(default=None, description="Maximum number of tokens to generate")
     system_prompt: Optional[str] = Field(
         default=None,
-        description="系统提示词",
+        description="System prompt",
     )
-    mcp_config: Optional[MCPConfig] = Field(default=None, description="MCP配置")
-    rag: Optional[RagConfig] = Field(default=None, description="RAG配置")
-    workflow: Optional[WorkflowConfig] = Field(default=None, description="工作流配置")
-    enable_memory: Optional[bool] = Field(default=None, description="是否为该智能体启用记忆功能")
-    system_message: Optional[str] = Field(default=None, description="自定义系统消息")
-    expected_output: Optional[str] = Field(default=None, description="期望的输出格式")
+    mcp_config: Optional[MCPConfig] = Field(default=None, description="MCP configuration")
+    rag: Optional[RagConfig] = Field(default=None, description="RAG configuration")
+    workflow: Optional[WorkflowConfig] = Field(default=None, description="Workflow configuration")
+    enable_memory: Optional[bool] = Field(default=None, description="Whether to enable memory for this agent")
+    system_message: Optional[str] = Field(default=None, description="Custom system message")
+    expected_output: Optional[str] = Field(default=None, description="Expected output format")
 
-    # 扩展配置参数
-    markdown: Optional[bool] = Field(default=None, description="是否使用markdown格式输出")
-    add_datetime_to_context: Optional[bool] = Field(default=None, description="是否添加日期时间到上下文")
-    add_location_to_context: Optional[bool] = Field(default=None, description="是否添加位置信息到上下文")
-    timezone_identifier: Optional[str] = Field(default=None, description="时区标识")
-    tool_call_limit: Optional[int] = Field(default=None, description="单次运行工具调用次数限制")
-    num_history_runs: Optional[int] = Field(default=None, description="历史会话轮数限制")
+    # Extended configuration parameters
+    markdown: Optional[bool] = Field(default=None, description="Whether to use markdown output")
+    add_datetime_to_context: Optional[bool] = Field(default=None, description="Whether to add the date and time to the context")
+    add_location_to_context: Optional[bool] = Field(default=None, description="Whether to add location information to the context")
+    timezone_identifier: Optional[str] = Field(default=None, description="Timezone identifier")
+    tool_call_limit: Optional[int] = Field(default=None, description="Tool call limit per run")
+    num_history_runs: Optional[int] = Field(default=None, description="Limit on the number of history runs")
 
     ui_mode: Optional[str] = Field(
         default=None,
@@ -92,27 +92,27 @@ class AgentConfig(BaseModel):
 
 
 class AgentRunRequest(BaseModel):
-    """工具运行时执行请求."""
+    """Tool runtime execution request."""
 
-    message: str = Field(..., description="用户输入")
+    message: str = Field(..., description="User input")
 
-    config: Optional[AgentConfig] = Field(default=None, description="智能体执行配置")
-    session_id: Optional[str] = Field(default=None, description="会话ID")
-    user_id: Optional[str] = Field(default=None, description="用户ID")
-    project_id: Optional[str] = Field(default=None, description="项目ID")
-    agent_id: Optional[str] = Field(default=None, description="执行中的智能体 ID")
-    request_id: Optional[str] = Field(default=None, description="请求追踪 ID")
-    skills_enabled: bool = Field(default=True, description="是否启用技能发现")
-    stream: bool = Field(default=False, description="是否开启流式输出")
+    config: Optional[AgentConfig] = Field(default=None, description="Agent execution configuration")
+    session_id: Optional[str] = Field(default=None, description="Session ID")
+    user_id: Optional[str] = Field(default=None, description="User ID")
+    project_id: Optional[str] = Field(default=None, description="Project ID")
+    agent_id: Optional[str] = Field(default=None, description="ID of the executing agent")
+    request_id: Optional[str] = Field(default=None, description="Request tracing ID")
+    skills_enabled: bool = Field(default=True, description="Whether to enable skill discovery")
+    stream: bool = Field(default=False, description="Whether to enable streaming output")
     stream_intermediate_steps: bool = Field(
         default=False,
-        description="流式输出是否包含中间工具步骤",
+        description="Whether streaming output includes intermediate tool steps",
     )
-    enable_memory: bool = Field(default=False, description="是否启用会话记忆功能")
+    enable_memory: bool = Field(default=False, description="Whether to enable conversation memory")
 
 
 class ToolExecution(BaseModel):
-    """单个工具调用的执行结果."""
+    """Execution result of a single tool call."""
 
     tool_call_id: Optional[str] = Field(default=None)
     tool_name: Optional[str] = Field(default=None)
@@ -122,7 +122,7 @@ class ToolExecution(BaseModel):
 
 
 class AgentRunResponse(BaseModel):
-    """工具智能体执行结果."""
+    """Tool agent execution result."""
 
     content: Optional[Any] = Field(default=None)
     tools: Optional[List[ToolExecution]] = Field(default=None)
@@ -132,7 +132,7 @@ class AgentRunResponse(BaseModel):
 
 
 class StreamEvent(BaseModel):
-    """流式事件基类."""
+    """Base class for streaming events."""
 
     event: str = Field(...)
     timestamp: Optional[str] = Field(default=None)

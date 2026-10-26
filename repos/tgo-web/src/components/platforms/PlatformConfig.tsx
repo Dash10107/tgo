@@ -35,12 +35,12 @@ const BasicSettings: React.FC<BasicSettingsProps> = ({ platform, onUpdate }) => 
   return (
     <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-5 rounded-lg shadow-sm border border-gray-200/60 dark:border-gray-700/60 w-full">
       <h3 className="text-md font-semibold text-gray-700 dark:text-gray-200 mb-4">
-        {t('platforms.config.basic.title', '基础设置')}
+        {t('platforms.config.basic.title', 'Basic Settings')}
       </h3>
       <div className="space-y-4">
         <div>
           <label htmlFor="platform-name" className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
-            {t('platforms.config.basic.platformName', '平台名称')}
+            {t('platforms.config.basic.platformName', 'Platform Name')}
           </label>
           <input
             type="text"
@@ -52,31 +52,31 @@ const BasicSettings: React.FC<BasicSettingsProps> = ({ platform, onUpdate }) => 
         </div>
         <div>
           <label htmlFor="platform-desc" className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
-            {t('platforms.config.basic.platformDesc', '平台描述 (可选)')}
+            {t('platforms.config.basic.platformDesc', 'Platform Description (Optional)')}
           </label>
           <textarea
             id="platform-desc"
             rows={2}
             value={description}
             onChange={handleDescriptionChange}
-            placeholder={t('platforms.config.basic.descPlaceholder', '描述此平台的用途')}
+            placeholder={t('platforms.config.basic.descPlaceholder', 'Describe the purpose of this platform')}
             className="w-full text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-700/50 dark:text-gray-200 resize-none"
           />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
-            {t('platforms.config.basic.platformIcon', '平台图标')}
+            {t('platforms.config.basic.platformIcon', 'Platform Icon')}
           </label>
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 p-1.5 rounded border border-gray-300/80 dark:border-gray-600/80 bg-gray-100/50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400 flex items-center justify-center">
               <Webhook className="w-4 h-4" />
             </div>
             <button className="text-xs text-blue-600 dark:text-blue-400 hover:underline">
-              {t('platforms.config.basic.selectUploadIcon', '选择/上传图标')}
+              {t('platforms.config.basic.selectUploadIcon', 'Select/Upload Icon')}
             </button>
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            {t('platforms.config.basic.iconHint', '选择一个图标在平台列表中展示。')}
+            {t('platforms.config.basic.iconHint', 'Choose an icon to display in the platform list.')}
           </p>
         </div>
       </div>
@@ -115,10 +115,10 @@ const WebhookIncoming: React.FC<WebhookIncomingProps> = ({ config, onUpdate }) =
     <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-5 rounded-lg shadow-sm border border-gray-200/60 dark:border-gray-700/60 w-full">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-md font-semibold text-gray-700 dark:text-gray-200">
-          {t('platforms.config.webhookIncoming.title', 'Webhook 接入 (接收消息)')}
+          {t('platforms.config.webhookIncoming.title', 'Webhook Integration (Receive Messages)')}
         </h3>
         <button className="text-xs text-blue-600 dark:text-blue-400 hover:underline">
-          {t('platforms.config.webhookIncoming.viewDocs', '查看接入文档')}
+          {t('platforms.config.webhookIncoming.viewDocs', 'View Integration Docs')}
         </button>
       </div>
       <div className="space-y-4">
@@ -133,14 +133,14 @@ const WebhookIncoming: React.FC<WebhookIncomingProps> = ({ config, onUpdate }) =
             />
             <button
               className="p-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-200/70 dark:hover:bg-gray-700/70 rounded-md"
-              title={t('platforms.config.webhookIncoming.copyUrl', '复制URL')}
+              title={t('platforms.config.webhookIncoming.copyUrl', 'Copy URL')}
               onClick={() => handleCopy(webhookUrl)}
             >
               <Copy className="w-4 h-4" />
             </button>
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            {t('platforms.config.webhookIncoming.urlHint', '将此 URL 配置到您的系统中，用于接收来自您系统的消息。')}
+            {t('platforms.config.webhookIncoming.urlHint', 'Configure this URL in your system to receive messages from your system.')}
           </p>
         </div>
         <div>
@@ -154,28 +154,28 @@ const WebhookIncoming: React.FC<WebhookIncomingProps> = ({ config, onUpdate }) =
             />
             <button
               className="p-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-200/70 dark:hover:bg-gray-700/70 rounded-md"
-              title={t('platforms.config.webhookIncoming.toggleSecret', '显示/隐藏密钥')}
+              title={t('platforms.config.webhookIncoming.toggleSecret', 'Show/Hide Secret')}
               onClick={() => setShowSecret(!showSecret)}
             >
               {showSecret ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
             <button
               className="p-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-200/70 dark:hover:bg-gray-700/70 rounded-md"
-              title={t('platforms.config.webhookIncoming.copySecret', '复制密钥')}
+              title={t('platforms.config.webhookIncoming.copySecret', 'Copy Secret')}
               onClick={() => handleCopy(secretKey)}
             >
               <Copy className="w-4 h-4" />
             </button>
             <button
               className="p-1.5 text-red-500 dark:text-red-400 hover:bg-red-100/70 dark:hover:bg-red-900/30 rounded-md"
-              title={t('platforms.config.webhookIncoming.regenerateSecret', '重新生成密钥')}
+              title={t('platforms.config.webhookIncoming.regenerateSecret', 'Regenerate Secret')}
               onClick={handleRegenerateSecret}
             >
               <RefreshCw className="w-4 h-4" />
             </button>
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            {t('platforms.config.webhookIncoming.secretHint', '用于验证传入请求的签名，确保安全性。')}
+            {t('platforms.config.webhookIncoming.secretHint', 'Used to verify the signature of incoming requests for security.')}
           </p>
         </div>
       </div>
@@ -211,12 +211,12 @@ const WebhookOutgoing: React.FC<WebhookOutgoingProps> = ({ config, onUpdate }) =
   return (
     <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-5 rounded-lg shadow-sm border border-gray-200/60 dark:border-gray-700/60 w-full">
       <h3 className="text-md font-semibold text-gray-700 dark:text-gray-200 mb-4">
-        {t('platforms.config.webhookOutgoing.title', 'Webhook 推送 (发送消息)')}
+        {t('platforms.config.webhookOutgoing.title', 'Webhook Push (Send Messages)')}
       </h3>
       <div className="space-y-4">
         <div>
           <label htmlFor="outgoing-url" className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
-            {t('platforms.config.webhookOutgoing.yourUrl', '您的接收 URL')}
+            {t('platforms.config.webhookOutgoing.yourUrl', 'Your Receiving URL')}
           </label>
           <input
             type="url"
@@ -227,23 +227,23 @@ const WebhookOutgoing: React.FC<WebhookOutgoingProps> = ({ config, onUpdate }) =
             className="w-full text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-700/50 dark:text-gray-200"
           />
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            {t('platforms.config.webhookOutgoing.urlHint', '当客服回复时，我们会将消息 POST 到此 URL。')}
+            {t('platforms.config.webhookOutgoing.urlHint', 'When customer service replies, we will POST the message to this URL.')}
           </p>
         </div>
         <div>
           <label htmlFor="outgoing-token" className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
-            {t('platforms.config.webhookOutgoing.authToken', '认证 Token (可选)')}
+            {t('platforms.config.webhookOutgoing.authToken', 'Authentication Token (Optional)')}
           </label>
           <input
             type="text"
             id="outgoing-token"
             value={outgoingToken}
             onChange={handleTokenChange}
-            placeholder={t('platforms.config.webhookOutgoing.tokenPlaceholder', '例如：Bearer your_secret_token')}
+            placeholder={t('platforms.config.webhookOutgoing.tokenPlaceholder', 'e.g., Bearer your_secret_token')}
             className="w-full text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-700/50 dark:text-gray-200"
           />
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            {t('platforms.config.webhookOutgoing.tokenHint', '如果您的接收 URL 需要认证，请在此处填写（例如 Authorization Header 的值）。')}
+            {t('platforms.config.webhookOutgoing.tokenHint', 'If your receiving URL requires authentication, fill in here (e.g., Authorization Header value).')}
           </p>
         </div>
       </div>
@@ -259,12 +259,12 @@ const ApiAccess: React.FC = () => {
   return (
     <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-5 rounded-lg shadow-sm border border-gray-200/60 dark:border-gray-700/60 opacity-60 w-full">
       <h3 className="text-md font-semibold text-gray-700 dark:text-gray-200 mb-4">
-        {t('platforms.config.apiAccess.title', 'API 接入 (可选)')}
+        {t('platforms.config.apiAccess.title', 'API Access (Optional)')}
       </h3>
       <div className="text-sm text-gray-500 dark:text-gray-400">
-        <p>{t('platforms.config.apiAccess.placeholder', '[API Key/Secret 管理和文档链接占位符]')}</p>
+        <p>{t('platforms.config.apiAccess.placeholder', '[API Key/Secret management and documentation link placeholder]')}</p>
         <p className="mt-2">
-          {t('platforms.config.apiAccess.description', '或者，您也可以通过调用我们的开放 API 来发送和接收消息。请参考开发者文档了解详情。')}
+          {t('platforms.config.apiAccess.description', 'Alternatively, you can send and receive messages by calling our open API. Please refer to the developer documentation for details.')}
         </p>
       </div>
     </div>
@@ -317,7 +317,7 @@ const PlatformConfig: React.FC<PlatformConfigProps> = ({ platform, onUpdate, onT
         ai_mode: aiMode,
         fallback_to_ai_timeout: aiMode === 'assist' ? fallbackTimeout : null,
       });
-      showSuccess(showToast, t('platforms.config.aiSettings.saveSuccess', 'AI 设置已保存'));
+      showSuccess(showToast, t('platforms.config.aiSettings.saveSuccess', 'AI settings saved'));
     } catch (e) {
       showApiError(showToast, e);
     }
@@ -329,9 +329,9 @@ const PlatformConfig: React.FC<PlatformConfigProps> = ({ platform, onUpdate, onT
         <div className="text-center text-gray-500 dark:text-gray-400">
           <Settings className="mx-auto mb-4 w-12 h-12 text-gray-300 dark:text-gray-600" />
           <h3 className="text-lg font-medium text-gray-900 dark:text-gray-200 mb-2">
-            {t('platforms.config.placeholder.title', '选择平台')}
+            {t('platforms.config.placeholder.title', 'Select Platform')}
           </h3>
-          <p>{t('platforms.config.placeholder.description', '请从左侧列表中选择一个平台进行配置')}</p>
+          <p>{t('platforms.config.placeholder.description', 'Please select a platform from the left list to configure')}</p>
         </div>
       </main>
     );
@@ -348,13 +348,13 @@ const PlatformConfig: React.FC<PlatformConfigProps> = ({ platform, onUpdate, onT
         <div className="flex items-center space-x-3">
           <Webhook className="w-6 h-6 text-purple-600 dark:text-purple-400" />
           <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-            {t('platforms.config.header.title', '{{name}} 配置', { name: displayName })}
+            {t('platforms.config.header.title', '{{name}} Configuration', { name: displayName })}
           </h2>
         </div>
         <div className="flex items-center space-x-3">
           <button className="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 flex items-center">
             <Pencil className="w-4 h-4 mr-1" />
-            {t('common.edit', '编辑')}
+            {t('common.edit', 'Edit')}
           </button>
           {/* Toggle Switch */}
           <button
@@ -365,7 +365,7 @@ const PlatformConfig: React.FC<PlatformConfigProps> = ({ platform, onUpdate, onT
             }`}
             onClick={() => onToggle?.(platform)}
           >
-            <span className="sr-only">{t('platforms.config.header.enablePlatform', '启用平台')}</span>
+            <span className="sr-only">{t('platforms.config.header.enablePlatform', 'Enable Platform')}</span>
             <span className={`inline-block w-4 h-4 transform bg-white rounded-full transition-transform ${
               isEnabled ? 'translate-x-6' : 'translate-x-1'
             }`}></span>
@@ -388,12 +388,12 @@ const PlatformConfig: React.FC<PlatformConfigProps> = ({ platform, onUpdate, onT
         {platform.type !== 'custom' && (
           <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-5 rounded-lg shadow-sm border border-gray-200/60 dark:border-gray-700/60 w-full">
             <h3 className="text-md font-semibold text-gray-700 dark:text-gray-200 mb-4">
-              {t('platforms.config.generic.title', '平台配置')}
+              {t('platforms.config.generic.title', 'Platform Configuration')}
             </h3>
             <div className="text-sm text-gray-500 dark:text-gray-400">
-              <p>{t('platforms.config.generic.comingSoon', '此平台的具体配置选项将在后续版本中提供。')}</p>
+              <p>{t('platforms.config.generic.comingSoon', 'Specific configuration options for this platform will be provided in future versions.')}</p>
               <p className="mt-2">
-                {t('platforms.config.generic.currentStatus', '当前状态：{{status}}', { status: platform.statusText })}
+                {t('platforms.config.generic.currentStatus', 'Current Status: {{status}}', { status: platform.statusText })}
               </p>
             </div>
           </div>
@@ -416,7 +416,7 @@ const PlatformConfig: React.FC<PlatformConfigProps> = ({ platform, onUpdate, onT
                 onClick={handleSaveAISettings}
                 className="px-4 py-1.5 text-sm rounded-md bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600"
               >
-                {t('platforms.config.aiSettings.saveButton', '保存 AI 设置')}
+                {t('platforms.config.aiSettings.saveButton', 'Save AI Settings')}
               </button>
             </div>
           )}

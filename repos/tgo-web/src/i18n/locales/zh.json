@@ -74,16 +74,28 @@
     "yes": "是",
     "no": "否",
     "enabled": "已启用",
-    "advancedOptions": "高级选项"
+    "advancedOptions": "高级选项",
+    "submitting": "提交中...",
+    "official": "官方",
+    "deleting": "删除中…",
+    "disabling": "禁用中…",
+    "enabling": "启用中…",
+    "disable": "禁用",
+    "submit": "提交",
+    "copySuccess": "复制成功",
+    "noData": "暂无数据",
+    "processing": "处理中...",
+    "tableCreated": "创建时间",
+    "lastUpdated": "更新时间"
   },
   "config": {
     "respondDirectly": "直接响应",
     "respondDirectlyDesc": "跳过成员回答汇总，直接返回回答",
     "markdown": "Markdown 格式",
     "markdownDesc": "使用 Markdown 格式化输出内容",
-      "addDatetime": "添加日期时间",
-      "addDatetimeDesc": "在上下文中包含当前日期时间",
-      "numHistoryRuns": "历史会话轮数",
+    "addDatetime": "添加日期时间",
+    "addDatetimeDesc": "在上下文中包含当前日期时间",
+    "numHistoryRuns": "历史会话轮数",
     "toolCallLimit": "工具调用限制",
     "skillsEnabled": "启用技能",
     "skillsEnabledDesc": "允许 AI 员工自动发现并使用项目中的专业技能"
@@ -116,10 +128,10 @@
     },
     "plugins": {
       "title": "插件管理",
-      "subtitle": "查看并管理已连接到 TGO 的插件",
+      "subtitle": "查看并管理已连接到 Pelatis 的插件",
       "empty": {
         "title": "暂无已连接的插件",
-        "description": "插件可以通过 Unix Socket 或 TCP 连接到 TGO API 服务。"
+        "description": "插件可以通过 Unix Socket 或 TCP 连接到 Pelatis API 服务。"
       },
       "viewDocs": "查看插件开发指南",
       "status": {
@@ -136,7 +148,7 @@
       "connectedAt": "连接于",
       "debug": {
         "title": "调试提示",
-        "description": "在开发模式下，插件可以通过 8005 端口（TCP）连接到 TGO AI 服务。",
+        "description": "在开发模式下，插件可以通过 8005 端口（TCP）连接到 Pelatis AI 服务。",
         "badge": "调试",
         "autoManaged": "调试模式 - 自动管理"
       },
@@ -194,6 +206,10 @@
           "copying": "部署文件",
           "building": "编译构建",
           "starting": "启动服务"
+        },
+        "manual": {
+          "title": "手动安装模式",
+          "description": "粘贴插件描述 YAML 文件进行安装。仅建议高级用户或开发调试时使用。"
         }
       },
       "actions": {
@@ -238,6 +254,9 @@
         "preparing": "准备升级...",
         "confirm": "立即升级",
         "error": "升级失败"
+      },
+      "fetch": {
+        "error": "无法获取插件信息，请检查 URL 是否正确。"
       }
     },
     "profile": {
@@ -631,7 +650,8 @@
       "createModelOption": "创建",
       "confirmDeleteTitle": "删除提供商",
       "confirmDeleteMsg": "确定要删除该提供商配置吗？此操作不可撤销。",
-      "empty": "尚未配置任何模型提供商，点击右上角“从商店获取”或“自定义配置”开始。"
+      "empty": "尚未配置任何模型提供商，点击右上角“从商店获取”或“自定义配置”开始。",
+      "addModel": "添加模型"
     }
   },
   "comingSoon": {
@@ -966,7 +986,8 @@
     "loadError": "加载系统信息失败",
     "systemInfo": "系统信息",
     "technicalDetails": "技术详情",
-    "links": "相关链接"
+    "links": "相关链接",
+    "apiEndpoint": "接口地址"
   },
   "agents": {
     "title": "AI员工团队管理",
@@ -990,7 +1011,8 @@
       "teamChatTooltip": "与AI员工团队对话",
       "teamChatNoAgents": "请先创建AI员工",
       "teamInfo": "团队信息",
-      "store": "招聘员工"
+      "store": "招聘员工",
+      "defaultAgentChat": "与默认AI员工对话"
     },
     "form": {
       "name": "AI员工名称",
@@ -1044,7 +1066,11 @@
       "noTeam": "团队未加载",
       "noTeamDesc": "请稍后重试",
       "noAgentsForTeamChat": "无法发起团队对话",
-      "noAgentsForTeamChatDesc": "请先创建至少一个AI员工"
+      "noAgentsForTeamChatDesc": "请先创建至少一个AI员工",
+      "noDefaultAgent": "默认AI员工未加载",
+      "noDefaultAgentDesc": "请稍后重试",
+      "validationFailed": "验证失败",
+      "fillRequired": "请填写所有必填字段"
     },
     "teamChat": {
       "defaultName": "AI员工团队"
@@ -1059,7 +1085,9 @@
     },
     "empty": {
       "title": "暂无AI员工",
-      "description": "点击「创建AI员工」按钮开始创建您的第一个AI员工"
+      "description": "点击「创建AI员工」按钮开始创建您的第一个AI员工",
+      "noResults": "未找到相关AI员工",
+      "noResultsDesc": "请尝试更换搜索关键词"
     },
     "error": {
       "title": "加载失败",
@@ -1117,6 +1145,48 @@
         "alreadyInstalled": "该员工已在团队中",
         "installSuccess": "成功招聘到一名新员工",
         "installFailed": "招聘失败，请重试"
+      },
+      "apiTest": {
+        "errors": {
+          "parseResponseFailed": "响应解析失败",
+          "requestFailed": "请求失败",
+          "networkFailed": "网络连接失败，请检查URL是否正确或是否存在CORS问题"
+        },
+        "sections": {
+          "authMethod": "鉴权方法",
+          "testResult": "测试结果"
+        },
+        "auth": {
+          "autoDetected": "自动检测"
+        },
+        "labels": {
+          "param": "参数",
+          "value": "值",
+          "type": "类型",
+          "format": "格式",
+          "min": "最小值",
+          "max": "最大值",
+          "minLength": "最小长度",
+          "maxLength": "最大长度",
+          "pattern": "模式"
+        },
+        "placeholders": {
+          "select": "请选择",
+          "enter": "请输入"
+        },
+        "noParams": "此端点没有定义参数",
+        "buttons": {
+          "testing": "测试中...",
+          "test": "测试"
+        },
+        "result": {
+          "corsHintTitle": "注意：由于浏览器CORS限制，某些API可能无法直接测试",
+          "corsHint": "CORS提示",
+          "error": "错误:",
+          "responseHeaders": "响应头:",
+          "responseData": "响应数据:",
+          "empty": "测试结果将显示在这里"
+        }
       }
     },
     "create": {
@@ -1125,7 +1195,8 @@
         "description": "能力描述",
         "tools": "工具",
         "skills": "技能",
-        "resources": "资源关联"
+        "resources": "资源关联",
+        "toolTools": "Tool工具"
       },
       "placeholders": {
         "name": "请输入AI员工名称",
@@ -1139,11 +1210,14 @@
         "selectPlaceholder": "请选择模型",
         "loadFailedTitle": "加载失败",
         "loadFailedDesc": "无法加载模型列表，请稍后重试",
-        "loadFailedInline": "模型加载失败: {{error}}"
+        "loadFailedInline": "模型加载失败: {{error}}",
+        "invalid": "请选择一个有效的模型（需包含提供商）"
       },
       "tools": {
         "shortNoMissingTitle": "工具短号缺失",
-        "shortNoMissingDesc": "以下工具缺少 short_no 或名称：{{names}}，请刷新工具商店或重新选择后重试"
+        "shortNoMissingDesc": "以下工具缺少 short_no 或名称：{{names}}，请刷新工具商店或重新选择后重试",
+        "missingTitle": "工具信息缺失",
+        "missingDesc": "以下工具缺少名称：{{names}}，请重新选择后重试"
       }
     },
     "edit": {
@@ -1155,7 +1229,8 @@
         "pendingNewTool": "待保存的新工具",
         "missingTitle": "工具信息缺失",
         "missingDesc": "以下工具缺少名称：{{names}}，请重新选择后重试"
-      }
+      },
+      "modelProviderRequired": "请重新选择一个有效的模型（需要包含提供商）"
     },
     "detail": {
       "basicInfo": "基本信息",
@@ -1304,6 +1379,19 @@
       },
       "cancel": "取消",
       "save": "保存"
+    },
+    "defaultAgent": {
+      "defaultName": "默认AI员工",
+      "description": "项目默认AI员工会在未显式指定目标时承接 AI 对话。"
+    },
+    "store": {
+      "hire": "招聘",
+      "hireNow": "立即招聘",
+      "alreadyInstalled": "该员工已在团队中",
+      "installFailed": "招聘失败，请重试",
+      "title": "员工商店",
+      "searchPlaceholder": "搜索员工名称或职责...",
+      "noResults": "未找到匹配的员工"
     }
   },
   "team": {
@@ -1355,7 +1443,10 @@
       "registerLink": "立即注册",
       "emailPlaceholder": "you@example.com",
       "emailOrUsernamePlaceholder": "请输入邮箱或用户名",
-      "passwordPlaceholder": "请输入密码"
+      "passwordPlaceholder": "请输入密码",
+      "resetAdminInstruction": "执行以下命令可重置 admin 用户",
+      "copied": "已复制",
+      "copy": "复制"
     },
     "register": {
       "title": "创建新账户",
@@ -1582,7 +1673,9 @@
       "max_tokens": "Max Tokens",
       "workflow_info": "工作流信息",
       "version": "版本",
-      "total_nodes": "节点总数"
+      "total_nodes": "节点总数",
+      "input_variables": "输入参数",
+      "cron_description": "使用标准 Cron 格式设置自动执行计划。"
     },
     "placeholders": {
       "selectAgent": "请选择AI员工",
@@ -1706,7 +1799,11 @@
       "description": "创建您的第一个AI工作流"
     },
     "noMatch": "未找到匹配的工作流",
-    "noMatch.description": "尝试调整搜索条件"
+    "noMatch.description": "尝试调整搜索条件",
+    "namePlaceholder": "工作流名称",
+    "settings": "设置",
+    "loading": "加载工作流...",
+    "tagsPlaceholder": "用逗号分隔"
   },
   "platforms": {
     "list": {
@@ -1784,6 +1881,10 @@
         "title": "平台配置",
         "comingSoon": "此平台的具体配置选项将在后续版本中提供。",
         "currentStatus": "当前状态：{{status}}"
+      },
+      "aiSettings": {
+        "saveSuccess": "AI 设置已保存",
+        "saveButton": "保存 AI 设置"
       }
     },
     "website": {
@@ -1816,7 +1917,7 @@
         "successDesc": "示例文件已下载，请在浏览器中打开查看效果",
         "demoTitle": "Widget 演示",
         "welcomeTitle": "欢迎！",
-        "welcomeDesc": "您的 TGO 聊天小部件已成功集成！点击右下角的聊天按钮开始对话。",
+        "welcomeDesc": "您的 Pelatis 聊天小部件已成功集成！点击右下角的聊天按钮开始对话。",
         "integrationCode": "集成代码",
         "securityWarning": "安全提示：此文件包含您的 API Key，请勿公开分享或提交到公共代码仓库。"
       },
@@ -1840,7 +1941,10 @@
         "displayModeBig": "大窗口",
         "apiKey": "API Key",
         "apiKeyPlaceholder": "暂无 API Key",
-        "apiKeyHint": "用于网站集成脚本的鉴权标识，请妥善保管。"
+        "apiKeyHint": "用于网站集成脚本的鉴权标识，请妥善保管。",
+        "uploadLogo": "上传 Logo",
+        "uploading": "上传中…",
+        "noApiKey": "暂无 API Key"
       },
       "embed": {
         "title": "网站集成代码",
@@ -1869,18 +1973,31 @@
         "uploadSuccessMessage": "Logo 已更新",
         "uploadError": "上传失败，请重试",
         "deleteSuccess": "平台已删除",
-        "deleteSuccessMessage": "平台已删除"
+        "deleteSuccessMessage": "平台已删除",
+        "disabled": "平台已禁用",
+        "enabled": "平台已启用",
+        "copied": "已复制",
+        "updated": "已更新",
+        "logoUpdated": "Logo 已更新"
       },
       "confirm": {
         "deleteTitle": "删除平台",
         "deleteMessage": "确定要删除此平台吗？",
         "confirmText": "删除",
-        "cancelText": "取消"
+        "cancelText": "取消",
+        "regenerateApiKey": "确定要重新生成 API Key 吗？现有嵌入脚本将需要更新。"
       },
       "defaults": {
         "widgetTitle": "欢迎光临",
         "welcomeMessage": "您好！有什么可以帮您？",
         "displayMode": "small"
+      },
+      "errors": {
+        "fileTooLarge": "图片大小不能超过 2MB",
+        "invalidFileType": "仅支持图片文件",
+        "cropperFailed": "无法打开裁剪器",
+        "removeLogoFailed": "暂不支持移除 Logo，请上传新的图片覆盖",
+        "uploadFailed": "上传失败，请重试"
       }
     },
     "wechat": {
@@ -2280,7 +2397,7 @@
       "integration": {
         "title": "API 集成信息",
         "guide": "集成指南",
-        "chatApi": "聊天 API (向 TGO 发送消息)",
+        "chatApi": "聊天 API (向 Pelatis 发送消息)",
         "endpoint": "API 端点",
         "authentication": "认证方式",
         "authDesc": "在请求头中添加平台 API 密钥：",
@@ -2291,7 +2408,7 @@
         "visitorRegisterDesc": "如果您需要传递详细的用户信息（名称、头像等），可以先调用访客注册 API：",
         "simpleExample": "简单示例",
         "responseHandling": "响应处理",
-        "responseHandlingDesc": "调用聊天 API 后，TGO 系统将返回 AI 助手的回复。第三方平台需要将返回的回复内容发送给对应的第三方用户。响应格式兼容 OpenAI ChatGPT API，支持流式和非流式响应。",
+        "responseHandlingDesc": "调用聊天 API 后，Pelatis 系统将返回 AI 助手的回复。第三方平台需要将返回的回复内容发送给对应的第三方用户。响应格式兼容 OpenAI ChatGPT API，支持流式和非流式响应。",
         "callbackApi": "回调 API (接收人工客服回复)",
         "callbackConfig": "配置回调 URL",
         "callbackConfigDesc": "在左侧「回调地址」字段中配置您的回调 URL。当人工客服回复消息时，系统会向该地址发送 POST 请求。",
@@ -2571,6 +2688,66 @@
       "timeoutHint": "消息多少秒无回复后 AI 自动接管。设置为 0 表示 AI 不会接管。",
       "saveSuccess": "AI 设置已保存",
       "saveButton": "保存 AI 设置"
+    },
+    "wecomBot": {
+      "messages": {
+        "saveSuccess": "保存成功",
+        "saveSuccessMessage": "企业微信机器人配置已更新",
+        "disabled": "平台已禁用",
+        "enabled": "平台已启用",
+        "urlCopied": "回调URL已复制",
+        "deleteSuccess": "删除成功",
+        "deleteSuccessMessage": "企业微信机器人平台已删除"
+      },
+      "header": {
+        "subtitle": "配置企业微信机器人（Webhook）对接所需的凭据与回调。"
+      },
+      "buttons": {
+        "deleting": "删除中…",
+        "delete": "删除",
+        "disabling": "禁用中…",
+        "enabling": "启用中…",
+        "disable": "禁用",
+        "enable": "启用",
+        "saving": "保存中…",
+        "save": "保存",
+        "copy": "复制"
+      },
+      "form": {
+        "name": "平台名称",
+        "namePlaceholder": "请输入平台名称",
+        "callbackUrl": "回调 URL",
+        "callbackUrlPlaceholder": "平台创建后会生成回调URL",
+        "callbackUrlHint": "将此 URL 填入企业微信智能机器人的「URL」配置中。",
+        "tokenPlaceholder": "用于回调验证的 Token",
+        "tokenHint": "与企业微信后台配置的 Token 保持一致。",
+        "encodingAESKeyPlaceholder": "43 位字符的消息加密密钥",
+        "encodingAESKeyHint": "43 位字符的消息加密密钥，用于回调消息的加解密。"
+      },
+      "guide": {
+        "title": "企业微信机器人配置指南",
+        "overview": "快速概览",
+        "overviewText": "完成以下三步：①在工作台创建智能机器人 → ②将回调 URL 填入企业微信并获取 Token 与 EncodingAESKey → ③将信息回填到本平台并保存。",
+        "step1Title": "1️⃣ 创建企业微信智能机器人",
+        "step1Item1": "登录企业微信APP端，进入「工作台」。",
+        "step1Item2": "找到并点击「智能机器人」应用进入。",
+        "step1Item3": "点击「创建智能体机器人」按钮。",
+        "step1Item4": "滚动到页面底部，点击「API模式创建」链接。",
+        "step2Title": "2️⃣ 配置回调 URL 与安全信息",
+        "step2Item1": "复制左侧「回调 URL」，粘贴到企业微信机器人配置页面的「URL」输入框中。",
+        "step2Item2": "点击「Token」旁的「随机生成」按钮，复制生成的 Token，回填到左侧「Token」输入框。",
+        "step2Item3": "点击「EncodingAESKey」旁的「随机生成」按钮，复制生成的密钥，回填到左侧「EncodingAESKey」输入框。",
+        "step2Item4": "重要：现在本平台点击保存，再回到企业微信APP端，点击「完成」按钮，完成机器人创建。",
+        "step2SecurityTitle": "安全提示",
+        "step2SecurityText": "请妥善保管 Token 和 EncodingAESKey，它们用于验证消息来源和加解密。"
+      },
+      "dialog": {
+        "deleteTitle": "确认删除",
+        "deleteMessage": "确定要删除此企业微信机器人平台吗？此操作不可撤销。",
+        "confirmDelete": "删除",
+        "cancel": "取消"
+      },
+      "label": "企业微信机器人"
     }
   },
   "ai": {
@@ -2823,7 +3000,17 @@
         "tags": "标签",
         "tagsPlaceholder": "输入标签，用逗号分隔",
         "tagsHint": "多个标签请用逗号分隔"
-      }
+      },
+      "results": "QA 问答对",
+      "segmentCount": "共 {{count}} 个问答对",
+      "searchSegments": "搜索分段内容...",
+      "loadingSegments": "正在加载分段成果...",
+      "noResults": "未找到匹配的分段",
+      "noSegments": "该文件暂无问答分段成果",
+      "tryDifferentSearch": "请尝试换个关键词",
+      "ensureQaMode": "请确保上传时开启了 QA 拆分模式",
+      "chars": "字符",
+      "editSegment": "编辑段落"
     },
     "icons": {
       "book": "书籍",
@@ -2909,7 +3096,8 @@
         "title": "知识库不存在",
         "description": "请检查链接是否正确"
       },
-      "fileServiceNotInitialized": "文件服务未初始化"
+      "fileServiceNotInitialized": "文件服务未初始化",
+      "viewQA": "查看问答对"
     },
     "upload": {
       "title": "拖拽文件到此处或点击上传",
@@ -2941,6 +3129,19 @@
       "configPath": "配置路径",
       "configPathDesc": "设置 → 模型供应商 → 设置默认嵌入模型",
       "goToConfig": "前往配置"
+    },
+    "update": "更新知识库",
+    "search": {
+      "failed": "搜索失败",
+      "title": "搜索测试",
+      "query": "测试文本",
+      "placeholder": "输入问题进行测试...",
+      "mode": "检索模式",
+      "results": "检索结果"
+    },
+    "tabs": {
+      "documents": "文档列表",
+      "searchTest": "搜索测试"
     }
   },
   "channels": {
@@ -2955,10 +3156,10 @@
     }
   },
   "footer": {
-    "copyright": "© 2025 Tgo CS. 保留所有权利。"
+    "copyright": "© 2025 Pelatis CS. 保留所有权利。"
   },
   "brand": {
-    "name": "Tgo CS"
+    "name": "Pelatis CS"
   },
   "chat": {
     "title": "对话管理",
@@ -3058,7 +3259,12 @@
       "clearMemoryTooltip": "清除 AI 对话记忆，重新开始对话",
       "clearMemoryConfirm": "确定要清除此会话的 AI 记忆吗？清除后 AI 将不再记得之前的对话内容。",
       "clearMemorySuccess": "记忆已清除",
-      "clearMemoryError": "清除记忆失败"
+      "clearMemoryError": "清除记忆失败",
+      "endChatSuccess": "会话已结束",
+      "endChatError": "结束会话失败",
+      "loadStaffError": "获取坐席列表失败",
+      "noAvailableStaff": "暂无可用坐席",
+      "endChatTooltip": "结束当前会话"
     },
     "suggestions": {
       "label": "✨ 建议："
@@ -3102,7 +3308,9 @@
         "sessionClosed": "会话已结束。客服 {0} 已完成服务。",
         "sessionClosedEmpty": "会话已结束。",
         "memoryCleared": "记忆已清除，AI 将重新开始对话"
-      }
+      },
+      "aiThinking": "AI 正在思考...",
+      "aiReply": "[AI 回复]"
     },
     "input": {
       "placeholder": "输入消息...",
@@ -3200,6 +3408,19 @@
           "message": "WebSocket 未连接，无法发送消息",
           "richText": "WebSocket 未连接，无法发送富文本消息"
         }
+      },
+      "accept": {
+        "successTitle": "接入成功",
+        "successMessage": "访客已成功接入",
+        "hint": "该访客正在等待接入",
+        "accepting": "接入中...",
+        "button": "接入访客"
+      },
+      "streaming": {
+        "cancelledTitle": "已暂停",
+        "cancelledMessage": "流消息已暂停",
+        "pauseTooltip": "暂停流消息",
+        "pause": "暂停"
       }
     }
   },
@@ -3273,7 +3494,7 @@
         "initLoginFailed": "无法启动登录流程",
         "missingVerifier": "本地验证密钥丢失，请重试",
         "invalidCode": "授权码无效或已过期",
-        "usageNotice": "启用后将在 TGO 平台中可用，根据实际 Token 消耗实时扣费",
+        "usageNotice": "启用后将在 Pelatis 平台中可用，根据实际 Token 消耗实时扣费",
         "noResults": "未找到匹配的模型",
         "noResultsDesc": "试试搜索其他关键词或切换分类",
         "allModels": "全部模型",
@@ -3312,7 +3533,10 @@
         "type": "模型类型",
         "documentation": "厂商 API 文档",
         "loading": "正在搜寻全球最先进的 AI 模型..."
-      }
+      },
+      "type": "类型",
+      "createdAt": "发布时间",
+      "noResultsDesc": "试试搜索其他关键词或切换分类"
     },
     "newTool": "新工具",
     "selectModal": {
@@ -3553,11 +3777,19 @@
         "number": "请输入有效的数字"
       },
       "save": "保存配置"
+    },
+    "endpointCopied": "端点地址已复制到剪贴板",
+    "copyEndpointFailed": "无法复制端点地址",
+    "noDescription": "暂无描述",
+    "list": {
+      "emptyTitle": "暂无工具",
+      "emptyDescriptionAll": "点击\"添加工具\"按钮开始添加您的第一个工具",
+      "emptyAction": "开始添加工具"
     }
   },
   "setup": {
     "title": "系统设置向导",
-    "subtitle": "欢迎使用 Tgo CS，让我们开始配置您的系统",
+    "subtitle": "欢迎使用 Pelatis CS，让我们开始配置您的系统",
     "steps": {
       "admin": "管理员账户",
       "staff": "人工坐席",
@@ -3702,7 +3934,7 @@
     "dismiss": "关闭",
     "dismissButton": "不再显示",
     "welcome": {
-      "title": "欢迎使用 TGO",
+      "title": "欢迎使用 Pelatis",
       "subtitle": "完成以下步骤，开启您的 AI 客服之旅",
       "progress": "当前进度",
       "estimatedTime": "约 2 分钟",
@@ -3815,6 +4047,16 @@
     "disconnect": {
       "title": "确认断开",
       "message": "确定要断开设备 \"{{name}}\" 的连接吗？"
+    },
+    "sessionMonitor": {
+      "title": "会话监控",
+      "modalTitle": "Computer Use 会话监控",
+      "modalSubtitle": "实时查看 AI 控制设备的执行状态",
+      "noSession": "暂无活动会话",
+      "noSessionDesc": "当 AI 员工开始控制设备执行任务时，您可以在此处实时监控执行进度和操作步骤。",
+      "tip1": "确保设备处于在线状态",
+      "tip2": "在团队配置中添加远程代理",
+      "tip3": "通过对话让 AI 员工执行设备操作任务"
     }
   },
   "ws": {
@@ -3925,6 +4167,19 @@
         "urlRequired": "请输入 GitHub 目录地址",
         "urlFormat": "请输入有效的 GitHub 地址，支持目录或文件链接，如：https://github.com/owner/repo/tree/branch/path"
       }
+    },
+    "disable": "禁用技能",
+    "enable": "启用技能",
+    "toggleFailed": "切换技能状态失败"
+  },
+  "modelDetail": {
+    "details": "员工详情",
+    "intro": "员工介绍"
+  },
+  "plugin": {
+    "ui": {
+      "loading": "正在加载插件...",
+      "title": "扩展功能"
     }
   }
 }

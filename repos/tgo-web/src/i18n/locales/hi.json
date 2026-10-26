@@ -1,0 +1,4529 @@
+{
+  "common": {
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "confirm": "पुष्टि करें",
+    "create": "बनाएँ",
+    "delete": "हटाएँ",
+    "edit": "संपादित करें",
+    "add": "जोड़ें",
+    "done": "हो गया",
+    "remove": "निकालें",
+    "search": "खोजें",
+    "loading": "लोड हो रहा है...",
+    "loadingMore": "लोड हो रहा है...",
+    "noMore": "और नहीं",
+    "saving": "सहेजा जा रहा है...",
+    "saveFailed": "सहेजना विफल रहा",
+    "success": "सफल",
+    "error": "त्रुटि",
+    "warning": "चेतावनी",
+    "info": "जानकारी",
+    "close": "बंद करें",
+    "back": "वापस",
+    "next": "आगे",
+    "previous": "पिछला",
+    "reset": "रीसेट करें",
+    "clear": "साफ़ करें",
+    "select": "चुनें",
+    "upload": "अपलोड करें",
+    "download": "डाउनलोड करें",
+    "copy": "कॉपी करें",
+    "settings": "सेटिंग्स",
+    "help": "सहायता",
+    "about": "परिचय",
+    "characters": "अक्षर",
+    "creating": "बनाया जा रहा है...",
+    "updating": "अपडेट हो रहा है...",
+    "clearSearch": "खोज साफ़ करें",
+    "or": "या",
+    "loadFailed": "लोड विफल रहा",
+    "retry": "पुनः प्रयास करें",
+    "retryFailed": "पुनः प्रयास विफल रहा",
+    "details": "विवरण",
+    "selectAll": "सभी चुनें",
+    "all": "सभी",
+    "connected": "कनेक्टेड",
+    "connectionFailed": "कनेक्शन विफल रहा",
+    "notConnected": "कनेक्ट नहीं है",
+    "active": "सक्रिय",
+    "inactive": "निष्क्रिय",
+    "copied": "कॉपी हो गया",
+    "copyFailed": "कॉपी विफल रहा",
+    "enable": "सक्षम करें",
+    "more": "और",
+    "optional": "वैकल्पिक",
+    "duplicate": "डुप्लिकेट करें",
+    "view": "देखें",
+    "refresh": "रीफ़्रेश करें",
+    "notice": "सूचना",
+    "install": "इंस्टॉल करें",
+    "installing": "इंस्टॉल हो रहा है...",
+    "installed": "इंस्टॉल किया गया",
+    "complete": "पूर्ण",
+    "action": "कार्रवाई",
+    "separator": ", ",
+    "debug_mode": "डीबग मोड",
+    "true": "सही",
+    "false": "गलत",
+    "please_input": "कृपया दर्ज करें",
+    "unsaved_changes": "असहेजे परिवर्तन",
+    "more_errors": "और {{count}} त्रुटियाँ",
+    "unknown": "अज्ञात",
+    "required": "आवश्यक",
+    "yes": "हाँ",
+    "no": "नहीं",
+    "enabled": "सक्षम",
+    "advancedOptions": "उन्नत विकल्प",
+    "submitting": "सबमिट हो रहा है...",
+    "official": "आधिकारिक",
+    "deleting": "हटाया जा रहा है…",
+    "disabling": "अक्षम किया जा रहा है…",
+    "enabling": "सक्षम किया जा रहा है…",
+    "disable": "अक्षम करें",
+    "submit": "सबमिट करें",
+    "copySuccess": "सफलतापूर्वक कॉपी किया गया",
+    "noData": "कोई डेटा नहीं",
+    "processing": "प्रोसेस हो रहा है...",
+    "tableCreated": "बनाया गया",
+    "lastUpdated": "अंतिम अपडेट"
+  },
+  "config": {
+    "respondDirectly": "सीधे उत्तर दें",
+    "respondDirectlyDesc": "सदस्यों के उत्तरों का संकलन छोड़ें और उत्तर सीधे लौटाएँ",
+    "markdown": "Markdown फ़ॉर्मेट",
+    "markdownDesc": "आउटपुट सामग्री को फ़ॉर्मेट करने के लिए Markdown का उपयोग करें",
+    "addDatetime": "दिनांक और समय जोड़ें",
+    "addDatetimeDesc": "संदर्भ में वर्तमान दिनांक और समय शामिल करें",
+    "numHistoryRuns": "पिछले सत्रों की संख्या",
+    "toolCallLimit": "टूल कॉल सीमा",
+    "skillsEnabled": "स्किल्स सक्षम करें",
+    "skillsEnabledDesc": "AI एजेंट को प्रोजेक्ट स्किल्स खोजने और उपयोग करने की अनुमति दें"
+  },
+  "tagInput": {
+    "placeholder": "टैग दर्ज करें और जोड़ने के लिए Enter दबाएँ",
+    "removeTag": "टैग हटाएँ",
+    "count": "{{current}}/{{max}} टैग",
+    "currentInput": "वर्तमान इनपुट: {{current}}/{{max}} अक्षर",
+    "hint": "टैग जोड़ने के लिए Enter या कॉमा दबाएँ",
+    "errors": {
+      "empty": "टैग का नाम खाली नहीं हो सकता",
+      "tooLong": "टैग का नाम {{max}} अक्षरों से अधिक नहीं हो सकता",
+      "duplicate": "यह टैग पहले से मौजूद है",
+      "maxReached": "अधिकतम {{max}} टैग की अनुमति है"
+    }
+  },
+  "settings": {
+    "title": "सेटिंग्स",
+    "subtitle": "अपनी प्राथमिकताएँ और एप्लिकेशन सेटिंग्स अनुकूलित करें",
+    "menu": {
+      "profile": "प्रोफ़ाइल",
+      "general": "सामान्य",
+      "staff": "मानव एजेंट",
+      "notifications": "सूचनाएँ",
+      "providers": "मॉडल प्रदाता",
+      "plugins": "प्लगइन",
+      "about": "परिचय",
+      "logout": "लॉग आउट"
+    },
+    "plugins": {
+      "title": "प्लगइन",
+      "subtitle": "Pelatis से जुड़े प्लगइन देखें और प्रबंधित करें",
+      "empty": {
+        "title": "कोई प्लगइन कनेक्टेड नहीं है",
+        "description": "प्लगइन Unix Socket या TCP के माध्यम से Pelatis API से कनेक्ट हो सकते हैं।"
+      },
+      "viewDocs": "प्लगइन डेवलपर गाइड देखें",
+      "status": {
+        "connected": "कनेक्टेड",
+        "disconnected": "डिस्कनेक्टेड",
+        "label": "वर्तमान स्थिति",
+        "running": "चल रहा है",
+        "error": "त्रुटि",
+        "installing": "इंस्टॉल हो रहा है",
+        "stopped": "रुका हुआ"
+      },
+      "capabilities": "क्षमताएँ",
+      "author": "लेखक",
+      "connectedAt": "कनेक्ट होने का समय",
+      "debug": {
+        "title": "डीबग संकेत",
+        "description": "डेवलपमेंट मोड में आप पोर्ट 8005 (TCP) या /var/run/tgo/tgo.sock (Unix Socket) के माध्यम से स्थानीय प्लगइन कनेक्ट कर सकते हैं।",
+        "badge": "डीबग",
+        "autoManaged": "डीबग मोड - स्वतः प्रबंधित"
+      },
+      "token": {
+        "generate": "डीबग टोकन",
+        "error": "टोकन बनाना विफल रहा",
+        "modal": {
+          "title": "प्रोजेक्ट डीबग टोकन",
+          "warning": "टोकन 24 घंटे के लिए मान्य है। इस टोकन से कनेक्ट होने के बाद स्थानीय डीबग प्लगइन स्वतः वर्तमान प्रोजेक्ट से जुड़ जाएँगे।",
+          "tokenLabel": "आपका डीबग टोकन",
+          "usage": "उपयोग",
+          "goSDK": "Go SDK:",
+          "pythonSDK": "Python SDK:"
+        }
+      },
+      "install": {
+        "button": "प्लगइन इंस्टॉल करें",
+        "now": "अभी इंस्टॉल करें",
+        "modal": {
+          "title": "नया प्लगइन इंस्टॉल करें",
+          "yamlLabel": "प्लगइन कॉन्फ़िग (YAML)"
+        },
+        "url": {
+          "title": "URL से इंस्टॉल करें",
+          "description": "प्लगइन का रिमोट URL दर्ज करें; सिस्टम स्वतः कॉन्फ़िगरेशन प्राप्त करके इंस्टॉलेशन तैयार करेगा।",
+          "label": "प्लगइन URL",
+          "github": {
+            "desc": "रिपॉज़िटरी URL और ब्रांच पाथ समर्थित हैं"
+          },
+          "gitee": {
+            "desc": "घरेलू त्वरण, Gitee समर्थित"
+          },
+          "custom": {
+            "desc": "सीधे YAML या डायरेक्टरी URL समर्थित हैं"
+          }
+        },
+        "fetch": "जानकारी प्राप्त करें",
+        "useManual": "मैन्युअल YAML पेस्ट मोड उपयोग करें",
+        "backToUrl": "URL मोड पर वापस जाएँ",
+        "preview": {
+          "success": "प्लगइन कॉन्फ़िगरेशन सफलतापूर्वक पार्स हुआ"
+        },
+        "confirm": "पुष्टि करें और इंस्टॉल करें",
+        "preparing": "इंस्टॉलेशन तैयार हो रहा है...",
+        "processing": "प्लगइन इंस्टॉल हो रहा है...",
+        "success": "इंस्टॉलेशन सफल रहा",
+        "error": "इंस्टॉलेशन विफल रहा",
+        "enjoy": "सब कुछ तैयार है, अन्वेषण शुरू करें!",
+        "source": "स्रोत",
+        "back": "वापस",
+        "stage": {
+          "preparing": "वातावरण तैयार करें",
+          "cloning": "कोड क्लोन करें",
+          "downloading": "आर्टिफ़ैक्ट डाउनलोड करें",
+          "copying": "फ़ाइलें डिप्लॉय करें",
+          "building": "कंपाइल और बिल्ड करें",
+          "starting": "सेवा शुरू करें"
+        },
+        "manual": {
+          "title": "मैन्युअल इंस्टॉल मोड",
+          "description": "इंस्टॉल करने के लिए प्लगइन विवरण YAML फ़ाइल पेस्ट करें। केवल उन्नत उपयोगकर्ताओं या डेवलपमेंट और डीबगिंग के लिए अनुशंसित।"
+        }
+      },
+      "actions": {
+        "detail": "विवरण देखें",
+        "checkUpdate": "अपडेट जाँचें",
+        "logs": "लॉग देखें",
+        "stop": "रोकें",
+        "start": "शुरू करें",
+        "restart": "पुनः आरंभ करें",
+        "uninstall": "अनइंस्टॉल करें",
+        "uninstallConfirm": "क्या आप वाकई इस प्लगइन को अनइंस्टॉल करना चाहते हैं? यह कार्रवाई पूर्ववत नहीं की जा सकती।"
+      },
+      "installed": {
+        "empty": {
+          "title": "अभी कोई प्लगइन नहीं",
+          "description": "आप GitHub स्रोत से, बाइनरी फ़ाइलों के माध्यम से इंस्टॉल कर सकते हैं, या डीबग टोकन से स्थानीय प्लगइन कनेक्ट कर सकते हैं।"
+        }
+      },
+      "updateAvailable": "अपडेट उपलब्ध है",
+      "checkUpdate": "अपडेट जाँचें",
+      "checkUpdateError": "अपडेट जाँचना विफल रहा",
+      "noUpdate": "पहले से नवीनतम संस्करण है",
+      "installedAt": "इंस्टॉल किया गया समय",
+      "installedAtTime": "इंस्टॉलेशन समय",
+      "installType": "इंस्टॉल प्रकार",
+      "logs": {
+        "title": "प्लगइन लॉग",
+        "empty": "अभी तक कोई लॉग आउटपुट नहीं"
+      },
+      "detail": {
+        "basicInfo": "बुनियादी जानकारी",
+        "noCapabilities": "यह प्लगइन कोई विशेष क्षमता घोषित नहीं करता"
+      },
+      "details": {
+        "description": "विवरण"
+      },
+      "upgrade": {
+        "title": "प्लगइन अपग्रेड",
+        "pluginName": "प्लगइन का नाम",
+        "currentVersion": "वर्तमान संस्करण",
+        "latestVersion": "नवीनतम संस्करण",
+        "preparing": "अपग्रेड तैयार हो रहा है...",
+        "confirm": "अभी अपग्रेड करें",
+        "error": "अपग्रेड विफल रहा"
+      },
+      "fetch": {
+        "error": "प्लगइन जानकारी प्राप्त नहीं की जा सकी। कृपया जाँचें कि URL सही है।"
+      }
+    },
+    "profile": {
+      "title": "प्रोफ़ाइल",
+      "subtitle": "अपनी व्यक्तिगत जानकारी देखें और प्रबंधित करें",
+      "loadError": "प्रोफ़ाइल लोड करना विफल रहा",
+      "username": "उपयोगकर्ता नाम",
+      "status": "स्थिति",
+      "description": "परिचय",
+      "serviceStatus": "सेवा स्थिति",
+      "servicePaused": "सेवा रोकी गई",
+      "serviceResumed": "सेवा फिर शुरू हुई",
+      "toggleError": "सेवा स्थिति बदलना विफल रहा",
+      "servicePausedLabel": "सेवा रुकी हुई है",
+      "serviceActiveLabel": "सक्रिय",
+      "servicePausedDesc": "रुके रहने के दौरान आपको नए विज़िटर असाइन नहीं किए जाएँगे; मौजूदा बातचीत प्रभावित नहीं होगी",
+      "serviceActiveDesc": "सिस्टम असाइनमेंट नियमों के आधार पर नए विज़िटर आपको असाइन करेगा",
+      "resumeService": "सेवा फिर शुरू करें",
+      "pauseService": "सेवा रोकें",
+      "accountInfo": "खाता जानकारी",
+      "createdAt": "बनाया गया",
+      "updatedAt": "अपडेट किया गया",
+      "roles": {
+        "admin": "एडमिन",
+        "user": "एजेंट",
+        "agent": "AI एजेंट"
+      },
+      "statuses": {
+        "online": "ऑनलाइन",
+        "offline": "ऑफ़लाइन",
+        "busy": "व्यस्त"
+      }
+    },
+    "staff": {
+      "title": "मानव एजेंट",
+      "addStaff": "स्टाफ जोड़ें",
+      "editStaff": "स्टाफ संपादित करें",
+      "searchPlaceholder": "उपयोगकर्ता नाम या उपनाम खोजें...",
+      "allRoles": "सभी भूमिकाएँ",
+      "allStatuses": "सभी स्थितियाँ",
+      "tableUser": "उपयोगकर्ता",
+      "tableRole": "भूमिका",
+      "tableStatus": "स्थिति",
+      "tableDescription": "विवरण",
+      "tableCreated": "बनाया गया",
+      "tableServiceActive": "सेवा",
+      "tableActions": "कार्रवाइयाँ",
+      "noResults": "कोई मेल खाता स्टाफ नहीं मिला",
+      "empty": "अभी कोई स्टाफ नहीं है, बनाने के लिए \"स्टाफ जोड़ें\" पर क्लिक करें",
+      "username": "उपयोगकर्ता नाम",
+      "usernamePlaceholder": "उपयोगकर्ता नाम दर्ज करें",
+      "nickname": "उपनाम",
+      "nicknamePlaceholder": "उपनाम दर्ज करें (वैकल्पिक)",
+      "name": "नाम",
+      "namePlaceholder": "नाम दर्ज करें",
+      "descriptionLabel": "विवरण",
+      "descriptionPlaceholder": "स्टाफ का विवरण दर्ज करें (वैकल्पिक)",
+      "password": "पासवर्ड",
+      "passwordPlaceholder": "पासवर्ड दर्ज करें (कम से कम 8 अक्षर)",
+      "passwordPlaceholderEdit": "वर्तमान पासवर्ड रखने के लिए खाली छोड़ें",
+      "confirmPassword": "पासवर्ड की पुष्टि करें",
+      "confirmPasswordPlaceholder": "पासवर्ड फिर से दर्ज करें",
+      "role": "भूमिका",
+      "roleHint": "सामान्य स्टाफ ग्राहक बातचीत संभाल सकता है; AI एजेंट को AI एजेंट से जोड़ा जा सकता है",
+      "status": "स्थिति",
+      "deleteConfirmTitle": "हटाने की पुष्टि करें",
+      "deleteConfirmMessage": "क्या आप वाकई स्टाफ \"{{name}}\" को हटाना चाहते हैं? यह कार्रवाई पूर्ववत नहीं की जा सकती।",
+      "fetchError": "स्टाफ सूची प्राप्त करना विफल रहा",
+      "createSuccess": "स्टाफ सफलतापूर्वक बनाया गया",
+      "updateSuccess": "स्टाफ सफलतापूर्वक अपडेट किया गया",
+      "deleteSuccess": "स्टाफ सफलतापूर्वक हटाया गया",
+      "saveError": "सहेजना विफल रहा",
+      "deleteError": "हटाना विफल रहा",
+      "roles": {
+        "admin": "एडमिन",
+        "user": "एजेंट",
+        "agent": "AI एजेंट"
+      },
+      "statuses": {
+        "online": "ऑनलाइन",
+        "offline": "ऑफ़लाइन",
+        "busy": "व्यस्त"
+      },
+      "serviceStopped": "इस एजेंट के लिए सेवा रोक दी गई",
+      "serviceStarted": "इस एजेंट के लिए सेवा शुरू की गई",
+      "toggleActiveError": "सेवा स्थिति बदलना विफल रहा",
+      "clickToStop": "सेवा रोकने के लिए क्लिक करें",
+      "clickToStart": "सेवा शुरू करने के लिए क्लिक करें",
+      "description": "मानव एजेंट के बारे में",
+      "descriptionText": "जब AI एजेंट उपयोगकर्ता की समस्या हल नहीं कर पाते, तो सिस्टम स्वतः बातचीत मानव एजेंट को असाइन कर देता है। मानव एजेंट अधिक पेशेवर मानवीय सहायता देने के लिए बातचीत अपने हाथ में ले सकते हैं।",
+      "assignmentRules": "असाइनमेंट नियम",
+      "assignmentRulesHint": "मानव एजेंट के लिए असाइनमेंट नियम कॉन्फ़िगर करें। सिस्टम इस प्रॉम्प्ट के साथ LLM का उपयोग करके बातचीत को सबसे उपयुक्त एजेंट को बुद्धिमानी से असाइन करता है।",
+      "serviceTime": "सेवा समय",
+      "serviceWeekdays": "सेवा के दिन",
+      "serviceStartTime": "प्रारंभ समय",
+      "serviceEndTime": "समाप्ति समय",
+      "timezone": "समय क्षेत्र",
+      "weekday": {
+        "mon": "सोम",
+        "tue": "मंगल",
+        "wed": "बुध",
+        "thu": "गुरु",
+        "fri": "शुक्र",
+        "sat": "शनि",
+        "sun": "रवि"
+      },
+      "chatSettings": "चैट सेटिंग्स",
+      "maxConcurrentChats": "अधिकतम समवर्ती चैट",
+      "maxConcurrentChatsHint": "प्रत्येक एजेंट एक साथ अधिकतम कितनी बातचीत संभाल सकता है",
+      "autoCloseHours": "स्वतः बंद होने का समय",
+      "autoCloseHoursHint": "इस समय के बाद निष्क्रिय बातचीत स्वतः बंद हो जाती है",
+      "hours": "घंटे",
+      "llmAssignment": "इंटेलिजेंट असाइनमेंट",
+      "llmAssignmentHint": "सक्षम होने पर सिस्टम इस प्रॉम्प्ट के साथ LLM का उपयोग करके बातचीत को सबसे उपयुक्त एजेंट को बुद्धिमानी से असाइन करता है।",
+      "assignmentModel": "असाइनमेंट मॉडल",
+      "selectModel": "एक मॉडल चुनें",
+      "assignmentModelHint": "बुद्धिमान बातचीत असाइनमेंट के लिए LLM चुनें; मॉडल मॉडल प्रदाता कॉन्फ़िगरेशन से आते हैं",
+      "assignmentPrompt": "असाइनमेंट प्रॉम्प्ट",
+      "assignmentRulesPlaceholder": "असाइनमेंट नियम प्रॉम्प्ट दर्ज करें...",
+      "resetToDefault": "डिफ़ॉल्ट पर रीसेट करें",
+      "saveRules": "नियम सहेजें",
+      "rulesSaved": "असाइनमेंट नियम सफलतापूर्वक सहेजे गए",
+      "rulesSaveError": "असाइनमेंट नियम सहेजना विफल रहा",
+      "promptTooLong": "प्रॉम्प्ट 1000 अक्षरों से अधिक नहीं हो सकता",
+      "errors": {
+        "usernameRequired": "कृपया उपयोगकर्ता नाम दर्ज करें",
+        "usernameLength": "उपयोगकर्ता नाम 1-50 अक्षरों के बीच होना चाहिए",
+        "nameRequired": "कृपया नाम दर्ज करें",
+        "passwordRequired": "कृपया पासवर्ड दर्ज करें",
+        "passwordLength": "पासवर्ड कम से कम 8 अक्षरों का होना चाहिए",
+        "passwordMismatch": "पासवर्ड मेल नहीं खाते"
+      }
+    },
+    "account": {
+      "title": "खाता जानकारी"
+    },
+    "language": {
+      "title": "भाषा सेटिंग्स",
+      "description": "अपनी पसंदीदा इंटरफ़ेस भाषा चुनें। परिवर्तन तुरंत लागू होंगे।",
+      "persistence": "भाषा प्राथमिकता स्वतः लोकल स्टोरेज में सहेज ली जाएगी",
+      "followSystem": "स्वतः"
+    },
+    "appearance": {
+      "title": "दिखावट सेटिंग्स",
+      "comingSoon": "और दिखावट और थीम विकल्प जल्द आ रहे हैं..."
+    },
+    "theme": {
+      "title": "थीम मोड",
+      "description": "अपना पसंदीदा थीम मोड चुनें। परिवर्तन तुरंत लागू होंगे",
+      "light": "लाइट",
+      "dark": "डार्क",
+      "system": "सिस्टम के अनुसार"
+    },
+    "general": {
+      "title": "सामान्य",
+      "login": "लॉगिन",
+      "autoLogin": "WeCom बैकएंड ऑटो लॉगिन सक्षम करें",
+      "features": "सुविधाएँ",
+      "emojiToText": "इमोजी को स्वतः टेक्स्ट में बदलें",
+      "codeMessage": "कोड संदेश",
+      "speechToText": "वॉइस संदेशों को स्वतः टेक्स्ट में बदलें",
+      "privacy": "गोपनीयता",
+      "readReceipts": "रीड रिसीट",
+      "readReceiptsDesc": "बंद होने पर दूसरे यह नहीं देख सकते कि आपने संदेश पढ़े हैं या नहीं।",
+      "timezonePrivacy": "स्थानीय समय दिखाएँ",
+      "timezonePrivacyDesc": "बंद होने पर दूसरे आपकी समय क्षेत्र जानकारी नहीं देख सकते।",
+      "conversationDisplay": "बातचीत प्रदर्शन मोड",
+      "normal": "सामान्य",
+      "bubbleLeft": "बबल बाईं ओर संरेखित"
+    },
+    "storage": {
+      "title": "स्टोरेज",
+      "comingSoon": "कैश प्रबंधन, स्टोरेज उपयोग आँकड़े आदि। जल्द आ रहा है..."
+    },
+    "notifications": {
+      "title": "सूचनाएँ",
+      "notSupported": "आपका ब्राउज़र डेस्कटॉप सूचनाओं का समर्थन नहीं करता",
+      "permission": {
+        "title": "सूचना अनुमति",
+        "granted": "अधिकृत",
+        "denied": "अस्वीकृत",
+        "default": "सेट नहीं",
+        "grantedDesc": "आप डेस्कटॉप सूचनाएँ प्राप्त कर सकते हैं",
+        "deniedDesc": "कृपया ब्राउज़र सेटिंग्स में सूचना अनुमति दें",
+        "defaultDesc": "सूचना अनुमति माँगने के लिए बटन पर क्लिक करें",
+        "request": "अनुमति माँगें",
+        "requesting": "माँगा जा रहा है..."
+      },
+      "toggles": {
+        "title": "सूचना सेटिंग्स",
+        "desktop": {
+          "title": "डेस्कटॉप सूचनाएँ",
+          "description": "नए संदेश आने पर सिस्टम सूचना केंद्र में सूचनाएँ दिखाएँ"
+        },
+        "sound": {
+          "title": "ध्वनि अलर्ट",
+          "description": "नए संदेश आने पर सूचना ध्वनि बजाएँ"
+        }
+      },
+      "scenarios": {
+        "title": "सूचना परिदृश्य",
+        "background": {
+          "title": "बैकग्राउंड सूचनाएँ",
+          "description": "पेज दिखाई न देने पर (टैब बदला गया या मिनिमाइज़ किया गया) सूचनाएँ भेजें"
+        },
+        "otherConversation": {
+          "title": "अन्य बातचीत के संदेश",
+          "description": "वर्तमान बातचीत के अलावा अन्य बातचीत से संदेश मिलने पर सूचनाएँ भेजें"
+        },
+        "newVisitor": {
+          "title": "नए विज़िटर की सूचनाएँ",
+          "description": "नए विज़िटर के क्यू में आने पर सूचनाएँ भेजें"
+        }
+      },
+      "test": {
+        "title": "परीक्षण सूचना",
+        "description": "सुविधा सही ढंग से काम कर रही है यह जाँचने के लिए परीक्षण सूचना भेजें",
+        "button": "परीक्षण भेजें"
+      },
+      "tip": "सुझाव: सूचना सुविधा के लिए ब्राउज़र अनुमति आवश्यक है। यदि आपने अनुमति अनुरोध अस्वीकार कर दिया है, तो ब्राउज़र सेटिंग्स में इस साइट के लिए सूचनाएँ मैन्युअल रूप से अनुमत करनी होंगी।"
+    },
+    "models": {
+      "modelStore": "मॉडल स्टोर",
+      "store": {
+        "title": "मॉडल स्टोर",
+        "subtitle": "विश्वस्तरीय AI मॉडल खोजें और इंस्टॉल करें",
+        "searchPlaceholder": "मॉडल, प्रदाता या सुविधाएँ खोजें...",
+        "categories": {
+          "all": "सभी मॉडल",
+          "chat": "चैट",
+          "embedding": "एम्बेडिंग",
+          "image": "छवि",
+          "audio": "ऑडियो"
+        },
+        "install": "शुरू करें",
+        "installing": "इंस्टॉल हो रहा है...",
+        "installed": "इंस्टॉल किया गया",
+        "uninstall": "उपयोग बंद करें",
+        "details": "मॉडल विवरण",
+        "provider": "प्रदाता",
+        "price": "मूल्य",
+        "inputPrice": "इनपुट मूल्य (प्रति 1M टोकन)",
+        "outputPrice": "आउटपुट मूल्य (प्रति 1M टोकन)",
+        "contextWindow": "कॉन्टेक्स्ट विंडो",
+        "noResults": "कोई मॉडल नहीं मिला",
+        "noResultsDesc": "अलग कीवर्ड से खोजें या श्रेणी बदलें",
+        "installSuccess": "मॉडल सफलतापूर्वक सिंक हुआ",
+        "installSuccessMessage": "मॉडल \"{{name}}\" आपके प्रोजेक्ट में सिंक हो गया है",
+        "fetchFailed": "स्टोर मॉडल प्राप्त करना विफल रहा"
+      },
+      "defaults": {
+        "title": "डिफ़ॉल्ट मॉडल",
+        "description": "LLM और एम्बेडिंग के लिए आवश्यक वैश्विक डिफ़ॉल्ट मॉडल चुनें।",
+        "llmLabel": "डिफ़ॉल्ट LLM",
+        "embeddingLabel": "डिफ़ॉल्ट एम्बेडिंग",
+        "selectPlaceholder": "कृपया एक मॉडल चुनें",
+        "none": "सेट नहीं",
+        "embeddingHelp": {
+          "title": "अनुशंसित एम्बेडिंग मॉडल",
+          "providers": {
+            "openai": {
+              "name": "OpenAI",
+              "models": [
+                "text-embedding-3-small",
+                "text-embedding-3-large",
+                "text-embedding-ada-002"
+              ]
+            },
+            "qwen": {
+              "name": "Qwen/DashScope",
+              "models": [
+                "text-embedding-v4"
+              ]
+            }
+          }
+        },
+        "noModels": "कोई मॉडल उपलब्ध नहीं",
+        "noEmbeddingModels": "कोई एम्बेडिंग मॉडल उपलब्ध नहीं",
+        "addProvider": "प्रदाता जोड़ें"
+      },
+      "toast": {
+        "saved": "डिफ़ॉल्ट मॉडल सहेजे गए",
+        "required": "कृपया डिफ़ॉल्ट LLM और डिफ़ॉल्ट एम्बेडिंग दोनों मॉडल सेट करें",
+        "atLeastOneRequired": "कृपया कम से कम एक डिफ़ॉल्ट मॉडल चुनें"
+      }
+    },
+    "providers": {
+      "title": "मॉडल प्रदाता",
+      "subtitle": "AI प्रदाताओं की एक्सेस कॉन्फ़िग प्रबंधित करें: कुंजियाँ, सुरक्षित प्रॉक्सी, मॉडल सूचियाँ और डिफ़ॉल्ट।",
+      "docs": "दस्तावेज़ देखें",
+      "add": "प्रदाता जोड़ें",
+      "addCustom": "कस्टम कॉन्फ़िग",
+      "fromStore": "स्टोर से प्राप्त करें",
+      "addModelTo": "इसमें मॉडल जोड़ें",
+      "addTitle": "प्रदाता जोड़ें",
+      "edit": "प्रदाता संपादित करें",
+      "storeModel": "स्टोर मॉडल",
+      "emptyTitle": "अपनी AI यात्रा शुरू करें",
+      "enableButton": "सक्षम करें",
+      "updateButton": "अपडेट करें",
+      "defaultName": "नया प्रदाता",
+      "baseUrl": "बेस URL",
+      "provider": {
+        "openai": "OpenAI",
+        "azure": "Azure OpenAI",
+        "qwen": "Qwen (DashScope)",
+        "moonshot": "Moonshot (Kimi)",
+        "deepseek": "DeepSeek",
+        "baichuan": "Baichuan",
+        "ollama": "Ollama",
+        "custom": "कस्टम"
+      },
+      "groups": {
+        "connection": "प्रमाणीकरण और कनेक्शन",
+        "models": "",
+        "modelsTitle": "मॉडल और डिफ़ॉल्ट"
+      },
+      "fields": {
+        "kind": "प्रदाता",
+        "name": "नाम/उपनाम",
+        "apiKey": "API कुंजी",
+        "baseUrl": "API बेस URL",
+        "models": "उपलब्ध मॉडल",
+        "defaultModel": "डिफ़ॉल्ट मॉडल",
+        "modelType": "मॉडल प्रकार",
+        "embeddingModel": "एम्बेडिंग मॉडल",
+        "modelId": "मॉडल ID"
+      },
+      "suggestedModels": "सुझाए गए मॉडल",
+      "noStoreModels": "स्टोर में ऐसे कोई मॉडल उपलब्ध नहीं हैं",
+      "modelType": {
+        "chat": "चैट मॉडल",
+        "embedding": "एम्बेडिंग मॉडल"
+      },
+      "modelTypes": {
+        "chat": "चैट",
+        "embedding": "एम्बेडिंग"
+      },
+      "azure": {
+        "deployment": "डिप्लॉयमेंट नाम",
+        "resource": "रिसोर्स",
+        "apiVersion": "API संस्करण"
+      },
+      "help": {
+        "azure": {
+          "deployment": "Azure में डिप्लॉयमेंट का नाम, मॉडल ID से अलग होता है",
+          "resource": "Azure रिसोर्स का नाम, जैसे आपका OpenAI सेवा रिसोर्स",
+          "apiVersion": "Azure OpenAI API संस्करण, जैसे 2024-02-15-preview"
+        },
+        "modelsCustom": "यदि सूची खाली है या आपको आवश्यक मॉडल नहीं मिल रहा, तो आप कस्टम मॉडल नाम मैन्युअल रूप से दर्ज कर सकते हैं",
+        "embeddingModel": "एम्बेडिंग मॉडल का नाम दर्ज करें, जैसे text-embedding-3-small, text-embedding-ada-002"
+      },
+      "placeholders": {
+        "apiKeyMasked": "कॉन्फ़िगर किया गया: {{mask}}, रखने के लिए खाली छोड़ें",
+        "apiKey": "API कुंजी पेस्ट करें",
+        "modelsSearch": "मॉडल ID खोजें या दर्ज करें...",
+        "manualModelId": "ID मैन्युअल रूप से दर्ज करें या नीचे से चुनें",
+        "baseUrl": {
+          "custom": "कस्टम बेस URL",
+          "default": "डिफ़ॉल्ट URL"
+        },
+        "embeddingModel": "जैसे, text-embedding-3-small"
+      },
+      "fetchModels": {
+        "failed": "मॉडल प्राप्त करना विफल रहा",
+        "empty": "कोई मॉडल उपलब्ध नहीं"
+      },
+      "selectDefaultModel": "कृपया पहले मॉडल जोड़ें",
+      "test": {
+        "ok": "कनेक्शन सफल रहा",
+        "failed": "कनेक्शन विफल रहा",
+        "saveFirst": "परीक्षण से पहले कृपया सहेजें"
+      },
+      "testButton": "परीक्षण",
+      "badges": {
+        "default": "डिफ़ॉल्ट"
+      },
+      "toast": {
+        "added": "प्रदाता जोड़ा गया",
+        "saved": "परिवर्तन सहेजे गए",
+        "deleted": "प्रदाता हटाया गया",
+        "modelAdded": "मॉडल जोड़ा गया",
+        "modelDeleted": "मॉडल हटाया गया",
+        "addedWithDefaults": "प्रदाता जोड़ा गया और {{count}} सामान्य मॉडल आरंभ किए गए"
+      },
+      "confirmDeleteModel": "क्या आप वाकई मॉडल {{model}} को हटाना चाहते हैं?",
+      "validate": {
+        "apiKey": "कृपया API कुंजी दर्ज करें",
+        "azureDeployment": "कृपया Azure डिप्लॉयमेंट नाम दर्ज करें"
+      },
+      "createModelOption": "बनाएँ",
+      "confirmDeleteTitle": "प्रदाता हटाएँ",
+      "confirmDeleteMsg": "क्या आप वाकई यह प्रदाता कॉन्फ़िगरेशन हटाना चाहते हैं? यह कार्रवाई पूर्ववत नहीं की जा सकती।",
+      "empty": "अभी कोई प्रदाता कॉन्फ़िगर नहीं है। शुरू करने के लिए \"स्टोर से प्राप्त करें\" या \"कस्टम कॉन्फ़िग\" पर क्लिक करें।",
+      "addModel": "मॉडल जोड़ें"
+    }
+  },
+  "about": {
+    "title": "सिस्टम जानकारी",
+    "version": "संस्करण",
+    "environment": "परिवेश",
+    "apiVersion": "API संस्करण",
+    "pythonVersion": "Python संस्करण",
+    "buildTime": "बिल्ड समय",
+    "gitCommit": "Git कमिट",
+    "github": "GitHub रिपॉज़िटरी",
+    "website": "आधिकारिक वेबसाइट",
+    "copyright": "सर्वाधिकार सुरक्षित।",
+    "loading": "लोड हो रहा है...",
+    "loadError": "सिस्टम जानकारी लोड करना विफल रहा",
+    "systemInfo": "सिस्टम जानकारी",
+    "technicalDetails": "तकनीकी विवरण",
+    "links": "लिंक",
+    "apiEndpoint": "API एंडपॉइंट"
+  },
+  "agents": {
+    "title": "एजेंट टीम प्रबंधन",
+    "subtitle": "अपने AI एजेंट प्रबंधित करें",
+    "config": {
+      "advanced": "उन्नत कॉन्फ़िगरेशन"
+    },
+    "actions": {
+      "create": "एजेंट बनाएँ",
+      "edit": "संपादित करें",
+      "copy": "कॉपी करें",
+      "delete": "हटाएँ",
+      "enable": "सक्षम करें",
+      "disable": "रोकें",
+      "refresh": "रीफ़्रेश करें",
+      "retry": "पुनः प्रयास करें",
+      "view": "विवरण देखें",
+      "viewMore": "और देखें",
+      "collapse": "संक्षिप्त करें",
+      "teamChat": "टीम चैट",
+      "teamChatTooltip": "एजेंट टीम से चैट करें",
+      "teamChatNoAgents": "कृपया पहले एक एजेंट बनाएँ",
+      "teamInfo": "टीम जानकारी",
+      "store": "एजेंट भर्ती करें",
+      "defaultAgentChat": "डिफ़ॉल्ट AI एजेंट से चैट करें"
+    },
+    "form": {
+      "name": "एजेंट का नाम",
+      "description": "विवरण",
+      "detailedDescription": "विस्तृत विवरण",
+      "profession": "पेशा",
+      "llmModel": "LLM मॉडल",
+      "tools": "टूल",
+      "knowledge_bases": "नॉलेज बेस",
+      "avatar": "अवतार"
+    },
+    "validation": {
+      "nameRequired": "एजेंट का नाम आवश्यक है",
+      "professionRequired": "पेशा/भूमिका आवश्यक है",
+      "descriptionRequired": "एजेंट का विवरण आवश्यक है",
+      "modelRequired": "कृपया एक LLM मॉडल चुनें"
+    },
+    "status": {
+      "active": "सक्रिय",
+      "inactive": "निष्क्रिय",
+      "online": "ऑनलाइन",
+      "offline": "ऑफ़लाइन"
+    },
+    "messages": {
+      "loadFailed": "लोड विफल रहा",
+      "loadFailedDesc": "एजेंट सूची लोड नहीं हो सकी, कृपया बाद में पुनः प्रयास करें",
+      "refreshSuccess": "रीफ़्रेश सफल रहा",
+      "refreshSuccessDesc": "एजेंट सूची अपडेट हो गई है",
+      "refreshFailed": "रीफ़्रेश विफल रहा",
+      "refreshFailedDesc": "एजेंट सूची रीफ़्रेश नहीं हो सकी, कृपया बाद में पुनः प्रयास करें",
+      "retryFailed": "पुनः प्रयास विफल रहा",
+      "retryFailedDesc": "एजेंट सूची लोड नहीं हो सकी, कृपया बाद में पुनः प्रयास करें",
+      "createSuccess": "निर्माण सफल रहा",
+      "createSuccessDesc": "एजेंट \"{{name}}\" सफलतापूर्वक बनाया गया है",
+      "createFailed": "निर्माण विफल रहा",
+      "updateSuccess": "अपडेट सफल रहा",
+      "updateSuccessDesc": "एजेंट \"{{name}}\" सफलतापूर्वक अपडेट किया गया है",
+      "updateFailed": "अपडेट विफल रहा",
+      "deleteSuccess": "हटाना सफल रहा",
+      "deleteSuccessDesc": "एजेंट \"{{name}}\" हटा दिया गया है",
+      "deleteFailed": "हटाना विफल रहा",
+      "deleteFailedDesc": "एजेंट हटाते समय एक त्रुटि हुई",
+      "copySuccess": "कॉपी सफल रही",
+      "copySuccessDesc": "एजेंट \"{{name}}\" सफलतापूर्वक कॉपी किया गया है",
+      "copyFailed": "कॉपी विफल रही",
+      "copyFailedDesc": "एजेंट कॉपी करते समय एक त्रुटि हुई",
+      "statusUpdateSuccess": "रीफ़्रेश सफल रहा",
+      "statusUpdateSuccessDesc": "एजेंट \"{{name}}\" की स्थिति अपडेट हो गई है",
+      "statusUpdateFailed": "रीफ़्रेश विफल रहा",
+      "statusUpdateFailedDesc": "एजेंट स्थिति अपडेट करते समय एक त्रुटि हुई",
+      "noTeam": "टीम लोड नहीं हुई",
+      "noTeamDesc": "कृपया बाद में पुनः प्रयास करें",
+      "noAgentsForTeamChat": "टीम चैट शुरू नहीं की जा सकती",
+      "noAgentsForTeamChatDesc": "कृपया पहले कम से कम एक एजेंट बनाएँ",
+      "noDefaultAgent": "डिफ़ॉल्ट AI एजेंट लोड नहीं हुआ",
+      "noDefaultAgentDesc": "कृपया बाद में पुनः प्रयास करें",
+      "validationFailed": "सत्यापन विफल रहा",
+      "fillRequired": "कृपया सभी आवश्यक फ़ील्ड भरें"
+    },
+    "teamChat": {
+      "defaultName": "एजेंट टीम"
+    },
+    "teamDescription": "टीम सहयोग के माध्यम से आप टूल कॉलिंग, वर्कफ़्लो निष्पादन और नॉलेज बेस रिट्रीवल क्षमताओं वाले कई AI एजेंट को एक साथ बुला सकते हैं, ताकि अधिक जटिल बिज़नेस लॉजिक और अधिक कुशल कार्य प्रोसेसिंग हो सके।",
+    "listTitle": "एजेंट सूची",
+    "stats": {
+      "total": "कुल एजेंट",
+      "active": "चल रहे हैं",
+      "error": "समस्याएँ",
+      "team": "टीम सदस्य"
+    },
+    "empty": {
+      "title": "कोई एजेंट नहीं",
+      "description": "अपना पहला एजेंट बनाने के लिए \"एजेंट बनाएँ\" बटन पर क्लिक करें",
+      "noResults": "कोई मेल खाता AI एजेंट नहीं मिला",
+      "noResultsDesc": "अलग खोज कीवर्ड आज़माएँ"
+    },
+    "error": {
+      "title": "लोड विफल रहा",
+      "retry": "पुनः प्रयास करें"
+    },
+    "card": {
+      "defaultRole": "एजेंट",
+      "noDescription": "कोई विवरण उपलब्ध नहीं",
+      "chatAction": "चैट शुरू करें",
+      "noTools": "कोई टूल जुड़ा नहीं है",
+      "noKnowledgeBases": "कोई नॉलेज बेस जुड़ा नहीं है",
+      "noWorkflows": "कोई वर्कफ़्लो जुड़ा नहीं है",
+      "chatTooltip": "एजेंट से चैट करें",
+      "editTooltip": "एजेंट संपादित करें",
+      "deleteTooltip": "एजेंट हटाएँ",
+      "llmLabel": "LLM",
+      "status": {
+        "active": "सक्रिय",
+        "inactive": "निष्क्रिय",
+        "error": "त्रुटि",
+        "unknown": "अज्ञात"
+      }
+    },
+    "copy": {
+      "suffix": " (कॉपी)",
+      "defaultProfession": "विशेषज्ञ"
+    },
+    "pagination": {
+      "previous": "पिछला",
+      "next": "अगला"
+    },
+    "modal": {
+      "create": {
+        "title": "एजेंट बनाएँ",
+        "subtitle": "पेशेवर कौशल वाला वर्चुअल डिजिटल एजेंट परिभाषित करें"
+      },
+      "edit": {
+        "title": "एजेंट संपादित करें",
+        "subtitle": "एजेंट का व्यवहार और कॉन्फ़िगरेशन अनुकूलित करें"
+      },
+      "detail": {
+        "title": "एजेंट विवरण"
+      },
+      "delete": {
+        "title": "एजेंट हटाएँ",
+        "message": "क्या आप वाकई एजेंट \"{{name}}\" को हटाना चाहते हैं? यह कार्रवाई पूर्ववत नहीं की जा सकती।",
+        "confirm": "हटाएँ",
+        "cancel": "रद्द करें"
+      },
+      "apiTest": {
+        "errors": {
+          "parseResponseFailed": "प्रतिक्रिया पार्स करना विफल रहा",
+          "requestFailed": "अनुरोध विफल रहा",
+          "networkFailed": "नेटवर्क कनेक्शन विफल रहा। जाँचें कि URL सही है या कोई CORS समस्या है"
+        },
+        "sections": {
+          "authMethod": "प्रमाणीकरण विधि",
+          "testResult": "परीक्षण परिणाम"
+        },
+        "auth": {
+          "autoDetected": "स्वतः पहचाना गया"
+        },
+        "labels": {
+          "param": "पैरामीटर",
+          "value": "मान",
+          "type": "प्रकार",
+          "format": "प्रारूप",
+          "min": "न्यूनतम",
+          "max": "अधिकतम",
+          "minLength": "न्यूनतम लंबाई",
+          "maxLength": "अधिकतम लंबाई",
+          "pattern": "पैटर्न"
+        },
+        "placeholders": {
+          "select": "कृपया चुनें",
+          "enter": "कृपया दर्ज करें"
+        },
+        "noParams": "यह एंडपॉइंट कोई पैरामीटर परिभाषित नहीं करता",
+        "buttons": {
+          "testing": "परीक्षण हो रहा है...",
+          "test": "परीक्षण"
+        },
+        "result": {
+          "corsHintTitle": "ध्यान दें: ब्राउज़र CORS प्रतिबंधों के कारण कुछ API सीधे परीक्षण नहीं किए जा सकते",
+          "corsHint": "CORS संकेत",
+          "error": "त्रुटि:",
+          "responseHeaders": "रिस्पॉन्स हेडर:",
+          "responseData": "रिस्पॉन्स डेटा:",
+          "empty": "परीक्षण परिणाम यहाँ दिखाए जाएँगे"
+        }
+      }
+    },
+    "create": {
+      "sections": {
+        "modelConfig": "मॉडल कॉन्फ़िगरेशन",
+        "description": "क्षमता विवरण",
+        "tools": "टूल",
+        "skills": "स्किल्स",
+        "resources": "रिसोर्स संबद्धता",
+        "toolTools": "टूल"
+      },
+      "placeholders": {
+        "name": "कृपया एजेंट का नाम दर्ज करें",
+        "profession": "जैसे ग्राहक सहायता, तकनीकी सहायता, सेल्स कंसल्टेंट",
+        "description": "कृपया एजेंट के कार्य, ज़िम्मेदारियाँ और विशेषताएँ बताएँ, जैसे ग्राहक पूछताछ संभालना, उत्पाद जानकारी और तकनीकी सहायता देना..."
+      },
+      "models": {
+        "loading": "मॉडल लोड हो रहे हैं...",
+        "error": "मॉडल लोड करना विफल रहा",
+        "empty": "कोई मॉडल उपलब्ध नहीं",
+        "selectPlaceholder": "कृपया एक मॉडल चुनें",
+        "loadFailedTitle": "लोड विफल रहा",
+        "loadFailedDesc": "मॉडल सूची लोड नहीं हो सकी, कृपया बाद में पुनः प्रयास करें",
+        "loadFailedInline": "मॉडल लोड विफल रहा: {{error}}",
+        "invalid": "कृपया एक मान्य मॉडल चुनें (प्रदाता आवश्यक है)"
+      },
+      "tools": {
+        "shortNoMissingTitle": "टूल शॉर्ट नंबर अनुपलब्ध",
+        "shortNoMissingDesc": "निम्न टूल में short_no या नाम नहीं है: {{names}}, कृपया टूल स्टोर रीफ़्रेश करें या फिर से चुनकर पुनः प्रयास करें",
+        "missingTitle": "टूल जानकारी अनुपलब्ध",
+        "missingDesc": "निम्न टूल में नाम नहीं है: {{names}}। कृपया फिर से चुनकर पुनः प्रयास करें"
+      }
+    },
+    "edit": {
+      "loading": "एजेंट विवरण लोड हो रहे हैं...",
+      "loadAgentError": "एजेंट विवरण लोड नहीं हो सके, कृपया बाद में पुनः प्रयास करें",
+      "updateFailedUnknown": "एजेंट अपडेट करते समय अज्ञात त्रुटि हुई",
+      "saveButton": "परिवर्तन सहेजें",
+      "tools": {
+        "pendingNewTool": "लंबित नया टूल",
+        "missingTitle": "टूल जानकारी अनुपलब्ध",
+        "missingDesc": "निम्न टूल में नाम नहीं है: {{names}}, कृपया फिर से चुनकर पुनः प्रयास करें"
+      },
+      "modelProviderRequired": "कृपया फिर से एक मान्य मॉडल चुनें (प्रदाता आवश्यक है)"
+    },
+    "detail": {
+      "basicInfo": "बुनियादी जानकारी",
+      "performanceStats": "प्रदर्शन आँकड़े",
+      "tools": "संबद्ध टूल",
+      "knowledge_bases": "संबद्ध नॉलेज बेस",
+      "workflows": "संबद्ध वर्कफ़्लो",
+      "tags": "टैग",
+      "fields": {
+        "description": "विवरण",
+        "agent_id": "एजेंट ID",
+        "llmModel": "LLM मॉडल",
+        "endpoint": "एंडपॉइंट",
+        "lastActive": "अंतिम सक्रिय"
+      },
+      "metrics": {
+        "conversationCount": "बातचीत",
+        "successRate": "सफलता दर",
+        "avgResponseTime": "औसत प्रतिक्रिया समय"
+      },
+      "noKnowledgeBases": "कोई नॉलेज बेस जुड़ा नहीं है",
+      "noWorkflows": "कोई वर्कफ़्लो जुड़ा नहीं है",
+      "knowledgeBasePrefix": "KB {{id}}",
+      "closeButton": "बंद करें"
+    },
+    "toolsSection": {
+      "selectedTitle": "चयनित टूल",
+      "selectedCount": "{{count}} चयनित",
+      "addButton": "टूल जोड़ें",
+      "emptyTitle": "कोई टूल नहीं जोड़ा गया",
+      "emptyDescription": "टूल चुनने के लिए \"टूल जोड़ें\" पर क्लिक करें"
+    },
+    "skillsSection": {
+      "selectedTitle": "चयनित स्किल्स",
+      "selectedCount": "{{count}} चयनित",
+      "addButton": "स्किल जोड़ें",
+      "selectTitle": "स्किल्स चुनें",
+      "selectSubtitle": "AI एजेंट में पेशेवर स्किल्स जोड़ें",
+      "emptyTitle": "कोई स्किल नहीं जोड़ी गई",
+      "emptyDescription": "स्किल्स चुनने के लिए \"स्किल जोड़ें\" पर क्लिक करें"
+    },
+    "knowledge_basesSection": {
+      "selectedTitle": "चयनित नॉलेज बेस",
+      "selectedCount": "{{count}} चयनित",
+      "addButton": "नॉलेज बेस जोड़ें",
+      "emptyTitle": "कोई नॉलेज बेस नहीं जोड़ा गया",
+      "emptyDescription": "नॉलेज बेस चुनने के लिए \"नॉलेज बेस जोड़ें\" पर क्लिक करें"
+    },
+    "deviceSection": {
+      "title": "बाउंड डिवाइस",
+      "addButton": "डिवाइस चुनें",
+      "boundCount": "1 बाउंड",
+      "emptyTitle": "कोई डिवाइस बाउंड नहीं है",
+      "emptyDescription": "रिमोट डिवाइस बाइंड करने के लिए \"डिवाइस चुनें\" पर क्लिक करें",
+      "unbind": "डिवाइस अनबाइंड करें"
+    },
+    "deviceSelectModal": {
+      "title": "डिवाइस चुनें",
+      "searchPlaceholder": "डिवाइस खोजें...",
+      "noDevices": "कोई डिवाइस उपलब्ध नहीं",
+      "confirmSelection": "चयन की पुष्टि करें",
+      "manageDevices": "डिवाइस प्रबंधित करें",
+      "statusOnline": "ऑनलाइन",
+      "statusOffline": "ऑफ़लाइन",
+      "totalDevices": "कुल {{count}} डिवाइस",
+      "selectedOne": "1 चयनित",
+      "selectedNone": "कोई चयनित नहीं",
+      "loading": "डिवाइस लोड हो रहे हैं...",
+      "loadFailedDesc": "डिवाइस सूची लोड नहीं हो सकी। कृपया बाद में पुनः प्रयास करें।",
+      "retryFailedDesc": "डिवाइस सूची लोड नहीं हो सकी। कृपया अपना नेटवर्क कनेक्शन जाँचें।"
+    },
+    "toolsList": {
+      "label": "संबद्ध टूल"
+    },
+    "apiTest": {
+      "title": "{{name}} का परीक्षण करें",
+      "authMethod": "प्रमाणीकरण विधि",
+      "autoDetected": "स्वतः पहचाना गया",
+      "autoDetectedTitle": "OpenAPI से स्वतः पहचाना गया ({{level}})",
+      "autoLevel": {
+        "operation": "ऑपरेशन-स्तर",
+        "global": "वैश्विक-स्तर"
+      },
+      "authDisplay": {
+        "none": "कोई नहीं",
+        "header": "हेडर",
+        "headerWithPrefix": "हेडर ({{prefix}})",
+        "query": "क्वेरी",
+        "autoDetected": "स्वतः पहचाना गया: {{type}}"
+      },
+      "paramsAndValues": "पैरामीटर और मान",
+      "param": "पैरामीटर",
+      "value": "मान",
+      "type": "प्रकार",
+      "format": "प्रारूप",
+      "min": "न्यूनतम",
+      "max": "अधिकतम",
+      "minLength": "न्यूनतम लंबाई",
+      "maxLength": "अधिकतम लंबाई",
+      "pattern": "पैटर्न",
+      "selectPlaceholder": "कृपया चुनें",
+      "inputPlaceholder": "कृपया दर्ज करें",
+      "examplePrefix": "उदाहरण: {{value}}",
+      "defaultPrefix": "डिफ़ॉल्ट: {{value}}",
+      "noParams": "इस एंडपॉइंट में कोई पैरामीटर नहीं है",
+      "button": {
+        "testing": "परीक्षण हो रहा है...",
+        "test": "परीक्षण"
+      },
+      "results": "परीक्षण परिणाम",
+      "corsHint": "CORS संकेत",
+      "corsNote": "ध्यान दें: ब्राउज़र CORS प्रतिबंधों के कारण कुछ API सीधे परीक्षण योग्य नहीं हो सकते",
+      "errorLabel": "त्रुटि:",
+      "responseHeaders": "रिस्पॉन्स हेडर:",
+      "responseData": "रिस्पॉन्स डेटा:",
+      "resultsPlaceholder": "परीक्षण परिणाम यहाँ दिखाई देंगे",
+      "requestFailed": "अनुरोध विफल रहा",
+      "networkFailed": "नेटवर्क कनेक्शन विफल रहा। URL या संभावित CORS समस्याएँ जाँचें"
+    },
+    "authMethod": {
+      "title": "प्रमाणीकरण विधि",
+      "type": "प्रमाणीकरण प्रकार",
+      "types": {
+        "none": "कोई नहीं",
+        "header": "हेडर",
+        "query": "क्वेरी"
+      },
+      "headerPrefix": "प्रमाणीकरण हेडर उपसर्ग",
+      "headerPrefixes": {
+        "basic": "Basic",
+        "bearer": "Bearer",
+        "custom": "कस्टम"
+      },
+      "keyLabel": "कुंजी",
+      "valueLabel": "मान",
+      "keyPlaceholder": {
+        "header": "Authorization",
+        "query": "api_key"
+      },
+      "valuePlaceholder": {
+        "header": {
+          "basic": "Basic <credentials>",
+          "bearer": "Bearer <token>"
+        },
+        "default": "API कुंजी दर्ज करें"
+      },
+      "cancel": "रद्द करें",
+      "save": "सहेजें"
+    },
+    "defaultAgent": {
+      "defaultName": "डिफ़ॉल्ट AI एजेंट",
+      "description": "जब कोई लक्ष्य स्पष्ट रूप से निर्दिष्ट नहीं होता, तब प्रोजेक्ट का डिफ़ॉल्ट AI एजेंट AI बातचीत संभालता है।"
+    },
+    "store": {
+      "hire": "भर्ती करें",
+      "hireNow": "अभी भर्ती करें",
+      "alreadyInstalled": "यह एजेंट पहले से आपकी टीम में है",
+      "installFailed": "भर्ती विफल रही, कृपया पुनः प्रयास करें",
+      "title": "एजेंट स्टोर",
+      "searchPlaceholder": "एजेंट का नाम या ज़िम्मेदारियाँ खोजें...",
+      "noResults": "कोई मेल खाता एजेंट नहीं मिला",
+      "noDescription": "कोई विवरण नहीं"
+    }
+  },
+  "team": {
+    "modal": {
+      "title": "टीम जानकारी",
+      "subtitle": "अपनी AI सहयोग टीम कॉन्फ़िगर करें, सामूहिक क्षमता बढ़ाने के लिए टूल, वर्कफ़्लो और नॉलेज बेस को एकीकृत करें",
+      "name": "टीम का नाम",
+      "namePlaceholder": "टीम का नाम दर्ज करें",
+      "model": "LLM मॉडल",
+      "modelHint": "टीम के लिए डिफ़ॉल्ट LLM मॉडल चुनें",
+      "instruction": "टीम निर्देश",
+      "instructionPlaceholder": "टीम सिस्टम प्रॉम्प्ट या निर्देश दर्ज करें...",
+      "instructionHint": "💡 यह निर्देश टीम की वैश्विक पृष्ठभूमि के रूप में काम करता है, जो कुशल सहयोग के लिए सभी सदस्यों की टूल कॉलिंग, वर्कफ़्लो निष्पादन और नॉलेज बेस क्षमताओं को एकीकृत करता है।",
+      "noTeam": "डिफ़ॉल्ट टीम नहीं मिली",
+      "cancel": "रद्द करें",
+      "save": "सहेजें",
+      "saveSuccess": "सहेजना सफल रहा",
+      "saveSuccessDesc": "टीम जानकारी अपडेट हो गई है",
+      "saveFailed": "सहेजना विफल रहा",
+      "saveFailedDesc": "टीम जानकारी अपडेट करते समय एक त्रुटि हुई",
+      "models": {
+        "loading": "मॉडल लोड हो रहे हैं...",
+        "error": "मॉडल लोड करना विफल रहा",
+        "empty": "कोई मॉडल उपलब्ध नहीं",
+        "selectPlaceholder": "एक मॉडल चुनें"
+      }
+    },
+    "config": {
+      "advanced": "उन्नत कॉन्फ़िगरेशन"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "अपने खाते में साइन इन करें",
+      "email": "ईमेल पता",
+      "emailOrUsername": "ईमेल या उपयोगकर्ता नाम",
+      "password": "पासवर्ड",
+      "rememberMe": "मुझे याद रखें",
+      "forgotPassword": "पासवर्ड भूल गए?",
+      "loginButton": "साइन इन करें",
+      "loggingIn": "साइन इन हो रहा है...",
+      "noAccount": "खाता नहीं है?",
+      "registerLink": "अभी साइन अप करें",
+      "emailPlaceholder": "you@example.com",
+      "emailOrUsernamePlaceholder": "ईमेल या उपयोगकर्ता नाम दर्ज करें",
+      "passwordPlaceholder": "अपना पासवर्ड दर्ज करें",
+      "resetAdminInstruction": "एडमिन उपयोगकर्ता रीसेट करने के लिए निम्न कमांड चलाएँ",
+      "copied": "कॉपी हो गया",
+      "copy": "कॉपी करें"
+    },
+    "register": {
+      "title": "नया खाता बनाएँ",
+      "email": "ईमेल पता",
+      "password": "पासवर्ड सेट करें",
+      "passwordConfirmation": "पासवर्ड की पुष्टि करें",
+      "registerButton": "साइन अप करें",
+      "registering": "साइन अप हो रहा है...",
+      "hasAccount": "पहले से खाता है?",
+      "loginLink": "साइन इन करें",
+      "emailPlaceholder": "you@example.com",
+      "passwordPlaceholder": "कम से कम 8 अक्षर",
+      "passwordConfirmationPlaceholder": "पासवर्ड फिर से दर्ज करें"
+    },
+    "validation": {
+      "emailRequired": "कृपया ईमेल पता दर्ज करें",
+      "emailOrUsernameRequired": "कृपया ईमेल या उपयोगकर्ता नाम दर्ज करें",
+      "emailInvalid": "कृपया एक मान्य ईमेल पता दर्ज करें",
+      "passwordRequired": "कृपया पासवर्ड दर्ज करें",
+      "passwordMinLength": "पासवर्ड कम से कम {{min}} अक्षरों का होना चाहिए",
+      "passwordConfirmationRequired": "कृपया पासवर्ड की पुष्टि करें",
+      "passwordMismatch": "पासवर्ड मेल नहीं खाते",
+      "loginFailed": "लॉगिन विफल रहा, कृपया अपना ईमेल और पासवर्ड जाँचें",
+      "registerFailed": "पंजीकरण विफल रहा, कृपया पुनः प्रयास करें",
+      "networkError": "नेटवर्क कनेक्शन विफल रहा, कृपया अपनी नेटवर्क सेटिंग्स जाँचें",
+      "serverError": "सर्वर त्रुटि, कृपया बाद में पुनः प्रयास करें",
+      "invalidCredentials": "अमान्य उपयोगकर्ता नाम या पासवर्ड",
+      "userExists": "उपयोगकर्ता पहले से मौजूद है, कृपया दूसरा ईमेल उपयोग करें",
+      "weakPassword": "पासवर्ड बहुत कमज़ोर है, कृपया अधिक जटिल पासवर्ड उपयोग करें"
+    },
+    "notLoggedIn": "लॉग इन नहीं हैं",
+    "agent": "एजेंट",
+    "user": "उपयोगकर्ता",
+    "logout": "लॉग आउट",
+    "sessionExpiredTitle": "सत्र समाप्त हो गया",
+    "sessionExpiredMessage": "कृपया फिर से साइन इन करें",
+    "verify": {
+      "title": "ईमेल सत्यापन",
+      "verifying": "आपका ईमेल सत्यापित किया जा रहा है...",
+      "success": "आपका ईमेल सफलतापूर्वक सत्यापित हो गया है! अब आप साइन इन कर सकते हैं।",
+      "error": "ईमेल सत्यापन विफल रहा",
+      "noToken": "सत्यापन टोकन गायब है। कृपया अपना सत्यापन लिंक जाँचें।",
+      "goToLogin": "साइन इन पर जाएँ"
+    },
+    "loginFailed": "लॉगिन विफल रहा",
+    "registerFailed": "पंजीकरण विफल रहा"
+  },
+  "navigation": {
+    "chat": "चैट",
+    "ai": "AI असिस्टेंट",
+    "aiFeatures": "AI सुविधाएँ",
+    "agents": "एजेंट टीम",
+    "tools": "टूल",
+    "deviceControl": "डिवाइस नियंत्रण",
+    "workflows": "वर्कफ़्लो",
+    "skills": "स्किल्स",
+    "visitors": "विज़िटर",
+    "knowledge": "नॉलेज बेस",
+    "channels": "प्लेटफ़ॉर्म प्रबंधन",
+    "settings": "सेटिंग्स",
+    "store": "ऐप स्टोर"
+  },
+  "workflow": {
+    "title": "वर्कफ़्लो",
+    "management": {
+      "title": "वर्कफ़्लो प्रबंधन",
+      "subtitle": "जटिल AI कार्य प्रवाहों को व्यवस्थित करें"
+    },
+    "banner": {
+      "title": "स्वचालित वर्कफ़्लो",
+      "description": "ग्राफ़िकल इंटरफ़ेस के माध्यम से AI नोड, शर्त शाखाएँ और कस्टम टूल व्यवस्थित करें, ताकि साधारण बातचीत से लेकर जटिल बिज़नेस लॉजिक तक स्वचालित प्रोसेसिंग हो सके।"
+    },
+    "empty": {
+      "title": "कोई वर्कफ़्लो नहीं",
+      "description": "अपनी पहली स्वचालित प्रक्रिया बनाने के लिए \"वर्कफ़्लो बनाएँ\" बटन पर क्लिक करें",
+      "noResults": "कोई मेल खाता वर्कफ़्लो नहीं मिला",
+      "noResultsDesc": "अपने खोज कीवर्ड या फ़िल्टर बदलकर देखें"
+    },
+    "addWorkflow": "वर्कफ़्लो जोड़ें",
+    "viewWorkflow": "वर्कफ़्लो देखें",
+    "listTitle": "वर्कफ़्लो सूची",
+    "nodes": "नोड",
+    "lastUpdated": "अपडेट किया गया",
+    "searchPlaceholder": "वर्कफ़्लो खोजें...",
+    "noDescription": "कोई विवरण नहीं",
+    "palette": {
+      "title": "घटक",
+      "search": "घटक खोजें...",
+      "noMatch": "कोई घटक नहीं मिला",
+      "underDevelopment": "विकासाधीन",
+      "insertVariable": "वेरिएबल डालें",
+      "searchVariables": "वेरिएबल खोजें...",
+      "noUpstreamVariables": "कोई अपस्ट्रीम वेरिएबल नहीं",
+      "noMatchingVariables": "कोई मेल खाता वेरिएबल नहीं",
+      "variableTip": "वर्तमान इनपुट में संदर्भित करने के लिए कोई वेरिएबल चुनें।"
+    },
+    "categories": {
+      "trigger": "ट्रिगर",
+      "ai": "AI क्षमताएँ",
+      "logic": "लॉजिक नियंत्रण",
+      "external": "बाहरी एकीकरण",
+      "output": "आउटपुट"
+    },
+    "node_types": {
+      "input": {
+        "label": "उपयोगकर्ता इनपुट",
+        "description": "उपयोगकर्ता की बातचीत के संदेशों से ट्रिगर होता है"
+      },
+      "timer": {
+        "label": "टाइमर ट्रिगर",
+        "description": "निर्धारित शेड्यूल के अनुसार निष्पादित करें"
+      },
+      "webhook": {
+        "label": "वेबहुक",
+        "description": "बाहरी HTTP अनुरोधों से ट्रिगर होता है"
+      },
+      "event": {
+        "label": "इवेंट ट्रिगर",
+        "description": "आंतरिक सिस्टम इवेंट से ट्रिगर होता है"
+      },
+      "answer": {
+        "label": "उत्तर",
+        "description": "उपयोगकर्ता या कॉलर को परिणाम लौटाएँ"
+      },
+      "agent": {
+        "label": "AI एजेंट",
+        "description": "अन्य AI एजेंट को कॉल करें"
+      },
+      "tool": {
+        "label": "टूल",
+        "description": "टूल निष्पादित करें"
+      },
+      "condition": {
+        "label": "शर्त",
+        "description": "शर्तों के आधार पर शाखा बनाएँ"
+      },
+      "llm": {
+        "label": "LLM कॉल",
+        "description": "बड़े भाषा मॉडल को सीधे कॉल करें"
+      },
+      "parallel": {
+        "label": "समानांतर",
+        "description": "कई शाखाओं को समानांतर में निष्पादित करें"
+      },
+      "api": {
+        "label": "API कॉल",
+        "description": "बाहरी HTTP अनुरोध निष्पादित करें"
+      },
+      "classifier": {
+        "label": "प्रश्न वर्गीकरणकर्ता",
+        "description": "LLM का उपयोग करके इनपुट को वर्गीकृत करें"
+      }
+    },
+    "status": {
+      "active": "सक्रिय",
+      "draft": "ड्राफ़्ट",
+      "archived": "संग्रहीत"
+    },
+    "actions": {
+      "create": "वर्कफ़्लो बनाएँ",
+      "new_workflow": "नया वर्कफ़्लो",
+      "edit": "संपादित करें",
+      "delete": "हटाएँ",
+      "deleteNode": "नोड हटाएँ",
+      "save": "सहेजें",
+      "undo": "पूर्ववत करें",
+      "redo": "फिर से करें",
+      "validate": "सत्यापित करें",
+      "debug": "डीबग"
+    },
+    "debug": {
+      "title": "ऑनलाइन डीबग",
+      "input_variables": "इनपुट वेरिएबल",
+      "execution_status": "निष्पादन स्थिति",
+      "final_output": "अंतिम आउटपुट",
+      "run": "वर्कफ़्लो चलाएँ",
+      "stop": "रोकें",
+      "clear": "परिणाम साफ़ करें",
+      "reset": "रीसेट करें",
+      "running": "चल रहा है...",
+      "success": "सफल",
+      "failed": "विफल",
+      "error": "निष्पादन त्रुटि",
+      "pending": "लंबित",
+      "waiting": "निष्पादन की प्रतीक्षा है...",
+      "starting": "शुरू हो रहा है...",
+      "no_input_variables": "कोई इनपुट वेरिएबल नहीं",
+      "timeline": "टाइमलाइन",
+      "duration": "अवधि",
+      "input": "इनपुट",
+      "output": "आउटपुट",
+      "copy_json": "JSON कॉपी करें",
+      "persistence_note": "डीबग मोड में निष्पादन परिणाम केवल पूर्वावलोकन के लिए हैं और ऑनलाइन वर्कफ़्लो संस्करण को प्रभावित नहीं करेंगे।"
+    },
+    "fields": {
+      "name": "नाम",
+      "label": "नोड का नाम",
+      "description": "विवरण",
+      "description_placeholder": "इस वर्कफ़्लो का वर्णन करें...",
+      "status": "स्थिति",
+      "tags": "टैग",
+      "selectAgent": "AI एजेंट चुनें",
+      "selectTool": "टूल चुनें",
+      "output_variable": "आउटपुट वेरिएबल",
+      "condition_type": "शर्त प्रकार",
+      "expression": "एक्सप्रेशन",
+      "variable": "वेरिएबल नाम",
+      "operator": "ऑपरेटर",
+      "compare_value": "तुलना मान",
+      "llm_prompt": "LLM प्रॉम्प्ट",
+      "system_prompt": "सिस्टम प्रॉम्प्ट",
+      "user_prompt": "उपयोगकर्ता प्रॉम्प्ट",
+      "branches": "समानांतर शाखाएँ",
+      "wait_for_all": "सभी शाखाओं की प्रतीक्षा करें",
+      "timeout": "टाइमआउट (सेकंड)",
+      "cron_expression": "Cron एक्सप्रेशन",
+      "path_suffix": "पाथ प्रत्यय",
+      "method": "मेथड",
+      "event_type": "इवेंट प्रकार",
+      "output_mode": "आउटपुट मोड",
+      "select_variable": "वेरिएबल चुनें",
+      "reply_template": "उत्तर टेम्पलेट",
+      "field_definition": "फ़ील्ड परिभाषा (JSON)",
+      "request_settings": "अनुरोध सेटिंग्स",
+      "headers": "हेडर",
+      "query_params": "क्वेरी पैरामीटर",
+      "body": "बॉडी",
+      "text_to_classify": "वर्गीकृत करने के लिए टेक्स्ट",
+      "category_definition": "श्रेणी परिभाषा",
+      "llm_model": "LLM मॉडल",
+      "temperature": "तापमान",
+      "max_tokens": "अधिकतम टोकन",
+      "workflow_info": "वर्कफ़्लो जानकारी",
+      "version": "संस्करण",
+      "total_nodes": "कुल नोड",
+      "input_variables": "इनपुट पैरामीटर",
+      "cron_description": "स्वचालित निष्पादन शेड्यूल सेट करने के लिए मानक Cron प्रारूप का उपयोग करें।"
+    },
+    "placeholders": {
+      "selectAgent": "कृपया एक AI एजेंट चुनें",
+      "selectTool": "कृपया एक टूल चुनें",
+      "cron_hint": "0 * * * * (हर घंटे)",
+      "custom_path": "custom-path",
+      "event_hint": "जैसे user_registered",
+      "variable_hint": "final_response",
+      "template_hint": "नमस्ते, परिणाम है: {{api_1.body}}",
+      "expression_hint": "{{variable}} === 'value'",
+      "raw_hint": "कच्ची सामग्री दर्ज करें...",
+      "api_hint": "https://api.example.com",
+      "input_name": "नाम",
+      "input_type": "प्रकार",
+      "input_description": "विवरण",
+      "input_placeholder": "यह इनपुट किसलिए है?",
+      "input_query_desc": "उपयोगकर्ता इनपुट संदेश की सामग्री",
+      "classifier_hint": "अपस्ट्रीम वेरिएबल चुनें, जैसे {{input_1.query}}",
+      "classifier_category_name": "श्रेणी {{index}}",
+      "llm_condition_hint": "'हाँ' शाखा को संतुष्ट करने वाली अर्थगत शर्तों का वर्णन करें..."
+    },
+    "classifier": {
+      "default_category_1": "श्रेणी 1",
+      "default_category_2": "श्रेणी 2",
+      "default_category_desc": "इस श्रेणी के ट्रिगर होने की शर्तों का वर्णन करें"
+    },
+    "output_types": {
+      "variable": "वेरिएबल संदर्भ",
+      "variable_desc": "अपस्ट्रीम के किसी आउटपुट वेरिएबल का संदर्भ लें",
+      "template": "टेक्स्ट टेम्पलेट",
+      "template_desc": "कस्टम टेक्स्ट और वेरिएबल मिलाएँ",
+      "structured": "संरचित डेटा",
+      "structured_desc": "Key-Value ऑब्जेक्ट लौटाएँ"
+    },
+    "operators": {
+      "equals": "बराबर (==)",
+      "notEquals": "बराबर नहीं (!=)",
+      "contains": "शामिल है",
+      "greaterThan": "से बड़ा (>)",
+      "lessThan": "से छोटा (<)",
+      "isEmpty": "खाली है (null/empty)",
+      "isNotEmpty": "खाली नहीं है"
+    },
+    "tabs": {
+      "prompt": "प्रॉम्प्ट",
+      "model": "मॉडल",
+      "capabilities": "क्षमताएँ",
+      "config": "कॉन्फ़िग",
+      "inference_model": "इन्फ़रेंस मॉडल"
+    },
+    "api": {
+      "default_output": "डिफ़ॉल्ट आउटपुट:",
+      "available_variables": "उपलब्ध वेरिएबल"
+    },
+    "condition_types": {
+      "expression": "एक्सप्रेशन",
+      "variable": "वेरिएबल तुलना",
+      "llm": "LLM मूल्यांकन"
+    },
+    "node_display": {
+      "input_label": "इन",
+      "input_trigger_label": "उपयोगकर्ता इनपुट ट्रिगर",
+      "inputs_defined": "{{count}} इनपुट परिभाषित",
+      "not_configured_tool": "टूल कॉन्फ़िगर नहीं है",
+      "prompt_preview": "प्रॉम्प्ट पूर्वावलोकन",
+      "not_configured_prompt": "प्रॉम्प्ट कॉन्फ़िगर नहीं है",
+      "branches_count": "{{count}} शाखाएँ",
+      "wait_for_all": "सभी की प्रतीक्षा करें",
+      "scheduled": "निर्धारित",
+      "not_configured_variable": "वेरिएबल कॉन्फ़िगर नहीं है",
+      "template_output": "टेक्स्ट टेम्पलेट",
+      "fields_count": "{{count}} फ़ील्ड",
+      "output_label": "वर्कफ़्लो आउटपुट",
+      "classifier_categories_count": "{{count}} श्रेणियाँ",
+      "classifier_output": "वर्गीकरणकर्ता आउटपुट",
+      "input_required": "इनपुट आवश्यक",
+      "llm_evaluation": "LLM मूल्यांकन",
+      "not_configured_condition": "शर्त कॉन्फ़िगर नहीं है",
+      "custom_event": "कस्टम इवेंट",
+      "not_configured_agent": "एजेंट कॉन्फ़िगर नहीं है",
+      "output": "आउटपुट"
+    },
+    "panel": {
+      "nodeConfig": "नोड कॉन्फ़िगरेशन",
+      "properties": "गुण"
+    },
+    "messages": {
+      "saveSuccess": "सहेजा गया",
+      "saveSuccessDesc": "वर्कफ़्लो सफलतापूर्वक सहेजा गया",
+      "saveFailed": "सहेजना विफल रहा",
+      "saveFailedDesc": "सहेजते समय एक त्रुटि हुई",
+      "createFailed": "निर्माण विफल रहा",
+      "validateSuccess": "सत्यापन सफल",
+      "validateSuccessDesc": "वर्कफ़्लो कॉन्फ़िगरेशन मान्य है",
+      "validateFailed": "सत्यापन विफल",
+      "validateFailedDesc": "कृपया वर्कफ़्लो कॉन्फ़िगरेशन जाँचें",
+      "deleteSuccess": "हटाया गया",
+      "deleteFailed": "हटाना विफल रहा",
+      "duplicateSuccess": "डुप्लिकेट किया गया",
+      "duplicateFailed": "डुप्लिकेट करना विफल रहा",
+      "unsavedChanges": "आपके पास असहेजे परिवर्तन हैं। क्या आप वाकई बंद करना चाहते हैं?"
+    },
+    "selectModal": {
+      "title": "वर्कफ़्लो चुनें",
+      "searchPlaceholder": "वर्कफ़्लो खोजें...",
+      "loading": "वर्कफ़्लो लोड हो रहे हैं...",
+      "loadFailedDesc": "वर्कफ़्लो लोड करना विफल रहा",
+      "retryFailedDesc": "वर्कफ़्लो लोड करना विफल रहा",
+      "noMatch": "कोई मेल खाता वर्कफ़्लो नहीं मिला",
+      "createNew": "नया वर्कफ़्लो बनाएँ",
+      "manageWorkflows": "वर्कफ़्लो प्रबंधित करें",
+      "confirmSelection": "चयन की पुष्टि करें ({{count}})"
+    },
+    "modal": {
+      "delete": {
+        "title": "वर्कफ़्लो हटाएँ",
+        "message": "क्या आप वाकई वर्कफ़्लो \"{{name}}\" को हटाना चाहते हैं? यह कार्रवाई पूर्ववत नहीं की जा सकती।"
+      }
+    },
+    "empty_state": {
+      "title": "कोई वर्कफ़्लो नहीं",
+      "description": "अपना पहला AI वर्कफ़्लो बनाएँ"
+    },
+    "noMatch": "कोई मेल खाता वर्कफ़्लो नहीं मिला",
+    "noMatch.description": "अपने खोज मानदंड बदलकर देखें",
+    "namePlaceholder": "वर्कफ़्लो का नाम",
+    "settings": "सेटिंग्स",
+    "loading": "वर्कफ़्लो लोड हो रहा है...",
+    "tagsPlaceholder": "अल्पविराम से अलग करें",
+    "config": {
+      "unlimited": "∞ असीमित"
+    }
+  },
+  "ai": {
+    "menu": {
+      "title": "AI सुविधाएँ"
+    }
+  },
+  "knowledge": {
+    "title": "नॉलेज बेस",
+    "subtitle": "एजेंट के लिए उपलब्ध ज्ञान स्रोत प्रबंधित करें।",
+    "create": "नॉलेज बेस बनाएँ",
+    "createDesc": "नॉलेज बेस का प्रकार चुनें और बुनियादी जानकारी भरें",
+    "edit": "नॉलेज बेस संपादित करें",
+    "editDesc": "नॉलेज बेस की बुनियादी जानकारी संशोधित करें",
+    "delete": "नॉलेज बेस हटाएँ",
+    "name": "नाम",
+    "description": "विवरण",
+    "category": "श्रेणी",
+    "namePlaceholder": "नॉलेज बेस का नाम दर्ज करें",
+    "descriptionPlaceholder": "नॉलेज बेस की सामग्री और उद्देश्य का वर्णन करें",
+    "descriptionHelper": "विवरण जितना सटीक होगा, AI के लिए इस नॉलेज बेस का सही उपयोग करना उतना आसान होगा",
+    "icon": "आइकन",
+    "iconHelper": "अपने नॉलेज बेस की पहचान के लिए एक आइकन चुनें",
+    "tags": "टैग",
+    "tagsPlaceholder": "टैग दर्ज करें और जोड़ने के लिए Enter दबाएँ",
+    "tagsHelper": "टैग जोड़ने से आपको नॉलेज बेस व्यवस्थित करने और खोजने में मदद मिलती है",
+    "filesCount": "{{count}} फ़ाइलें",
+    "manage": "नॉलेज बेस प्रबंधित करें",
+    "basicInfo": "बुनियादी जानकारी",
+    "selectType": "प्रकार चुनें",
+    "typeFileShort": "फ़ाइल",
+    "typeWebsiteShort": "वेबसाइट",
+    "typeQAShort": "QA",
+    "typeTmall": "Tmall",
+    "typeTmallShort": "Tmall उत्पाद",
+    "typeTaobao": "Taobao",
+    "typeTaobaoShort": "Taobao उत्पाद",
+    "typeJD": "JD.com",
+    "typeJDShort": "JD उत्पाद",
+    "comingSoon": "जल्द आ रहा है",
+    "comingSoonBadge": "जल्द आ रहा है",
+    "selectModal": {
+      "title": "नॉलेज बेस चुनें",
+      "searchPlaceholder": "नॉलेज बेस खोजें...",
+      "selectedSummary": "{{selected}} चयनित / कुल {{total}}",
+      "loading": "नॉलेज बेस लोड हो रहे हैं...",
+      "noMatch": "कोई मेल खाता नॉलेज बेस नहीं मिला",
+      "confirmSelection": "चयन की पुष्टि करें ({{count}})",
+      "loadFailedDesc": "नॉलेज बेस सूची लोड नहीं हो सकी, कृपया बाद में पुनः प्रयास करें",
+      "retryFailedDesc": "नॉलेज बेस सूची लोड नहीं हो सकी, कृपया अपना नेटवर्क कनेक्शन जाँचें"
+    },
+    "validation": {
+      "nameRequired": "नाम आवश्यक है",
+      "nameMin": "नाम कम से कम 2 अक्षरों का होना चाहिए",
+      "nameMax": "नाम 50 अक्षरों से अधिक नहीं हो सकता",
+      "descRequired": "विवरण आवश्यक है",
+      "descMin": "विवरण कम से कम 5 अक्षरों का होना चाहिए",
+      "descMax": "विवरण 500 अक्षरों से अधिक नहीं हो सकता",
+      "urlRequired": "वेबसाइट URL आवश्यक है",
+      "urlInvalid": "कृपया एक मान्य URL दर्ज करें"
+    },
+    "type": "प्रकार",
+    "typeFile": "फ़ाइल",
+    "typeWebsite": "वेबसाइट",
+    "typeQA": "QA जोड़े",
+    "typeFileDesc": "नॉलेज बेस बनाने के लिए दस्तावेज़ फ़ाइलें अपलोड करें",
+    "typeWebsiteDesc": "नॉलेज बेस बनाने के लिए वेबसाइट सामग्री क्रॉल करें",
+    "typeQADesc": "नॉलेज बेस बनाने के लिए QA जोड़े बनाएँ",
+    "typeReadonly": "बनाने के बाद नॉलेज बेस का प्रकार बदला नहीं जा सकता",
+    "advancedSettings": "उन्नत सेटिंग्स",
+    "metadata": {
+      "fetch": "जानकारी प्राप्त करें",
+      "fetching": "जानकारी प्राप्त हो रही है...",
+      "fetchSuccess": "वेबसाइट जानकारी प्राप्त हुई",
+      "fetchFailed": "वेबसाइट जानकारी प्राप्त करना विफल रहा",
+      "hint": "URL दर्ज करने के बाद वेबसाइट का शीर्षक और विवरण स्वतः प्राप्त किया जाएगा",
+      "defaultDescription": "{{domain}} से नॉलेज बेस"
+    },
+    "crawl": {
+      "title": "क्रॉल कॉन्फ़िगरेशन",
+      "info": "क्रॉल कॉन्फ़िगरेशन",
+      "urlSection": "वेबसाइट URL",
+      "startUrl": "वेबसाइट URL",
+      "startUrlPlaceholder": "https://example.com",
+      "maxPages": "अधिकतम पेज",
+      "maxPagesHint": "1-10000, डिफ़ॉल्ट 100",
+      "maxDepth": "अधिकतम गहराई",
+      "maxDepthHint": "1-10, डिफ़ॉल्ट 3",
+      "advancedOptions": "उन्नत विकल्प",
+      "includePatterns": "शामिल पैटर्न",
+      "includePatternsPlaceholder": "/docs/*, /blog/*",
+      "includePatternsHint": "अल्पविराम से अलग URL पैटर्न, केवल मेल खाते पेज क्रॉल करें",
+      "excludePatterns": "बाहर रखे गए पैटर्न",
+      "excludePatternsPlaceholder": "/admin/*, /login/*",
+      "excludePatternsHint": "अल्पविराम से अलग URL पैटर्न, मेल खाते पेज छोड़ें",
+      "renderJs": "JavaScript रेंडर करें",
+      "renderJsHint": "पेज का JavaScript चलाने के लिए सक्षम करें, डायनामिक सामग्री वाली वेबसाइट के लिए उपयुक्त",
+      "followExternal": "बाहरी लिंक का अनुसरण करें",
+      "respectRobots": "robots.txt का सम्मान करें",
+      "waitTime": "प्रतीक्षा समय (सेकंड)",
+      "waitTimeHint": "पेज लोड होने के बाद प्रतीक्षा का समय, डायनामिक सामग्री के लिए",
+      "start": "क्रॉल शुरू करें",
+      "cancel": "क्रॉल रद्द करें",
+      "started": "क्रॉल शुरू हुआ",
+      "startedDesc": "वेबसाइट क्रॉल जॉब शुरू हो गया है",
+      "startFailed": "क्रॉल शुरू करना विफल रहा",
+      "startFailedDesc": "क्रॉल जॉब शुरू करते समय एक त्रुटि हुई",
+      "cancelled": "क्रॉल रद्द हुआ",
+      "cancelledDesc": "वेबसाइट क्रॉल जॉब रद्द कर दिया गया है",
+      "cancelFailed": "रद्द करना विफल रहा",
+      "cancelFailedDesc": "क्रॉल जॉब रद्द करते समय एक त्रुटि हुई",
+      "noConfig": "कोई क्रॉल कॉन्फ़िगरेशन नहीं",
+      "noConfigDesc": "इस नॉलेज बेस में कोई क्रॉल कॉन्फ़िगरेशन नहीं है",
+      "status": {
+        "pending": "लंबित",
+        "crawling": "क्रॉल हो रहा है",
+        "processing": "प्रोसेस हो रहा है",
+        "completed": "पूर्ण",
+        "failed": "विफल",
+        "cancelled": "रद्द"
+      }
+    },
+    "website": {
+      "loading": "लोड हो रहा है...",
+      "loadFailed": "नॉलेज बेस लोड करना विफल रहा",
+      "loadPagesFailed": "पेज लोड करना विफल रहा",
+      "noPages": "अभी तक कोई पेज क्रॉल नहीं हुआ",
+      "tabs": {
+        "pages": "पेज"
+      },
+      "columns": {
+        "url": "URL",
+        "title": "शीर्षक",
+        "status": "स्थिति",
+        "depth": "गहराई",
+        "crawledAt": "क्रॉल किया गया",
+        "actions": "कार्रवाइयाँ"
+      },
+      "pageStatus": {
+        "pending": "लंबित",
+        "crawling": "क्रॉल हो रहा है",
+        "fetched": "प्राप्त",
+        "extracted": "निकाला गया",
+        "processing": "प्रोसेस हो रहा है",
+        "processed": "प्रोसेस हो गया",
+        "failed": "विफल",
+        "skipped": "छोड़ा गया"
+      },
+      "progress": {
+        "title": "क्रॉल प्रगति",
+        "crawling": "क्रॉल हो रहा है",
+        "completed": "पूर्ण",
+        "total": "कुल पेज",
+        "pending": "लंबित",
+        "crawled": "क्रॉल किए गए",
+        "processing": "प्रोसेस हो रहे हैं",
+        "processed": "प्रोसेस हुए",
+        "failed": "विफल"
+      },
+      "addPage": {
+        "button": "पेज जोड़ें",
+        "title": "पेज मैन्युअल रूप से जोड़ें",
+        "urlLabel": "पेज URL",
+        "urlPlaceholder": "जोड़ने के लिए पेज URL दर्ज करें",
+        "parentPageLabel": "पैरेंट पेज",
+        "noParent": "कोई नहीं (रूट पेज के रूप में जोड़ें)",
+        "parentPageHint": "पैरेंट पेज चुनें, नया पेज उसके चाइल्ड के रूप में जोड़ा जाएगा",
+        "maxDepthLabel": "क्रॉल गहराई",
+        "depthOption0": "केवल यह पेज (गहराई 0)",
+        "depthOption1": "सीधे लिंक शामिल करें (गहराई 1)",
+        "depthOption2": "गहराई 2",
+        "depthOption3": "गहराई 3",
+        "depthOption5": "गहराई 5",
+        "depthOption10": "गहराई 10 (अधिकतम)",
+        "hint": "एक मान्य URL दर्ज करें, पेज क्रॉल क्यू में जोड़ दिया जाएगा",
+        "submit": "जोड़ें",
+        "success": "पेज सफलतापूर्वक जोड़ा गया",
+        "skipped": "पेज पहले से मौजूद है",
+        "failed": "पेज जोड़ना विफल रहा"
+      },
+      "deletePage": {
+        "button": "हटाएँ",
+        "success": "पेज सफलतापूर्वक हटाया गया",
+        "failed": "पेज हटाना विफल रहा"
+      },
+      "recrawlPage": {
+        "button": "फिर से क्रॉल करें",
+        "success": "पुनः क्रॉल शुरू हुआ",
+        "skipped": "पेज पहले से क्रॉल हो रहा है",
+        "failed": "पेज को फिर से क्रॉल करना विफल रहा"
+      },
+      "crawlDeeper": {
+        "button": "और गहराई तक क्रॉल करें",
+        "notReady": "पेज अभी प्रोसेस नहीं हुआ है, और गहराई तक क्रॉल नहीं किया जा सकता",
+        "success": "गहरा क्रॉल शुरू हुआ",
+        "successDesc": "{{added}} पेज जोड़े गए, {{found}} लिंक मिले",
+        "noNewPages": "कोई नया पेज नहीं मिला",
+        "failed": "गहरा क्रॉल विफल रहा"
+      }
+    },
+    "qa": {
+      "loading": "लोड हो रहा है...",
+      "loadFailed": "नॉलेज बेस लोड करना विफल रहा",
+      "loadPairsFailed": "QA जोड़े लोड करना विफल रहा",
+      "noPairs": "अभी कोई QA जोड़ा नहीं",
+      "add": "QA जोड़ा जोड़ें",
+      "addTitle": "QA जोड़ा जोड़ें",
+      "addSuccess": "QA जोड़ा सफलतापूर्वक जोड़ा गया",
+      "addFailed": "QA जोड़ा जोड़ना विफल रहा",
+      "editTitle": "QA जोड़ा संपादित करें",
+      "editSuccess": "QA जोड़ा सफलतापूर्वक अपडेट किया गया",
+      "editFailed": "QA जोड़ा अपडेट करना विफल रहा",
+      "deleteSuccess": "QA जोड़ा सफलतापूर्वक हटाया गया",
+      "deleteFailed": "QA जोड़ा हटाना विफल रहा",
+      "import": "आयात करें",
+      "importTitle": "QA जोड़े आयात करें",
+      "importFormat": "प्रारूप चुनें",
+      "importData": "डेटा पेस्ट करें",
+      "importButton": "आयात शुरू करें",
+      "importSuccess": "{{count}} QA जोड़े सफलतापूर्वक आयात किए गए",
+      "importFailed": "आयात विफल रहा",
+      "importJsonPlaceholder": "JSON ऐरे डेटा पेस्ट करें...",
+      "importCsvPlaceholder": "CSV डेटा पेस्ट करें...",
+      "importJsonFormat": "JSON प्रारूप उदाहरण:",
+      "importCsvFormat": "CSV प्रारूप उदाहरण:",
+      "searchPlaceholder": "प्रश्न या उत्तर खोजें...",
+      "allCategories": "सभी श्रेणियाँ",
+      "allStatuses": "सभी स्थितियाँ",
+      "pagination": "पेज {{current}} / {{total}}",
+      "stats": {
+        "total": "कुल QA जोड़े",
+        "pending": "लंबित",
+        "processed": "प्रोसेस हुए",
+        "failed": "विफल"
+      },
+      "status": {
+        "pending": "लंबित",
+        "processing": "प्रोसेस हो रहा है",
+        "processed": "प्रोसेस हुआ",
+        "failed": "विफल"
+      },
+      "form": {
+        "question": "प्रश्न",
+        "questionPlaceholder": "प्रश्न दर्ज करें...",
+        "answer": "उत्तर",
+        "answerPlaceholder": "उत्तर दर्ज करें...",
+        "category": "श्रेणी",
+        "categoryPlaceholder": "श्रेणी दर्ज करें (वैकल्पिक)",
+        "tags": "टैग",
+        "tagsPlaceholder": "टैग दर्ज करें, अल्पविराम से अलग करें",
+        "tagsHint": "कई टैग अल्पविराम से अलग करें"
+      },
+      "results": "QA जोड़े",
+      "segmentCount": "कुल {{count}} QA जोड़े",
+      "searchSegments": "सेगमेंट सामग्री खोजें...",
+      "loadingSegments": "सेगमेंट परिणाम लोड हो रहे हैं...",
+      "noResults": "कोई मेल खाता सेगमेंट नहीं मिला",
+      "noSegments": "इस फ़ाइल के लिए अभी कोई Q&A सेगमेंट परिणाम नहीं हैं",
+      "tryDifferentSearch": "कोई दूसरा कीवर्ड आज़माएँ",
+      "ensureQaMode": "सुनिश्चित करें कि अपलोड करते समय Q&A विभाजन मोड सक्षम था",
+      "chars": "अक्षर",
+      "editSegment": "सेगमेंट संपादित करें"
+    },
+    "icons": {
+      "book": "पुस्तक",
+      "fileText": "दस्तावेज़",
+      "database": "डेटाबेस",
+      "brain": "बुद्धिमत्ता",
+      "lightbulb": "विचार",
+      "bookOpen": "खुली पुस्तक",
+      "library": "लाइब्रेरी",
+      "graduationCap": "शिक्षा",
+      "bookmark": "बुकमार्क",
+      "archive": "आर्काइव",
+      "folderOpen": "फ़ोल्डर",
+      "hardDrive": "स्टोरेज",
+      "layers": "परतें",
+      "package": "पैकेज",
+      "briefcase": "ब्रीफ़केस",
+      "target": "लक्ष्य",
+      "zap": "बिजली",
+      "star": "तारा",
+      "heart": "दिल",
+      "globe": "वैश्विक"
+    },
+    "list": {
+      "columns": {
+        "name": "नाम",
+        "type": "प्रकार",
+        "documents": "दस्तावेज़",
+        "lastUpdated": "अंतिम अपडेट",
+        "actions": "कार्रवाइयाँ"
+      },
+      "loadFailedDesc": "नॉलेज बेस प्राप्त करते समय एक त्रुटि हुई"
+    },
+    "empty": {
+      "title": "कोई नॉलेज बेस नहीं",
+      "description": "शुरू करने के लिए अपना पहला नॉलेज बेस बनाएँ"
+    },
+    "error": {
+      "clear": "त्रुटि साफ़ करें"
+    },
+    "confirmDelete": {
+      "message": "क्या आप वाकई नॉलेज बेस \"{{name}}\" को हटाना चाहते हैं? यह कार्रवाई पूर्ववत नहीं की जा सकती।"
+    },
+    "file": {
+      "confirmDelete": {
+        "message": "क्या आप वाकई फ़ाइल \"{{name}}\" को हटाना चाहते हैं? यह कार्रवाई पूर्ववत नहीं की जा सकती।"
+      }
+    },
+    "detail": {
+      "title": "नॉलेज बेस विवरण",
+      "backToList": "नॉलेज बेस सूची पर वापस जाएँ",
+      "refresh": "रीफ़्रेश करें",
+      "uploadDocument": "दस्तावेज़ अपलोड करें",
+      "searchPlaceholder": "दस्तावेज़ खोजें...",
+      "filter": "फ़िल्टर",
+      "allTypes": "सभी प्रकार",
+      "totalDocuments": "कुल: {{count}} दस्तावेज़",
+      "totalSize": "आकार: {{size}} MB",
+      "lastUpdated": "अंतिम अपडेट: {{date}}",
+      "documentName": "दस्तावेज़ का नाम",
+      "fileSize": "फ़ाइल आकार",
+      "uploadTime": "अपलोड समय",
+      "status": "स्थिति",
+      "actions": "कार्रवाइयाँ",
+      "processed": "प्रोसेस हुआ",
+      "processing": "प्रोसेस हो रहा है",
+      "chunking": "चंकिंग",
+      "embedding": "एम्बेडिंग",
+      "error": "त्रुटि",
+      "pending": "लंबित",
+      "archived": "संग्रहीत",
+      "download": "डाउनलोड करें",
+      "preview": "पूर्वावलोकन",
+      "delete": "हटाएँ",
+      "noDocuments": "कोई दस्तावेज़ नहीं",
+      "noDocumentsDesc": "इस नॉलेज बेस में अभी कोई दस्तावेज़ अपलोड नहीं हुआ है",
+      "startUploading": "दस्तावेज़ अपलोड करना शुरू करें",
+      "loading": "लोड हो रहा है...",
+      "loadingDetails": "नॉलेज बेस विवरण लोड हो रहे हैं...",
+      "loadFailedDefault": "नॉलेज बेस विवरण लोड करना विफल रहा",
+      "loadFailedDesc": "नॉलेज बेस विवरण लोड करते समय एक त्रुटि हुई",
+      "notFound": {
+        "title": "नॉलेज बेस नहीं मिला",
+        "description": "कृपया जाँचें कि लिंक सही है"
+      },
+      "fileServiceNotInitialized": "फ़ाइल सेवा आरंभ नहीं हुई",
+      "viewQA": "Q&A जोड़े देखें"
+    },
+    "upload": {
+      "title": "फ़ाइलें यहाँ खींचें या अपलोड करने के लिए क्लिक करें",
+      "supportedFormats": "PDF, Word, Excel, PowerPoint, टेक्स्ट फ़ाइलें, Markdown, HTML समर्थित",
+      "selectFiles": "फ़ाइलें चुनें",
+      "uploading": "अपलोड हो रहा है...",
+      "uploadProgress": "अपलोड प्रगति",
+      "uploadComplete": "अपलोड पूर्ण",
+      "uploadFailed": "अपलोड विफल",
+      "maxFileSize": "फ़ाइल आकार 10MB से अधिक नहीं हो सकता",
+      "unsupportedFormat": "असमर्थित फ़ाइल प्रारूप",
+      "multipleSuccessMessage": "{{count}} फ़ाइलें सफलतापूर्वक अपलोड हुईं",
+      "partialSuccess": "आंशिक अपलोड सफल",
+      "partialSuccessMessage": "{{success}} फ़ाइलें सफलतापूर्वक अपलोड हुईं, {{failed}} फ़ाइलें विफल रहीं",
+      "checkingEmbedding": "एम्बेडिंग मॉडल कॉन्फ़िगरेशन जाँचा जा रहा है...",
+      "noEmbeddingModel": {
+        "title": "⚠️ फ़ाइलें अपलोड नहीं की जा सकतीं",
+        "description": "कोई एम्बेडिंग मॉडल कॉन्फ़िगर नहीं है। नॉलेज बेस फ़ाइलों के वेक्टराइज़ेशन के लिए एम्बेडिंग मॉडल आवश्यक है। कृपया पहले AI प्रदाता सेटिंग्स में डिफ़ॉल्ट एम्बेडिंग मॉडल कॉन्फ़िगर करें।",
+        "goToSettings": "सेटिंग्स पर जाएँ"
+      }
+    },
+    "embedding": {
+      "error": "त्रुटि",
+      "noProject": "वर्तमान प्रोजेक्ट नहीं मिला",
+      "checkFailed": "जाँच विफल रही",
+      "checkFailedDesc": "एम्बेडिंग मॉडल कॉन्फ़िगरेशन सत्यापित नहीं हो सका। कृपया सुनिश्चित करें कि एम्बेडिंग मॉडल कॉन्फ़िगर है।",
+      "requiredTitle": "एम्बेडिंग मॉडल आवश्यक है",
+      "requiredDesc": "नॉलेज बेस बनाने के लिए डिफ़ॉल्ट एम्बेडिंग मॉडल कॉन्फ़िगर होना आवश्यक है। एम्बेडिंग मॉडल दस्तावेज़ सामग्री को सिमेंटिक खोज के लिए वेक्टर में बदलता है।",
+      "configPath": "कॉन्फ़िगरेशन पाथ",
+      "configPathDesc": "सेटिंग्स → मॉडल प्रदाता → डिफ़ॉल्ट एम्बेडिंग मॉडल सेट करें",
+      "goToConfig": "कॉन्फ़िगरेशन पर जाएँ"
+    },
+    "update": "नॉलेज बेस अपडेट करें",
+    "search": {
+      "failed": "खोज विफल रही",
+      "title": "खोज परीक्षण",
+      "query": "परीक्षण टेक्स्ट",
+      "placeholder": "परीक्षण के लिए कोई प्रश्न दर्ज करें...",
+      "mode": "खोज मोड",
+      "results": "खोज परिणाम"
+    },
+    "tabs": {
+      "documents": "दस्तावेज़",
+      "searchTest": "खोज परीक्षण"
+    },
+    "table": {
+      "statusColumn": "स्थिति",
+      "status": {
+        "published": "प्रकाशित",
+        "draft": "ड्राफ़्ट",
+        "archived": "संग्रहीत",
+        "unknown": "अज्ञात"
+      },
+      "emptyTitle": "अभी कोई नॉलेज बेस नहीं",
+      "emptyHint": "अपना पहला नॉलेज बेस बनाने के लिए \"नया नॉलेज बेस\" बटन पर क्लिक करें",
+      "title": "शीर्षक",
+      "category": "श्रेणी",
+      "views": "व्यूज़",
+      "updatedAt": "अपडेट किया गया",
+      "actions": "कार्रवाइयाँ",
+      "more": "अधिक"
+    },
+    "documentList": {
+      "downloading": "डाउनलोड हो रहा है...",
+      "download": "फ़ाइल डाउनलोड करें",
+      "deleting": "हटाया जा रहा है...",
+      "deleteFile": "फ़ाइल हटाएँ"
+    },
+    "fileUpload": {
+      "uploading": "अपलोड हो रहा है..."
+    },
+    "filters": {
+      "searchPlaceholder": "नॉलेज बेस खोजें...",
+      "filter": "फ़िल्टर",
+      "quickFilter": "त्वरित फ़िल्टर"
+    },
+    "fileTypes": {
+      "text": "टेक्स्ट"
+    },
+    "row": {
+      "files": "फ़ाइलें",
+      "share": "साझा करें"
+    },
+    "searchTest": {
+      "subtitle": "नॉलेज बेस रिट्रीवल का परीक्षण करें और AI के उत्तर देते समय उपयोग होने वाले खोज व्यवहार का अनुकरण करें",
+      "searching": "खोज रहा है...",
+      "startSearch": "खोज शुरू करें",
+      "resultCount": "परिणामों की संख्या",
+      "recommended": "अनुशंसित",
+      "contentTypes": "सामग्री प्रकार",
+      "deselectAll": "सभी अचयनित करें",
+      "selectAll": "सभी चुनें",
+      "selectAtLeastOne": "कृपया कम से कम एक सामग्री प्रकार चुनें",
+      "aboutScore": "स्कोर के बारे में",
+      "scoreHigh": "सबसे प्रासंगिक, पहले स्थान पर",
+      "scoreMid": "अत्यधिक प्रासंगिक",
+      "scoreLow": "मध्यम प्रासंगिक",
+      "scoreNote": "स्कोर 0-1 सीमा में सामान्यीकृत किए जाते हैं। हाइब्रिड खोज सिमेंटिक समानता और कीवर्ड मिलान को जोड़ती है और RRF एल्गोरिदम से रैंक करती है।",
+      "elapsed": "लगा समय",
+      "total": "कुल",
+      "items": "आइटम",
+      "noMatches": "कोई मेल खाता परिणाम नहीं मिला",
+      "ready": "तैयार",
+      "tryOtherKeywords": "अलग कीवर्ड आज़माएँ या खोज मोड बदलें",
+      "startHint": "परीक्षण शुरू करने के लिए बाईं ओर कोई प्रश्न दर्ज करें",
+      "document": "दस्तावेज़",
+      "unknownSource": "अज्ञात स्रोत",
+      "untitled": "शीर्षकहीन",
+      "semanticRank": "सिमेंटिक रैंक",
+      "keywordRank": "कीवर्ड रैंक",
+      "modes": {
+        "hybrid": {
+          "name": "हाइब्रिड खोज",
+          "description": "सिमेंटिक समझ को कीवर्ड मिलान के साथ जोड़ता है (अनुशंसित)"
+        },
+        "embedding": {
+          "name": "सिमेंटिक खोज",
+          "description": "वेक्टर समानता पर आधारित; सिमेंटिक अर्थ समझता है"
+        },
+        "fulltext": {
+          "name": "फ़ुल-टेक्स्ट खोज",
+          "description": "सटीक खोज के लिए कीवर्ड मिलान पर आधारित"
+        }
+      },
+      "types": {
+        "qa_pair": "Q&A जोड़े",
+        "paragraph": "अनुच्छेद",
+        "heading": "शीर्षक",
+        "table": "तालिका",
+        "list": "सूची",
+        "code": "कोड ब्लॉक"
+      }
+    },
+    "store": {
+      "fetchFailed": "नॉलेज बेस सूची प्राप्त करना विफल रहा",
+      "currentUser": "वर्तमान उपयोगकर्ता",
+      "createFailed": "नॉलेज बेस बनाना विफल रहा",
+      "updateFailed": "नॉलेज बेस अपडेट करना विफल रहा",
+      "deleteFailed": "नॉलेज बेस हटाना विफल रहा",
+      "copySuffix": "कॉपी"
+    }
+  },
+  "channels": {
+    "title": "प्लेटफ़ॉर्म प्रबंधन",
+    "custom": "कस्टम प्लेटफ़ॉर्म",
+    "config": "कॉन्फ़िगरेशन",
+    "status": "स्थिति",
+    "active": "सक्रिय",
+    "inactive": "निष्क्रिय",
+    "placeholder": {
+      "selectOrCreate": "कृपया बाईं ओर से कोई प्लेटफ़ॉर्म चुनें, या नया बनाने के लिए \"+\" पर क्लिक करें।"
+    }
+  },
+  "footer": {
+    "copyright": "© 2025 Pelatis CS. सर्वाधिकार सुरक्षित।"
+  },
+  "brand": {
+    "name": "Pelatis CS"
+  },
+  "comingSoon": {
+    "title": "जल्द आ रहा है",
+    "description": "यह सुविधा विकासाधीन है। बने रहें..."
+  },
+  "visitor": {
+    "pagination": {
+      "previous": "पिछला",
+      "next": "अगला"
+    },
+    "management": {
+      "title": "विज़िटर प्रबंधन",
+      "subtitle": "सभी प्लेटफ़ॉर्म के विज़िटर की जानकारी देखें और प्रबंधित करें",
+      "totalVisitors": "कुल विज़िटर",
+      "errorTitle": "लोड विफल रहा"
+    },
+    "table": {
+      "visitor": "विज़िटर",
+      "platform": "प्लेटफ़ॉर्म",
+      "lastVisit": "अंतिम विज़िट",
+      "lastOnline": "अंतिम ऑनलाइन",
+      "tags": "टैग",
+      "actions": "कार्रवाइयाँ",
+      "empty": "कोई विज़िटर डेटा नहीं"
+    },
+    "filters": {
+      "search": {
+        "placeholder": "नाम, ईमेल या फ़ोन खोजें..."
+      },
+      "platform": {
+        "all": "सभी प्लेटफ़ॉर्म"
+      },
+      "tags": {
+        "all": "सभी टैग",
+        "select": "टैग के अनुसार फ़िल्टर करें",
+        "selected": "चयनित टैग"
+      },
+      "sort": {
+        "lastVisit": "अंतिम सक्रिय",
+        "createdAt": "सबसे नए"
+      },
+      "online": {
+        "all": "सभी स्थितियाँ",
+        "online": "ऑनलाइन",
+        "offline": "ऑफ़लाइन"
+      }
+    },
+    "detail": {
+      "title": "विज़िटर विवरण",
+      "basicInfo": "बुनियादी जानकारी",
+      "email": "ईमेल",
+      "phone": "फ़ोन",
+      "company": "कंपनी",
+      "jobTitle": "पद",
+      "source": "स्रोत",
+      "note": "टिप्पणी",
+      "systemInfo": "सिस्टम जानकारी",
+      "platform": "प्लेटफ़ॉर्म",
+      "firstVisit": "पहली विज़िट",
+      "lastVisit": "अंतिम विज़िट"
+    },
+    "unknown": "अज्ञात विज़िटर",
+    "fallbackName": "विज़िटर {{suffix}}",
+    "onlineStatus": {
+      "online": "ऑनलाइन",
+      "justNow": "अभी",
+      "minutesAgo": "{{count}} मिनट पहले",
+      "hoursAgo": "{{count}} घंटे पहले",
+      "daysAgo": "{{count}} दिन पहले",
+      "weeksAgo": "{{count}} सप्ताह पहले"
+    },
+    "ai": {
+      "emotion": {
+        "neutral": "तटस्थ"
+      }
+    },
+    "system": {
+      "defaultSource": "आधिकारिक वेबसाइट",
+      "fields": {
+        "platform": "प्लेटफ़ॉर्म",
+        "sourcePage": "स्रोत पेज",
+        "browser": "ब्राउज़र",
+        "os": "ऑपरेटिंग सिस्टम",
+        "language": "भाषा",
+        "timezone": "समय क्षेत्र",
+        "ipAddress": "IP पता",
+        "location": "स्थान",
+        "firstSeen": "पहली बार देखा गया"
+      },
+      "empty": "कोई सिस्टम जानकारी नहीं"
+    },
+    "sections": {
+      "basicInfo": "बुनियादी जानकारी",
+      "aiInsights": "AI अंतर्दृष्टि",
+      "systemInfo": "सिस्टम जानकारी",
+      "recentActivity": "हाल की गतिविधि",
+      "aiPersona": "AI पर्सोना",
+      "relatedTickets": "संबंधित टिकट"
+    },
+    "aiInsights": {
+      "satisfactionScore": "संतुष्टि स्कोर",
+      "emotionScore": "भावना स्कोर",
+      "intent": "आशय",
+      "insightSummary": "अंतर्दृष्टि सारांश",
+      "currentSatisfaction": "वर्तमान संतुष्टि",
+      "currentEmotion": "वर्तमान भावना"
+    },
+    "activity": {
+      "noActivity": "अभी कोई गतिविधि नहीं",
+      "noTickets": "कोई संबंधित टिकट नहीं",
+      "duration": {
+        "seconds": "अवधि {{count}} सेकंड",
+        "minutes": "अवधि {{count}} मिनट",
+        "minutesSeconds": "अवधि {{m}} मिनट {{s}} सेकंड"
+      }
+    },
+    "persona": {
+      "noData": "कोई पर्सोना डेटा नहीं"
+    },
+    "load": {
+      "failedTitle": "विज़िटर जानकारी लोड करना विफल रहा",
+      "failedDesc": "विज़िटर डेटा लोड करना विफल रहा"
+    },
+    "ui": {
+      "loading": "विज़िटर जानकारी लोड हो रही है...",
+      "loadFailed": "लोड विफल रहा",
+      "selectConversation": "विज़िटर जानकारी देखने के लिए कोई चैट चुनें",
+      "noInfo": "कोई विज़िटर जानकारी नहीं"
+    },
+    "fields": {
+      "name": "नाम",
+      "nickname": "उपनाम",
+      "email": "ईमेल",
+      "phone": "फ़ोन",
+      "note": "टिप्पणी",
+      "field": "फ़ील्ड"
+    },
+    "update": {
+      "successTitle": "सफलतापूर्वक अपडेट किया गया",
+      "fieldUpdated": "{{field}} अपडेट हो गया है",
+      "failedTitle": "अपडेट विफल रहा",
+      "failedDesc": "अपडेट विफल रहा"
+    },
+    "validation": {
+      "invalidEmail": "कृपया एक मान्य ईमेल पता दर्ज करें",
+      "invalidPhone": "कृपया एक मान्य फ़ोन नंबर दर्ज करें"
+    },
+    "avatar": {
+      "uploadTitle": "अवतार अपलोड करने के लिए क्लिक करें",
+      "cropTitle": "अवतार क्रॉप करें",
+      "invalidTypeTitle": "अमान्य फ़ाइल प्रकार",
+      "invalidTypeDesc": "कृपया JPEG, PNG, GIF या WebP छवि चुनें",
+      "fileTooLargeTitle": "फ़ाइल बहुत बड़ी है",
+      "fileTooLargeDesc": "छवि का आकार 5MB से अधिक नहीं होना चाहिए",
+      "uploadSuccessTitle": "अपलोड सफल",
+      "uploadSuccessDesc": "विज़िटर का अवतार अपडेट हो गया है",
+      "uploadFailedTitle": "अपलोड विफल",
+      "uploadFailedDesc": "अपलोड विफल रहा"
+    },
+    "customAttr": {
+      "addButton": "कस्टम एट्रिब्यूट जोड़ें",
+      "namePlaceholder": "एट्रिब्यूट का नाम",
+      "valuePlaceholder": "एट्रिब्यूट का मान",
+      "templates": {
+        "company": "कंपनी",
+        "jobTitle": "पद",
+        "department": "विभाग",
+        "industry": "उद्योग",
+        "sourceChannel": "स्रोत चैनल",
+        "budgetRange": "बजट सीमा",
+        "decisionAuthority": "निर्णय अधिकार",
+        "urgency": "तात्कालिकता",
+        "note": "टिप्पणी"
+      },
+      "addSuccessTitle": "सफलतापूर्वक जोड़ा गया",
+      "addSuccessDesc": "कस्टम एट्रिब्यूट जोड़ा गया",
+      "addFailedTitle": "जोड़ना विफल रहा",
+      "addFailedDesc": "जोड़ना विफल रहा",
+      "updateSuccessTitle": "सफलतापूर्वक अपडेट किया गया",
+      "updateSuccessDesc": "कस्टम एट्रिब्यूट अपडेट किया गया",
+      "updateFailedTitle": "अपडेट विफल रहा",
+      "updateFailedDesc": "अपडेट विफल रहा",
+      "deleteSuccessTitle": "सफलतापूर्वक हटाया गया",
+      "deleteSuccessDesc": "कस्टम एट्रिब्यूट हटाया गया",
+      "deleteFailedTitle": "हटाना विफल रहा",
+      "deleteFailedDesc": "हटाना विफल रहा"
+    },
+    "tags": {
+      "title": "टैग",
+      "addButton": "जोड़ें",
+      "editTagTitle": "टैग संपादित करें",
+      "deleteTagTitle": "टैग हटाएँ",
+      "inputPlaceholder": "टैग का नाम दर्ज करें",
+      "editPanel": {
+        "weightLabel": "भार (0-10)",
+        "colorLabel": "रंग"
+      },
+      "colorPicker": {
+        "title": "रंग चुनें"
+      },
+      "weightTitle": "भार: {{weight}}",
+      "limitReached": "टैग सीमा पूरी हो गई ({{max}} अधिकतम)",
+      "common": {
+        "title": "सामान्य टैग:",
+        "loading": "लोड हो रहा है",
+        "loadFailed": "सामान्य टैग प्राप्त करना विफल रहा",
+        "empty": "कोई टैग उपलब्ध नहीं"
+      },
+      "colors": {
+        "red": "लाल",
+        "orange": "नारंगी",
+        "yellow": "पीला",
+        "green": "हरा",
+        "emerald": "पन्ना हरा",
+        "teal": "टील",
+        "blue": "नीला",
+        "indigo": "नील",
+        "purple": "बैंगनी",
+        "pink": "गुलाबी",
+        "gray": "धूसर"
+      },
+      "addSuccessTitle": "सफलतापूर्वक जोड़ा गया",
+      "addSuccessDesc": "टैग जोड़ा गया",
+      "addFailedTitle": "जोड़ना विफल रहा",
+      "addFailedDesc": "टैग जोड़ना विफल रहा",
+      "updateSuccessTitle": "सफलतापूर्वक अपडेट किया गया",
+      "updateSuccessDesc": "टैग अपडेट किया गया",
+      "updateFailedTitle": "अपडेट विफल रहा",
+      "updateFailedDesc": "टैग अपडेट करना विफल रहा",
+      "removeSuccessTitle": "सफलतापूर्वक हटाया गया",
+      "removeSuccessDesc": "टैग हटाया गया",
+      "removeFailedTitle": "हटाना विफल रहा",
+      "removeFailedDesc": "टैग हटाना विफल रहा",
+      "errors": {
+        "notFound": "टैग नहीं मिला",
+        "noTagId": "टैग ID प्राप्त करना विफल रहा"
+      }
+    },
+    "defaultName": "विज़िटर"
+  },
+  "errors": {
+    "incompleteVisitorInfo": "विज़िटर की जानकारी अधूरी है",
+    "missingVisitorId": "visitor_id गायब है",
+    "networkFailed": "नेटवर्क कनेक्शन विफल रहा, कृपया अपना नेटवर्क जाँचें और पुनः प्रयास करें",
+    "timeout": "अनुरोध का समय समाप्त हो गया, कृपया बाद में पुनः प्रयास करें",
+    "badRequest": "अमान्य अनुरोध पैरामीटर, कृपया अपना इनपुट जाँचें",
+    "unauthorized": "प्रमाणीकरण विफल रहा, कृपया फिर से लॉग इन करें",
+    "forbidden": "अपर्याप्त अनुमतियाँ, यह कार्रवाई नहीं की जा सकती",
+    "notFound": "अनुरोधित संसाधन मौजूद नहीं है",
+    "conflict": "संसाधन टकराव, कृपया पेज रीफ़्रेश करें और पुनः प्रयास करें",
+    "fileTooLarge": "फ़ाइल बहुत बड़ी है, कृपया छोटी फ़ाइल चुनें",
+    "unsupportedFileType": "असमर्थित फ़ाइल प्रकार",
+    "serverError": "सर्वर त्रुटि, कृपया बाद में पुनः प्रयास करें",
+    "unauthorizedRetry": "प्रमाणीकरण विफल रहा, कृपया फिर से लॉग इन करके पुनः प्रयास करें",
+    "tooManyRequests": "बहुत अधिक अनुरोध, कृपया बाद में पुनः प्रयास करें",
+    "internalServerError": "आंतरिक सर्वर त्रुटि, कृपया बाद में पुनः प्रयास करें",
+    "serviceUnavailable": "सेवा अस्थायी रूप से अनुपलब्ध है, कृपया बाद में पुनः प्रयास करें",
+    "unknown": "एक अज्ञात त्रुटि हुई, कृपया बाद में पुनः प्रयास करें"
+  },
+  "search": {
+    "tabs": {
+      "all": "सभी",
+      "visitors": "विज़िटर",
+      "messages": "संदेश"
+    },
+    "placeholder": "विज़िटर या संदेश खोजें",
+    "clear": "साफ़ करें",
+    "aria": {
+      "tablist": "खोज श्रेणियाँ"
+    },
+    "errorGeneric": "खोज विफल रही, कृपया बाद में पुनः प्रयास करें",
+    "toasts": {
+      "notFoundTitle": "बातचीत नहीं मिली",
+      "noConversationInfo": "इस परिणाम में बातचीत की जानकारी नहीं है",
+      "notInRecent": "यह बातचीत हाल की सूची में नहीं है। रीफ़्रेश करके देखें।",
+      "incompleteVisitorInfo": "विज़िटर की जानकारी अधूरी है",
+      "missingVisitorId": "visitor_id गायब है"
+    },
+    "emptyQueryHint": "खोज शुरू करने के लिए कोई कीवर्ड दर्ज करें",
+    "searching": "खोज रहा है...",
+    "visitorsSectionTitle": "विज़िटर ({{count}})",
+    "messagesSectionTitle": "संदेश ({{count}})",
+    "noVisitorsFound": "कोई संबंधित विज़िटर नहीं मिला",
+    "noMessagesFound": "कोई संबंधित संदेश नहीं मिला",
+    "noPreview": "(कोई पूर्वावलोकन नहीं)",
+    "channel": "बातचीत",
+    "footer": {
+      "hintPrefix": "सुझाव:",
+      "esc": "बंद करने के लिए Esc",
+      "enter": "खोलने के लिए Enter",
+      "tip": "सुझाव:",
+      "escClose": "बंद करने के लिए Esc",
+      "enterOpen": "खोलने के लिए Enter",
+      "summary": "विज़िटर और संदेश खोजें"
+    },
+    "footerText": "विज़िटर और संदेश खोजें",
+    "sections": {
+      "visitors": "विज़िटर",
+      "messages": "संदेश"
+    },
+    "empty": {
+      "visitors": "कोई संबंधित विज़िटर नहीं मिला",
+      "messages": "कोई संबंधित संदेश नहीं मिला"
+    }
+  },
+  "time": {
+    "today": "आज",
+    "yesterday": "कल",
+    "relative": {
+      "justNow": "अभी",
+      "minutes": "{{count}} मिनट पहले",
+      "minutesAgo": "{{count}} मिनट पहले",
+      "hours": "{{count}} घंटे पहले",
+      "hoursAgo": "{{count}} घंटे पहले",
+      "yesterdayAt": "कल {{time}}",
+      "days": "{{count}} दिन पहले",
+      "today": "आज",
+      "yesterday": "कल",
+      "daysAgo": "{{count}} दिन पहले",
+      "weeksAgo": "{{count}} सप्ताह पहले",
+      "monthsAgo": "{{count}} महीने पहले",
+      "yearsAgo": "{{count}} वर्ष पहले"
+    },
+    "lastSeen": {
+      "justNow": "अभी ऑनलाइन था",
+      "justNowShort": "अभी",
+      "minutesAgo": "{{mins}} मिनट पहले ऑनलाइन था",
+      "minutesShort": "{{mins}} मिनट",
+      "online": "ऑनलाइन"
+    },
+    "weekdays": {
+      "0": "रविवार",
+      "1": "सोमवार",
+      "2": "मंगलवार",
+      "3": "बुधवार",
+      "4": "गुरुवार",
+      "5": "शुक्रवार",
+      "6": "शनिवार"
+    }
+  },
+  "chat": {
+    "title": "चैट प्रबंधन",
+    "openChat": "चैट खोलें",
+    "sync": {
+      "syncing": "बातचीत सिंक हो रही हैं...",
+      "success": "बातचीत सफलतापूर्वक सिंक हुईं",
+      "failed": "बातचीत सिंक करना विफल रहा",
+      "retry": "पुनः प्रयास करें",
+      "lastSync": "अंतिम सिंक: {{time}}",
+      "refresh": "बातचीत रीफ़्रेश करें",
+      "noConversations": "कोई बातचीत नहीं",
+      "loadError": "बातचीत लोड करना विफल रहा"
+    },
+    "status": {
+      "online": "ऑनलाइन",
+      "offline": "ऑफ़लाइन",
+      "connecting": "कनेक्ट हो रहा है...",
+      "connected": "कनेक्टेड",
+      "disconnected": "डिस्कनेक्टेड",
+      "ai_typing": "AI टाइप कर रहा है..."
+    },
+    "actions": {
+      "refresh": "रीफ़्रेश करें",
+      "retry": "पुनः प्रयास करें",
+      "delete": "बातचीत हटाएँ",
+      "markRead": "पढ़ा हुआ चिह्नित करें"
+    },
+    "history": {
+      "loading": "पुराने संदेश लोड हो रहे हैं...",
+      "loadMore": "और पुराने संदेश लोड करें",
+      "noMessages": "कोई पुराने संदेश नहीं",
+      "loadFailed": "पुराने संदेश लोड करना विफल रहा",
+      "loadMoreFailed": "और संदेश लोड करना विफल रहा",
+      "retry": "पुनः प्रयास करें",
+      "yesterday": "कल",
+      "daysAgo": "{{days}} दिन पहले",
+      "loadingNewer": "लोड हो रहा है...",
+      "weekday": {
+        "sunday": "रविवार",
+        "monday": "सोमवार",
+        "tuesday": "मंगलवार",
+        "wednesday": "बुधवार",
+        "thursday": "गुरुवार",
+        "friday": "शुक्रवार",
+        "saturday": "शनिवार"
+      }
+    },
+    "empty": {
+      "selectConversation": "बातचीत शुरू करने के लिए कोई चैट चुनें"
+    },
+    "list": {
+      "searchPlaceholder": "खोजें",
+      "searchAria": "बातचीत खोजें",
+      "tagFilter": {
+        "button": "टैग फ़िल्टर",
+        "add": "फ़िल्टर टैग जोड़ें",
+        "edit": "फ़िल्टर टैग संपादित करें",
+        "remove": "टैग हटाएँ",
+        "searchPlaceholder": "टैग खोजें",
+        "clear": "साफ़ करें",
+        "loading": "टैग लोड हो रहे हैं...",
+        "empty": "कोई टैग नहीं"
+      },
+      "tabs": {
+        "mine": "मेरी",
+        "unassigned": "अनसाइन्ड",
+        "recent": "हाल में ऑनलाइन",
+        "all": "पूर्ण",
+        "manual": "मैन्युअल सेवा"
+      },
+      "waiting": {
+        "justNow": "अभी",
+        "minutes": "{{count}} मि",
+        "hours": "{{count}} घं",
+        "hoursMinutes": "{{h}} घं {{m}} मि",
+        "days": "{{count}} दिन",
+        "daysHours": "{{d}} दिन {{h}} घं",
+        "status": "प्रतीक्षा में"
+      }
+    },
+    "header": {
+      "staffFallback": "एजेंट",
+      "visitorFallback": "विज़िटर {{suffix}}",
+      "agentFallback": "AI कर्मचारी",
+      "teamFallback": "AI कर्मचारी टीम",
+      "agentTooltip": "AI कर्मचारी चैट",
+      "endChat": "चैट समाप्त करें",
+      "transfer": "स्थानांतरित करें",
+      "transferTooltip": "किसी अन्य एजेंट को स्थानांतरित करें",
+      "transferSuccess": "{{name}} को स्थानांतरित किया गया",
+      "transferError": "स्थानांतरण विफल रहा",
+      "transferTo": "इन्हें स्थानांतरित करें",
+      "noStaffAvailable": "कोई स्टाफ उपलब्ध नहीं",
+      "loadingStaff": "लोड हो रहा है...",
+      "clearMemory": "मेमोरी साफ़ करें",
+      "clearMemoryTooltip": "AI बातचीत की मेमोरी साफ़ करें और फिर से शुरू करें",
+      "clearMemoryConfirm": "क्या आप वाकई इस सत्र की AI मेमोरी साफ़ करना चाहते हैं? AI को पिछली बातचीत याद नहीं रहेगी।",
+      "clearMemorySuccess": "मेमोरी साफ़ की गई",
+      "clearMemoryError": "मेमोरी साफ़ करना विफल रहा",
+      "endChatSuccess": "चैट समाप्त हुई",
+      "endChatError": "चैट समाप्त करना विफल रहा",
+      "loadStaffError": "एजेंट सूची लोड करना विफल रहा",
+      "noAvailableStaff": "कोई एजेंट उपलब्ध नहीं",
+      "endChatTooltip": "वर्तमान चैट समाप्त करें"
+    },
+    "suggestions": {
+      "label": "✨ सुझाव:"
+    },
+    "send": {
+      "platformErrorLog": "प्लेटफ़ॉर्म संदेश भेजना विफल रहा",
+      "platformError": "प्लेटफ़ॉर्म संदेश भेजना विफल रहा, कृपया बाद में पुनः प्रयास करें",
+      "wsNotConnected": "WebSocket कनेक्टेड नहीं है, कृपया नेटवर्क जाँचें",
+      "wsFailed": "WebSocket से भेजना विफल रहा, कृपया नेटवर्क कनेक्शन जाँचें",
+      "failedLogPrefix": "संदेश भेजना विफल रहा:"
+    },
+    "search": {
+      "locateFailedTitle": "संदेश का स्थान नहीं मिला",
+      "locateFailedDesc": "यह संदेश हटाया गया हो सकता है या अस्थायी रूप से अनुपलब्ध है"
+    },
+    "messages": {
+      "sending": "भेजा जा रहा है...",
+      "sendFailedTitle": "भेजना विफल रहा",
+      "image": {
+        "previewAria": "छवि पूर्वावलोकन",
+        "alt": "छवि",
+        "uploading": "अपलोड हो रहा है",
+        "uploadFailed": "अपलोड विफल रहा"
+      },
+      "file": {
+        "aria": "फ़ाइल",
+        "placeholder": "[फ़ाइल]",
+        "uploadFailedRetry": "अपलोड विफल रहा, पुनः प्रयास के लिए क्लिक करें",
+        "uploadingWithPercent": "{{percent}}% अपलोड हो रहा है",
+        "download": "डाउनलोड करें"
+      },
+      "stream": {
+        "timeout": "AI उत्तर का समय समाप्त हो गया",
+        "error": "AI उत्तर बनाना विफल रहा",
+        "cancelled": "AI उत्तर रद्द किया गया",
+        "force": "AI उत्तर को बलपूर्वक समाप्त किया गया"
+      },
+      "system": {
+        "staffAssigned": "आपको ग्राहक सेवा से जोड़ दिया गया है। एजेंट {0} आपकी सहायता करेंगे।",
+        "sessionTransferred": "सत्र स्थानांतरित किया गया। एजेंट {0} ने आपको एजेंट {1} को स्थानांतरित किया है।",
+        "sessionClosed": "सत्र समाप्त। एजेंट {0} ने सेवा पूर्ण की है।",
+        "sessionClosedEmpty": "सत्र समाप्त।",
+        "memoryCleared": "मेमोरी साफ़ की गई, AI बातचीत फिर से शुरू करेगा"
+      },
+      "aiThinking": "AI सोच रहा है...",
+      "aiReply": "[AI उत्तर]"
+    },
+    "input": {
+      "placeholder": "संदेश लिखें...",
+      "disabled": {
+        "placeholder": "AI असिस्टेंट सक्षम है, मैन्युअल इनपुट अक्षम है",
+        "tooltip": "AI असिस्टेंट सक्षम है, मैन्युअल इनपुट अक्षम है",
+        "cannotSendTooltip": "AI असिस्टेंट सक्षम है, मैन्युअल भेजना अक्षम है"
+      },
+      "emoji": {
+        "aria": "इमोजी पिकर खोलें",
+        "title": "इमोजी डालें"
+      },
+      "screenshot": {
+        "aria": "स्क्रीनशॉट पेस्ट निर्देश",
+        "title": "स्क्रीनशॉट"
+      },
+      "image": {
+        "aria": "छवि अपलोड करें",
+        "title": "छवि भेजें"
+      },
+      "file": {
+        "aria": "फ़ाइल अपलोड करें",
+        "title": "फ़ाइल भेजें",
+        "remove": "फ़ाइल हटाएँ"
+      },
+      "ai": {
+        "label": "AI असिस्टेंट",
+        "toggleAria": "AI असिस्टेंट टॉगल करें",
+        "enabled": "AI सक्षम",
+        "disabled": "AI अक्षम",
+        "enabledTitle": "AI सक्षम",
+        "enabledMessage": "विज़िटर का AI असिस्टेंट सक्षम कर दिया गया है",
+        "disabledTitle": "AI अक्षम",
+        "disabledMessage": "विज़िटर का AI असिस्टेंट अक्षम कर दिया गया है"
+      },
+      "screenshotTip": {
+        "aria": "स्क्रीनशॉट भेजने का सुझाव",
+        "title": "स्क्रीनशॉट भेजने का सुझाव",
+        "line1": "आप QQ, WeChat या सिस्टम स्क्रीनशॉट टूल से स्क्रीनशॉट ले सकते हैं,",
+        "line2": {
+          "prefix": "फिर दबाएँ",
+          "suffix": "संदेश इनपुट बॉक्स में छवि पेस्ट करके भेजने के लिए"
+        }
+      },
+      "preview": {
+        "imageAlt": "पूर्वावलोकन छवि {{index}}",
+        "removeAria": "पूर्वावलोकन हटाएँ"
+      },
+      "upload": {
+        "failed": "अपलोड विफल रहा"
+      },
+      "errors": {
+        "images": {
+          "unsupportedTypeTitle": "असमर्थित फ़ाइल प्रकार",
+          "unsupportedTypeDesc": "केवल छवि फ़ाइलें समर्थित हैं (jpg/png/gif/webp)",
+          "limitReachedTitle": "छवि सीमा पूरी हो गई (9 छवियाँ)",
+          "limitReachedDesc": "अधिकतम 9 छवियों की अनुमति है",
+          "tooManyTitle": "अधिकतम 9 छवियों की अनुमति है",
+          "tooManyDesc": "जोड़ी जा सकने वाली छवियों की संख्या से अधिक हो गई",
+          "limitReachedTitleSimple": "छवि सीमा पूरी हो गई",
+          "limitReachedAddNine": "अधिकतम 9 छवियाँ जोड़ी जा सकती हैं",
+          "partialNotAddedTitle": "कुछ छवियाँ नहीं जोड़ी गईं",
+          "partialNotAddedDesc": "{{added}} छवियाँ जोड़ी गईं, {{skipped}} छोड़ी गईं (9 छवियों की सीमा से अधिक)"
+        },
+        "files": {
+          "onlyOne": "केवल एक फ़ाइल समर्थित है",
+          "removeCurrent": "कृपया पहले वर्तमान फ़ाइल हटाएँ",
+          "skippedOther": "\"{{name}}\" जोड़ी गई, {{count}} अन्य फ़ाइलें छोड़ी गईं"
+        },
+        "noConversationTitle": "कृपया कोई बातचीत चुनें",
+        "noConversationDesc": {
+          "image": "छवियाँ भेजने से पहले कृपया कोई बातचीत चुनें",
+          "file": "फ़ाइलें भेजने से पहले कृपया कोई बातचीत चुनें",
+          "message": "संदेश भेजने से पहले कृपया कोई बातचीत चुनें"
+        },
+        "platformFailed": "प्लेटफ़ॉर्म संदेश भेजना विफल रहा, कृपया बाद में पुनः प्रयास करें",
+        "websocketFailed": "WebSocket से भेजना विफल रहा, कृपया नेटवर्क कनेक्शन जाँचें",
+        "websocketNotConnected": {
+          "image": "WebSocket कनेक्टेड नहीं है, छवि संदेश नहीं भेजा जा सकता",
+          "file": "WebSocket कनेक्टेड नहीं है, फ़ाइल संदेश नहीं भेजा जा सकता",
+          "message": "WebSocket कनेक्टेड नहीं है, संदेश नहीं भेजा जा सकता",
+          "richText": "WebSocket कनेक्टेड नहीं है, रिच टेक्स्ट संदेश नहीं भेजा जा सकता"
+        }
+      },
+      "shortcuts": {
+        "sendWithHint": "भेजने के लिए Enter • {{hint}}",
+        "newline": {
+          "mac": "नई पंक्ति के लिए ⌘ + Enter",
+          "windows": "नई पंक्ति के लिए Ctrl + Enter"
+        }
+      },
+      "send": {
+        "label": "भेजें",
+        "sending": "भेजा जा रहा है..."
+      },
+      "closed": "बातचीत समाप्त हुई",
+      "notMyVisitor": "यह विज़िटर {{name}} को असाइन है",
+      "otherAgent": "अन्य एजेंट",
+      "accept": {
+        "successTitle": "स्वीकार किया गया",
+        "successMessage": "विज़िटर सफलतापूर्वक स्वीकार किया गया",
+        "hint": "यह विज़िटर स्वीकार किए जाने की प्रतीक्षा में है",
+        "accepting": "स्वीकार किया जा रहा है...",
+        "button": "विज़िटर स्वीकार करें"
+      },
+      "streaming": {
+        "cancelledTitle": "रोका गया",
+        "cancelledMessage": "स्ट्रीमिंग संदेश रोका गया",
+        "pauseTooltip": "स्ट्रीमिंग संदेश रोकें",
+        "pause": "रोकें"
+      }
+    },
+    "aiTyping": "AI टाइप कर रहा है...",
+    "agentRole": "सहायता एजेंट",
+    "userRole": "उपयोगकर्ता"
+  },
+  "tools": {
+    "title": "टूल",
+    "subtitle": "AI एजेंट की क्षमताओं को कॉन्फ़िगर और विस्तारित करें",
+    "copyEndpoint": "एंडपॉइंट कॉपी करें",
+    "editTool": "टूल संपादित करें",
+    "banner": {
+      "title": "AI क्षमताएँ बढ़ाएँ",
+      "description": "HTTP या MCP प्रोटोकॉल टूल जोड़कर आप AI एजेंट को खोज, डेटाबेस क्वेरी और बाहरी सेवाएँ कॉल करने जैसी असीमित संभावनाएँ दे सकते हैं।"
+    },
+    "listTitle": "टूल सूची",
+    "addHttpTool": "HTTP टूल जोड़ें",
+    "addMCPTool": "MCP टूल जोड़ें",
+    "toolStore": "टूल स्टोर",
+    "store": {
+      "title": "टूल स्टोर",
+      "subtitle": "शक्तिशाली AI टूल एक्सटेंशन खोजें और इंस्टॉल करें",
+      "searchPlaceholder": "टूल, लेखक या टैग खोजें...",
+      "categories": {
+        "all": "सभी टूल",
+        "model": "मॉडल",
+        "tool": "उपयोगिताएँ",
+        "agent": "एजेंट रणनीतियाँ",
+        "extension": "एक्सटेंशन",
+        "plugin": "प्लगइन"
+      },
+      "install": "इंस्टॉल करें",
+      "installing": "इंस्टॉल हो रहा है...",
+      "installed": "इंस्टॉल किया गया",
+      "uninstall": "अनइंस्टॉल करें",
+      "details": "टूल विवरण",
+      "author": "लेखक",
+      "version": "संस्करण",
+      "downloads": "डाउनलोड",
+      "rating": "रेटिंग",
+      "lastUpdated": "अंतिम अपडेट",
+      "requirements": "आवश्यकताएँ",
+      "changelog": "परिवर्तन लॉग",
+      "featured": "विशेष रुप से प्रदर्शित",
+      "verified": "सत्यापित",
+      "noResults": "कोई मेल खाता टूल नहीं मिला",
+      "backToList": "सूची पर वापस जाएँ",
+      "price": "मूल्य",
+      "free": "निःशुल्क",
+      "installSuccess": "टूल इंस्टॉल हो गया",
+      "installSuccessMessage": "टूल \"{{name}}\" आपके प्रोजेक्ट में सफलतापूर्वक इंस्टॉल हो गया है",
+      "uninstallSuccess": "टूल अनइंस्टॉल हो गया",
+      "uninstallSuccessMessage": "टूल \"{{name}}\" आपके प्रोजेक्ट से हटा दिया गया है",
+      "loginRequired": "लॉगिन आवश्यक",
+      "loginRequiredDesc": "लॉगिन करने से आप टूल एक क्लिक में इंस्टॉल कर सकते हैं, कॉन्फ़िगरेशन सिंक कर सकते हैं और अपना AI टूलसेट प्रबंधित कर सकते हैं।",
+      "loginTitle": "टूल स्टोर में लॉगिन करें",
+      "loginNow": "अभी लॉगिन करें",
+      "openLoginWindow": "स्टोर में लॉगिन करें",
+      "loginSuccess": "लॉगिन सफल",
+      "loginSuccessDesc": "अब आप स्टोर टूल इंस्टॉल और प्रबंधित कर सकते हैं।",
+      "loginFailed": "लॉगिन विफल",
+      "loginSyncDesc": "लॉगिन होने के बाद यह विंडो स्वतः आपकी स्थिति सिंक कर देगी।",
+      "loginSecurityDesc": "आपके खाते की सुरक्षा के लिए हम लॉगिन पेज नई विंडो में खोलेंगे।",
+      "logout": "लॉग आउट",
+      "recharge": "टॉप अप करें",
+      "balance": "बैलेंस",
+      "popupBlocked": "ब्राउज़र ने पॉप-अप विंडो ब्लॉक कर दी है, कृपया पॉप-अप की अनुमति दें और पुनः प्रयास करें",
+      "cancelInstall": "अभी नहीं",
+      "model": {
+        "title": "मॉडल स्टोर",
+        "subtitle": "विश्व के शीर्ष मॉडल तक पहुँचें, उपयोग के अनुसार भुगतान करें, कई API कुंजियाँ प्रबंधित करने की आवश्यकता नहीं",
+        "searchPlaceholder": "मॉडल का नाम, प्रदाता या क्षमताएँ खोजें...",
+        "fetchFailed": "स्टोर मॉडल प्राप्त करना विफल रहा",
+        "initLoginFailed": "लॉगिन प्रक्रिया शुरू करना विफल रहा",
+        "missingVerifier": "स्थानीय सत्यापन कुंजी गायब है, कृपया पुनः प्रयास करें",
+        "invalidCode": "अमान्य या समाप्त हो चुका प्राधिकरण कोड",
+        "usageNotice": "सक्षम करने के बाद यह Pelatis प्लेटफ़ॉर्म पर उपलब्ध होगा, वास्तविक टोकन खपत के आधार पर रियल-टाइम बिलिंग के साथ।",
+        "noResults": "कोई मेल खाता मॉडल नहीं मिला",
+        "noResultsDesc": "अन्य कीवर्ड खोजें या श्रेणी बदलें",
+        "allModels": "सभी मॉडल",
+        "types": {
+          "chat": "चैट मॉडल",
+          "embedding": "एम्बेडिंग मॉडल",
+          "image": "छवि मॉडल",
+          "audio": "ऑडियो मॉडल"
+        },
+        "installing": "इंस्टॉल हो रहा है...",
+        "installStep": {
+          "verify": "क्रेडेंशियल सत्यापित हो रहे हैं",
+          "sync": "मॉडल सिंक हो रहा है",
+          "done": "इंस्टॉलेशन पूर्ण"
+        },
+        "error": {
+          "notBound": "कृपया पहले Store खाते में लॉगिन करें"
+        },
+        "installSuccess": "मॉडल इंस्टॉलेशन सफल",
+        "installSuccessMessage": "मॉडल \"{{name}}\" आपके प्रोजेक्ट में सफलतापूर्वक सिंक हो गया है",
+        "uninstallSuccess": "मॉडल निष्क्रियकरण सफल",
+        "uninstallSuccessMessage": "मॉडल \"{{name}}\" आपके प्रोजेक्ट से हटा दिया गया है",
+        "priceInput": "इनपुट मूल्य",
+        "priceOutput": "आउटपुट मूल्य",
+        "perMillionTokens": "प्रति 1M टोकन",
+        "contextWindow": "कॉन्टेक्स्ट विंडो",
+        "capabilities": "क्षमताएँ",
+        "startUsing": "अभी उपयोग शुरू करें",
+        "stopUsing": "उपयोग बंद करें",
+        "available": "उपलब्ध",
+        "installed": "सक्षम",
+        "notInstalled": "सक्षम नहीं",
+        "backToList": "सूची पर वापस जाएँ",
+        "details": "मॉडल विवरण",
+        "provider": "प्रदाता",
+        "type": "मॉडल प्रकार",
+        "documentation": "प्रदाता API दस्तावेज़",
+        "loading": "विश्व के सबसे उन्नत AI मॉडल खोजे जा रहे हैं..."
+      },
+      "type": "प्रकार",
+      "createdAt": "प्रकाशित",
+      "noResultsDesc": "अन्य कीवर्ड आज़माएँ या श्रेणी बदलें",
+      "perCall": "कॉल",
+      "perCallShort": "कॉल",
+      "description": "विवरण",
+      "availableMethods": "उपलब्ध मेथड",
+      "parameters": "पैरामीटर"
+    },
+    "newTool": "नया टूल",
+    "selectModal": {
+      "title": "टूल चुनें",
+      "searchPlaceholder": "टूल खोजें...",
+      "loading": "टूल लोड हो रहे हैं...",
+      "noMatch": "कोई मेल खाता टूल नहीं मिला",
+      "configTool": "टूल कॉन्फ़िगर करें",
+      "manageTools": "टूल प्रबंधित करें",
+      "category": {
+        "toolServer": "टूल सर्वर",
+        "custom": "कस्टम टूल",
+        "plugin": "प्लगइन टूल",
+        "deviceControl": "डिवाइस नियंत्रण"
+      },
+      "confirmSelection": "चयन की पुष्टि करें ({{count}})",
+      "loadFailedDesc": "टूल सूची लोड नहीं हो सकी, कृपया बाद में पुनः प्रयास करें",
+      "retryFailedTitle": "पुनः प्रयास विफल रहा",
+      "retryFailedDesc": "टूल सूची लोड नहीं हो सकी, कृपया अपना नेटवर्क कनेक्शन जाँचें"
+    },
+    "source": {
+      "marketplace": "टूल मार्केटप्लेस",
+      "custom": "कस्टम",
+      "unknown": "अज्ञात"
+    },
+    "author": {
+      "marketplace": "टूल मार्केटप्लेस",
+      "customUser": "उपयोगकर्ता कस्टम",
+      "unknown": "अज्ञात स्रोत"
+    },
+    "search": {
+      "placeholder": "टूल खोजें..."
+    },
+    "categories": {
+      "all": "सभी",
+      "productivity": "उत्पादकता",
+      "communication": "संचार",
+      "data": "डेटा विश्लेषण",
+      "ai": "AI टूल",
+      "integration": "एकीकरण",
+      "plugin": "प्लगइन टूल",
+      "unknown": "अज्ञात श्रेणी"
+    },
+    "page": {
+      "customTool": "कस्टम टूल"
+    },
+    "tools": {
+      "addMcpTool": "टूल जोड़ें",
+      "delete": {
+        "successTitle": "हटाया गया",
+        "successMessage": "टूल \"{{name}}\" हटा दिया गया है"
+      },
+      "confirmDelete": {
+        "title": "हटाने की पुष्टि करें",
+        "message": "क्या आप वाकई टूल \"{{name}}\" को हटाना चाहते हैं? यह कार्रवाई पूर्ववत नहीं की जा सकती।"
+      },
+      "unknownAction": {
+        "title": "Unknown action",
+        "message": "Unsupported action type: {{type}}"
+      },
+      "actionFailed": {
+        "title": "Action failed",
+        "message": "An error occurred while performing {{type}} action"
+      },
+      "uninstall": {
+        "successTitle": "Uninstalled",
+        "successMessage": "Tool \"{{name}}\" has been uninstalled"
+      },
+      "toggle": {
+        "enabledTitle": "Enabled",
+        "enabledMessage": "Tool \"{{name}}\" has been enabled",
+        "disabledTitle": "Disabled",
+        "disabledMessage": "Tool \"{{name}}\" has been disabled"
+      },
+      "installedEmpty": {
+        "title": "No installed tools",
+        "description": "Click the \"Add Tool\" button in the top-right to create your first tool",
+        "action": "Go to Tool Store"
+      },
+      "addHttpTool": "Add HTTP Tool",
+      "list": {
+        "emptyTitle": "No tools",
+        "emptyDescriptionAll": "Click \"Add Tool\" to add your first tool",
+        "emptyDescriptionCategory": "No tools under category \"{{category}}\"",
+        "emptyAction": "Start adding tools"
+      },
+      "endpoint": "Endpoint",
+      "noDescription": "No description",
+      "endpointCopied": "Endpoint copied to clipboard",
+      "copyEndpointFailed": "Failed to copy endpoint",
+      "edit": {
+        "title": "Edit Tool",
+        "message": "Edit functionality for tool \"{{name}}\" is coming soon",
+        "notFound": "Tool Not Found",
+        "notFoundMessage": "Unable to find detailed information for this tool"
+      }
+    },
+    "addToolModal": {
+      "title": "Add MCP Tool",
+      "subtitle": "Connect to external capability servers via MCP protocol",
+      "fields": {
+        "name": "Tool Name",
+        "description": "Tool Description",
+        "transportType": "Transport Type",
+        "endpoint": "Endpoint",
+        "config": "Configuration"
+      },
+      "placeholders": {
+        "name": "e.g., weather-api",
+        "description": "Brief description of the tool's functionality",
+        "endpoint": "e.g., https://api.example.com/tool",
+        "config": "{\"key\": \"value\"}"
+      },
+      "hints": {
+        "config": "Please enter valid JSON format configuration"
+      },
+      "errors": {
+        "nameRequired": "Please enter tool name",
+        "invalidName": "Tool name can only contain letters, numbers, underscores and hyphens",
+        "endpointRequired": "Please enter endpoint",
+        "invalidJson": "Configuration must be valid JSON format",
+        "noProject": "No project selected"
+      },
+      "success": {
+        "title": "Added Successfully",
+        "message": "{{name}} has been successfully added"
+      },
+      "confirm": "Confirm Create",
+      "error": {
+        "title": "Add Failed",
+        "message": "Failed to add tool, please try again later"
+      }
+    },
+    "addHttpToolModal": {
+      "title": "Add HTTP Tool",
+      "subtitle": "Configure external API endpoints as AI agent capabilities",
+      "sections": {
+        "basic": "Basic Information",
+        "config": "API Configuration"
+      },
+      "fields": {
+        "name": "Tool Name",
+        "description": "Tool Description",
+        "endpoint": "API Endpoint",
+        "method": "HTTP Method",
+        "headers": "Request Headers",
+        "parameters": "Input Parameters"
+      },
+      "placeholders": {
+        "name": "e.g., search_user",
+        "description": "Describe the tool's function to help AI understand when to call it",
+        "endpoint": "https://api.example.com/v1/users",
+        "paramDesc": "Parameter description..."
+      },
+      "params": {
+        "name": "Name",
+        "type": "Type",
+        "desc": "Description",
+        "required": "Required",
+        "empty": "Define dynamic parameters needed when AI calls the endpoint"
+      },
+      "addHeader": "Add Header",
+      "addParameter": "Add Parameter",
+      "confirm": "Confirm Create",
+      "errors": {
+        "nameRequired": "Please enter tool name",
+        "invalidName": "Tool name can only contain letters, numbers, underscores and hyphens",
+        "descriptionRequired": "Please enter tool description",
+        "endpointRequired": "Please enter API endpoint"
+      },
+      "success": {
+        "title": "Added Successfully",
+        "message": "HTTP tool {{name}} has been added"
+      },
+      "error": {
+        "title": "Add Failed",
+        "message": "Failed to add HTTP tool"
+      }
+    },
+    "editHttpToolModal": {
+      "title": "Edit HTTP Tool",
+      "subtitle": "Update external API endpoint configuration",
+      "save": "Save Changes",
+      "success": {
+        "title": "Updated Successfully",
+        "message": "HTTP tool {{name}} has been updated"
+      },
+      "error": {
+        "title": "Update Failed",
+        "message": "Failed to update HTTP tool"
+      }
+    },
+    "editToolModal": {
+      "title": "Edit Tool",
+      "subtitle": "Modify MCP tool connection configuration",
+      "fields": {
+        "name": "Tool Name",
+        "description": "Tool Description",
+        "transportType": "Transport Type",
+        "endpoint": "Endpoint",
+        "toolType": "Tool Type"
+      },
+      "placeholders": {
+        "name": "e.g., weather-api",
+        "description": "Brief description of the tool's functionality",
+        "endpoint": "e.g., https://api.example.com/tool"
+      },
+      "hints": {
+        "toolTypeReadonly": "Tool type cannot be modified"
+      },
+      "errors": {
+        "nameRequired": "Please enter tool name",
+        "invalidName": "Tool name can only contain letters, numbers, underscores and hyphens",
+        "endpointRequired": "Please enter endpoint"
+      },
+      "success": {
+        "title": "Updated Successfully",
+        "message": "{{name}} has been successfully updated"
+      },
+      "save": "Save Changes",
+      "error": {
+        "title": "Update Failed",
+        "message": "Failed to update tool, please try again later"
+      }
+    },
+    "config": {
+      "title": "Tool Configuration",
+      "info": "Tool Information",
+      "parameters": "Configuration Parameters",
+      "noParams": "This tool has no configurable parameters",
+      "placeholders": {
+        "array": "Separate multiple values with commas",
+        "required": "Required",
+        "optional": "Optional"
+      },
+      "validation": {
+        "required": "This field is required",
+        "number": "Please enter a valid number"
+      },
+      "save": "Save Configuration"
+    },
+    "endpointCopied": "Endpoint address copied to clipboard",
+    "copyEndpointFailed": "Unable to copy endpoint address",
+    "noDescription": "No description",
+    "list": {
+      "emptyTitle": "No tools yet",
+      "emptyDescriptionAll": "Click the \"Add Tool\" button to add your first tool",
+      "emptyAction": "Start adding tools"
+    }
+  },
+  "platforms": {
+    "list": {
+      "title": "Platforms",
+      "addPlatform": "Add Platform",
+      "defaultName": "New Platform",
+      "loading": "Loading platform list...",
+      "loadFailedTitle": "Load Failed",
+      "retry": "Retry",
+      "retrying": "Retrying...",
+      "emptyTitle": "No Platforms",
+      "emptyDescription": "Click the button above to add a platform",
+      "status": {
+        "connected": "Connected",
+        "error": "Connection Failed",
+        "pending": "Pending Configuration",
+        "notConfigured": "Not Configured",
+        "unsupported": "Coming Soon"
+      },
+      "toast": {
+        "createSuccessTitle": "Created Successfully",
+        "createSuccessMessage": "Platform \"{{name}}\" has been created"
+      }
+    },
+    "typeSelector": {
+      "title": "Select Platform Type",
+      "loading": "Loading available platform types...",
+      "loadError": "Failed to load platform types, please try again later",
+      "loadFailed": "Load Failed",
+      "emptyTypes": "No available platform types",
+      "unsupported": "Not Supported"
+    },
+    "config": {
+      "basic": {
+        "title": "Basic Settings",
+        "platformName": "Platform Name",
+        "platformDesc": "Platform Description (Optional)",
+        "descPlaceholder": "Describe the purpose of this platform",
+        "platformIcon": "Platform Icon",
+        "selectUploadIcon": "Select/Upload Icon",
+        "iconHint": "Choose an icon to display in the platform list."
+      },
+      "webhookIncoming": {
+        "title": "Webhook Integration (Receive Messages)",
+        "viewDocs": "View Integration Docs",
+        "copyUrl": "Copy URL",
+        "urlHint": "Configure this URL in your system to receive messages from your system.",
+        "toggleSecret": "Show/Hide Secret",
+        "copySecret": "Copy Secret",
+        "regenerateSecret": "Regenerate Secret",
+        "secretHint": "Used to verify the signature of incoming requests for security."
+      },
+      "webhookOutgoing": {
+        "title": "Webhook Push (Send Messages)",
+        "yourUrl": "Your Receiving URL",
+        "urlHint": "When customer service replies, we will POST the message to this URL.",
+        "authToken": "Authentication Token (Optional)",
+        "tokenPlaceholder": "e.g., Bearer your_secret_token",
+        "tokenHint": "If your receiving URL requires authentication, fill in here (e.g., Authorization Header value)."
+      },
+      "apiAccess": {
+        "title": "API Access (Optional)",
+        "placeholder": "[API Key/Secret management and documentation link placeholder]",
+        "description": "Alternatively, you can send and receive messages by calling our open API. Please refer to the developer documentation for details."
+      },
+      "placeholder": {
+        "title": "Select Platform",
+        "description": "Please select a platform from the left list to configure"
+      },
+      "header": {
+        "title": "{{name}} Configuration",
+        "enablePlatform": "Enable Platform"
+      },
+      "generic": {
+        "title": "Platform Configuration",
+        "comingSoon": "Specific configuration options for this platform will be provided in future versions.",
+        "currentStatus": "Current Status: {{status}}"
+      },
+      "aiSettings": {
+        "saveSuccess": "AI settings saved",
+        "saveButton": "Save AI Settings"
+      }
+    },
+    "website": {
+      "label": "Official Website",
+      "header": {
+        "title": "Website Widget Configuration",
+        "subtitle": "Adjust the configuration on the left, the preview on the right will update in real-time"
+      },
+      "buttons": {
+        "delete": "Delete",
+        "deleting": "Deleting...",
+        "enable": "Enable",
+        "disable": "Disable",
+        "enabling": "Enabling...",
+        "disabling": "Disabling...",
+        "save": "Save",
+        "saving": "Saving...",
+        "show": "Show",
+        "hide": "Hide",
+        "copy": "Copy",
+        "regenerate": "Regenerate",
+        "remove": "Remove",
+        "upload": "Click to Upload",
+        "testIntegration": "Test Integration",
+        "downloadExample": "Download Example"
+      },
+      "download": {
+        "hint": "Download a complete integration example file with pre-configured API Key",
+        "success": "Download Successful",
+        "successDesc": "Example file has been downloaded, open it in a browser to see the result",
+        "demoTitle": "Widget Demo",
+        "welcomeTitle": "Welcome!",
+        "welcomeDesc": "Your Pelatis chat widget is now integrated! Click the chat button in the bottom-right corner to start a conversation.",
+        "integrationCode": "Integration Code",
+        "securityWarning": "Security Notice: This file contains your API key. Do not share it publicly or commit it to public repositories."
+      },
+      "form": {
+        "name": "Name",
+        "namePlaceholder": "Please enter platform name",
+        "widgetTitle": "Visitor Window Title",
+        "themeColor": "Theme Color",
+        "logo": "Logo",
+        "logoUploading": "Uploading...",
+        "logoHint": "Recommended size: 72x72 pixels. Supports PNG/JPG/SVG, max 2MB.",
+        "clickUpload": "Click to Upload",
+        "welcomeMessage": "Welcome Message",
+        "position": "Position",
+        "positionBottomRight": "Bottom Right",
+        "positionBottomLeft": "Bottom Left",
+        "positionTopRight": "Top Right",
+        "positionTopLeft": "Top Left",
+        "displayMode": "Default Display Mode",
+        "displayModeSmall": "Small Window",
+        "displayModeBig": "Big Window",
+        "apiKey": "API Key",
+        "apiKeyPlaceholder": "No API Key",
+        "apiKeyHint": "Authentication identifier for website integration script, please keep it safe.",
+        "uploadLogo": "Upload Logo",
+        "uploading": "Uploading…",
+        "noApiKey": "No API Key yet"
+      },
+      "embed": {
+        "title": "Website Integration Code",
+        "description": "Copy and paste the following code into the <code>&lt;head&gt;</code> or <code>&lt;body&gt;</code> of your website:",
+        "instruction": "Copy and paste the following code into the <code>&lt;head&gt;</code> or <code>&lt;body&gt;</code> of your website:"
+      },
+      "messages": {
+        "saveSuccess": "Saved Successfully",
+        "saveSuccessMessage": "Platform information has been updated",
+        "platformDisabled": "Platform Disabled",
+        "platformEnabled": "Platform Enabled",
+        "logoSizeError": "Image size cannot exceed 2MB",
+        "logoTypeError": "Only image files are supported",
+        "cropError": "Unable to open cropper",
+        "logoRemoved": "Removed",
+        "logoRemovedMessage": "Logo has been cleared",
+        "logoRemoveError": "Removing logo is not currently supported, please upload a new image to overwrite",
+        "apiKeyCopied": "Copied",
+        "apiKeyCopiedMessage": "API Key has been copied to clipboard",
+        "regenerateConfirm": "Are you sure you want to regenerate the API Key? Existing embed scripts will need to be updated.",
+        "apiKeyRegenerated": "Updated",
+        "apiKeyRegeneratedMessage": "API Key has been regenerated",
+        "embedCodeCopied": "Copied",
+        "embedCodeCopiedMessage": "Embed code has been copied to clipboard",
+        "uploadSuccess": "Upload Successful",
+        "uploadSuccessMessage": "Logo has been updated",
+        "uploadError": "Upload failed, please try again",
+        "deleteSuccess": "Platform Deleted",
+        "deleteSuccessMessage": "Platform has been deleted",
+        "disabled": "Platform disabled",
+        "enabled": "Platform enabled",
+        "copied": "Copied",
+        "updated": "Updated",
+        "logoUpdated": "Logo updated"
+      },
+      "confirm": {
+        "deleteTitle": "Delete Platform",
+        "deleteMessage": "Are you sure you want to delete this platform?",
+        "confirmText": "Delete",
+        "cancelText": "Cancel",
+        "regenerateApiKey": "Are you sure you want to regenerate the API Key? Existing embed scripts will need to be updated."
+      },
+      "defaults": {
+        "widgetTitle": "Welcome",
+        "welcomeMessage": "Hello! How can I help you?",
+        "displayMode": "small"
+      },
+      "errors": {
+        "fileTooLarge": "Image size must not exceed 2MB",
+        "invalidFileType": "Only image files are supported",
+        "cropperFailed": "Unable to open the cropper",
+        "removeLogoFailed": "Removing the logo is not supported yet; upload a new image to replace it",
+        "uploadFailed": "Upload failed, please try again"
+      }
+    },
+    "wechat": {
+      "label": "WeChat OA"
+    },
+    "whatsapp": {
+      "label": "WhatsApp"
+    },
+    "telegram": {
+      "label": "Telegram",
+      "header": {
+        "title": "{{name}} Config",
+        "subtitle": "Configure credentials and callbacks for Telegram Bot."
+      },
+      "buttons": {
+        "delete": "Delete",
+        "deleting": "Deleting...",
+        "enable": "Enable",
+        "disable": "Disable",
+        "enabling": "Enabling...",
+        "disabling": "Disabling...",
+        "save": "Save",
+        "saving": "Saving...",
+        "copy": "Copy"
+      },
+      "form": {
+        "name": "Platform Name",
+        "namePlaceholder": "Please enter platform name",
+        "callbackUrl": "Webhook URL",
+        "callbackUrlPlaceholder": "Webhook URL will be generated after creation",
+        "callbackUrlHint": "Use the setWebhook API to set this URL as your Bot's Webhook address.",
+        "botToken": "Bot Token",
+        "botTokenPlaceholder": "e.g.: 123456789:ABCdefGHIjklMNOpqrsTUVwxyz",
+        "botTokenHint": "Obtain the Token after creating your Bot via @BotFather, and keep it safe.",
+        "webhookSecret": "Webhook Secret (Optional)",
+        "webhookSecretPlaceholder": "Used to verify webhook request source",
+        "webhookSecretHint": "Set the same value via the secret_token parameter when calling setWebhook to verify request authenticity."
+      },
+      "guide": {
+        "title": "Telegram Bot Configuration Guide",
+        "overview": "✨ Quick Start",
+        "overviewText": "Steps: ①Create Bot & get Token → ②Enter Token → ③Click 'Enable'. System auto-configures Webhook!",
+        "step1Title": "1️⃣ Create Telegram Bot",
+        "step1Item1": "Search for <a class=\"text-blue-600 hover:underline\" href=\"https://t.me/BotFather\" target=\"_blank\" rel=\"noreferrer\">@BotFather</a> in Telegram and start a chat.",
+        "step1Item2": "Send /newbot command to begin creating your robot.",
+        "step1Item3": "Enter a display name and a unique username (ending in _bot) as prompted.",
+        "step1Item4": "BotFather will return a Bot Token. Copy it for the next step.",
+        "step2Title": "2️⃣ Configure and Enable",
+        "step2Item1": "Paste the Token into the 'Bot Token' field on the left.",
+        "step2Item2": "(Optional) Enter a 'Webhook Secret' for enhanced security.",
+        "step2Item3": "Click 'Save', then click the 'Enable' button in the top right.",
+        "step2AutoConfigTitle": "💡 Auto Configuration",
+        "step2AutoConfig": "After enabling, the system automatically registers the Webhook address with Telegram. No manual setup needed.",
+        "step3Title": "3️⃣ Test Your Bot",
+        "step3Item1": "Search for your Bot's username in Telegram and start a conversation.",
+        "step3Item2": "Send any message, and the AI will reply automatically.",
+        "step3Item3": "To add your Bot to groups, ensure 'Allow Groups' is enabled in BotFather.",
+        "docsLink": "Telegram Bot API Docs"
+      },
+      "dialog": {
+        "deleteTitle": "Confirm Delete",
+        "deleteMessage": "Are you sure you want to delete this Telegram Bot platform? This action cannot be undone.",
+        "confirmDelete": "Delete",
+        "cancel": "Cancel"
+      },
+      "messages": {
+        "saveSuccess": "Saved Successfully",
+        "saveSuccessMessage": "Telegram configuration has been updated",
+        "deleteSuccess": "Deleted Successfully",
+        "deleteSuccessMessage": "Telegram Bot platform has been deleted",
+        "urlCopied": "Webhook URL copied",
+        "disabled": "Platform disabled",
+        "enabled": "Platform enabled"
+      }
+    },
+    "sms": {
+      "label": "SMS"
+    },
+    "facebook": {
+      "label": "Facebook"
+    },
+    "instagram": {
+      "label": "Instagram"
+    },
+    "twitter": {
+      "label": "Twitter"
+    },
+    "linkedin": {
+      "label": "LinkedIn"
+    },
+    "discord": {
+      "label": "Discord"
+    },
+    "slack": {
+      "label": "Slack",
+      "header": {
+        "title": "{{name}} Configuration",
+        "subtitle": "Configure Slack Bot credentials and security settings."
+      },
+      "buttons": {
+        "delete": "Delete",
+        "deleting": "Deleting...",
+        "enable": "Enable",
+        "disable": "Disable",
+        "enabling": "Enabling...",
+        "disabling": "Disabling...",
+        "save": "Save",
+        "saving": "Saving..."
+      },
+      "form": {
+        "name": "Platform Name",
+        "namePlaceholder": "Enter platform name",
+        "botToken": "Bot Token",
+        "botTokenPlaceholder": "xoxb-...",
+        "botTokenHint": "Get the Bot User OAuth Token from the 'OAuth & Permissions' page of your Slack App.",
+        "appToken": "App Token (Socket Mode)",
+        "appTokenPlaceholder": "xapp-...",
+        "appTokenHint": "Generate in 'Basic Information' -> 'App-Level Tokens' (requires connections:write scope).",
+        "signingSecret": "Signing Secret (Optional)",
+        "signingSecretPlaceholder": "Secret for verifying request origin",
+        "signingSecretHint": "Get from 'Basic Information' -> 'App Credentials' to enhance security."
+      },
+      "guide": {
+        "title": "Slack Bot Configuration Guide",
+        "overview": "Quick Overview",
+        "overviewText": "Complete these steps: ① Create Slack App -> ② Enable Socket Mode & get App Token -> ③ Configure Bot permissions & event subscriptions -> ④ Install to workspace & get Bot Token.",
+        "step1Title": "1️⃣ Create Slack App",
+        "step1Item1": "Visit <a class=\"text-blue-600 hover:underline\" href=\"https://api.slack.com/apps\" target=\"_blank\" rel=\"noreferrer\">api.slack.com/apps</a> and click 'Create New App'.",
+        "step1Item2": "Select 'From scratch', enter App name and select target workspace.",
+        "step1Item3": "Set display name in 'App Home' and ensure 'Messages Tab' is enabled.",
+        "step2Title": "2️⃣ Enable Socket Mode",
+        "step2Item1": "Click 'Socket Mode' in the left menu and turn it on.",
+        "step2Item2": "Generate an App-Level Token as prompted, ensuring it includes the <code>connections:write</code> scope.",
+        "step2Item3": "Copy the generated <code>xapp-...</code> Token and paste it into the 'App Token' field on the left.",
+        "step3Title": "3️⃣ Configure Permissions & Events",
+        "step3Item1": "Add required scopes (e.g., chat:write, im:history) to 'Bot Token Scopes' in 'OAuth & Permissions'.",
+        "step3Item2": "Enable events in 'Event Subscriptions' and add <code>message.im</code> and <code>app_mention</code>.",
+        "step4Title": "4️⃣ Installation & Integration",
+        "step4Item1": "Click 'Install to Workspace' and complete authorization.",
+        "step4Item2": "Copy the 'Bot User OAuth Token' (xoxb-...) and paste it into the 'Bot Token' field on the left.",
+        "step4Item3": "Once saved, your AI assistant will be ready to respond on Slack.",
+        "docsLink": "Official Slack API Documentation"
+      },
+      "dialog": {
+        "deleteTitle": "Confirm Delete",
+        "deleteMessage": "Are you sure you want to delete this Slack Bot platform? This action cannot be undone.",
+        "confirmDelete": "Delete",
+        "cancel": "Cancel"
+      },
+      "messages": {
+        "saveSuccess": "Saved successfully",
+        "saveSuccessMessage": "Slack Bot configuration updated",
+        "deleteSuccess": "Deleted successfully",
+        "deleteSuccessMessage": "Slack Bot platform deleted",
+        "disabled": "Platform disabled",
+        "enabled": "Platform enabled"
+      }
+    },
+    "teams": {
+      "label": "Microsoft Teams"
+    },
+    "webchat": {
+      "label": "Web Chat"
+    },
+    "phone": {
+      "label": "Phone"
+    },
+    "tiktok": {
+      "label": "TikTok"
+    },
+    "unknown": {
+      "label": "Unknown Platform"
+    },
+    "wecom": {
+      "label": "WeCom",
+      "header": {
+        "title": "{{name}} Config",
+        "subtitle": "Configure credentials and callbacks for WeCom integration."
+      },
+      "buttons": {
+        "delete": "Delete",
+        "deleting": "Deleting...",
+        "enable": "Enable",
+        "disable": "Disable",
+        "enabling": "Enabling...",
+        "disabling": "Disabling...",
+        "save": "Save",
+        "saving": "Saving...",
+        "show": "Show",
+        "hide": "Hide",
+        "copy": "Copy"
+      },
+      "form": {
+        "name": "Platform Name",
+        "namePlaceholder": "Please enter platform name",
+        "corpId": "CorpID",
+        "corpIdPlaceholder": "e.g.: ww1234567890abcdef",
+        "corpIdHint": "Can be found in 'My Company' - 'Company Information'.",
+        "agentId": "AgentId",
+        "agentIdPlaceholder": "e.g.: 1000002",
+        "agentIdHint": "Obtain from the application details page in the WeCom management backend.",
+        "appSecret": "App Secret",
+        "appSecretPlaceholder": "Please enter App Secret",
+        "appSecretHint": "Used as credentials for calling WeCom interfaces, keep it safe.",
+        "token": "Token",
+        "tokenPlaceholder": "Token for callback verification",
+        "tokenHint": "Must match the Token in the WeCom callback configuration.",
+        "encodingAESKey": "EncodingAESKey",
+        "encodingAESKeyPlaceholder": "43-character message encryption key",
+        "encodingAESKeyHint": "Used when the message encryption method is compatible/safe mode.",
+        "callbackUrl": "Callback URL",
+        "callbackUrlPlaceholder": "Callback URL will be generated after creation",
+        "callbackUrlHint": "Set this URL as the callback address in WeCom 'Server Configuration'."
+      },
+      "guide": {
+        "title": "WeCom Configuration Guide",
+        "overview": "Quick Overview",
+        "overviewText": "Complete these four steps: ① Find CorpID → ② Obtain AgentId/Secret → ③ Configure server callback (URL/Token/EncodingAESKey) → ④ Save and test.",
+        "step1Title": "1️⃣ Find CorpID",
+        "step1Item1": "Log in to the <a class=\"text-blue-600 hover:underline\" href=\"https://work.weixin.qq.com/wework_admin/frame\" target=\"_blank\" rel=\"noreferrer\">WeCom management backend</a>.",
+        "step1Item2": "Go to 'My Company' → 'Company Information'.",
+        "step1Item3": "Copy the 'CorpID' and paste it into the 'CorpID' field on the left.",
+        "step1Example": "Example: ww1234567890abcdef",
+        "step2Title": "2️⃣ Obtain AgentId and App Secret",
+        "step2Item1": "Select 'App Management' on the left and open your self-built app.",
+        "step2Item2": "You can see the 'AgentId' on the app details page.",
+        "step2Item3": "Click 'Secret' to show or reset, copy and fill into the 'App Secret' field on the left.",
+        "step2SecurityTitle": "Security Tip",
+        "step2SecurityText": "Keep the Secret safe and do not leak it; use minimum permissions and rotate regularly in production.",
+        "step3Title": "3️⃣ Configure Server Callback (URL / Token / EncodingAESKey)",
+        "step3Item1": "In 'App Management' → your app → 'Receive Messages', click 'Set' to enter 'API Receive Messages'.",
+        "step3Item2": "URL: Copy the Callback URL (read-only) from the left and paste it into the console;",
+        "step3Item3": "Token: Customize any string and ensure it matches the left field;",
+        "step3Item4": "EncodingAESKey: Click to generate a 43-character key and copy it to the left field;",
+        "step3Item5": "Encryption Method: 'Compatible' or 'Safe' mode is recommended.",
+        "step3ExampleTitle": "Example Placeholder (for reference only)",
+        "step3Note": "After saving, WeCom will perform URL verification. Ensure your server returns the correct verification response.",
+        "step4Title": "4️⃣ Troubleshooting",
+        "step4Item1": "URL verification failed: Check if your callback service is accessible from the public internet and if the TLS certificate is valid.",
+        "step4Item2": "Decryption failed: Confirm the EncodingAESKey is correct and contains no extra spaces.",
+        "step4Item3": "403/Permission issues: Confirm the app is enabled and granted required permissions; regenerate Secret if necessary.",
+        "docsLink": "WeCom Message Callback Dev Docs",
+        "bestPracticesTitle": "Best Practices",
+        "bestPracticesItem1": "Store Secrets in a key management service (like Vault, KMS) instead of plaintext in code.",
+        "bestPracticesItem2": "Use different Token/AESKey for different environments (Dev/Test/Prod).",
+        "bestPracticesItem3": "Rotate Secrets regularly and update server configuration before expiration."
+      },
+      "messages": {
+        "saveSuccess": "Saved Successfully",
+        "saveSuccessMessage": "WeCom platform configuration has been updated",
+        "disabled": "Platform disabled",
+        "enabled": "Platform enabled",
+        "urlCopied": "Callback URL copied",
+        "deleteSuccess": "Deleted Successfully",
+        "deleteSuccessMessage": "WeCom platform has been deleted"
+      },
+      "confirm": {
+        "deleteTitle": "Delete Platform",
+        "deleteMessage": "Are you sure you want to delete this platform?",
+        "confirmText": "Delete",
+        "cancelText": "Cancel"
+      }
+    },
+    "dingtalkBot": {
+      "label": "DingTalk Bot",
+      "header": {
+        "title": "{{name}} Config",
+        "subtitle": "Configure credentials and callbacks for DingTalk Bot integration."
+      },
+      "buttons": {
+        "delete": "Delete",
+        "deleting": "Deleting...",
+        "enable": "Enable",
+        "disable": "Disable",
+        "enabling": "Enabling...",
+        "disabling": "Disabling...",
+        "save": "Save",
+        "saving": "Saving...",
+        "copy": "Copy"
+      },
+      "form": {
+        "name": "Platform Name",
+        "namePlaceholder": "Please enter platform name",
+        "callbackUrl": "Message Receiver URL",
+        "callbackUrlPlaceholder": "Receiver URL will be generated after creation",
+        "callbackUrlHint": "Fill this URL into the 'Message Receiver URL' in DingTalk Bot configuration.",
+        "appKey": "App Key",
+        "appKeyPlaceholder": "DingTalk App Key",
+        "appKeyHint": "Found in 'Credentials & Basic Info' of the app details on DingTalk Open Platform.",
+        "appSecret": "App Secret",
+        "appSecretPlaceholder": "DingTalk App Secret",
+        "appSecretHint": "Found in 'Credentials & Basic Info' on DingTalk Open Platform, keep it safe.",
+        "robotCode": "Robot Code",
+        "robotCodePlaceholder": "Unique code for the DingTalk robot",
+        "robotCodeHint": "Obtain from the robot configuration page on DingTalk Open Platform.",
+        "aesKey": "AES Key",
+        "aesKeyPlaceholder": "Key for message encryption/decryption",
+        "aesKeyHint": "Used to decrypt event messages from DingTalk, obtain from Open Platform.",
+        "token": "Token",
+        "tokenPlaceholder": "Token for signature verification",
+        "tokenHint": "Used to verify event subscription request source, obtain from Open Platform."
+      },
+      "guide": {
+        "title": "DingTalk Bot Configuration Guide",
+        "overview": "Quick Overview",
+        "overviewText": "Complete three steps: ① Create app/robot on DingTalk Open Platform → ② Configure receiver URL and get credentials → ③ Fill information back here and save.",
+        "step1Title": "1️⃣ Create DingTalk App/Robot",
+        "step1Item1": "Visit <a class=\"text-blue-600 hover:underline\" href=\"https://open.dingtalk.com/developer\" target=\"_blank\" rel=\"noreferrer\">DingTalk Open Platform</a>, log in and enter developer backend.",
+        "step1Item2": "Click 'App Development' → 'Internal Development' → 'Create App'.",
+        "step1Item3": "Fill in app name, description, etc., and confirm creation.",
+        "step1Item4": "In app details, find 'Robot' and click 'Create Robot'.",
+        "step2Title": "2️⃣ Configure Receiver and Security",
+        "step2Item1": "In robot configuration, find 'Message Receiver Mode' and select 'HTTP Mode'.",
+        "step2Item2": "Copy the 'Message Receiver URL' from the left and paste it into DingTalk.",
+        "step2Item3": "In 'Credentials & Basic Info', copy 'AppKey' and 'AppSecret' and fill them on the left.",
+        "step2Item4": "In robot configuration, copy 'RobotCode' and fill it into 'Robot Code' on the left.",
+        "step2Item5": "In 'Dev Config' → 'Event Subscription', copy 'AES Key' and 'Token' and fill them on the left.",
+        "step2SecurityTitle": "Security Tip",
+        "step2SecurityText": "Keep AppSecret, AES Key, and Token safe; they are used for verification and encryption.",
+        "step3Title": "3️⃣ Publish App",
+        "step3Item1": "Click 'Save' on this platform.",
+        "step3Item2": "Go back to DingTalk, click 'Version Management & Release' → 'Create Version'.",
+        "step3Item3": "Submit for review; it will be ready after admin approval.",
+        "docsLink": "DingTalk Bot Dev Docs"
+      },
+      "dialog": {
+        "deleteTitle": "Confirm Delete",
+        "deleteMessage": "Are you sure you want to delete this DingTalk Bot platform? This action cannot be undone.",
+        "confirmDelete": "Delete",
+        "cancel": "Cancel"
+      },
+      "messages": {
+        "saveSuccess": "Saved Successfully",
+        "saveSuccessMessage": "DingTalk Bot configuration has been updated",
+        "deleteSuccess": "Deleted Successfully",
+        "deleteSuccessMessage": "DingTalk Bot platform has been deleted",
+        "urlCopied": "Receiver URL copied",
+        "disabled": "Platform disabled",
+        "enabled": "Platform enabled"
+      }
+    },
+    "feishuBot": {
+      "label": "Feishu Bot",
+      "header": {
+        "title": "{{name}} Config",
+        "subtitle": "Configure credentials and callbacks for Feishu Bot integration."
+      },
+      "buttons": {
+        "delete": "Delete",
+        "deleting": "Deleting...",
+        "enable": "Enable",
+        "disable": "Disable",
+        "enabling": "Enabling...",
+        "disabling": "Disabling...",
+        "save": "Save",
+        "saving": "Saving...",
+        "copy": "Copy"
+      },
+      "form": {
+        "name": "Platform Name",
+        "namePlaceholder": "Please enter platform name",
+        "callbackUrl": "Request URL",
+        "callbackUrlPlaceholder": "Request URL will be generated after creation",
+        "callbackUrlHint": "Fill this URL into the 'Request URL' in Feishu Bot configuration.",
+        "appId": "App ID",
+        "appIdPlaceholder": "Feishu App ID",
+        "appIdHint": "Found in 'Credentials & Basic Info' of the app details on Feishu Open Platform.",
+        "appSecret": "App Secret",
+        "appSecretPlaceholder": "Feishu App Secret",
+        "appSecretHint": "Found in 'Credentials & Basic Info' on Feishu Open Platform, keep it safe.",
+        "encryptKey": "Encrypt Key",
+        "encryptKeyPlaceholder": "Encryption key from Feishu Open Platform",
+        "encryptKeyHint": "Used to decrypt event messages from Feishu, obtain from Open Platform.",
+        "verificationToken": "Verification Token",
+        "verificationTokenPlaceholder": "Verification token from Feishu Open Platform",
+        "verificationTokenHint": "Used to verify event subscription request source, obtain from Open Platform."
+      },
+      "guide": {
+        "title": "Feishu Bot Configuration Guide",
+        "overview": "Quick Overview",
+        "overviewText": "Complete three steps: ① Create app/robot on Feishu Open Platform → ② Configure request URL and get Encrypt Key/Verification Token → ③ Fill information back here and save.",
+        "step1Title": "1️⃣ Create Feishu App/Robot",
+        "step1Item1": "Visit <a class=\"text-blue-600 hover:underline\" href=\"https://open.feishu.cn/app\" target=\"_blank\" rel=\"noreferrer\">Feishu Open Platform</a>, log in and enter developer backend.",
+        "step1Item2": "Click 'Create Custom App', fill in name and description.",
+        "step1Item3": "Go to app details, find 'Robot' in left menu, and enable robot capability.",
+        "step2Title": "2️⃣ Configure Event Subscription",
+        "step2Item1": "In app details, enter 'Event Subscription'.",
+        "step2Item2": "Copy the 'Request URL' from the left and paste it into Feishu.",
+        "step2Item3": "Find 'Encrypt Key' and 'Verification Token' on the page, copy and fill them on the left.",
+        "step2Item4": "Add required events, e.g., 'Receive Messages' (im.message.receive_v1).",
+        "step2SecurityTitle": "Security Tip",
+        "step2SecurityText": "Keep Encrypt Key and Verification Token safe; they are used for verification and decryption.",
+        "step3Title": "3️⃣ Publish App",
+        "step3Item1": "Click 'Save' on this platform.",
+        "step3Item2": "Go back to Feishu, click 'Version Management & Release' → 'Create Version'.",
+        "step3Item3": "Submit for review; it will be ready after admin approval.",
+        "docsLink": "Feishu Bot Dev Docs"
+      },
+      "dialog": {
+        "deleteTitle": "Confirm Delete",
+        "deleteMessage": "Are you sure you want to delete this Feishu Bot platform? This action cannot be undone.",
+        "confirmDelete": "Delete",
+        "cancel": "Cancel"
+      },
+      "messages": {
+        "saveSuccess": "Saved Successfully",
+        "saveSuccessMessage": "Feishu Bot configuration has been updated",
+        "deleteSuccess": "Deleted Successfully",
+        "deleteSuccessMessage": "Feishu Bot platform has been deleted",
+        "urlCopied": "Request URL copied",
+        "disabled": "Platform disabled",
+        "enabled": "Platform enabled"
+      }
+    },
+    "email": {
+      "label": "Email",
+      "header": {
+        "title": "Email Platform Configuration",
+        "subtitle": "Configure IMAP (receiving) and SMTP (sending) information."
+      },
+      "buttons": {
+        "delete": "Delete",
+        "deleting": "Deleting...",
+        "enable": "Enable",
+        "disable": "Disable",
+        "enabling": "Enabling...",
+        "disabling": "Disabling...",
+        "save": "Save",
+        "saving": "Saving...",
+        "show": "Show",
+        "hide": "Hide",
+        "testConnection": "Test Connection",
+        "testing": "Testing..."
+      },
+      "form": {
+        "name": "Platform Name",
+        "namePlaceholder": "Enter platform name",
+        "emailAddress": "Email Address",
+        "emailPlaceholder": "you@example.com",
+        "emailPassword": "Email Password",
+        "passwordPlaceholder": "Enter email password or authorization code",
+        "passwordHint": "Gmail/QQ Mail requires app-specific password or authorization code",
+        "autoDetected": "Auto-detected as",
+        "showAdvanced": "Show Advanced Settings",
+        "hideAdvanced": "Hide Advanced Settings",
+        "imapSection": "IMAP Configuration (Receiving Emails)",
+        "imapHost": "IMAP Server",
+        "imapHostPlaceholder": "e.g., imap.gmail.com",
+        "imapPort": "IMAP Port",
+        "imapPortPlaceholder": "Default 993 (SSL) or 143 (non-SSL)",
+        "imapUsername": "Email Address",
+        "imapUsernamePlaceholder": "you@example.com",
+        "imapPassword": "Email Password",
+        "imapPasswordPlaceholder": "Enter email password or authorization code",
+        "useSsl": "Use SSL",
+        "smtpSection": "SMTP Configuration (Sending Emails)",
+        "useSameCredentials": "Use Same Credentials for SMTP (Recommended)",
+        "smtpHost": "SMTP Server",
+        "smtpHostPlaceholder": "e.g., smtp.gmail.com",
+        "smtpPort": "SMTP Port",
+        "smtpPortPlaceholder": "Default 465 (SSL) or 587 (TLS)",
+        "smtpUsername": "SMTP Username",
+        "smtpUsernamePlaceholder": "Usually same as email address",
+        "smtpPassword": "SMTP Password",
+        "smtpPasswordPlaceholder": "Enter SMTP password",
+        "smtpPasswordSame": "Using IMAP password",
+        "smtpUseSsl": "Use SSL (Port 465)",
+        "smtpUseTls": "Use TLS/STARTTLS (Port 587, Recommended)"
+      },
+      "guide": {
+        "title": "Email Platform Configuration Guide (IMAP Receiving + SMTP Sending)",
+        "tipTitle": "Tip",
+        "tipMessage": "IMAP is for receiving emails, SMTP is for sending emails. Common ports: <span class=\"font-mono\">IMAP SSL=993</span>, <span class=\"font-mono\">SMTP SSL=465</span>, <span class=\"font-mono\">SMTP TLS=587</span>.",
+        "section1Title": "1. Get Email Credentials (General Steps)",
+        "section1Step1": "Log in to your email service provider account (Gmail / Outlook / QQ Mail, etc.).",
+        "section1Step2": "Go to 'Account Settings' or 'Security' page, enable IMAP/SMTP service (if required).",
+        "section1Step3": "If required by the service provider (such as Gmail/QQ), enable two-step verification and create an 'App-specific password'.",
+        "section1Step4": "Fill in IMAP and SMTP configuration in the left form. If using same credentials, check 'Use Same Credentials for SMTP'.",
+        "section1Step5": "Click 'Save' in the upper right corner, then test sending and receiving emails.",
+        "section2Title": "2. Common Email Servers and Ports",
+        "tableProvider": "Provider",
+        "tableImapServer": "IMAP Server",
+        "tableImapPort": "IMAP Port",
+        "tableSmtpServer": "SMTP Server",
+        "tableSmtpPort": "SMTP Port",
+        "tableQQMail": "QQ Mail",
+        "section3Title": "3. Detailed Provider Configuration",
+        "gmailTitle": "Gmail (App-specific Password)",
+        "gmailStep1": "Go to Google Account Security Center → Two-step Verification → App-specific Password; confirm IMAP/SMTP is enabled.",
+        "gmailStep2": "IMAP server: <code class=\"px-1 bg-gray-100 rounded\">imap.gmail.com</code>, port: 993 (SSL).",
+        "gmailStep3": "SMTP server: <code class=\"px-1 bg-gray-100 rounded\">smtp.gmail.com</code>, port: 465 (SSL) or 587 (TLS).",
+        "gmailStep4": "Username is your Gmail address; password uses app-specific password (same for IMAP and SMTP).",
+        "gmailPasswordPlaceholder": "App-specific password",
+        "gmailDocs": "Gmail Official Guide",
+        "outlookTitle": "Outlook (Office 365)",
+        "outlookStep1": "IMAP server: <code class=\"px-1 bg-gray-100 rounded\">outlook.office365.com</code>, port: 993 (SSL).",
+        "outlookStep2": "SMTP server: <code class=\"px-1 bg-gray-100 rounded\">smtp.office365.com</code>, port: 587 (TLS).",
+        "outlookStep3": "Username is usually the email address; IMAP and SMTP use same credentials.",
+        "outlookDocs": "Microsoft Documentation",
+        "qqTitle": "QQ Mail (Enable IMAP/SMTP Required)",
+        "qqStep1": "Go to QQ Mail Settings → Account → Enable 'IMAP/SMTP Service'.",
+        "qqStep2": "Get authorization code as password; IMAP server: <code class=\"px-1 bg-gray-100 rounded\">imap.qq.com</code>, port: 993.",
+        "qqStep3": "SMTP server: <code class=\"px-1 bg-gray-100 rounded\">smtp.qq.com</code>, port: 465 (SSL) or 587 (TLS).",
+        "qqStep4": "IMAP and SMTP use the same authorization code.",
+        "qqPasswordPlaceholder": "Authorization code",
+        "qqDocs": "QQ Mail Help",
+        "troubleshootTitle": "Troubleshooting Guide",
+        "troubleshootItem1": "Confirm that the service provider has enabled IMAP/SMTP service; Gmail/QQ need to enable in settings and use app-specific password/authorization code.",
+        "troubleshootItem2": "IMAP: prioritize SSL (port 993); SMTP: recommend TLS (port 587) or SSL (port 465).",
+        "troubleshootItem3": "Verify that the email address (username) and password are correct, pay attention to case and spaces.",
+        "troubleshootItem4": "If 'Use Same Credentials' is checked, ensure IMAP and SMTP use the same username and password.",
+        "troubleshootItem5": "If still failing, check if you need to allow third-party client access in the service provider backend.",
+        "moreInfo": "More documentation: Official documentation and support pages of each email service provider."
+      },
+      "messages": {
+        "saveSuccess": "Saved Successfully",
+        "saveSuccessMessage": "Email platform configuration has been saved",
+        "enabled": "Platform Enabled",
+        "disabled": "Platform Disabled",
+        "deleteSuccess": "Platform Deleted",
+        "deleteSuccessMessage": "Platform has been deleted",
+        "testSuccess": "Connection Test Successful",
+        "testSuccessMessage": "Both IMAP and SMTP connections are working",
+        "testFailed": "Connection Test Failed",
+        "testValidationError": "Please fill in all required email configuration fields"
+      },
+      "confirm": {
+        "deleteTitle": "Delete Platform",
+        "deleteMessage": "Are you sure you want to delete this platform?",
+        "confirmText": "Delete",
+        "cancelText": "Cancel"
+      }
+    },
+    "douyin": {
+      "label": "Douyin",
+      "title": "{{name}} - Douyin Platform Configuration",
+      "subtitle": "Configure Douyin Open Platform credentials and callback information.",
+      "buttons": {
+        "delete": "Delete",
+        "deleting": "Deleting...",
+        "enable": "Enable",
+        "disable": "Disable",
+        "enabling": "Enabling...",
+        "disabling": "Disabling...",
+        "save": "Save",
+        "saving": "Saving...",
+        "show": "Show",
+        "hide": "Hide"
+      },
+      "form": {
+        "platformName": "Platform Name",
+        "platformNamePlaceholder": "Please enter platform name",
+        "appId": "App ID",
+        "appIdPlaceholder": "e.g., your_app_id",
+        "appSecret": "App Secret",
+        "appSecretPlaceholder": "Please enter App Secret",
+        "clientKey": "Client Key",
+        "clientKeyPlaceholder": "e.g., your_client_key",
+        "clientSecret": "Client Secret",
+        "clientSecretPlaceholder": "Please enter Client Secret",
+        "callbackUrl": "Callback URL",
+        "callbackUrlPlaceholder": "Callback URL will be generated after platform creation",
+        "callbackUrlHint": "Configure this URL in Douyin Open Platform 'Callback Address' settings.",
+        "authScope": "Authorization Scope",
+        "authScopePlaceholder": "e.g., user_info,video.list",
+        "authScopeHint": "Separate multiple permissions with commas, e.g., user_info,video.list."
+      },
+      "guide": {
+        "title": "Douyin Open Platform Configuration Guide",
+        "overview": "Quick Overview",
+        "overviewText": "Complete the following four steps: ① Register Open Platform account → ② Create application and get credentials → ③ Configure callback address → ④ Save and test.",
+        "step1Title": "1️⃣ Register Douyin Open Platform Account",
+        "step1Item1": "Visit <a class=\"text-blue-600 hover:underline\" href=\"https://developer.open-douyin.com/\" target=\"_blank\" rel=\"noreferrer\">Douyin Open Platform</a> and complete account registration and entity authentication (if required).",
+        "step1Item2": "Log in to the console and complete developer information.",
+        "step2Title": "2️⃣ Create Application and Get Credentials",
+        "step2Item1": "Create a new application in the console and note down the App ID and App Secret.",
+        "step2Item2": "Get Client Key and Client Secret in application settings.",
+        "step2Item3": "Select and enable the required authorization scope (Scope) according to business needs.",
+        "step3Title": "3️⃣ Configure Callback Address",
+        "step3Item1": "Configure the callback URL in the Open Platform 'Callback Settings': use the read-only callback URL above.",
+        "step3Item2": "Ensure the server is publicly accessible and correctly handles verification requests.",
+        "step4Title": "4️⃣ Common Issues and Troubleshooting",
+        "step4Item1": "Callback verification failed: Check if the callback URL is accessible and if the TLS certificate is valid.",
+        "step4Item2": "Insufficient permissions: Confirm that the required Scope has been enabled and authorized in the Open Platform.",
+        "step4Item3": "Credential error: Verify that App ID/Secret and Client Key/Secret are entered correctly.",
+        "bestPracticesTitle": "Best Practices",
+        "bestPracticesItem1": "Store keys in a secure key management service (such as KMS/Vault) to avoid appearing in the code repository.",
+        "bestPracticesItem2": "Use different callbacks and credentials for different environments (development/testing/production), with minimum authorization as needed.",
+        "bestPracticesItem3": "Regularly rotate keys and minimize permission scope (Scope)."
+      },
+      "messages": {
+        "saveSuccess": "Saved Successfully",
+        "saveSuccessMessage": "Douyin platform configuration has been saved",
+        "platformDisabled": "Platform Disabled",
+        "platformEnabled": "Platform Enabled",
+        "deleteSuccess": "Platform Deleted",
+        "deleteSuccessMessage": "Platform has been deleted"
+      },
+      "confirm": {
+        "deleteTitle": "Delete Platform",
+        "deleteMessage": "Are you sure you want to delete this platform?",
+        "confirmText": "Delete",
+        "cancelText": "Cancel"
+      },
+      "docsLink": "Douyin Open Platform documentation"
+    },
+    "custom": {
+      "label": "Custom Platform",
+      "title": "Custom Platform Configuration",
+      "subtitle": "Configure API information and callback URL for third-party program integration.",
+      "configSection": "Configuration",
+      "platformName": "Platform Name",
+      "platformNamePlaceholder": "Enter platform name",
+      "nameSaved": "Platform name saved successfully",
+      "chatUrl": "Chat API Endpoint",
+      "chatUrlHint": "Third-party programs call this address to send conversation messages.",
+      "apiKeyHint": "Use X-Platform-API-Key in the request header for authentication.",
+      "apiKey": "API Key",
+      "callbackUrl": "Callback URL",
+      "callbackUrlHint": "When customer service replies to messages, the system will push messages to this address",
+      "callbackUrlPlaceholder": "https://your-domain.com/webhook/callback",
+      "callbackSaved": "Callback URL saved successfully",
+      "callbackSaveFailed": "Failed to save callback URL",
+      "invalidUrl": "Invalid URL format",
+      "invalidUrlHint": "Please enter a valid HTTP/HTTPS address",
+      "notAvailable": "Not Available",
+      "copied": "{{label}} copied to clipboard",
+      "copyFailed": "Copy failed",
+      "disabled": "Platform disabled",
+      "enabled": "Platform enabled",
+      "toggleFailed": "Failed to toggle status",
+      "confirmRegenerate": "Are you sure you want to regenerate the API key? The old key will be invalidated immediately.",
+      "regenerated": "API key regenerated successfully",
+      "regenerateFailed": "Failed to regenerate API key",
+      "regenerate": "Regenerate",
+      "deleted": "Platform deleted",
+      "deleteFailed": "Failed to delete platform",
+      "deleteTitle": "Delete Platform",
+      "deleteMessage": "Are you sure you want to delete platform \"{{name}}\"? This action cannot be undone.",
+      "code": "Code",
+      "saveSuccess": "Saved successfully",
+      "integration": {
+        "title": "API Integration Information",
+        "guide": "Integration Guide",
+        "chatApi": "Chat API (Send Messages to Pelatis)",
+        "endpoint": "API Endpoint",
+        "authentication": "Authentication",
+        "authDesc": "Add the platform API key in the request header:",
+        "requiredParams": "Required Parameters",
+        "messagesDesc": "Array of conversation messages, compatible with OpenAI ChatGPT API format",
+        "userDesc": "Unique identifier of the third-party platform user (required)",
+        "optionalFeatures": "Optional Features",
+        "visitorRegisterDesc": "If you need to pass detailed user information (name, avatar, etc.), you can first call the visitor registration API:",
+        "simpleExample": "Simple Example",
+        "responseHandling": "Response Handling",
+        "responseHandlingDesc": "After calling the chat API, Pelatis system will return the AI assistant's reply. The third-party platform needs to send the returned reply content to the corresponding third-party user. The response format is compatible with OpenAI ChatGPT API, supporting both streaming and non-streaming responses.",
+        "callbackApi": "Callback API (Receive Customer Service Replies)",
+        "callbackConfig": "Configure Callback URL",
+        "callbackConfigDesc": "Configure your callback URL in the 'Callback URL' field on the left. When customer service replies to a message, the system will send a POST request to that address.",
+        "requestFormat": "Request Format",
+        "fieldDescriptions": "Field Descriptions",
+        "messageIdDesc": "Unique message identifier",
+        "callbackUserDesc": "Third-party user identifier (corresponds to the user field in the chat API)",
+        "contentDesc": "Customer service reply message content",
+        "timestampDesc": "Message timestamp (ISO 8601 format)",
+        "responseRequirement": "Response Requirement",
+        "responseRequirementDesc": "Please ensure the callback URL is publicly accessible and returns HTTP 200 status code to indicate successful receipt.",
+        "codeExamples": "Code Examples"
+      }
+    },
+    "aiSettings": {
+      "title": "AI Settings",
+      "optional": "Optional",
+      "agents": "AI Agents",
+      "loadingAgents": "Loading...",
+      "selectAgents": "Select AI Agent",
+      "noAgents": "No AI Agents Available",
+      "agentsHint": "Select the AI agent assigned to this platform.",
+      "agentsHintDefault": "If none selected, the project default AI agent will be used.",
+      "mode": "AI Mode",
+      "modeAuto": "Auto",
+      "modeAssist": "Assist",
+      "modeOff": "Off",
+      "modeAutoHint": "AI automatically handles all messages.",
+      "modeAssistHint": "Human first, AI takes over after timeout.",
+      "modeOffHint": "Disable AI, only human handles messages.",
+      "timeout": "Timeout (seconds)",
+      "timeoutPlaceholder": "e.g., 60",
+      "timeoutHint": "Time in seconds before AI takes over when there's no reply. Set to 0 to prevent AI takeover.",
+      "saveSuccess": "AI settings saved",
+      "saveButton": "Save AI Settings"
+    },
+    "wecomBot": {
+      "messages": {
+        "saveSuccess": "Saved successfully",
+        "saveSuccessMessage": "WeCom bot configuration updated",
+        "disabled": "Platform disabled",
+        "enabled": "Platform enabled",
+        "urlCopied": "Callback URL copied",
+        "deleteSuccess": "Deleted successfully",
+        "deleteSuccessMessage": "WeCom bot platform deleted"
+      },
+      "header": {
+        "subtitle": "Configure the credentials and callback needed to connect the WeCom bot (Webhook).",
+        "title": "{{name}} Configuration"
+      },
+      "buttons": {
+        "deleting": "Deleting…",
+        "delete": "Delete",
+        "disabling": "Disabling…",
+        "enabling": "Enabling…",
+        "disable": "Disable",
+        "enable": "Enable",
+        "saving": "Saving…",
+        "save": "Save",
+        "copy": "Copy"
+      },
+      "form": {
+        "name": "Platform Name",
+        "namePlaceholder": "Enter the platform name",
+        "callbackUrl": "Callback URL",
+        "callbackUrlPlaceholder": "The callback URL is generated after the platform is created",
+        "callbackUrlHint": "Enter this URL in the \"URL\" setting of the WeCom smart bot.",
+        "tokenPlaceholder": "Token used for callback verification",
+        "tokenHint": "Must match the Token configured in the WeCom admin console.",
+        "encodingAESKeyPlaceholder": "43-character message encryption key",
+        "encodingAESKeyHint": "43-character message encryption key, used to encrypt and decrypt callback messages.",
+        "token": "Token",
+        "encodingAESKey": "EncodingAESKey"
+      },
+      "guide": {
+        "title": "WeCom Bot Setup Guide",
+        "overview": "Quick Overview",
+        "overviewText": "Complete three steps: ① create a smart bot in the Workbench → ② enter the callback URL in WeCom and get the Token and EncodingAESKey → ③ fill them back in on this platform and save.",
+        "step1Title": "1️⃣ Create a WeCom smart bot",
+        "step1Item1": "Log in to the WeCom app and open \"Workbench\".",
+        "step1Item2": "Find and tap the \"Smart Bot\" app.",
+        "step1Item3": "Tap the \"Create smart agent bot\" button.",
+        "step1Item4": "Scroll to the bottom of the page and click the \"Create in API mode\" link.",
+        "step2Title": "2️⃣ Configure the callback URL and security info",
+        "step2Item1": "Copy the \"Callback URL\" on the left and paste it into the \"URL\" field on the WeCom bot configuration page.",
+        "step2Item2": "Click \"Random generate\" next to \"Token\", copy the generated Token and fill it into the \"Token\" field on the left.",
+        "step2Item3": "Click \"Random generate\" next to \"EncodingAESKey\", copy the generated key and fill it into the \"EncodingAESKey\" field on the left.",
+        "step2Item4": "Important: click Save on this platform now, then go back to the WeCom app and click \"Done\" to finish creating the bot.",
+        "step2SecurityTitle": "Security Notice",
+        "step2SecurityText": "Keep the Token and EncodingAESKey safe; they are used to verify the message source and to encrypt/decrypt messages."
+      },
+      "dialog": {
+        "deleteTitle": "Confirm Deletion",
+        "deleteMessage": "Are you sure you want to delete this WeCom bot platform? This action cannot be undone.",
+        "confirmDelete": "Delete",
+        "cancel": "Cancel"
+      },
+      "label": "WeCom Bot"
+    },
+    "store": {
+      "newPlatform": "New Platform",
+      "loadDetailFailed": "Failed to load platform details"
+    },
+    "status": {
+      "notConfigured": "Not configured",
+      "connected": "Connected",
+      "disabled": "Disabled",
+      "connectionFailed": "Connection failed"
+    }
+  },
+  "setup": {
+    "title": "System Setup Wizard",
+    "subtitle": "Welcome to Pelatis CS, let's configure your system",
+    "steps": {
+      "admin": "Admin Account",
+      "staff": "Human Agents",
+      "llm": "LLM Configuration",
+      "verify": "Verify Installation"
+    },
+    "stepIndicator": "Step {{current}} / {{total}}",
+    "admin": {
+      "title": "Setup Administrator Account",
+      "description": "Create a system administrator account for login and management",
+      "username": "Username",
+      "usernamePlaceholder": "Enter username (3-20 characters)",
+      "usernameFixed": "Default admin username, cannot be modified",
+      "password": "Password",
+      "passwordPlaceholder": "Enter password (at least 8 characters)",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "Re-enter password",
+      "validation": {
+        "usernameRequired": "Username is required",
+        "usernameLength": "Username must be 3-20 characters",
+        "usernameFormat": "Username can only contain letters, numbers and underscores",
+        "passwordRequired": "Password is required",
+        "passwordLength": "Password must be at least 8 characters",
+        "passwordStrength": "Password must contain uppercase, lowercase and numbers",
+        "confirmPasswordRequired": "Please confirm your password",
+        "passwordMismatch": "Passwords do not match"
+      }
+    },
+    "staff": {
+      "title": "Configure Human Agents",
+      "description": "Add human agent accounts to handle customer inquiries",
+      "infoText": "When the AI agent cannot resolve user issues, the system will automatically assign the conversation to a human agent. Human agents can take over the conversation and provide more professional assistance.",
+      "staffItem": "Agent {{index}}",
+      "username": "Username",
+      "usernamePlaceholder": "Enter username (min 4, letters/numbers only)",
+      "name": "Name",
+      "namePlaceholder": "Enter agent name",
+      "password": "Password",
+      "passwordPlaceholder": "Enter password (at least 8 characters)",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "Re-enter password",
+      "addStaff": "Add Agent",
+      "emptyHint": "Click the button above to add human agent accounts",
+      "requiredHint": "* At least one human agent is required",
+      "validation": {
+        "usernameRequired": "Username is required",
+        "usernameLength": "Username must be 4-50 characters",
+        "usernameFormat": "Username can only contain English letters and numbers (no spaces/special characters)",
+        "nameRequired": "Name is required",
+        "passwordRequired": "Password is required",
+        "passwordLength": "Password must be at least 8 characters",
+        "passwordMismatch": "Passwords do not match",
+        "atLeastOne": "Please add at least one human agent"
+      }
+    },
+    "llm": {
+      "title": "Configure AI Large Language Model",
+      "description": "Select your LLM provider, you can also configure this later in system settings",
+      "optional": "(Optional)",
+      "provider": "Provider",
+      "providerPlaceholder": "Select LLM provider",
+      "providers": {
+        "none": "Skip for now",
+        "openai": "OpenAI",
+        "azure": "Azure OpenAI",
+        "anthropic": "Anthropic",
+        "local": "Local Model",
+        "other": "Other"
+      },
+      "name": "Display Name",
+      "namePlaceholder": "e.g., My OpenAI Provider",
+      "apiKey": "API Key",
+      "apiKeyPlaceholder": "Enter API Key (e.g., sk-...)",
+      "apiEndpoint": "API Endpoint",
+      "apiEndpointPlaceholder": "Enter API Endpoint (optional)",
+      "model": "Model Name",
+      "modelPlaceholder": "e.g., gpt-4, claude-3-opus",
+      "testConnection": "Test Connection",
+      "testSuccess": "Connection test successful",
+      "testFailed": "Connection test failed",
+      "validation": {
+        "providerRequired": "Please select a provider",
+        "nameRequired": "Display name is required",
+        "apiKeyRequired": "API Key is required"
+      }
+    },
+    "verify": {
+      "title": "Installation Complete",
+      "description": "Verifying system configuration...",
+      "summary": "Installation Summary",
+      "adminCreated": "Administrator account created",
+      "staffCreated": "{{count}} human agent(s) created",
+      "staffNotConfigured": "Human agents not configured (can be set later)",
+      "llmConfigured": "LLM configured",
+      "llmNotConfigured": "LLM not configured (can be set later)",
+      "checks": {
+        "title": "System Checks",
+        "database": "Database Connection",
+        "admin": "Administrator Account",
+        "llm": "LLM Configuration",
+        "status": {
+          "success": "Success",
+          "failed": "Failed",
+          "skipped": "Skipped"
+        }
+      },
+      "verifying": "Verifying...",
+      "verifySuccess": "Verification successful",
+      "verifyFailed": "Verification failed",
+      "installationComplete": "Installation Complete!",
+      "redirecting": "Redirecting to login page..."
+    },
+    "buttons": {
+      "previous": "Previous",
+      "next": "Next",
+      "skip": "Skip",
+      "finish": "Finish Installation",
+      "retry": "Retry"
+    },
+    "errors": {
+      "createAdminFailed": "Failed to create administrator account",
+      "createStaffFailed": "Failed to create human agent",
+      "configureLLMFailed": "Failed to configure LLM",
+      "verifyFailed": "Failed to verify installation",
+      "alreadyInstalled": "System is already installed"
+    },
+    "success": {
+      "adminCreated": "Administrator account created successfully",
+      "llmConfigured": "LLM configured successfully"
+    },
+    "guard": {
+      "checking": "Checking system status...",
+      "serverError": "Unable to Connect to Server",
+      "retryButton": "Retry"
+    }
+  },
+  "onboarding": {
+    "title": "Quick Start",
+    "progress": "{{completed}}/{{total}} Completed",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "dismiss": "Close",
+    "dismissButton": "Don't Show Again",
+    "welcome": {
+      "title": "Welcome to Pelatis",
+      "subtitle": "Complete the following steps to start your AI customer service journey",
+      "progress": "Progress",
+      "estimatedTime": "~2 min",
+      "skip": "Skip Guide",
+      "later": "Setup Later",
+      "start": "Start Setup"
+    },
+    "panel": {
+      "title": "Quick Start",
+      "progress": "Progress",
+      "skip": "Skip",
+      "viewAll": "View All"
+    },
+    "modal": {
+      "close": "Close"
+    },
+    "steps": {
+      "ai_provider": {
+        "title": "Configure AI Models",
+        "description": "Connect to AI providers like OpenAI, Qwen, etc."
+      },
+      "default_models": {
+        "title": "Set Default Models",
+        "description": "Choose default chat and embedding models"
+      },
+      "rag_collection": {
+        "title": "Create Knowledge Base",
+        "description": "Upload documents or web pages to build your knowledge base"
+      },
+      "agent_with_kb": {
+        "title": "Create Agent",
+        "description": "Create an AI Agent and link it to your knowledge base"
+      },
+      "first_chat": {
+        "title": "Start Chatting",
+        "description": "Send a message and experience AI-powered responses"
+      }
+    },
+    "tasks": {
+      "platformCreated": "Setup Platform",
+      "knowledgeBaseUploaded": "Upload Knowledge Base",
+      "agentCreated": "Create AI Agent and Link Knowledge Base",
+      "messageReceived": "Receive Message from Platform"
+    }
+  },
+  "deviceControl": {
+    "title": "Device Control",
+    "subtitle": "Manage remote devices controlled by AI agents",
+    "addDevice": "Add Device",
+    "search": {
+      "placeholder": "Search devices..."
+    },
+    "banner": {
+      "title": "Remote Device Control",
+      "description": "Connect your computer or mobile device to let AI agents control the screen directly for more complex automation tasks."
+    },
+    "stats": {
+      "total": "Total Devices",
+      "online": "Online",
+      "offline": "Offline"
+    },
+    "filter": {
+      "all": "All",
+      "online": "Online",
+      "offline": "Offline"
+    },
+    "empty": {
+      "title": "No Connected Devices",
+      "description": "Click the \"Add Device\" button to generate a bind code, then enter the bind code in the control client software to connect your device.",
+      "noResults": "No matching devices found",
+      "tryOther": "Try other search criteria or filters"
+    },
+    "device": {
+      "online": "Online",
+      "offline": "Offline",
+      "disconnect": "Disconnect",
+      "resolution": "Resolution",
+      "lastSeen": "Last Seen",
+      "now": "Now",
+      "neverConnected": "Never connected",
+      "justNow": "Just now",
+      "minutesAgo": "{{count}} minutes ago",
+      "hoursAgo": "{{count}} hours ago",
+      "daysAgo": "{{count}} days ago",
+      "debug": "Debug Device"
+    },
+    "bindCode": {
+      "title": "Add Device",
+      "description": "Enter the following bind code in the control client software to connect your device",
+      "expiresIn": "Expires in",
+      "expired": "Bind code expired",
+      "howTo": "How to connect?",
+      "step1": "Download and install the control client software",
+      "step2": "Open the software and enter the bind code above",
+      "step3": "Once connected, the device will appear in the list"
+    },
+    "edit": {
+      "title": "Edit Device",
+      "deviceName": "Device Name",
+      "deviceNamePlaceholder": "Enter device name",
+      "nameRequired": "Please enter a device name",
+      "os": "Operating System",
+      "resolution": "Screen Resolution",
+      "status": "Status"
+    },
+    "delete": {
+      "title": "Confirm Delete",
+      "message": "Are you sure you want to delete device \"{{name}}\"? This action cannot be undone."
+    },
+    "disconnect": {
+      "title": "Confirm Disconnect",
+      "message": "Are you sure you want to disconnect device \"{{name}}\"?"
+    },
+    "sessionMonitor": {
+      "title": "Session Monitor",
+      "modalTitle": "Computer Use Session Monitor",
+      "modalSubtitle": "View the execution status of AI-controlled devices in real time",
+      "noSession": "No active sessions",
+      "noSessionDesc": "When an AI agent starts controlling a device to perform a task, you can monitor its progress and steps here in real time.",
+      "tip1": "Make sure the device is online",
+      "tip2": "Add a remote agent in the team configuration",
+      "tip3": "Ask the AI agent in a conversation to perform device operations"
+    }
+  },
+  "ws": {
+    "error": {
+      "unknown": "Unknown error",
+      "success": "Success",
+      "authFail": "Authentication failed",
+      "subscriberNotExist": "Subscriber does not exist",
+      "inBlacklist": "User is in blacklist",
+      "channelNotExist": "Channel does not exist",
+      "userNotOnNode": "User not on node",
+      "senderOffline": "Sender is offline",
+      "msgKeyError": "Message key error",
+      "payloadDecodeError": "Payload decode failed",
+      "forwardSendPacketError": "Forward send packet failed",
+      "notAllowSend": "Not allowed to send",
+      "connectKick": "Connection kicked",
+      "notInWhitelist": "Not in whitelist",
+      "queryTokenError": "Query token failed",
+      "systemError": "System error",
+      "channelIDError": "Invalid channel ID",
+      "nodeMatchError": "Node matching error",
+      "nodeNotMatch": "Node not matched",
+      "ban": "Channel is banned",
+      "notSupportHeader": "Unsupported header",
+      "clientKeyIsEmpty": "Client key is empty",
+      "rateLimit": "Rate limit exceeded",
+      "notSupportChannelType": "Unsupported channel type",
+      "disband": "Channel disbanded",
+      "sendBan": "Sending is banned",
+      "sendFailed": "Failed to send message (error code: {{code}})"
+    }
+  },
+  "skills": {
+    "title": "Skills Management",
+    "subtitle": "Define reusable professional instruction sets for AI agents",
+    "search": {
+      "placeholder": "Search skills..."
+    },
+    "createSkill": "Create Skill",
+    "banner": {
+      "title": "Build Professional Skills",
+      "description": "By creating skills, you can break down complex tasks into standardized instruction templates. Enable AI agents to complete specific tasks like code review, copywriting, and data analysis like experts following best practices."
+    },
+    "listTitle": "Skills List",
+    "empty": {
+      "title": "No skills yet",
+      "description": "Create your first skill to make AI agents more professional"
+    },
+    "card": {
+      "author": "Author",
+      "updated": "Updated"
+    },
+    "toggle": {
+      "enabled": "Enabled",
+      "disabled": "Disabled"
+    },
+    "fetchFailed": "Failed to fetch skills",
+    "fetchDetailFailed": "Failed to fetch skill details",
+    "deleteConfirm": "Are you sure you want to delete skill \"{{name}}\"? This action cannot be undone.",
+    "deleteSuccess": "Skill deleted",
+    "deleteFailed": "Failed to delete skill",
+    "form": {
+      "createTitle": "Create Skill",
+      "editTitle": "Edit Skill",
+      "name": "Skill Name",
+      "nameHint": "Lowercase letters, numbers and hyphens, e.g. my-skill",
+      "description": "Description",
+      "descriptionPlaceholder": "Briefly describe the purpose and use cases of this skill",
+      "instructions": "Skill Instructions (Markdown)",
+      "instructionsPlaceholder": "Write detailed skill instructions in Markdown...",
+      "author": "Author",
+      "license": "License",
+      "tags": "Tags",
+      "tagPlaceholder": "Type a tag and press Enter",
+      "createSuccess": "Skill created",
+      "updateSuccess": "Skill updated",
+      "createFailed": "Failed to create skill",
+      "updateFailed": "Failed to update skill",
+      "errors": {
+        "nameRequired": "Please enter a skill name",
+        "nameFormat": "Name can only contain lowercase letters, numbers and hyphens, and must start with a letter",
+        "nameMinLength": "Name must be at least 2 characters",
+        "descRequired": "Please enter a description"
+      }
+    },
+    "detail": {
+      "title": "Skill Details",
+      "instructions": "Skill Instructions",
+      "scripts": "Script Files",
+      "references": "Reference Files"
+    },
+    "import": {
+      "title": "Import Skill from GitHub",
+      "urlLabel": "GitHub Skill Directory URL",
+      "urlHint": "Paste a GitHub directory or file URL (supports /tree/ and /blob/ links), the system will automatically download the entire directory",
+      "tokenLabel": "GitHub Token",
+      "tokenHint": "For accessing private repos or increasing GitHub API rate limits (anonymous: 60/hr, authenticated: 5000/hr)",
+      "addToken": "Add GitHub Token (for private repos or higher rate limits)",
+      "submit": "Import Skill",
+      "success": "Skill imported successfully",
+      "failed": "Failed to import skill",
+      "infoTitle": "Skill Directory Specification",
+      "infoItem1": "Directory must contain a SKILL.md file with YAML frontmatter",
+      "infoItem2": "SKILL.md frontmatter must include name and description fields",
+      "infoItem3": "May optionally include scripts/, references/, assets/ subdirectories",
+      "errors": {
+        "urlRequired": "Please enter a GitHub directory URL",
+        "urlFormat": "Please enter a valid GitHub URL, supports directory or file links, e.g.: https://github.com/owner/repo/tree/branch/path"
+      }
+    },
+    "disable": "Disable skill",
+    "enable": "Enable skill",
+    "toggleFailed": "Failed to toggle skill status"
+  },
+  "modelDetail": {
+    "details": "Agent Details",
+    "intro": "Agent Introduction"
+  },
+  "plugin": {
+    "ui": {
+      "loading": "Loading plugin...",
+      "title": "Extensions"
+    }
+  },
+  "agentDependency": {
+    "title": "Hiring Preparation",
+    "toolsToInstall": "Tools to install",
+    "pricePerCall": "Per call",
+    "modelToBind": "Model to bind",
+    "provider": "Provider",
+    "confirmHint": "After confirmation the system will install the selected tools and models and then complete hiring the agent.",
+    "installing": "Installing and hiring...",
+    "confirmHire": "Confirm hire",
+    "installingFor": "Installing the required dependencies for <b>{{agentName}}</b>"
+  },
+  "agentStoreDetail": {
+    "hiring": "Hiring...",
+    "hireHint": "After hiring, the agent will appear in your AI agent list immediately",
+    "noDetailedDescription": "No detailed description",
+    "skillConfig": "Skill Configuration",
+    "recommendedModel": "Recommended model",
+    "generalModel": "General model",
+    "preinstalledTools": "Pre-installed tools",
+    "loadingToolDetails": "Loading tool details...",
+    "noPreinstalledTools": "This agent has no pre-installed tools"
+  },
+  "authMethod": {
+    "autoDetected": "Auto-detected",
+    "header": "Request Header",
+    "query": "Query Parameter",
+    "none": "None",
+    "enterApiKey": "Enter API Key",
+    "title": "Authentication Method",
+    "authType": "Authentication type",
+    "headerPrefix": "Authorization header prefix",
+    "key": "Key",
+    "value": "Value",
+    "autoDetectedShort": "Auto-detect"
+  },
+  "apiTestModal": {
+    "paramsAndValues": "Parameters and values"
+  },
+  "customTool": {
+    "authSourceOperation": "operation level",
+    "authSourceGlobal": "global level",
+    "authAutoConfigured": "Authentication auto-configured",
+    "errors": {
+      "nameRequired": "Please enter a tool name",
+      "nameTooLong": "Tool name cannot exceed 50 characters",
+      "schemaRequired": "Please enter the Schema configuration"
+    },
+    "createSuccess": "Created successfully",
+    "createFailed": "Creation failed",
+    "createFailedMessage": "An error occurred while creating the custom tool, please try again",
+    "title": "Create Custom Tool",
+    "name": "Name",
+    "namePlaceholder": "Enter tool name",
+    "viewOpenApiSpec": "View OpenAPI-Swagger specification",
+    "examples": "Examples",
+    "schemaPlaceholder": "Enter OpenAPI Schema configuration...",
+    "availableTools": "Available tools",
+    "parsing": "Parsing...",
+    "table": {
+      "name": "Name",
+      "description": "Description",
+      "method": "Method",
+      "path": "Path",
+      "actions": "Actions"
+    },
+    "test": "Test",
+    "noValidEndpoints": "No valid API endpoints found",
+    "enterSchemaToView": "Enter an OpenAPI Schema to view available tools",
+    "autoDetectedAuthTitle": "Authentication configuration auto-detected from the OpenAPI spec",
+    "authDetectedFromSpec": "Detected {{authType}} authentication from the OpenAPI spec ({{source}})",
+    "createSuccessMessage": "Custom tool \"{{name}}\" has been created"
+  },
+  "toolCard": {
+    "actionFailed": "Action failed",
+    "actionError": "An error occurred while performing the {{action}} action"
+  },
+  "baseCard": {
+    "verified": "Verified",
+    "featured": "Featured",
+    "version": "Version",
+    "rating": "Rating",
+    "actions": {
+      "details": "Details",
+      "edit": "Edit",
+      "delete": "Delete",
+      "installed": "Installed",
+      "install": "Install"
+    }
+  },
+  "aiInfoCard": {
+    "status": "Status",
+    "product": "Product",
+    "tracking": "Tracking"
+  },
+  "connectionStatus": {
+    "connected": "Connected",
+    "connecting": "Connecting...",
+    "failed": "Connection failed",
+    "disconnected": "Not connected",
+    "reconnect": "Reconnect"
+  },
+  "richText": {
+    "unnamedFile": "Unnamed file",
+    "uploading": "Uploading",
+    "uploadFailed": "Upload failed",
+    "open": "Open",
+    "image": "Image",
+    "uploadFailedClickRetry": "Upload failed",
+    "clickToRetry": "Click to retry"
+  },
+  "imageCrop": {
+    "adjustFirst": "Please adjust the crop area first",
+    "failed": "Crop failed, please try again",
+    "zoom": "Zoom",
+    "preview": "Preview (1:1)",
+    "previewAlt": "Preview",
+    "none": "None",
+    "recommendedSize": "Recommended size: 72x72 pixels"
+  },
+  "toolsList": {
+    "linkedTools": "Linked tools",
+    "more": "more"
+  },
+  "toolsSkeleton": {
+    "loadFailed": "Failed to load"
+  },
+  "platformConfigPage": {
+    "loading": "Loading platform configuration...",
+    "loadFailed": "Failed to load platform configuration"
+  },
+  "upload": {
+    "parseError": "Unable to parse the upload response",
+    "networkError": "Network error or the server is unavailable",
+    "aborted": "Upload cancelled",
+    "forbidden": "Insufficient permissions, unable to upload files",
+    "fileTooLargeServer": "File is too large and the server rejected it. Please choose a smaller file or ask an administrator to raise the upload limit.",
+    "failedWithStatus": "Upload failed ({{status}})",
+    "failedRetry": "Upload failed, please try again later"
+  },
+  "fileManagement": {
+    "loadFailed": "Failed to load file list",
+    "previewFile": "Preview file",
+    "featureInDevelopment": "This feature is under development..."
+  },
+  "notification": {
+    "testTitle": "Test notification",
+    "testBody": "This is a test notification used to verify that notifications work correctly."
+  },
+  "image": {
+    "placeholder": "[Image]"
+  },
+  "channel": {
+    "loadFailed": "Failed to load channel info"
+  },
+  "conversation": {
+    "newCreated": "New conversation created"
+  },
+  "messages": {
+    "loadHistoryFailed": "Failed to load message history",
+    "loadMoreFailed": "Failed to load more messages",
+    "loadNewerFailed": "Failed to load newer messages",
+    "loadContextFailed": "Failed to load message context"
+  },
+  "storeAuth": {
+    "loginFailed": "Login failed",
+    "exchangeFailed": "Failed to exchange the authorization code"
+  },
+  "sync": {
+    "noMessages": "No messages yet",
+    "failed": "Sync failed"
+  },
+  "toast": {
+    "operationFailed": "Operation failed",
+    "tryAgainLater": "Please try again later",
+    "authFailed": "Authentication failed",
+    "loginAgain": "Please log in again and retry",
+    "networkError": "Network error",
+    "checkNetwork": "Please check your network connection and try again",
+    "permissionDenied": "Insufficient permissions",
+    "cannotPerform": "Unable to perform this action",
+    "fileTooLarge": "File too large",
+    "chooseSmallerFile": "Please choose a smaller file",
+    "fileTypeError": "File type error",
+    "serverError": "Server error",
+    "serviceUnavailable": "The service is temporarily unavailable, please try again later",
+    "file": {
+      "uploadSuccess": "Upload successful",
+      "deleteSuccess": "Deleted successfully",
+      "downloadDone": "Download complete",
+      "uploadFailed": "Upload failed",
+      "deleteFailed": "Delete failed",
+      "downloadFailed": "Download failed",
+      "detail": "File \"{{fileName}}\": {{title}}"
+    },
+    "operationSuccess": "Operation successful",
+    "kb": {
+      "createSuccess": "Created successfully",
+      "updateSuccess": "Updated successfully",
+      "deleteSuccess": "Deleted successfully",
+      "createFailed": "Creation failed",
+      "updateFailed": "Update failed",
+      "deleteFailed": "Delete failed",
+      "loadFailed": "Load failed",
+      "detailNamed": "Knowledge base \"{{name}}\": {{title}}",
+      "detail": "Knowledge base: {{title}}"
+    }
+  }
+}

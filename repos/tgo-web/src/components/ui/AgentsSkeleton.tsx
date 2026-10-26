@@ -168,7 +168,7 @@ export const AgentsErrorState: React.FC<AgentsErrorStateProps> = ({
         </svg>
       </div>
       <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-        {t('agents.error.title', '加载失败')}
+        {t('agents.error.title', 'Load Failed')}
       </h3>
       <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-4">
         {error}
@@ -178,7 +178,7 @@ export const AgentsErrorState: React.FC<AgentsErrorStateProps> = ({
           onClick={onRetry}
           className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
         >
-          {t('agents.error.retry', '重试')}
+          {t('agents.error.retry', 'Retry')}
         </button>
       )}
     </div>
@@ -204,8 +204,8 @@ export const AgentsEmptyState: React.FC<AgentsEmptyStateProps> = ({
   const { t } = useTranslation();
 
   // Use provided props or fallback to translations
-  const displayTitle = title || t('agents.empty.title', '暂无AI员工');
-  const displayDescription = description || t('agents.empty.description', '点击「创建AI员工」按钮开始创建您的第一个AI员工');
+  const displayTitle = title || t('agents.empty.title', 'No Agents');
+  const displayDescription = description || t('agents.empty.description', 'Click the "Create Agent" button to start creating your first agent');
 
   return (
     <div className="text-center py-12">

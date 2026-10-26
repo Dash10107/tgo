@@ -32,8 +32,8 @@ export const ChatListHeader: React.FC<ChatListHeaderProps> = React.memo(({ searc
       <div className="relative flex-grow mr-2">
         <input
           type="text"
-          placeholder={t('chat.list.searchPlaceholder', '搜索')}
-          aria-label={t('chat.list.searchAria', '搜索')}
+          placeholder={t('chat.list.searchPlaceholder', 'Search')}
+          aria-label={t('chat.list.searchAria', 'Search conversations')}
           value={searchQuery}
           readOnly
           onClick={openSearch}

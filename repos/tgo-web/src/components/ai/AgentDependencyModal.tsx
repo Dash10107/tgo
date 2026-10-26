@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Loader2, CheckCircle2, AlertCircle, Wrench, Cpu, ShieldCheck } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import type { AgentDependencyCheckResponse } from '@/types';
 
 interface AgentDependencyModalProps {
@@ -18,7 +18,7 @@ const AgentDependencyModal: React.FC<AgentDependencyModalProps> = ({
   onConfirm,
   isInstalling
 }) => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const currentLang = i18n.language.startsWith('zh') ? 'zh' : 'en';
   
   const [selectedTools, setSelectedTools] = useState<string[]>([]);
@@ -75,10 +75,10 @@ const AgentDependencyModal: React.FC<AgentDependencyModalProps> = ({
             <div className="p-8 space-y-6">
               <div className="text-center space-y-2">
                 <h2 className="text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight">
-                  招聘准备
+                  {t('agentDependency.title', 'Hiring Preparation')}
                 </h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  正在为 <span className="font-bold text-indigo-600 dark:text-indigo-400">{agentName}</span> 安装必要的依赖环境
+                  <Trans i18nKey="agentDependency.installingFor" defaults="Installing the required dependencies for <b>{{agentName}}</b>" values={{ agentName }} components={{ b: <span className="font-bold text-indigo-600 dark:text-indigo-400" /> }} />
                 </p>
               </div>
 
@@ -88,7 +88,7 @@ const AgentDependencyModal: React.FC<AgentDependencyModalProps> = ({
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-xs font-black text-gray-400 uppercase tracking-widest">
                       <Wrench className="w-3 h-3" />
-                      需安装的工具 ({missing_tools.length})
+                      {t('agentDependency.toolsToInstall', 'Tools to install')} ({missing_tools.length})
                     </div>
                     <div className="bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800 divide-y divide-gray-100 dark:divide-gray-800">
                       {missing_tools.map(tool => (
@@ -109,7 +109,7 @@ const AgentDependencyModal: React.FC<AgentDependencyModalProps> = ({
                               {tool.title_zh || tool.name}
                             </p>
                             <p className="text-[10px] text-gray-500 font-medium">
-                              单次调用: ¥{tool.price_per_call.toFixed(2)}
+                              {t('agentDependency.pricePerCall', 'Per call')}: ¥{tool.price_per_call.toFixed(2)}
                             </p>
                           </div>
                         </div>
@@ -123,7 +123,7 @@ const AgentDependencyModal: React.FC<AgentDependencyModalProps> = ({
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-xs font-black text-gray-400 uppercase tracking-widest">
                       <Cpu className="w-3 h-3" />
-                      需绑定的模型
+                      {t('agentDependency.modelToBind', 'Model to bind')}
                     </div>
                     <div 
                       onClick={() => !isInstalling && setInstallModel(!installModel)}
@@ -142,7 +142,7 @@ const AgentDependencyModal: React.FC<AgentDependencyModalProps> = ({
                         </p>
                         <div className="flex items-center justify-between">
                           <p className="text-[10px] text-gray-500 font-medium">
-                            提供商: {missing_model.provider.name}
+                            {t('agentDependency.provider', 'Provider')}: {missing_model.provider.name}
                           </p>
                           {(missing_model.input_price > 0 || missing_model.output_price > 0) && (
                             <p className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold">
@@ -158,7 +158,7 @@ const AgentDependencyModal: React.FC<AgentDependencyModalProps> = ({
                 <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-2xl border border-amber-100/50 dark:border-amber-800/30 flex gap-3">
                   <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
                   <p className="text-xs font-bold text-amber-700 dark:text-amber-300 leading-relaxed">
-                    确认后系统将自动为您安装选中的工具和模型，并最终完成员工招聘。
+                    {t('agentDependency.confirmHint', 'After confirmation the system will install the selected tools and models and then complete hiring the agent.')}
                   </p>
                 </div>
               </div>
@@ -169,7 +169,7 @@ const AgentDependencyModal: React.FC<AgentDependencyModalProps> = ({
                     onClick={onClose}
                     className="flex-1 py-4 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 font-black rounded-2xl transition-all active:scale-[0.98]"
                   >
-                    取消
+                    {t('common.cancel', 'Cancel')}
                   </button>
                 )}
                 <button
@@ -180,10 +180,10 @@ const AgentDependencyModal: React.FC<AgentDependencyModalProps> = ({
                   {isInstalling ? (
                     <>
                       <Loader2 className="w-5 h-5 animate-spin" />
-                      安装并招聘中...
+                      {t('agentDependency.installing', 'Installing and hiring...')}
                     </>
                   ) : (
-                    '确认招聘'
+                    t('agentDependency.confirmHire', 'Confirm hire')
                   )}
                 </button>
               </div>

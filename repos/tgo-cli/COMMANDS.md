@@ -166,7 +166,7 @@ Each tool is named `tgo_<resource>_<action>` and maps to the corresponding CLI c
 
 | MCP Tool | Description | Parameters |
 |----------|-------------|------------|
-| `tgo_auth_login` | Login to TGO and save token | `server` (string), `username` (string), `password` (string) |
+| `tgo_auth_login` | Login to Pelatis and save token | `server` (string), `username` (string), `password` (string) |
 | `tgo_auth_logout` | Clear saved auth token | — |
 | `tgo_auth_whoami` | Get current logged-in user info | — |
 | `tgo_conversation_list` | List conversations | `scope` (mine/waiting/all), `limit`, `offset`, `msg_count` |

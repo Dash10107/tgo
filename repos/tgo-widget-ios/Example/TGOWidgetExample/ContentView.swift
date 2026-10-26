@@ -89,7 +89,7 @@ struct ContentView: View {
                     }
                 }
             }
-            .navigationTitle("TGO Widget Demo")
+            .navigationTitle("Pelatis Widget Demo")
         }
     }
 

@@ -219,29 +219,29 @@ class WuKongIMConversationWithChannelsPaginatedResponse(BaseModel):
 @router.post(
     "/my",
     response_model=WuKongIMConversationWithChannelsResponse,
-    summary="同步我的会话列表",
-    description="同步当前客服在 WuKongIM 中的所有会话列表（包含历史会话），包含最近消息和频道信息。",
+    summary="Sync my conversation list",
+    description="Sync all of the current staff member's conversations in WuKongIM (including historical ones), with recent messages and channel info.",
 )
 async def sync_my_conversations(
     http_request: Request,
     request: WuKongIMConversationSyncRequest,
     tag_ids: Optional[List[str]] = Query(
         default=None,
-        description="访客标签ID（Base64），支持多个 tag_id（OR 关系）。提供后仅返回匹配标签的访客会话。",
+        description="Visitor tag IDs (Base64); multiple tag_ids are supported (OR relation). When provided, only visitor conversations matching the tags are returned.",
     ),
     manual_service_contain: bool = Query(
         default=False,
-        description="如果为 true，则仅返回 tags 中包含“转人工(Manual Service)”标签的访客会话（可与 tag_ids 组合，AND 关系）。",
+        description="If true, only return visitor conversations whose tags include the \"Manual Service\" tag (can be combined with tag_ids, AND relation).",
     ),
     db: Session = Depends(get_db),
     current_user: Staff = Depends(get_current_active_user),
     user_language: UserLanguage = Depends(get_user_language),
 ) -> WuKongIMConversationWithChannelsResponse:
     """
-    同步当前客服的会话列表。
+    Sync the current staff member's conversation list.
     
-    直接从 WuKongIM 获取当前客服参与的所有会话及其最近消息记录，
-    包括已关闭的历史会话。同时返回每个会话对应的频道详细信息。
+    Fetches all conversations the current staff member participates in, with their recent messages,
+    directly from WuKongIM, including closed historical conversations. Also returns detailed channel info for each conversation.
     """
     staff_uid = f"{current_user.id}-staff"
 
@@ -348,27 +348,27 @@ async def sync_my_conversations(
 @router.post(
     "/all",
     response_model=WuKongIMConversationPaginatedResponse,
-    summary="获取所有服务过的访客会话",
-    description="获取当前客服服务过的所有访客会话列表（基于 VisitorSession 表，包括已关闭的会话），支持分页。",
+    summary="Get all served visitor sessions",
+    description="Get the list of all visitor sessions the current staff member has served (based on the VisitorSession table, including closed sessions), with pagination.",
 )
 async def sync_all_conversations(
-    msg_count: int = Query(default=20, ge=1, le=100, description="每个会话返回的最近消息数量"),
+    msg_count: int = Query(default=20, ge=1, le=100, description="Number of recent messages to return per session"),
     only_completed_recent: bool = Query(
         default=False,
-        description="如果为 true，则仅返回“已完成(Closed)”的最近会话（按每个访客最近一次已关闭会话时间排序）",
+        description="If true, only return recent \"Closed\" sessions (ordered by each visitor's most recent closed session time)",
     ),
-    limit: int = Query(default=20, ge=1, le=100, description="每页返回的会话数量"),
-    offset: int = Query(default=0, ge=0, description="跳过的会话数量"),
+    limit: int = Query(default=20, ge=1, le=100, description="Number of sessions per page"),
+    offset: int = Query(default=0, ge=0, description="Number of sessions to skip"),
     db: Session = Depends(get_db),
     current_user: Staff = Depends(get_current_active_user),
 ) -> WuKongIMConversationPaginatedResponse:
     """
-    获取当前客服服务过的所有访客会话（支持分页）。
+    Get all visitor sessions the current staff member has served (with pagination).
     
-    查询 VisitorSession 表中 staff_id 为当前客服的所有会话（包括已关闭的），
-    对访客进行去重后，从 WuKongIM 获取这些会话的最近消息。
+    Queries all sessions in the VisitorSession table whose staff_id is the current staff member (including closed ones),
+    de-duplicates by visitor, then fetches the recent messages of those sessions from WuKongIM.
     
-    如果当前用户是 admin 角色，则返回项目下所有的会话。
+    If the current user has the admin role, all sessions in the project are returned.
     """
     # Check if current user is admin
     is_admin = current_user.role == StaffRole.ADMIN.value
@@ -525,21 +525,21 @@ async def sync_all_conversations(
 @router.post(
     "/waiting",
     response_model=WuKongIMConversationPaginatedResponse,
-    summary="获取等待中访客的会话",
-    description="获取所有等待中（未分配）访客的 WuKongIM 会话列表，用于客服查看待接入访客的对话内容，支持分页。",
+    summary="Get sessions of waiting visitors",
+    description="Get the WuKongIM conversation list of all waiting (unassigned) visitors so staff can view the conversations of visitors awaiting pickup, with pagination.",
 )
 async def sync_waiting_conversations(
-    msg_count: int = Query(default=20, ge=1, le=100, description="每个会话返回的最近消息数量"),
-    limit: int = Query(default=20, ge=1, le=100, description="每页返回的会话数量"),
-    offset: int = Query(default=0, ge=0, description="跳过的会话数量"),
+    msg_count: int = Query(default=20, ge=1, le=100, description="Number of recent messages to return per session"),
+    limit: int = Query(default=20, ge=1, le=100, description="Number of sessions per page"),
+    offset: int = Query(default=0, ge=0, description="Number of sessions to skip"),
     db: Session = Depends(get_db),
     current_user: Staff = Depends(require_permission("visitors:read")),
 ) -> WuKongIMConversationPaginatedResponse:
     """
-    获取等待中访客的会话列表（支持分页）。
+    Get the conversation list of waiting visitors (with pagination).
     
-    此接口获取当前项目中所有状态为 WAITING 的访客的 WuKongIM 会话信息，
-    包括最近的消息记录。用于客服人员查看待接入访客的对话内容。
+    This endpoint fetches the WuKongIM conversation info of all visitors in WAITING status in the current project,
+    including recent message history, so staff can view the conversations of visitors awaiting pickup.
     """
     # 1. Get total count of waiting entries
     total_count = (
@@ -662,19 +662,19 @@ async def sync_waiting_conversations(
 @router.get(
     "/by-tags/recent",
     response_model=WuKongIMConversationWithChannelsPaginatedResponse,
-    summary="按访客标签获取最近会话",
-    description="按访客标签（tag_id，支持多个）筛选访客，并返回这些访客的最近会话列表（按最新会话时间倒序），支持分页。返回结果包含 conversations + channels（channels.extra 与 /channels/info 保持一致）。",
+    summary="Get recent sessions by visitor tag",
+    description="Filter visitors by visitor tag (tag_id, multiple supported) and return their recent conversation list (newest first), with pagination. The result contains conversations + channels (channels.extra is consistent with /channels/info).",
 )
 async def sync_recent_conversations_by_visitor_tags(
     http_request: Request,
-    tag_ids: Optional[List[str]] = Query(default=None, description="访客标签ID（Base64），支持多个 tag_id（OR 关系）"),
+    tag_ids: Optional[List[str]] = Query(default=None, description="Visitor tag IDs (Base64); multiple tag_ids supported (OR relation)"),
     manual_service_contain: bool = Query(
         default=False,
-        description="如果为 true，则要求访客 tags 中包含“转人工(Manual Service)”标签（可与 tag_ids 组合，AND 关系）",
+        description="If true, require the visitor's tags to include the \"Manual Service\" tag (can be combined with tag_ids, AND relation)",
     ),
-    msg_count: int = Query(default=1, ge=1, le=100, description="每个会话返回的最近消息数量（默认 1）"),
-    limit: int = Query(default=20, ge=1, le=100, description="每页返回的会话数量"),
-    offset: int = Query(default=0, ge=0, description="跳过的会话数量"),
+    msg_count: int = Query(default=1, ge=1, le=100, description="Number of recent messages to return per session (default 1)"),
+    limit: int = Query(default=20, ge=1, le=100, description="Number of sessions per page"),
+    offset: int = Query(default=0, ge=0, description="Number of sessions to skip"),
     db: Session = Depends(get_db),
     current_user: Staff = Depends(require_permission("visitors:read")),
     user_language: UserLanguage = Depends(get_user_language),
@@ -816,14 +816,14 @@ async def sync_recent_conversations_by_visitor_tags(
 
 @router.put(
     "/unread",
-    summary="设置会话未读数",
-    description="设置指定会话的未读消息数量。",
+    summary="Set conversation unread count",
+    description="Set the unread message count of the given conversation.",
 )
 async def set_conversation_unread(
     request: WuKongIMSetUnreadRequest,
     current_user: Staff = Depends(get_current_active_user),
 ) -> Dict[str, str]:
-    """设置会话的未读消息数量。"""
+    """Set the unread message count of a conversation."""
     staff_uid = f"{current_user.id}-staff"
 
     logger.info(
@@ -859,14 +859,14 @@ async def set_conversation_unread(
 
 @router.delete(
     "",
-    summary="删除会话",
-    description="从会话列表中删除指定的会话。",
+    summary="Delete conversation",
+    description="Delete the given conversation from the conversation list.",
 )
 async def delete_conversation(
     request: WuKongIMDeleteConversationRequest,
     current_user: Staff = Depends(get_current_active_user),
 ) -> Dict[str, str]:
-    """从会话列表中删除指定的会话。"""
+    """Delete the given conversation from the conversation list."""
     staff_uid = f"{current_user.id}-staff"
 
     logger.info(
@@ -901,15 +901,15 @@ async def delete_conversation(
 @router.post(
     "/messages",
     response_model=WuKongIMChannelMessageSyncResponse,
-    summary="同步频道消息",
-    description="同步指定频道的历史消息记录。",
+    summary="Sync channel messages",
+    description="Sync the historical messages of the given channel.",
 )
 async def sync_channel_messages(
     request: WuKongIMChannelMessageSyncRequest,
     current_user: Staff = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ) -> WuKongIMChannelMessageSyncResponse:
-    """同步指定频道的历史消息记录。"""
+    """Sync the historical messages of the given channel."""
     staff_uid = f"{current_user.id}-staff"
 
     # 1) Check if there is a memory clearance record for this staff and channel

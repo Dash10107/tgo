@@ -44,11 +44,11 @@ interface NodePaletteProps {
 }
 
 const CATEGORIES = [
-  { id: 'trigger', label: 'workflow.categories.trigger', defaultLabel: '触发节点', color: 'bg-green-500', icon: Play },
-  { id: 'ai', label: 'workflow.categories.ai', defaultLabel: 'AI 能力', color: 'bg-blue-500', icon: Bot },
-  { id: 'logic', label: 'workflow.categories.logic', defaultLabel: '逻辑控制', color: 'bg-purple-500', icon: GitMerge },
-  { id: 'external', label: 'workflow.categories.external', defaultLabel: '外部集成', color: 'bg-orange-500', icon: Globe },
-  { id: 'output', label: 'workflow.categories.output', defaultLabel: '输出', color: 'bg-indigo-500', icon: MessageSquare },
+  { id: 'trigger', label: 'workflow.categories.trigger', defaultLabel: 'Trigger Nodes', color: 'bg-green-500', icon: Play },
+  { id: 'ai', label: 'workflow.categories.ai', defaultLabel: 'AI Capabilities', color: 'bg-blue-500', icon: Bot },
+  { id: 'logic', label: 'workflow.categories.logic', defaultLabel: 'Logic Control', color: 'bg-purple-500', icon: GitMerge },
+  { id: 'external', label: 'workflow.categories.external', defaultLabel: 'External Integrations', color: 'bg-orange-500', icon: Globe },
+  { id: 'output', label: 'workflow.categories.output', defaultLabel: 'Output', color: 'bg-indigo-500', icon: MessageSquare },
 ] as const;
 
 const NodePalette: React.FC<NodePaletteProps> = ({ isCollapsed, onToggleCollapse }) => {
@@ -138,7 +138,7 @@ const NodePalette: React.FC<NodePaletteProps> = ({ isCollapsed, onToggleCollapse
               </div>
               {isDisabled && (
                 <span className="shrink-0 text-[8px] bg-gray-100 dark:bg-gray-700 text-gray-400 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">
-                  {t('workflow.palette.underDevelopment', '待开发')}
+                  {t('workflow.palette.underDevelopment', 'Under Development')}
                 </span>
               )}
             </div>
@@ -176,7 +176,7 @@ const NodePalette: React.FC<NodePaletteProps> = ({ isCollapsed, onToggleCollapse
         <div className="p-8 border-b border-gray-100/50 dark:border-gray-700/50">
           <h3 className="text-[11px] font-bold text-gray-400 dark:text-gray-500 mb-5 uppercase tracking-[0.2em] flex items-center gap-2">
             <LayoutGrid className="w-4 h-4 text-purple-600" />
-            {t('workflow.palette.title', '组件库')}
+            {t('workflow.palette.title', 'Components')}
           </h3>
           <div className="relative group">
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-purple-500 transition-colors" />
@@ -184,7 +184,7 @@ const NodePalette: React.FC<NodePaletteProps> = ({ isCollapsed, onToggleCollapse
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t('workflow.palette.search', '搜索组件...')}
+              placeholder={t('workflow.palette.search', 'Search components...')}
               className="w-full pl-11 pr-4 py-3 text-xs bg-gray-100/50 dark:bg-gray-800 border-transparent focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 rounded-2xl dark:text-gray-100 outline-none transition-all font-medium shadow-sm"
             />
           </div>
@@ -218,7 +218,7 @@ const NodePalette: React.FC<NodePaletteProps> = ({ isCollapsed, onToggleCollapse
               <Search className="w-8 h-8" />
             </div>
             <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest leading-relaxed">
-              {t('workflow.palette.noMatch', '未找到匹配组件')}
+              {t('workflow.palette.noMatch', 'No components found')}
             </p>
           </div>
         )}

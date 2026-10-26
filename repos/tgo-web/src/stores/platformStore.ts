@@ -4,17 +4,18 @@ import type { Platform, PlatformConfig, PlatformType } from '@/types';
 import platformsApiService, { type PlatformResponse, type PlatformUpdateRequest } from '@/services/platformsApi';
 import { useOnboardingStore } from './onboardingStore';
 
+import i18n from '@/i18n';
 interface PlatformState {
-  // 平台数据
+  // Platform data
   platforms: Platform[];
   selectedPlatform: Platform | null;
 
-  // 搜索和筛选
+  // Search and filtering
   searchQuery: string;
   statusFilter: 'all' | 'connected' | 'error' | 'pending' | 'disabled';
   typeFilter: 'all' | 'website' | 'wechat' | 'tiktok' | 'email' | 'phone' | 'custom';
 
-  // 加载状态
+  // Loading state
   isLoading: boolean;
   isConnecting: boolean;
   isUpdating: boolean;
@@ -23,7 +24,7 @@ interface PlatformState {
   isLoadingDetail: boolean;
   detailLoadError: string | null;
 
-  // 配置状态
+  // Configuration state
   configChanges: Record<string, Partial<PlatformConfig>>;
   hasUnsavedChanges: boolean;
 
@@ -35,7 +36,7 @@ interface PlatformState {
   setTypeFilter: (filter: PlatformState['typeFilter']) => void;
   setLoading: (loading: boolean) => void;
 
-  // 平台操作
+  // Platform operations
   createPlatform: (platformData: Partial<Platform>) => Promise<Platform>;
   updatePlatform: (platformId: string, updates: Partial<Platform>) => Promise<void>;
   deletePlatform: (platformId: string) => Promise<void>;
@@ -44,11 +45,11 @@ interface PlatformState {
   togglePlatformStatus: (platformId: string) => Promise<void>;
   testPlatformConnection: (platformId: string) => Promise<boolean>;
 
-  // 配置操作
+  // Configuration operations
   updatePlatformConfig: (platformId: string, config: Partial<PlatformConfig>) => void;
   savePlatformConfig: (platformId: string) => Promise<void>;
 
-  // 明细拉取与密钥
+  // Fetching details and keys
   fetchPlatformById: (platformId: string) => Promise<void>;
   regenerateApiKey: (platformId: string) => Promise<void>;
 
@@ -57,7 +58,7 @@ interface PlatformState {
   resetPlatformConfig: (platformId: string) => void;
   generateWebhookSecret: (platformId: string) => string;
 
-  // 计算属性
+  // Computed properties
   getFilteredPlatforms: () => Platform[];
   getPlatformById: (platformId: string) => Platform | undefined;
   getPlatformStatistics: () => {
@@ -74,7 +75,7 @@ export const usePlatformStore = create<PlatformState>()(
   devtools(
     persist(
       (set, get) => ({
-        // 初始状态 - empty arrays, will be populated in development with mock data
+        // Initial state - empty arrays, will be populated in development with mock data
         platforms: [],
         selectedPlatform: null,
         searchQuery: '',
@@ -98,13 +99,13 @@ export const usePlatformStore = create<PlatformState>()(
         setTypeFilter: (filter) => set({ typeFilter: filter }, false, 'setTypeFilter'),
         setLoading: (loading) => set({ isLoading: loading }, false, 'setLoading'),
 
-        // 平台操作
+        // Platform operations
         createPlatform: async (platformData) => {
           set({ isLoading: true }, false, 'createPlatform');
 
           try {
             // Prepare request body according to API schema
-            const name = platformData.name || '新平台';
+            const name = platformData.name || i18n.t('platforms.store.newPlatform', 'New Platform');
             const type = (platformData.type as PlatformType) || 'custom';
             const config = (platformData.config as Record<string, any>) || undefined;
 
@@ -122,7 +123,7 @@ export const usePlatformStore = create<PlatformState>()(
               icon: platformData.icon || 'Webhook',
               iconColor: platformData.iconColor || 'text-gray-500',
               status: 'unconfigured',
-              statusText: '未配置',
+              statusText: i18n.t('platforms.status.notConfigured', 'Not configured'),
               statusColor: 'bg-gray-400',
               type: apiResp.type as PlatformType,
               description: platformData.description || '',
@@ -149,7 +150,7 @@ export const usePlatformStore = create<PlatformState>()(
 
             return createdPlatform;
           } catch (error) {
-            console.error('创建平台失败:', error);
+            console.error('Failed to create platform:', error);
             set({ isLoading: false }, false, 'createPlatformError');
             throw error;
           }
@@ -197,7 +198,7 @@ export const usePlatformStore = create<PlatformState>()(
                 // If server responded, prefer its values; otherwise apply local updates
                 const mapRespToUI = (p: PlatformResponse): Platform => {
                   const status = p.is_active ? 'connected' as const : 'disabled' as const;
-                  const statusText = p.is_active ? '已连接' : '已禁用';
+                  const statusText = p.is_active ? i18n.t('platforms.status.connected', 'Connected') : i18n.t('platforms.status.disabled', 'Disabled');
                   const statusColor = p.is_active ? 'bg-green-500' : 'bg-gray-400';
                   return {
                     id: p.id,
@@ -238,7 +239,7 @@ export const usePlatformStore = create<PlatformState>()(
               'updatePlatformSuccess'
             );
           } catch (error) {
-            console.error('更新平台失败:', error);
+            console.error('Failed to update platform:', error);
             set({ isUpdating: false }, false, 'updatePlatformError');
             throw error;
           }
@@ -250,7 +251,7 @@ export const usePlatformStore = create<PlatformState>()(
             const p = await platformsApiService.getPlatformById(platformId);
             const state = get();
             const status = p.is_active ? 'connected' as const : 'disabled' as const;
-            const statusText = p.is_active ? '已连接' : '已禁用';
+            const statusText = p.is_active ? i18n.t('platforms.status.connected', 'Connected') : i18n.t('platforms.status.disabled', 'Disabled');
             const statusColor = p.is_active ? 'bg-green-500' : 'bg-gray-400';
             const mapped: Platform = {
               id: p.id,
@@ -282,10 +283,10 @@ export const usePlatformStore = create<PlatformState>()(
               detailLoadError: null,
             }, false, 'fetchPlatformByIdSuccess');
           } catch (error) {
-            console.error('获取平台详情失败:', error);
+            console.error('Failed to fetch platform details:', error);
             set({
               isLoadingDetail: false,
-              detailLoadError: (error as Error).message || '加载平台详情失败'
+              detailLoadError: (error as Error).message || i18n.t('platforms.store.loadDetailFailed', 'Failed to load platform details')
             }, false, 'fetchPlatformByIdError');
             throw error; // Re-throw to allow caller to handle
           }
@@ -296,7 +297,7 @@ export const usePlatformStore = create<PlatformState>()(
           try {
             const resp = await platformsApiService.regenerateApiKey(platformId); // { id, api_key }
             set((state) => {
-              // 找到目标平台，仅更新 config.apiKey，不改变其它字段
+              // Found the target platform; update only config.apiKey and leave other fields unchanged
               const platforms = state.platforms.map((p) => {
                 if (p.id !== platformId) return p;
                 return {
@@ -313,7 +314,7 @@ export const usePlatformStore = create<PlatformState>()(
               return { platforms, selectedPlatform: selected, isUpdating: false };
             }, false, 'regenerateApiKeySuccess');
           } catch (error) {
-            console.error('重新生成 API Key 失败:', error);
+            console.error('Failed to regenerate API Key:', error);
             set({ isUpdating: false }, false, 'regenerateApiKeyError');
             throw error;
           }
@@ -349,7 +350,7 @@ export const usePlatformStore = create<PlatformState>()(
               'deletePlatformSuccess'
             );
           } catch (error) {
-            console.error('删除平台失败:', error);
+            console.error('Failed to delete platform:', error);
             set({ isDeleting: false }, false, 'deletePlatformError');
             throw error;
           }
@@ -362,7 +363,7 @@ export const usePlatformStore = create<PlatformState>()(
               const map = (p: Platform): Platform => ({
                 ...p,
                 status: 'connected',
-                statusText: '已连接',
+                statusText: i18n.t('platforms.status.connected', 'Connected'),
                 statusColor: 'bg-green-500',
               });
               return {
@@ -371,7 +372,7 @@ export const usePlatformStore = create<PlatformState>()(
               };
             }, false, 'enablePlatformSuccess');
           } catch (error) {
-            console.error('启用平台失败:', error);
+            console.error('Failed to enable platform:', error);
             throw error;
           }
         },
@@ -383,7 +384,7 @@ export const usePlatformStore = create<PlatformState>()(
               const map = (p: Platform): Platform => ({
                 ...p,
                 status: 'disabled',
-                statusText: '已禁用',
+                statusText: i18n.t('platforms.status.disabled', 'Disabled'),
                 statusColor: 'bg-gray-400',
               });
               return {
@@ -392,7 +393,7 @@ export const usePlatformStore = create<PlatformState>()(
               };
             }, false, 'disablePlatformSuccess');
           } catch (error) {
-            console.error('禁用平台失败:', error);
+            console.error('Failed to disable platform:', error);
             throw error;
           }
         },
@@ -406,7 +407,7 @@ export const usePlatformStore = create<PlatformState>()(
 
             if (platform) {
               const newStatus = platform.status === 'connected' ? 'disabled' : 'connected';
-              const newStatusText = newStatus === 'connected' ? '已连接' : '已禁用';
+              const newStatusText = newStatus === 'connected' ? i18n.t('platforms.status.connected', 'Connected') : i18n.t('platforms.status.disabled', 'Disabled');
               const newStatusColor = newStatus === 'connected' ? 'bg-green-500' : 'bg-gray-400';
 
               await get().updatePlatform(platformId, {
@@ -418,7 +419,7 @@ export const usePlatformStore = create<PlatformState>()(
 
             set({ isConnecting: false }, false, 'togglePlatformStatusSuccess');
           } catch (error) {
-            console.error('切换平台状态失败:', error);
+            console.error('Failed to toggle platform status:', error);
             set({ isConnecting: false }, false, 'togglePlatformStatusError');
           }
         },
@@ -427,21 +428,21 @@ export const usePlatformStore = create<PlatformState>()(
           set({ isConnecting: true }, false, 'testPlatformConnection');
 
           try {
-            // 模拟连接测试
+            // Simulate a connection test
             await new Promise(resolve => setTimeout(resolve, 2000));
 
-            const isSuccess = Math.random() > 0.3; // 70% 成功率
+            const isSuccess = Math.random() > 0.3; // 70% success rate
 
             if (isSuccess) {
               await get().updatePlatform(platformId, {
                 status: 'connected',
-                statusText: '已连接',
+                statusText: i18n.t('platforms.status.connected', 'Connected'),
                 statusColor: 'bg-green-500'
               });
             } else {
               await get().updatePlatform(platformId, {
                 status: 'error',
-                statusText: '连接失败',
+                statusText: i18n.t('platforms.status.connectionFailed', 'Connection failed'),
                 statusColor: 'bg-red-500'
               });
             }
@@ -449,13 +450,13 @@ export const usePlatformStore = create<PlatformState>()(
             set({ isConnecting: false }, false, 'testPlatformConnectionComplete');
             return isSuccess;
           } catch (error) {
-            console.error('测试连接失败:', error);
+            console.error('Failed to test connection:', error);
             set({ isConnecting: false }, false, 'testPlatformConnectionError');
             return false;
           }
         },
 
-        // 配置操作
+        // Configuration operations
         updatePlatformConfig: (platformId, config) => {
           set(
             (state) => ({
@@ -520,12 +521,12 @@ export const usePlatformStore = create<PlatformState>()(
           return secret;
         },
 
-        // 计算属性
+        // Computed properties
         getFilteredPlatforms: () => {
           const { platforms, searchQuery, statusFilter, typeFilter } = get();
           let filtered = platforms;
 
-          // 搜索过滤
+          // Search filtering
           if (searchQuery.trim()) {
             filtered = filtered.filter(platform =>
               platform.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -533,12 +534,12 @@ export const usePlatformStore = create<PlatformState>()(
             );
           }
 
-          // 状态过滤
+          // Status filtering
           if (statusFilter !== 'all') {
             filtered = filtered.filter(platform => platform.status === statusFilter);
           }
 
-          // 类型过滤
+          // Type filtering
           if (typeFilter !== 'all') {
             filtered = filtered.filter(platform => platform.type === typeFilter);
           }
@@ -584,7 +585,7 @@ export const usePlatformStore = create<PlatformState>()(
               // Map API responses directly; use API-provided icon (raw SVG) and type
               const mapped: Platform[] = items.map((p) => {
                 const status = p.is_active ? 'connected' as const : 'disabled' as const;
-                const statusText = p.is_active ? '已连接' : '已禁用';
+                const statusText = p.is_active ? i18n.t('platforms.status.connected', 'Connected') : i18n.t('platforms.status.disabled', 'Disabled');
                 const statusColor = p.is_active ? 'bg-green-500' : 'bg-gray-400';
 
                 return {
@@ -618,15 +619,15 @@ export const usePlatformStore = create<PlatformState>()(
 
             set({ platforms: all, isLoading: false, loadError: null }, false, 'initializeStoreSuccess');
           } catch (error) {
-            console.error('加载平台列表失败:', error);
-            set({ isLoading: false, loadError: error instanceof Error ? error.message : '加载失败' }, false, 'initializeStoreError');
+            console.error('Failed to load platform list:', error);
+            set({ isLoading: false, loadError: error instanceof Error ? error.message : i18n.t('common.loadFailed', 'Failed to load') }, false, 'initializeStoreError');
           }
         }
       }),
       {
         name: 'platform-store',
         partialize: (state) => ({
-          // 持久化用户偏好
+          // Persist user preferences
           searchQuery: state.searchQuery,
           statusFilter: state.statusFilter,
           typeFilter: state.typeFilter

@@ -33,10 +33,10 @@ const CustomEdge: React.FC<EdgeProps> = ({
   });
 
   const getLabelColor = () => {
-    if (data?.label === 'true' || data?.label === '是') {
+    if (data?.label === 'true' || data?.label === 'yes' || data?.label === '\u662f') { // '\u662f' is the legacy Chinese "yes" label
       return 'bg-green-100 text-green-700 border-green-300 dark:bg-green-900/50 dark:text-green-300 dark:border-green-700';
     }
-    if (data?.label === 'false' || data?.label === '否') {
+    if (data?.label === 'false' || data?.label === 'no' || data?.label === '\u5426') { // '\u5426' is the legacy Chinese "no" label
       return 'bg-red-100 text-red-700 border-red-300 dark:bg-red-900/50 dark:text-red-300 dark:border-red-700';
     }
     return 'bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600';

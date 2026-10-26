@@ -66,19 +66,19 @@ export const EditKnowledgeBaseModal: React.FC<EditKnowledgeBaseModalProps> = ({
 
     // Validate name
     if (!formData.name.trim()) {
-      newErrors.name = t('knowledge.validation.nameRequired', '知识库名称不能为空');
+      newErrors.name = t('knowledge.validation.nameRequired', 'Name is required');
       isValid = false;
     } else if (formData.name.trim().length < 2) {
-      newErrors.name = t('knowledge.validation.nameMin', '知识库名称至少需要2个字符');
+      newErrors.name = t('knowledge.validation.nameMin', 'Name must be at least 2 characters');
       isValid = false;
     } else if (formData.name.trim().length > 50) {
-      newErrors.name = t('knowledge.validation.nameMax', '知识库名称不能超过50个字符');
+      newErrors.name = t('knowledge.validation.nameMax', 'Name cannot exceed 50 characters');
       isValid = false;
     }
 
     // Validate description - only check if empty
     if (!formData.description.trim()) {
-      newErrors.description = t('knowledge.validation.descRequired', '知识库描述不能为空');
+      newErrors.description = t('knowledge.validation.descRequired', 'Description is required');
       isValid = false;
     }
 
@@ -136,12 +136,12 @@ export const EditKnowledgeBaseModal: React.FC<EditKnowledgeBaseModalProps> = ({
   const getTypeLabel = () => {
     switch (knowledgeBase?.type) {
       case 'website':
-        return t('knowledge.typeWebsite', '网站');
+        return t('knowledge.typeWebsite', 'Website');
       case 'qa':
-        return t('knowledge.typeQA', '问答');
+        return t('knowledge.typeQA', 'QA Pairs');
       case 'file':
       default:
-        return t('knowledge.typeFile', '文件');
+        return t('knowledge.typeFile', 'File');
     }
   };
 
@@ -165,10 +165,10 @@ export const EditKnowledgeBaseModal: React.FC<EditKnowledgeBaseModalProps> = ({
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
-                  {t('knowledge.edit', '编辑知识库')}
+                  {t('knowledge.edit', 'Edit Knowledge Base')}
                 </h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                  {t('knowledge.editDesc', '修改知识库的基本信息')}
+                  {t('knowledge.editDesc', 'Modify knowledge base basic information')}
                 </p>
               </div>
             </div>
@@ -195,7 +195,7 @@ export const EditKnowledgeBaseModal: React.FC<EditKnowledgeBaseModalProps> = ({
                   {getTypeLabel()}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {t('knowledge.typeReadonly', '知识库类型创建后不可更改')}
+                  {t('knowledge.typeReadonly', 'Knowledge base type cannot be changed after creation')}
                 </p>
               </div>
             </div>
@@ -206,17 +206,17 @@ export const EditKnowledgeBaseModal: React.FC<EditKnowledgeBaseModalProps> = ({
                 <div className="flex items-center gap-2 mb-3">
                   <Globe className="w-4 h-4 text-green-600 dark:text-green-400" />
                   <span className="text-sm font-medium text-green-700 dark:text-green-300">
-                    {t('knowledge.crawl.info', '爬取配置')}
+                    {t('knowledge.crawl.info', 'Crawl Configuration')}
                   </span>
                 </div>
                 <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                   <p className="flex items-center gap-2">
-                    <span className="font-medium text-gray-700 dark:text-gray-300">{t('knowledge.crawl.startUrl', '起始URL')}:</span>
+                    <span className="font-medium text-gray-700 dark:text-gray-300">{t('knowledge.crawl.startUrl', 'Website URL')}:</span>
                     <span className="truncate">{knowledgeBase.crawlConfig.start_url}</span>
                   </p>
                   <div className="flex gap-6">
-                    <p><span className="font-medium text-gray-700 dark:text-gray-300">{t('knowledge.crawl.maxPages', '最大页面数')}:</span> {knowledgeBase.crawlConfig.max_pages || 100}</p>
-                    <p><span className="font-medium text-gray-700 dark:text-gray-300">{t('knowledge.crawl.maxDepth', '最大深度')}:</span> {knowledgeBase.crawlConfig.max_depth || 3}</p>
+                    <p><span className="font-medium text-gray-700 dark:text-gray-300">{t('knowledge.crawl.maxPages', 'Max Pages')}:</span> {knowledgeBase.crawlConfig.max_pages || 100}</p>
+                    <p><span className="font-medium text-gray-700 dark:text-gray-300">{t('knowledge.crawl.maxDepth', 'Max Depth')}:</span> {knowledgeBase.crawlConfig.max_depth || 3}</p>
                   </div>
                 </div>
               </div>
@@ -226,20 +226,20 @@ export const EditKnowledgeBaseModal: React.FC<EditKnowledgeBaseModalProps> = ({
             <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-5 space-y-4 border border-gray-100 dark:border-gray-700">
               <div className="flex items-center gap-3 pb-3 border-b border-gray-200 dark:border-gray-700">
                 <FileText className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                <h3 className="font-medium text-gray-800 dark:text-gray-100">{t('knowledge.basicInfo', '基本信息')}</h3>
+                <h3 className="font-medium text-gray-800 dark:text-gray-100">{t('knowledge.basicInfo', 'Basic Information')}</h3>
               </div>
 
               {/* Name Field */}
               <div>
                 <label htmlFor="edit-kb-name" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                  {t('knowledge.name', '知识库名称')} <span className="text-red-500 dark:text-red-400">*</span>
+                  {t('knowledge.name', 'Name')} <span className="text-red-500 dark:text-red-400">*</span>
                 </label>
                 <input
                   id="edit-kb-name"
                   type="text"
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
-                  placeholder={t('knowledge.namePlaceholder', '请输入知识库名称')}
+                  placeholder={t('knowledge.namePlaceholder', 'Enter knowledge base name')}
                   disabled={isLoading}
                   className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white dark:bg-gray-700 dark:text-gray-100 ${
                     errors.name ? 'border-red-300 bg-red-50 dark:border-red-600 dark:bg-red-950' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
@@ -250,20 +250,20 @@ export const EditKnowledgeBaseModal: React.FC<EditKnowledgeBaseModalProps> = ({
                   <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">{errors.name}</p>
                 )}
                 <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                  {formData.name.length}/50 {t('common.characters', '字符')}
+                  {formData.name.length}/50 {t('common.characters', 'characters')}
                 </p>
               </div>
 
               {/* Description Field */}
               <div>
                 <label htmlFor="edit-kb-description" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                  {t('knowledge.description', '知识库描述')} <span className="text-red-500 dark:text-red-400">*</span>
+                  {t('knowledge.description', 'Description')} <span className="text-red-500 dark:text-red-400">*</span>
                 </label>
                 <textarea
                   id="edit-kb-description"
                   value={formData.description}
                   onChange={(e) => handleInputChange('description', e.target.value)}
-                  placeholder={t('knowledge.descriptionPlaceholder', '请输入知识库描述，简要说明这个知识库的用途和内容')}
+                  placeholder={t('knowledge.descriptionPlaceholder', 'Describe the content and purpose of the knowledge base')}
                   disabled={isLoading}
                   rows={3}
                   className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-vertical bg-white dark:bg-gray-700 dark:text-gray-100 ${
@@ -274,19 +274,19 @@ export const EditKnowledgeBaseModal: React.FC<EditKnowledgeBaseModalProps> = ({
                   <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">{errors.description}</p>
                 )}
                 <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                  {t('knowledge.descriptionHelper', '描述越准确，AI 越容易正确使用该知识库')}
+                  {t('knowledge.descriptionHelper', 'The more accurate the description, the easier it is for AI to use this knowledge base correctly')}
                 </p>
               </div>
 
               {/* Tags Field */}
               <div>
                 <label htmlFor="edit-kb-tags" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                  {t('knowledge.tags', '知识库标签')} <span className="text-gray-400 dark:text-gray-500 font-normal">({t('common.optional', '可选')})</span>
+                  {t('knowledge.tags', 'Tags')} <span className="text-gray-400 dark:text-gray-500 font-normal">({t('common.optional', 'Optional')})</span>
                 </label>
                 <TagInput
                   tags={formData.tags}
                   onTagsChange={handleTagsChange}
-                  placeholder={t('knowledge.tagsPlaceholder', '输入标签并按回车键添加')}
+                  placeholder={t('knowledge.tagsPlaceholder', 'Enter tags and press Enter to add')}
                   maxTags={10}
                   maxTagLength={20}
                   disabled={isLoading}
@@ -303,7 +303,7 @@ export const EditKnowledgeBaseModal: React.FC<EditKnowledgeBaseModalProps> = ({
               disabled={isLoading}
               className="px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {t('common.cancel', '取消')}
+              {t('common.cancel', 'Cancel')}
             </button>
             <button
               type="submit"
@@ -313,10 +313,10 @@ export const EditKnowledgeBaseModal: React.FC<EditKnowledgeBaseModalProps> = ({
               {isLoading ? (
                 <>
                   <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
-                  {t('common.updating', '更新中...')}
+                  {t('common.updating', 'Updating...')}
                 </>
               ) : (
-                t('knowledge.update', '更新知识库')
+                t('knowledge.update', 'Update Knowledge Base')
               )}
             </button>
           </div>

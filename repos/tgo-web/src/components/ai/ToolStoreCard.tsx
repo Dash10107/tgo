@@ -45,13 +45,13 @@ const ToolStoreCard: React.FC<ToolStoreCardProps> = ({ tool, onClick, onInstall,
             )}
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400 font-medium flex items-center justify-between">
-            <span>{tool.author || 'TGO'}</span>
+            <span>{tool.author || 'Pelatis'}</span>
             <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-black uppercase tracking-wider ${
               (tool.price_per_call || 0) > 0 
                 ? 'bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400' 
                 : 'bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400'
             }`}>
-              {(tool.price_per_call || 0) > 0 ? `¥${tool.price_per_call}/次` : t('tools.store.free', '免费')}
+              {(tool.price_per_call || 0) > 0 ? `¥${tool.price_per_call}/${t('tools.store.perCall', 'call')}` : t('tools.store.free', 'Free')}
             </span>
           </p>
         </div>
@@ -84,7 +84,7 @@ const ToolStoreCard: React.FC<ToolStoreCardProps> = ({ tool, onClick, onInstall,
               : 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-200 dark:shadow-none'
           }`}
         >
-          {isInstalled ? t('tools.store.installed', '已安装') : t('tools.store.install', '安装')}
+          {isInstalled ? t('tools.store.installed', 'Installed') : t('tools.store.install', 'Install')}
         </button>
       </div>
     </StoreCardBase>

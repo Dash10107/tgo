@@ -1,4 +1,4 @@
-# TGO-Tech RAG Service
+# Pelatis RAG Service
 
 This directory contains all files related to the RAG Service (Retrieval-Augmented Generation - Document & File Management).
 

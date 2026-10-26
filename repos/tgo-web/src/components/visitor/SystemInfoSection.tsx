@@ -4,101 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { formatLocalDateTime } from '@/utils/dateUtils';
 import CollapsibleSection from '../ui/CollapsibleSection';
 
-// 常用语言代码到显示名称的映射（简体中文版本）
-const LANGUAGE_DISPLAY_NAMES_ZH_CN: Record<string, string> = {
-  'zh': '中文',
-  'zh-CN': '简体中文',
-  'zh-TW': '繁体中文（台湾）',
-  'zh-HK': '繁体中文（香港）',
-  'zh-Hans': '简体中文',
-  'zh-Hant': '繁体中文',
-  'en': '英语',
-  'en-US': '英语（美国）',
-  'en-GB': '英语（英国）',
-  'en-AU': '英语（澳大利亚）',
-  'ja': '日语',
-  'ja-JP': '日语',
-  'ko': '韩语',
-  'ko-KR': '韩语',
-  'fr': '法语',
-  'fr-FR': '法语',
-  'de': '德语',
-  'de-DE': '德语',
-  'es': '西班牙语',
-  'es-ES': '西班牙语',
-  'pt': '葡萄牙语',
-  'pt-BR': '葡萄牙语（巴西）',
-  'pt-PT': '葡萄牙语（葡萄牙）',
-  'ru': '俄语',
-  'ru-RU': '俄语',
-  'ar': '阿拉伯语',
-  'ar-SA': '阿拉伯语',
-  'th': '泰语',
-  'th-TH': '泰语',
-  'vi': '越南语',
-  'vi-VN': '越南语',
-  'it': '意大利语',
-  'it-IT': '意大利语',
-  'nl': '荷兰语',
-  'nl-NL': '荷兰语',
-  'pl': '波兰语',
-  'pl-PL': '波兰语',
-  'tr': '土耳其语',
-  'tr-TR': '土耳其语',
-  'id': '印尼语',
-  'id-ID': '印尼语',
-  'ms': '马来语',
-  'ms-MY': '马来语',
-};
-
-// 常用语言代码到显示名称的映射（繁体中文版本）
-const LANGUAGE_DISPLAY_NAMES_ZH_TW: Record<string, string> = {
-  'zh': '中文',
-  'zh-CN': '簡體中文',
-  'zh-TW': '繁體中文（台灣）',
-  'zh-HK': '繁體中文（香港）',
-  'zh-Hans': '簡體中文',
-  'zh-Hant': '繁體中文',
-  'en': '英語',
-  'en-US': '英語（美國）',
-  'en-GB': '英語（英國）',
-  'en-AU': '英語（澳洲）',
-  'ja': '日語',
-  'ja-JP': '日語',
-  'ko': '韓語',
-  'ko-KR': '韓語',
-  'fr': '法語',
-  'fr-FR': '法語',
-  'de': '德語',
-  'de-DE': '德語',
-  'es': '西班牙語',
-  'es-ES': '西班牙語',
-  'pt': '葡萄牙語',
-  'pt-BR': '葡萄牙語（巴西）',
-  'pt-PT': '葡萄牙語（葡萄牙）',
-  'ru': '俄語',
-  'ru-RU': '俄語',
-  'ar': '阿拉伯語',
-  'ar-SA': '阿拉伯語',
-  'th': '泰語',
-  'th-TH': '泰語',
-  'vi': '越南語',
-  'vi-VN': '越南語',
-  'it': '義大利語',
-  'it-IT': '義大利語',
-  'nl': '荷蘭語',
-  'nl-NL': '荷蘭語',
-  'pl': '波蘭語',
-  'pl-PL': '波蘭語',
-  'tr': '土耳其語',
-  'tr-TR': '土耳其語',
-  'id': '印尼語',
-  'id-ID': '印尼語',
-  'ms': '馬來語',
-  'ms-MY': '馬來語',
-};
-
-// 常用语言代码到显示名称的映射（英文版本）
+// Mapping of common language codes to display names (English)
 const LANGUAGE_DISPLAY_NAMES_EN: Record<string, string> = {
   'zh': 'Chinese',
   'zh-CN': 'Chinese (Simplified)',
@@ -146,23 +52,22 @@ const LANGUAGE_DISPLAY_NAMES_EN: Record<string, string> = {
 };
 
 /**
- * 根据当前 UI 语言获取对应的语言名称映射表
+ * Get the language-name table for the current UI language.
+ * Only English has a static table; other UI languages (Hindi, Marathi, ...)
+ * fall back to the browser's Intl.DisplayNames in formatLanguageCode.
  */
 const getLanguageDisplayNames = (uiLang: string): Record<string, string> => {
-  if (uiLang.startsWith('zh-TW') || uiLang.startsWith('zh-HK') || uiLang.startsWith('zh-Hant')) {
-    return LANGUAGE_DISPLAY_NAMES_ZH_TW;
+  if (uiLang.toLowerCase().startsWith('en')) {
+    return LANGUAGE_DISPLAY_NAMES_EN;
   }
-  if (uiLang.startsWith('zh')) {
-    return LANGUAGE_DISPLAY_NAMES_ZH_CN;
-  }
-  return LANGUAGE_DISPLAY_NAMES_EN;
+  return {};
 };
 
 /**
- * 将语言代码转换为友好的显示名称
- * @param code - 语言代码 (e.g., 'zh-CN', 'en-US')
- * @param uiLang - 当前 UI 语言 (e.g., 'zh-CN', 'zh-TW', 'en')
- * @returns 友好的语言名称
+ * Convert a language code to a friendly display name
+ * @param code - language code (e.g., 'zh-CN', 'en-US')
+ * @param uiLang - current UI language (e.g., 'en', 'hi', 'mr')
+ * @returns friendly language name
  */
 const formatLanguageCode = (code?: string | null, uiLang: string = 'zh-CN'): string => {
   if (!code || code.trim() === '') return '-';
@@ -170,12 +75,12 @@ const formatLanguageCode = (code?: string | null, uiLang: string = 'zh-CN'): str
   const trimmedCode = code.trim();
   const displayNames = getLanguageDisplayNames(uiLang);
   
-  // 先尝试精确匹配
+  // Try an exact match first
   if (displayNames[trimmedCode]) {
     return displayNames[trimmedCode];
   }
   
-  // 尝试只用语言部分匹配（如 zh-CN 匹配 zh）
+  // Try matching only the language part (e.g. zh-CN matches zh)
   const langPart = trimmedCode.split('-')[0].toLowerCase();
   const matchedKey = Object.keys(displayNames).find(
     key => key.toLowerCase() === langPart
@@ -184,7 +89,7 @@ const formatLanguageCode = (code?: string | null, uiLang: string = 'zh-CN'): str
     return displayNames[matchedKey];
   }
   
-  // 如果都没匹配到，尝试使用浏览器内置的 Intl.DisplayNames
+  // If nothing matched, try the browser's built-in Intl.DisplayNames
   try {
     const intlDisplayNames = new Intl.DisplayNames([uiLang], { type: 'language' });
     const displayName = intlDisplayNames.of(trimmedCode);
@@ -192,10 +97,10 @@ const formatLanguageCode = (code?: string | null, uiLang: string = 'zh-CN'): str
       return displayName;
     }
   } catch {
-    // Intl.DisplayNames 不支持该语言代码
+    // Intl.DisplayNames does not support this language code
   }
   
-  // 最后返回原始代码
+  // Finally return the original code
   return trimmedCode;
 };
 
@@ -216,7 +121,7 @@ interface SystemInfoSectionProps {
 }
 
 /**
- * 系统信息模块组件
+ * System info module component
  */
 const SystemInfoSection: React.FC<SystemInfoSectionProps> = ({
   systemInfo,
@@ -260,7 +165,7 @@ const SystemInfoSection: React.FC<SystemInfoSectionProps> = ({
 
   return (
     <CollapsibleSection
-      title={t('visitor.sections.systemInfo', '系统信息')}
+      title={t('visitor.sections.systemInfo', 'System Information')}
       className={className}
       defaultExpanded={false}
       expanded={expanded}
@@ -274,22 +179,22 @@ const SystemInfoSection: React.FC<SystemInfoSectionProps> = ({
       {hasAnyInfo ? (
         <div className="space-y-1 px-0.5">
           {[
-            { label: t('visitor.system.fields.platform', '平台'), value: platform },
+            { label: t('visitor.system.fields.platform', 'Platform'), value: platform },
             { 
-              label: t('visitor.system.fields.sourcePage', '来源页面'), 
+              label: t('visitor.system.fields.sourcePage', 'Source Page'), 
               value: sourceDetailUrl ? (
                 <a href={sourceDetailUrl} target="_blank" rel="noreferrer" className="text-blue-500 hover:underline break-all" title={sourceDetailUrl}>
                   {sourceDetailUrl}
                 </a>
               ) : sourceDetail 
             },
-            { label: t('visitor.system.fields.browser', '浏览器'), value: browser },
-            { label: t('visitor.system.fields.os', '操作系统'), value: os },
-            { label: t('visitor.system.fields.language', '语言'), value: language },
-            { label: t('visitor.system.fields.timezone', '时区'), value: timezone },
-            { label: t('visitor.system.fields.ipAddress', 'IP 地址'), value: ipAddress },
-            { label: t('visitor.system.fields.location', '位置'), value: displayLocation },
-            { label: t('visitor.system.fields.firstSeen', '首次访问'), value: firstSeen },
+            { label: t('visitor.system.fields.browser', 'Browser'), value: browser },
+            { label: t('visitor.system.fields.os', 'Operating System'), value: os },
+            { label: t('visitor.system.fields.language', 'Language'), value: language },
+            { label: t('visitor.system.fields.timezone', 'Timezone'), value: timezone },
+            { label: t('visitor.system.fields.ipAddress', 'IP Address'), value: ipAddress },
+            { label: t('visitor.system.fields.location', 'Location'), value: displayLocation },
+            { label: t('visitor.system.fields.firstSeen', 'First Seen'), value: firstSeen },
           ].map((item, idx) => (
             <div key={idx} className="flex justify-between items-start py-0.5 group">
               <span className="text-gray-400 dark:text-gray-500 text-[12px] flex-shrink-0 pt-0.5">{item.label}</span>
@@ -300,7 +205,7 @@ const SystemInfoSection: React.FC<SystemInfoSectionProps> = ({
           ))}
         </div>
       ) : (
-        <div className="text-[12px] text-gray-400 dark:text-gray-500 py-4 text-center italic">{t('visitor.system.empty', '暂无系统信息')}</div>
+        <div className="text-[12px] text-gray-400 dark:text-gray-500 py-4 text-center italic">{t('visitor.system.empty', 'No system information')}</div>
       )}
     </CollapsibleSection>
   );

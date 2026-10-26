@@ -230,7 +230,7 @@ async def create_admin(
     # The placeholder model is replaced after LLM setup selects a concrete default model.
     try:
         agent_data = {
-            "name": "Tgo AI Agent",
+            "name": "Pelatis AI Agent",
             "model": SETUP_DEFAULT_AGENT_MODEL,
             "is_default": True,
         }
@@ -298,7 +298,7 @@ async def create_admin(
                 platform.config = {
                     "position": "bottom-right",
                     "welcome_message": "Hello! How can I help you today?",
-                    "widget_title": "TGO AI Chatbot",
+                    "widget_title": "Pelatis AI Chatbot",
                 }
                 platform.is_active = True
                 website_platform = platform

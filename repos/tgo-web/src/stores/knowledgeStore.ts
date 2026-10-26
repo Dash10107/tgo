@@ -7,35 +7,36 @@ import {
   transformKnowledgeBaseItemToCreateRequest
 } from '@/utils/knowledgeBaseTransforms';
 
+import i18n from '@/i18n';
 type FilterType = 'all' | 'published' | 'draft' | 'archived';
 type SortField = 'title' | 'updatedAt' | 'views' | 'status';
 type SortDirection = 'asc' | 'desc';
 
 interface KnowledgeState {
-  // 知识库数据
+  // Knowledge base data
   knowledgeBases: KnowledgeBaseItem[];
   selectedKnowledgeBase: KnowledgeBaseItem | null;
   
-  // 搜索和筛选
+  // Search and filtering
   searchQuery: string;
   selectedFilter: FilterType;
   quickFilter: string;
   
-  // 排序
+  // Sorting
   sortField: SortField;
   sortDirection: SortDirection;
   
-  // 分页
+  // Pagination
   currentPage: number;
   pageSize: number;
   
-  // 加载状态
+  // Loading state
   isLoading: boolean;
   isCreating: boolean;
   isUpdating: boolean;
   isDeleting: boolean;
 
-  // 错误状态
+  // Error state
   error: string | null;
   hasError: boolean;
   
@@ -52,17 +53,17 @@ interface KnowledgeState {
   clearError: () => void;
   retry: () => Promise<void>;
   
-  // CRUD操作
+  // CRUD operations
   createKnowledgeBase: (data: Partial<KnowledgeBaseItem>) => Promise<KnowledgeBaseItem | undefined>;
   updateKnowledgeBase: (id: string, updates: Partial<KnowledgeBaseItem>) => Promise<void>;
   deleteKnowledgeBase: (id: string) => Promise<void>;
   duplicateKnowledgeBase: (id: string) => Promise<void>;
   
-  // 批量操作
+  // Batch operations
   bulkDelete: (ids: string[]) => Promise<void>;
   bulkUpdateStatus: (ids: string[], status: KnowledgeBaseItem['status']) => Promise<void>;
 
-  // API集成方法
+  // API integration methods
   fetchKnowledgeBases: (params?: {
     limit?: number;
     offset?: number;
@@ -71,7 +72,7 @@ interface KnowledgeState {
   }) => Promise<void>;
   refreshKnowledgeBases: () => Promise<void>;
 
-  // 计算属性
+  // Computed properties
   getFilteredAndSortedKnowledgeBases: () => KnowledgeBaseItem[];
   getPaginatedKnowledgeBases: () => { items: KnowledgeBaseItem[]; totalPages: number };
   getKnowledgeBaseById: (id: string) => KnowledgeBaseItem | undefined;
@@ -87,7 +88,7 @@ export const useKnowledgeStore = create<KnowledgeState>()(
   devtools(
     persist(
       (set, get) => ({
-        // 初始状态
+        // Initial state
         knowledgeBases: [],
         selectedKnowledgeBase: null,
         searchQuery: '',
@@ -139,7 +140,7 @@ export const useKnowledgeStore = create<KnowledgeState>()(
           await refreshKnowledgeBases();
         },
 
-        // API集成方法
+        // API integration methods
         fetchKnowledgeBases: async (params) => {
           set({
             isLoading: true,
@@ -158,8 +159,8 @@ export const useKnowledgeStore = create<KnowledgeState>()(
               hasError: false
             }, false, 'fetchKnowledgeBasesSuccess');
           } catch (error) {
-            console.error('获取知识库列表失败:', error);
-            const errorMessage = error instanceof Error ? error.message : '获取知识库列表失败';
+            console.error('Failed to fetch knowledge base list:', error);
+            const errorMessage = error instanceof Error ? error.message : i18n.t('knowledge.store.fetchFailed', 'Failed to fetch the knowledge base list');
             set({
               knowledgeBases: [],
               isLoading: false,
@@ -182,7 +183,7 @@ export const useKnowledgeStore = create<KnowledgeState>()(
           await get().fetchKnowledgeBases(params);
         },
 
-        // CRUD操作
+        // CRUD operations
         createKnowledgeBase: async (data) => {
           set({
             isCreating: true,
@@ -201,7 +202,7 @@ export const useKnowledgeStore = create<KnowledgeState>()(
               content: newCollection.description || '',
               category: data.category || 'other',
               tags: data.tags || newCollection.tags || [],
-              author: data.author || '当前用户',
+              author: data.author || i18n.t('knowledge.store.currentUser', 'Current user'),
               createdAt: newCollection.created_at, // Preserve full timestamp
               updatedAt: newCollection.updated_at, // Preserve full timestamp
               views: 0,
@@ -224,8 +225,8 @@ export const useKnowledgeStore = create<KnowledgeState>()(
 
             return newItem;
           } catch (error) {
-            console.error('创建知识库失败:', error);
-            const errorMessage = error instanceof Error ? error.message : '创建知识库失败';
+            console.error('Failed to create knowledge base:', error);
+            const errorMessage = error instanceof Error ? error.message : i18n.t('knowledge.store.createFailed', 'Failed to create the knowledge base');
             set({
               isCreating: false,
               error: errorMessage,
@@ -290,8 +291,8 @@ export const useKnowledgeStore = create<KnowledgeState>()(
               'updateKnowledgeBaseSuccess'
             );
           } catch (error) {
-            console.error('更新知识库失败:', error);
-            const errorMessage = error instanceof Error ? error.message : '更新知识库失败';
+            console.error('Failed to update knowledge base:', error);
+            const errorMessage = error instanceof Error ? error.message : i18n.t('knowledge.store.updateFailed', 'Failed to update the knowledge base');
             set({
               isUpdating: false,
               error: errorMessage,
@@ -325,8 +326,8 @@ export const useKnowledgeStore = create<KnowledgeState>()(
               'deleteKnowledgeBaseSuccess'
             );
           } catch (error) {
-            console.error('删除知识库失败:', error);
-            const errorMessage = error instanceof Error ? error.message : '删除知识库失败';
+            console.error('Failed to delete knowledge base:', error);
+            const errorMessage = error instanceof Error ? error.message : i18n.t('knowledge.store.deleteFailed', 'Failed to delete the knowledge base');
             set({
               isDeleting: false,
               error: errorMessage,
@@ -345,7 +346,7 @@ export const useKnowledgeStore = create<KnowledgeState>()(
             const duplicate: KnowledgeBaseItem = {
               ...original,
               id: Date.now().toString(),
-              title: `${original.title} (副本)`,
+              title: `${original.title} (${i18n.t('knowledge.store.copySuffix', 'Copy')})`,
               createdAt: new Date().toISOString().split('T')[0],
               updatedAt: new Date().toISOString().split('T')[0],
               status: 'draft'
@@ -374,7 +375,7 @@ export const useKnowledgeStore = create<KnowledgeState>()(
               'bulkDeleteSuccess'
             );
           } catch (error) {
-            console.error('批量删除失败:', error);
+            console.error('Batch delete failed:', error);
             set({ isDeleting: false }, false, 'bulkDeleteError');
           }
         },
@@ -396,17 +397,17 @@ export const useKnowledgeStore = create<KnowledgeState>()(
               'bulkUpdateStatusSuccess'
             );
           } catch (error) {
-            console.error('批量更新状态失败:', error);
+            console.error('Batch status update failed:', error);
             set({ isUpdating: false }, false, 'bulkUpdateStatusError');
           }
         },
 
-        // 计算属性
+        // Computed properties
         getFilteredAndSortedKnowledgeBases: () => {
           const { knowledgeBases, searchQuery, selectedFilter, sortField, sortDirection } = get();
           let filtered = knowledgeBases;
 
-          // 搜索过滤
+          // Search filtering
           if (searchQuery.trim()) {
             filtered = filtered.filter(item =>
               item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -419,12 +420,12 @@ export const useKnowledgeStore = create<KnowledgeState>()(
             );
           }
 
-          // 状态过滤
+          // Status filtering
           if (selectedFilter !== 'all') {
             filtered = filtered.filter(item => item.status === selectedFilter);
           }
 
-          // 排序
+          // Sorting
           filtered.sort((a, b) => {
             let aValue: any = a[sortField];
             let bValue: any = b[sortField];
@@ -475,7 +476,7 @@ export const useKnowledgeStore = create<KnowledgeState>()(
       {
         name: 'knowledge-store',
         partialize: (state) => ({
-          // 持久化用户偏好
+          // Persist user preferences
           searchQuery: state.searchQuery,
           selectedFilter: state.selectedFilter,
           quickFilter: state.quickFilter,

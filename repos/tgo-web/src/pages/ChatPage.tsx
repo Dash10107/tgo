@@ -71,22 +71,22 @@ const ChatPage: React.FC = () => {
   // Track if initial URL sync has been attempted
   const hasAttemptedUrlSync = useRef(false);
 
-  // Note: 会话列表的加载由 ChatList.tsx 根据当前 tab 处理，不再需要在这里调用 syncConversationsIfNeeded
+  // Note: the conversation list is loaded by ChatList.tsx according to the current tab; syncConversationsIfNeeded no longer needs to be called here
 
   const createChatByChannel = useChatStore(state => state.createChatByChannel);
 
-  // 从 URL 参数定位会话（仅在 URL 变化时执行一次）
+  // Locate the conversation from URL params (runs once, only when the URL changes)
   useEffect(() => {
     // Only attempt URL sync once per URL change
     if (urlChannelType && urlChannelId && !hasAttemptedUrlSync.current) {
       hasAttemptedUrlSync.current = true;
       const targetChannelType = parseInt(urlChannelType, 10);
       
-      // 使用 getState() 获取最新的 chats，避免依赖 chats 数组导致重复触发
+      // Use getState() to get the latest chats, avoiding repeated triggers from depending on the chats array
       const currentChats = useChatStore.getState().chats;
       const currentActiveChat = useChatStore.getState().activeChat;
       
-      // 如果当前 activeChat 已经是目标会话，不需要再设置
+      // If the current activeChat is already the target conversation, no need to set it again
       if (currentActiveChat?.channelId === urlChannelId && currentActiveChat?.channelType === targetChannelType) {
         return;
       }
@@ -125,7 +125,7 @@ const ChatPage: React.FC = () => {
     hasAttemptedUrlSync.current = false;
   }, [urlChannelType, urlChannelId]);
 
-  // 设置默认活跃聊天（仅当没有 URL 参数时）
+  // Set the default active chat (only when there are no URL params)
   useEffect(() => {
     // If URL has params, don't auto-select first chat
     if (urlChannelType && urlChannelId) return;
@@ -209,7 +209,7 @@ const ChatPage: React.FC = () => {
     return () => window.removeEventListener('focus', onFocus);
   }, []);
 
-  // 判断当前会话是否是 agent 会话（channelId 以 -agent 结尾）
+  // Determine whether the current conversation is an agent conversation (channelId ends with -agent)
   const isAgentChat = activeChat?.channelId?.endsWith('-agent') ?? false;
   const isAIChat = isAgentChat;
 
@@ -233,7 +233,7 @@ const ChatPage: React.FC = () => {
         onEndChatSuccess={handleEndChatSuccess}
       />
 
-      {/* Visitor Info Panel - 仅在非 AI 会话（非 agent）时显示 */}
+      {/* Visitor Info Panel - only shown for non-AI (non-agent) conversations */}
       {!isAIChat && <VisitorPanel activeChat={activeChat ?? undefined} />}
     </div>
   );

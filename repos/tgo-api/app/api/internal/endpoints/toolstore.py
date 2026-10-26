@@ -17,7 +17,7 @@ def get_project_credential(
     project_id: UUID,
     db: Session = Depends(get_db),
 ) -> Any:
-    """获取项目绑定的商店凭证（内部接口，包含解密后的 API Key）"""
+    """Get the store credentials bound to the project (internal API; includes the decrypted API key)."""
     credential = db.scalar(
         select(StoreCredential).where(StoreCredential.project_id == project_id)
     )

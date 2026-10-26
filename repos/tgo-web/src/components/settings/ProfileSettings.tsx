@@ -50,7 +50,7 @@ const ProfileSettings: React.FC = () => {
       setProfile(data);
     } catch (err: any) {
       console.error('Failed to load profile:', err);
-      setLoadError(err?.message || t('settings.profile.loadError', '加载个人资料失败'));
+      setLoadError(err?.message || t('settings.profile.loadError', 'Failed to load profile'));
     } finally {
       setIsLoading(false);
     }
@@ -72,12 +72,12 @@ const ProfileSettings: React.FC = () => {
       setProfile(updated);
       showSuccess(
         newPaused
-          ? t('settings.profile.servicePaused', '已暂停接待服务')
-          : t('settings.profile.serviceResumed', '已恢复接待服务')
+          ? t('settings.profile.servicePaused', 'Service paused')
+          : t('settings.profile.serviceResumed', 'Service resumed')
       );
     } catch (err: any) {
       console.error('Failed to toggle service:', err);
-      showError(err?.message || t('settings.profile.toggleError', '切换服务状态失败'));
+      showError(err?.message || t('settings.profile.toggleError', 'Failed to toggle service status'));
     } finally {
       setIsToggling(false);
     }
@@ -109,7 +109,7 @@ const ProfileSettings: React.FC = () => {
               className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
             >
               <RefreshCw className="w-4 h-4" />
-              {t('common.retry', '重试')}
+              {t('common.retry', 'Retry')}
             </button>
           </div>
         </div>
@@ -133,17 +133,17 @@ const ProfileSettings: React.FC = () => {
             <User className="w-6 h-6 text-gray-600 dark:text-gray-400" />
             <div>
               <h1 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">
-                {t('settings.profile.title', '个人资料')}
+                {t('settings.profile.title', 'Profile')}
               </h1>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                {t('settings.profile.subtitle', '查看和管理你的个人信息')}
+                {t('settings.profile.subtitle', 'View and manage your personal information')}
               </p>
             </div>
           </div>
           <button
             onClick={loadProfile}
             className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-            title={t('common.refresh', '刷新')}
+            title={t('common.refresh', 'Refresh')}
           >
             <RefreshCw className="w-5 h-5" />
           </button>
@@ -176,12 +176,12 @@ const ProfileSettings: React.FC = () => {
 
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                  <span className="font-medium">{t('settings.profile.username', '用户名')}:</span>
+                  <span className="font-medium">{t('settings.profile.username', 'Username')}:</span>
                   <span>{profile?.username}</span>
                 </div>
 
                 <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                  <span className="font-medium">{t('settings.profile.status', '状态')}:</span>
+                  <span className="font-medium">{t('settings.profile.status', 'Status')}:</span>
                   <span className="flex items-center gap-1.5">
                     <span className={`w-2 h-2 rounded-full ${statusStyle.dotColor}`}></span>
                     {statusLabel}
@@ -190,7 +190,7 @@ const ProfileSettings: React.FC = () => {
 
                 {profile?.description && (
                   <div className="text-gray-600 dark:text-gray-400">
-                    <span className="font-medium">{t('settings.profile.description', '简介')}:</span>
+                    <span className="font-medium">{t('settings.profile.description', 'Bio')}:</span>
                     <p className="mt-1">{profile.description}</p>
                   </div>
                 )}
@@ -202,7 +202,7 @@ const ProfileSettings: React.FC = () => {
         {/* Service Status Section */}
         <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
           <h3 className="text-lg font-medium text-gray-800 dark:text-gray-100 mb-4">
-            {t('settings.profile.serviceStatus', '接待服务状态')}
+            {t('settings.profile.serviceStatus', 'Service Status')}
           </h3>
 
           <div className="flex items-center justify-between">
@@ -215,14 +215,14 @@ const ProfileSettings: React.FC = () => {
                 )}
                 <span className={`font-medium ${profile?.service_paused ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
                   {profile?.service_paused
-                    ? t('settings.profile.servicePausedLabel', '已暂停接待')
-                    : t('settings.profile.serviceActiveLabel', '正常接待中')}
+                    ? t('settings.profile.servicePausedLabel', 'Service Paused')
+                    : t('settings.profile.serviceActiveLabel', 'Active')}
                 </span>
               </div>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 {profile?.service_paused
-                  ? t('settings.profile.servicePausedDesc', '暂停后将不会被分配新的访客，已有会话不受影响')
-                  : t('settings.profile.serviceActiveDesc', '系统会根据分配规则将新访客分配给你')}
+                  ? t('settings.profile.servicePausedDesc', 'You will not be assigned new visitors while paused, existing conversations are not affected')
+                  : t('settings.profile.serviceActiveDesc', 'System will assign new visitors to you based on assignment rules')}
               </p>
             </div>
 
@@ -245,8 +245,8 @@ const ProfileSettings: React.FC = () => {
                 <PhoneOff className="w-4 h-4" />
               )}
               {profile?.service_paused
-                ? t('settings.profile.resumeService', '恢复接待')
-                : t('settings.profile.pauseService', '暂停接待')}
+                ? t('settings.profile.resumeService', 'Resume Service')
+                : t('settings.profile.pauseService', 'Pause Service')}
             </button>
           </div>
         </section>
@@ -254,16 +254,16 @@ const ProfileSettings: React.FC = () => {
         {/* Account Info Section */}
         <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
           <h3 className="text-lg font-medium text-gray-800 dark:text-gray-100 mb-4">
-            {t('settings.profile.accountInfo', '账户信息')}
+            {t('settings.profile.accountInfo', 'Account Information')}
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-              <span className="font-medium min-w-[80px]">{t('settings.profile.createdAt', '创建时间')}:</span>
+              <span className="font-medium min-w-[80px]">{t('settings.profile.createdAt', 'Created At')}:</span>
               <span>{profile?.created_at ? new Date(profile.created_at).toLocaleString() : '-'}</span>
             </div>
             <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-              <span className="font-medium min-w-[80px]">{t('settings.profile.updatedAt', '更新时间')}:</span>
+              <span className="font-medium min-w-[80px]">{t('settings.profile.updatedAt', 'Updated At')}:</span>
               <span>{profile?.updated_at ? new Date(profile.updated_at).toLocaleString() : '-'}</span>
             </div>
           </div>

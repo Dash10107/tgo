@@ -58,7 +58,7 @@ sidebar_position: 2
 
 **解决方案**：
 
-TGO 需要至少 4GB 内存。检查可用内存：
+Pelatis 需要至少 4GB 内存。检查可用内存：
 
 ```bash
 free -h

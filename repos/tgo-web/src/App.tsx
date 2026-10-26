@@ -65,10 +65,10 @@ const App: React.FC = () => {
       if (isLoggingOut) return;
       if (isAuthenticated) {
         isLoggingOut = true;
-        try { toast?.showToast('warning', t('auth.sessionExpiredTitle', '会话已过期'), t('auth.sessionExpiredMessage', '请重新登录')); } catch {}
+        try { toast?.showToast('warning', t('auth.sessionExpiredTitle', 'Session expired'), t('auth.sessionExpiredMessage', 'Please sign in again')); } catch {}
         // Persist a flash message for the login page to display after redirect
         try {
-          localStorage.setItem('auth-flash', JSON.stringify({ message: t('auth.sessionExpiredMessage', '登录已过期，请重新登录') }));
+          localStorage.setItem('auth-flash', JSON.stringify({ message: t('auth.sessionExpiredMessage', 'Please sign in again') }));
         } catch {}
         logout();
       }

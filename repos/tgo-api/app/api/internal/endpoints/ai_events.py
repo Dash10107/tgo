@@ -1,6 +1,6 @@
 """Internal AI events endpoint (no authentication required).
 
-This endpoint is designed for the AI Service to send events to the TGO API
+This endpoint is designed for the AI Service to send events to the Pelatis API
 without requiring JWT authentication. It runs on a separate port (8001) and
 should only be accessible from the internal network.
 """
@@ -141,7 +141,7 @@ def _ensure_manual_service_tag(db: Session, project_id, visitor: Visitor) -> Non
 async def _handle_manual_service_request(event: AIServiceEvent, project: Project, db: Session) -> dict:
     """Handle a manual service request event.
 
-    1) Tag the visitor with the manual service escalation tag (转人工).
+    1) Tag the visitor with the manual service escalation tag (Manual Service).
     2) If the visitor is unassigned, call transfer_to_staff to assign a staff member.
        Do NOT create VisitorWaitingQueue entries directly here.
     """
@@ -851,7 +851,7 @@ async def ingest_ai_event_internal(
 
     if event_type == USER_INFO_EVENT:
         if user_type != "visitor":
-            # 客服信息更新逻辑留白
+            # Staff info update logic intentionally left blank
             return {"event_type": event_type, "result": {"message": "Staff info update not implemented yet"}}
             
         result = await _handle_visitor_info_update(event, project, db)
@@ -859,7 +859,7 @@ async def ingest_ai_event_internal(
 
     if event_type in (VISITOR_SENTIMENT_EVENT, USER_SENTIMENT_EVENT):
         if user_type != "visitor":
-            # 客服情感分析逻辑留白
+            # Staff sentiment analysis logic intentionally left blank
             return {"event_type": event_type, "result": {"message": "Staff sentiment update not implemented yet"}}
             
         result = await _handle_visitor_sentiment_update(event, project, db)
@@ -867,7 +867,7 @@ async def ingest_ai_event_internal(
 
     if event_type in (VISITOR_TAG_EVENT, USER_TAG_EVENT):
         if user_type != "visitor":
-            # 客服标签逻辑留白
+            # Staff tag logic intentionally left blank
             return {"event_type": event_type, "result": {"message": "Staff tag add not implemented yet"}}
             
         result = _handle_visitor_tag(event, project, db)

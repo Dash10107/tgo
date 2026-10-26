@@ -6,7 +6,7 @@ sidebar_position: 1
 
 # 源码部署
 
-本页介绍如何从源代码构建和部署 TGO，适用于需要自定义修改或开发调试的场景。
+本页介绍如何从源代码构建和部署 Pelatis，适用于需要自定义修改或开发调试的场景。
 
 ## 与镜像部署的区别
 
@@ -113,7 +113,7 @@ docker compose exec tgo-api bash
 
 ## 安装模式记忆
 
-TGO 会记住你的安装模式，保存在 `./data/.tgo-install-mode` 文件中。
+Pelatis 会记住你的安装模式，保存在 `./data/.tgo-install-mode` 文件中。
 
 之后执行 `upgrade` 时会自动使用相同模式：
 

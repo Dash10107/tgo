@@ -12,7 +12,7 @@ import NodeExecutionOverlay from '../overlays/NodeExecutionOverlay';
 
 const APINode: React.FC<NodeProps<APINodeData>> = ({ id, data, selected }) => {
   const { t } = useTranslation();
-  const defaultLabel = t('workflow.node_types.api.label', 'API调用');
+  const defaultLabel = t('workflow.node_types.api.label', 'API Call');
 
   return (
     <div

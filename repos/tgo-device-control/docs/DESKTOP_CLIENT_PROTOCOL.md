@@ -1,6 +1,6 @@
 # Desktop Client 协议规范
 
-本文档定义了 TGO Device Control 系统中桌面控制端（Desktop Client）与服务端之间的通信协议。
+本文档定义了 Pelatis Device Control 系统中桌面控制端（Desktop Client）与服务端之间的通信协议。
 
 ## 目录
 

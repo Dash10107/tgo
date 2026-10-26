@@ -310,7 +310,7 @@ class ChatProvider extends ChangeNotifier {
       clientMsgNo: clientMsgNo,
     );
 
-    // 1. 先将消息渲染到UI上
+    // 1. Render the message to the UI first
     addMessage(userMessage);
 
     try {
@@ -319,15 +319,15 @@ class ChatProvider extends ChangeNotifier {
         await cancelStreaming(reason: 'auto_cancel_on_new_send');
       }
 
-      // 2. 通过websocket发送消息
+      // 2. Send the message via websocket
       await _imService.sendText(trimmed, clientMsgNo: clientMsgNo);
 
       debugPrint('[ChatProvider] Message sent via IM, clientMsgNo: $clientMsgNo');
 
-      // 发送成功后，更新状态为 sent
+      // After a successful send, update the status to sent
       updateMessageStatus(id, MessageStatus.sent);
 
-      // 3. 再调用 /v1/chat/completion 接口
+      // 3. Then call the /v1/chat/completion API
       try {
         await _chatService.sendCompletion(
           apiKey: _visitorService.apiKey,
@@ -338,7 +338,7 @@ class ChatProvider extends ChangeNotifier {
         );
       } catch (e) {
         debugPrint('[ChatProvider] Completion error (non-fatal): $e');
-        // 虽然 completion 失败了，但消息已经通过 IM 发送成功，不重置状态
+        // Although completion failed, the message was already sent via IM, so the status is not reset
       }
     } catch (e) {
       debugPrint('[ChatProvider] Send error: $e');

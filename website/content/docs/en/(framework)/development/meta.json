@@ -1,5 +1,5 @@
 {
   "title": "Development",
-  "description": "How to develop plugins and extensions for the TGO system.",
+  "description": "How to develop plugins and extensions for the Pelatis system.",
   "pages": ["source-deploy", "restart-upgrade", "debug-tools", "tgo-command"]
 }

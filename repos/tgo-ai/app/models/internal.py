@@ -40,9 +40,9 @@ class AgentTool(BaseModel):
 
     @property
     def input_schema(self) -> Dict[str, Any]:
-        """获取工具的 inputSchema，优先从 base_config 获取"""
+        """Get the tool's inputSchema, preferring base_config."""
         if self.base_config:
-            # 支持 inputSchema 和 input_schema 两种命名
+            # Support both inputSchema and input_schema naming
             schema = self.base_config.get("inputSchema") or self.base_config.get("input_schema")
             if schema:
                 return schema

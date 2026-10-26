@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     )
 
     # Service Info
-    SERVICE_NAME: str = Field(default="TGO Device Control")
+    SERVICE_NAME: str = Field(default="Pelatis Device Control")
     SERVICE_VERSION: str = Field(default="1.0.0")
 
     # Server Configuration
@@ -48,7 +48,7 @@ class Settings(BaseSettings):
     # API Service Configuration
     API_SERVICE_URL: str = Field(
         default="http://localhost:8000",
-        description="URL of the TGO API service",
+        description="URL of the Pelatis API service",
     )
 
     # Database Configuration

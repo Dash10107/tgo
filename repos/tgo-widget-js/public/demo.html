@@ -21,25 +21,25 @@
   </head>
   <body>
     <header>
-      <strong>TGO Widget SDK Demo</strong>
+      <strong>Pelatis Widget SDK Demo</strong>
     </header>
     <main>
       <section class="hero">
         <h1>Welcome</h1>
-        <p>This page simulates a third-party website integrating the TGO Widget SDK. After the page loads, a customer support widget should appear at the bottom-right corner automatically.</p>
+        <p>This page simulates a third-party website integrating the Pelatis Widget SDK. After the page loads, a customer support widget should appear at the bottom-right corner automatically.</p>
       </section>
       <section id="spa-demo">
-        <h2>SPA 路由切换测试</h2>
+        <h2>SPA Route Switching Test</h2>
         <div class="nav">
-          <button type="button" data-path="./demo-home">首页</button>
-          <button type="button" data-path="./demo-product">产品页</button>
-          <button type="button" data-path="./demo-pricing">定价页</button>
-          <button type="button" data-path="./demo-about">关于页</button>
+          <button type="button" data-path="./demo-home">Home</button>
+          <button type="button" data-path="./demo-product">Product</button>
+          <button type="button" data-path="./demo-pricing">Pricing</button>
+          <button type="button" data-path="./demo-about">About</button>
         </div>
         <div id="spa-view" class="card" style="min-height:100px;margin-top:12px;"></div>
         <div class="actions" style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
-          <button id="btn-custom" type="button">自定义事件测试</button>
-          <button id="btn-form" type="button">表单提交测试</button>
+          <button id="btn-custom" type="button">Custom Event Test</button>
+          <button id="btn-form" type="button">Form Submit Test</button>
         </div>
       </section>
 
@@ -68,10 +68,10 @@
 
       (function(){
         const pages = {
-          './demo-home':    { title: '首页',   body: '欢迎来到首页。这是用于测试 page_view 上报的演示页面。' },
-          './demo-product': { title: '产品页', body: '这是产品页，用于模拟 SPA 路由切换。' },
-          './demo-pricing': { title: '定价页', body: '这是定价页，切换路由后会触发上一页停留时长上报。' },
-          './demo-about':   { title: '关于页', body: '这是关于页，演示进入即上报 + 离开补时长。' }
+          './demo-home':    { title: 'Home',    body: 'Welcome to the home page. This demo page is used to test page_view reporting.' },
+          './demo-product': { title: 'Product', body: 'This is the product page, used to simulate SPA route switching.' },
+          './demo-pricing': { title: 'Pricing', body: 'This is the pricing page. Switching routes triggers the previous page dwell time report.' },
+          './demo-about':   { title: 'About',   body: 'This is the about page, demonstrating report-on-enter plus dwell time on leave.' }
         };
         const view = document.getElementById('spa-view');
 
@@ -82,7 +82,7 @@
           if(view){
             view.innerHTML = '<h3>'+p.title+'</h3>'+
               '<p>'+p.body+'</p>'+
-              '<p style="color:#6b7280;font-size:12px">当前 URL: '+location.href+'</p>';
+              '<p style="color:#6b7280;font-size:12px">Current URL: '+location.href+'</p>';
           }
           document.querySelectorAll('#spa-demo .nav [data-path]')
             .forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-path')===path));
@@ -96,16 +96,16 @@
         });
         window.addEventListener('popstate', function(){ render(location.pathname); });
 
-        // 初始路由（非 pages 范围则替换为 /demo-home）
+        // Initial route (replace with /demo-home if outside the pages list)
         if(!pages[location.pathname]){ history.replaceState({ path:'./demo-home' }, '', './demo-home'); }
         render(location.pathname);
 
-        // 自定义事件测试按钮
+        // Custom event test button
         document.getElementById('btn-custom')?.addEventListener('click', function(){
-          window.TGOWidget && window.TGOWidget('track', 'custom_event', '测试事件', { context: { test: true } });
+          window.TGOWidget && window.TGOWidget('track', 'custom_event', 'Test event', { context: { test: true } });
         });
         document.getElementById('btn-form')?.addEventListener('click', function(){
-          window.TGOWidget && window.TGOWidget('track', 'form_submitted', '测试表单', { context: { form_id: 'test-form' } });
+          window.TGOWidget && window.TGOWidget('track', 'form_submitted', 'Test form', { context: { form_id: 'test-form' } });
         });
       })();
     </script>

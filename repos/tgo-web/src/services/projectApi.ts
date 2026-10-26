@@ -2,7 +2,7 @@ import { apiClient } from './api';
 import type { ToolStoreCredential } from '@/types';
 
 export const projectApi = {
-  // 绑定工具商店凭证
+  // Bind the tool store credentials
   bindToolStoreCredential: async (projectId: string, data: {
     toolstore_user_id: string;
     toolstore_email: string;
@@ -12,12 +12,12 @@ export const projectApi = {
     return await apiClient.post<ToolStoreCredential>(`/v1/toolstore/${projectId}/bindCredential`, data);
   },
 
-  // 获取工具商店凭证状态
+  // Get the tool store credential status
   getToolStoreCredential: async (projectId: string) => {
     return await apiClient.get<ToolStoreCredential | null>(`/v1/toolstore/${projectId}/credential`);
   },
 
-  // 解绑工具商店凭证
+  // Unbind the tool store credentials
   unbindToolStoreCredential: async (projectId: string) => {
     return await apiClient.delete(`/v1/toolstore/${projectId}/credential`);
   },

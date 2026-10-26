@@ -16,7 +16,7 @@ logger = get_logger("exceptions")
 
 
 class TGOAPIException(Exception):
-    """Base exception for TGO API."""
+    """Base exception for Pelatis API."""
     
     def __init__(
         self,
@@ -155,11 +155,11 @@ class ExternalServiceError(TGOAPIException):
 
 
 async def tgo_api_exception_handler(request: Request, exc: TGOAPIException) -> JSONResponse:
-    """Handle TGO API exceptions."""
+    """Handle Pelatis API exceptions."""
     request_id = str(uuid4())
     
     logger.error(
-        f"TGO API Exception: {exc.code} - {exc.message}",
+        f"Pelatis API Exception: {exc.code} - {exc.message}",
         extra={
             "request_id": request_id,
             "path": request.url.path,

@@ -1,6 +1,6 @@
-# TGO Device Control API Reference
+# Pelatis Device Control API Reference
 
-本文档描述了 TGO Device Control 服务的 REST API 接口。
+本文档描述了 Pelatis Device Control 服务的 REST API 接口。
 
 ## Base URL
 

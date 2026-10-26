@@ -5,33 +5,42 @@ from __future__ import annotations
 from typing import Optional
 
 
+# Chinese ("zh") values are written as unicode escapes; Hindi ("hi") and Marathi ("mr") added.
 INTENT_TRANSLATIONS = {
     "purchase": {
         "en": "Purchase",
-        "zh": "购买",
-        "zh-cn": "购买",
-        "zh_cn": "购买",
+        "zh": "\u8d2d\u4e70",
+        "zh-cn": "\u8d2d\u4e70",
+        "zh_cn": "\u8d2d\u4e70",
+        "hi": "खरीदारी",
+        "mr": "खरेदी",
         "ja": "購入",
     },
     "inquiry": {
         "en": "Inquiry",
-        "zh": "咨询",
-        "zh-cn": "咨询",
-        "zh_cn": "咨询",
+        "zh": "\u54a8\u8be2",
+        "zh-cn": "\u54a8\u8be2",
+        "zh_cn": "\u54a8\u8be2",
+        "hi": "पूछताछ",
+        "mr": "चौकशी",
         "ja": "問い合わせ",
     },
     "complaint": {
         "en": "Complaint",
-        "zh": "投诉",
-        "zh-cn": "投诉",
-        "zh_cn": "投诉",
+        "zh": "\u6295\u8bc9",
+        "zh-cn": "\u6295\u8bc9",
+        "zh_cn": "\u6295\u8bc9",
+        "hi": "शिकायत",
+        "mr": "तक्रार",
         "ja": "苦情",
     },
     "support": {
         "en": "Support",
-        "zh": "支持",
-        "zh-cn": "支持",
-        "zh_cn": "支持",
+        "zh": "\u652f\u6301",
+        "zh-cn": "\u652f\u6301",
+        "zh_cn": "\u652f\u6301",
+        "hi": "सहायता",
+        "mr": "सहाय्य",
         "ja": "サポート",
     },
 }

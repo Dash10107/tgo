@@ -50,7 +50,7 @@ const DeviceCard: React.FC<DeviceCardProps> = ({
 
   // Format last seen time
   const formatLastSeen = (dateString?: string) => {
-    if (!dateString) return t('deviceControl.device.neverConnected', '从未连接');
+    if (!dateString) return t('deviceControl.device.neverConnected', 'Never connected');
     const date = new Date(dateString);
     const now = new Date();
     const diff = now.getTime() - date.getTime();
@@ -58,10 +58,10 @@ const DeviceCard: React.FC<DeviceCardProps> = ({
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
 
-    if (minutes < 1) return t('deviceControl.device.justNow', '刚刚');
-    if (minutes < 60) return t('deviceControl.device.minutesAgo', '{{count}} 分钟前', { count: minutes });
-    if (hours < 24) return t('deviceControl.device.hoursAgo', '{{count}} 小时前', { count: hours });
-    return t('deviceControl.device.daysAgo', '{{count}} 天前', { count: days });
+    if (minutes < 1) return t('deviceControl.device.justNow', 'Just now');
+    if (minutes < 60) return t('deviceControl.device.minutesAgo', '{{count}} minutes ago', { count: minutes });
+    if (hours < 24) return t('deviceControl.device.hoursAgo', '{{count}} hours ago', { count: hours });
+    return t('deviceControl.device.daysAgo', '{{count}} days ago', { count: days });
   };
 
   // Get OS icon/text
@@ -124,7 +124,7 @@ const DeviceCard: React.FC<DeviceCardProps> = ({
                 className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
               >
                 <Pencil className="w-4 h-4" />
-                {t('common.edit', '编辑')}
+                {t('common.edit', 'Edit')}
               </button>
               {isOnline && (
                 <button
@@ -135,7 +135,7 @@ const DeviceCard: React.FC<DeviceCardProps> = ({
                   className="w-full px-4 py-2 text-left text-sm text-orange-600 dark:text-orange-400 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
                 >
                   <Power className="w-4 h-4" />
-                  {t('deviceControl.device.disconnect', '断开连接')}
+                  {t('deviceControl.device.disconnect', 'Disconnect')}
                 </button>
               )}
               <button
@@ -146,7 +146,7 @@ const DeviceCard: React.FC<DeviceCardProps> = ({
                 className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
               >
                 <Trash2 className="w-4 h-4" />
-                {t('common.delete', '删除')}
+                {t('common.delete', 'Delete')}
               </button>
             </div>
           )}
@@ -159,14 +159,14 @@ const DeviceCard: React.FC<DeviceCardProps> = ({
           <>
             <Wifi className="w-4 h-4 text-green-500" />
             <span className="text-sm font-medium text-green-600 dark:text-green-400">
-              {t('deviceControl.device.online', '在线')}
+              {t('deviceControl.device.online', 'Online')}
             </span>
           </>
         ) : (
           <>
             <WifiOff className="w-4 h-4 text-gray-400" />
             <span className="text-sm text-gray-500 dark:text-gray-400">
-              {t('deviceControl.device.offline', '离线')}
+              {t('deviceControl.device.offline', 'Offline')}
             </span>
           </>
         )}
@@ -176,16 +176,16 @@ const DeviceCard: React.FC<DeviceCardProps> = ({
       <div className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
         {device.screen_resolution && (
           <div className="flex items-center justify-between">
-            <span>{t('deviceControl.device.resolution', '分辨率')}</span>
+            <span>{t('deviceControl.device.resolution', 'Resolution')}</span>
             <span className="font-medium text-gray-700 dark:text-gray-300">
               {device.screen_resolution}
             </span>
           </div>
         )}
         <div className="flex items-center justify-between">
-          <span>{t('deviceControl.device.lastSeen', '最后在线')}</span>
+          <span>{t('deviceControl.device.lastSeen', 'Last Seen')}</span>
           <span className="font-medium text-gray-700 dark:text-gray-300">
-            {isOnline ? t('deviceControl.device.now', '现在') : formatLastSeen(device.last_seen_at)}
+            {isOnline ? t('deviceControl.device.now', 'Now') : formatLastSeen(device.last_seen_at)}
           </span>
         </div>
       </div>

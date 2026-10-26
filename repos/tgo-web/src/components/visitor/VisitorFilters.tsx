@@ -52,7 +52,7 @@ const VisitorFilters: React.FC = () => {
 
   const platformOptions = useMemo(() => {
     return [
-      { value: '', label: t('visitor.filters.platform.all', '所有平台') },
+      { value: '', label: t('visitor.filters.platform.all', 'All Platforms') },
       ...platforms.map(p => ({
         value: p.id,
         label: p.display_name || p.name || p.type,
@@ -61,14 +61,14 @@ const VisitorFilters: React.FC = () => {
   }, [platforms, t]);
 
   const onlineOptions = [
-    { value: '', label: t('visitor.filters.online.all', '所有状态') },
-    { value: 'true', label: t('visitor.filters.online.online', '在线') },
-    { value: 'false', label: t('visitor.filters.online.offline', '离线') },
+    { value: '', label: t('visitor.filters.online.all', 'All Statuses') },
+    { value: 'true', label: t('visitor.filters.online.online', 'Online') },
+    { value: 'false', label: t('visitor.filters.online.offline', 'Offline') },
   ];
 
   const tagOptions = useMemo(() => {
     return [
-      { value: '', label: t('visitor.filters.tags.all', '所有标签') },
+      { value: '', label: t('visitor.filters.tags.all', 'All Tags') },
       ...availableTags.map(tag => ({
         value: tag.id,
         label: tag.display_name || tag.name,
@@ -78,8 +78,8 @@ const VisitorFilters: React.FC = () => {
   }, [availableTags, t]);
 
   const sortOptions = [
-    { value: 'last_offline_time:desc', label: t('visitor.filters.sort.lastVisit', '最近活跃') },
-    { value: 'created_at:desc', label: t('visitor.filters.sort.createdAt', '最新创建') },
+    { value: 'last_offline_time:desc', label: t('visitor.filters.sort.lastVisit', 'Last Active') },
+    { value: 'created_at:desc', label: t('visitor.filters.sort.createdAt', 'Newest') },
   ];
 
   const handlePlatformChange = (value: string) => {
@@ -127,7 +127,7 @@ const VisitorFilters: React.FC = () => {
             type="text"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            placeholder={t('visitor.filters.search.placeholder', '搜索名称、邮箱或手机号...')}
+            placeholder={t('visitor.filters.search.placeholder', 'Search name, email or phone...')}
             className="w-full pl-9 pr-4 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none dark:text-gray-100"
           />
         </div>
@@ -157,7 +157,7 @@ const VisitorFilters: React.FC = () => {
             value=""
             onChange={handleTagSelect}
             options={tagOptions}
-            placeholder={t('visitor.filters.tags.select', '按标签筛选')}
+            placeholder={t('visitor.filters.tags.select', 'Filter by Tag')}
             isLoading={isLoadingTags}
           />
         </div>
@@ -181,7 +181,7 @@ const VisitorFilters: React.FC = () => {
             className="flex items-center gap-1 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
           >
             <Icon name="RotateCcw" size={14} />
-            {t('common.reset', '重置')}
+            {t('common.reset', 'Reset')}
           </button>
         )}
       </div>
@@ -189,7 +189,7 @@ const VisitorFilters: React.FC = () => {
       {/* Selected Tags Chips */}
       {filters.tag_ids && filters.tag_ids.length > 0 && (
         <div className="flex flex-wrap gap-2 items-center">
-          <span className="text-xs text-gray-500 dark:text-gray-400">{t('visitor.filters.tags.selected', '已选标签')}:</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">{t('visitor.filters.tags.selected', 'Selected Tags')}:</span>
           {filters.tag_ids.map(tagId => {
             const tag = availableTags.find(t => t.id === tagId);
             if (!tag) return null;
@@ -209,7 +209,7 @@ const VisitorFilters: React.FC = () => {
                 <button
                   onClick={() => removeTag(tagId)}
                   className="ml-1 p-0.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
-                  aria-label={t('common.remove', '移除')}
+                  aria-label={t('common.remove', 'Remove')}
                 >
                   <X size={12} />
                 </button>

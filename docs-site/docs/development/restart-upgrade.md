@@ -6,7 +6,7 @@ sidebar_position: 2
 
 # 重启和升级
 
-本页介绍如何管理 TGO 服务的启停和版本升级。
+本页介绍如何管理 Pelatis 服务的启停和版本升级。
 
 ## 服务管理
 
@@ -181,7 +181,7 @@ docker compose exec -T postgres psql -U tgo tgo < tgo-db-backup.sql
 
 ```
 =========================================
-  TGO Service Health Check
+  Pelatis Service Health Check
 =========================================
 
   ✅ tgo-api           running (healthy)

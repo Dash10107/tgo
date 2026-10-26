@@ -1,6 +1,6 @@
 /**
- * Markdown 渲染问题诊断工具
- * 用于快速诊断 has_stream_data 标记和 Markdown 渲染问题
+ * Markdown rendering problem diagnostics tool
+ * Used to quickly diagnose the has_stream_data flag and Markdown rendering problems
  */
 
 interface DiagnosticResult {
@@ -12,74 +12,74 @@ interface DiagnosticResult {
 }
 
 /**
- * 诊断消息对象的 metadata 结构
+ * Diagnose the metadata structure of a message object
  */
 export const diagnoseMessageMetadata = (message: any): DiagnosticResult[] => {
   const results: DiagnosticResult[] = [];
   
-  // 检查消息对象是否存在
+  // Check whether the message object exists
   if (!message) {
     results.push({
-      category: '消息对象',
+      category: 'Message object',
       status: 'fail',
-      message: '消息对象不存在',
-      suggestion: '请确保传入了有效的消息对象'
+      message: 'Message object does not exist',
+      suggestion: 'Make sure a valid message object is passed in'
     });
     return results;
   }
   
-  // 检查 metadata 字段
+  // Check the metadata field
   if (!message.metadata) {
     results.push({
       category: 'metadata',
       status: 'fail',
-      message: 'metadata 字段不存在',
+      message: 'metadata field does not exist',
       details: { message },
-      suggestion: '检查消息转换逻辑是否正确设置了 metadata'
+      suggestion: 'Check that the message conversion logic sets metadata correctly'
     });
   } else {
     results.push({
       category: 'metadata',
       status: 'pass',
-      message: 'metadata 字段存在',
+      message: 'metadata field exists',
       details: { keys: Object.keys(message.metadata) }
     });
   }
   
-  // 检查 has_stream_data 字段
+  // Check the has_stream_data field
   if (!message.metadata?.has_stream_data) {
     results.push({
       category: 'has_stream_data',
       status: 'warning',
-      message: 'has_stream_data 字段为 false 或不存在',
+      message: 'has_stream_data field is false or missing',
       details: { 
         value: message.metadata?.has_stream_data,
         type: typeof message.metadata?.has_stream_data
       },
-      suggestion: '如果这是 AI 回复消息，检查原始 WuKongIM 消息是否包含 stream_data 字段'
+      suggestion: 'If this is an AI reply, check whether the original WuKongIM message contains the stream_data field'
     });
   } else {
     results.push({
       category: 'has_stream_data',
       status: 'pass',
-      message: 'has_stream_data 字段为 true',
+      message: 'has_stream_data field is true',
       details: { value: message.metadata.has_stream_data }
     });
   }
   
-  // 检查 wukongim metadata
+  // Check the wukongim metadata
   if (!message.metadata?.wukongim) {
     results.push({
       category: 'wukongim metadata',
       status: 'warning',
-      message: 'wukongim metadata 不存在',
-      suggestion: '检查消息是否正确从 WuKongIM 格式转换'
+      message: 'wukongim metadata does not exist',
+      suggestion: 'Check that the message was converted correctly from the WuKongIM format'
     });
   } else {
     results.push({
       category: 'wukongim metadata',
       status: 'pass',
-      message: 'wukongim metadata 存在',
+      message: 'wukongim metadata exists',
       details: { 
         message_id: message.metadata.wukongim.message_id,
         channel_id: message.metadata.wukongim.channel_id,
@@ -88,19 +88,19 @@ export const diagnoseMessageMetadata = (message: any): DiagnosticResult[] => {
     });
   }
   
-  // 检查消息内容
+  // Check the message content
   if (!message.content || message.content.trim() === '') {
     results.push({
-      category: '消息内容',
+      category: 'Message content',
       status: 'warning',
-      message: '消息内容为空',
-      suggestion: '检查消息内容提取逻辑'
+      message: 'Message content is empty',
+      suggestion: 'Check the message content extraction logic'
     });
   } else {
     results.push({
-      category: '消息内容',
+      category: 'Message content',
       status: 'pass',
-      message: `消息内容存在 (${message.content.length} 字符)`,
+      message: `Message content exists (${message.content.length} characters)`,
       details: { preview: message.content.substring(0, 100) }
     });
   }
@@ -109,22 +109,22 @@ export const diagnoseMessageMetadata = (message: any): DiagnosticResult[] => {
 };
 
 /**
- * 诊断 WuKongIM 原始消息
+ * Diagnose a raw WuKongIM message
  */
 export const diagnoseWuKongIMMessage = (wkMessage: any): DiagnosticResult[] => {
   const results: DiagnosticResult[] = [];
   
   if (!wkMessage) {
     results.push({
-      category: 'WuKongIM 消息',
+      category: 'WuKongIM message',
       status: 'fail',
-      message: 'WuKongIM 消息对象不存在',
-      suggestion: '请确保传入了有效的 WuKongIM 消息对象'
+      message: 'WuKongIM message object does not exist',
+      suggestion: 'Make sure a valid WuKongIM message object is passed in'
     });
     return results;
   }
   
-  // 检查 stream_data 字段
+  // Check the stream_data field
   const hasStreamDataField = 'stream_data' in wkMessage;
   const streamDataValue = wkMessage.stream_data;
   const streamDataTrimmed = streamDataValue?.trim?.();
@@ -132,32 +132,32 @@ export const diagnoseWuKongIMMessage = (wkMessage: any): DiagnosticResult[] => {
   
   if (!hasStreamDataField) {
     results.push({
-      category: 'stream_data 字段',
+      category: 'stream_data field',
       status: 'warning',
-      message: 'stream_data 字段不存在',
+      message: 'stream_data field does not exist',
       details: { 
         available_fields: Object.keys(wkMessage),
         has_payload: 'payload' in wkMessage
       },
-      suggestion: '这可能是普通消息（非 AI 回复），或者 API 返回格式有变化'
+      suggestion: 'This may be a regular message (not an AI reply), or the API response format may have changed'
     });
   } else if (!hasValidStreamData) {
     results.push({
-      category: 'stream_data 字段',
+      category: 'stream_data field',
       status: 'warning',
-      message: 'stream_data 字段存在但值为空或 null',
+      message: 'stream_data field exists but is empty or null',
       details: { 
         value: streamDataValue,
         type: typeof streamDataValue,
         length: streamDataValue?.length
       },
-      suggestion: '这可能是普通消息，不需要 Markdown 渲染'
+      suggestion: 'This may be a regular message that does not need Markdown rendering'
     });
   } else {
     results.push({
-      category: 'stream_data 字段',
+      category: 'stream_data field',
       status: 'pass',
-      message: 'stream_data 字段存在且有有效值',
+      message: 'stream_data field exists and has a valid value',
       details: { 
         length: streamDataValue.length,
         preview: streamDataValue.substring(0, 100) + '...'
@@ -165,22 +165,22 @@ export const diagnoseWuKongIMMessage = (wkMessage: any): DiagnosticResult[] => {
     });
   }
   
-  // 检查 payload 字段
+  // Check the payload field
   if (!wkMessage.payload) {
     results.push({
-      category: 'payload 字段',
+      category: 'payload field',
       status: 'warning',
-      message: 'payload 字段不存在',
-      suggestion: '检查 WuKongIM 消息格式是否正确'
+      message: 'payload field does not exist',
+      suggestion: 'Check that the WuKongIM message format is correct'
     });
   } else {
     const payloadType = typeof wkMessage.payload;
     const hasContent = payloadType === 'object' && wkMessage.payload.content;
     
     results.push({
-      category: 'payload 字段',
+      category: 'payload field',
       status: 'pass',
-      message: `payload 字段存在 (类型: ${payloadType})`,
+      message: `payload field exists (type: ${payloadType})`,
       details: { 
         type: payloadType,
         hasContent,
@@ -189,15 +189,15 @@ export const diagnoseWuKongIMMessage = (wkMessage: any): DiagnosticResult[] => {
     });
   }
   
-  // 检查其他关键字段
+  // Check other key fields
   const requiredFields = ['message_id', 'from_uid', 'channel_id', 'channel_type', 'timestamp'];
   requiredFields.forEach(field => {
     if (!(field in wkMessage)) {
       results.push({
-        category: `必需字段: ${field}`,
+        category: `Required field: ${field}`,
         status: 'warning',
-        message: `${field} 字段不存在`,
-        suggestion: '检查 WuKongIM 消息格式'
+        message: `${field} field does not exist`,
+        suggestion: 'Check the WuKongIM message format'
       });
     }
   });
@@ -206,17 +206,17 @@ export const diagnoseWuKongIMMessage = (wkMessage: any): DiagnosticResult[] => {
 };
 
 /**
- * 运行完整的诊断
+ * Run the full diagnosis
  */
 export const runFullDiagnostics = (wkMessage?: any, convertedMessage?: any): void => {
   console.log('🔍 ========================================');
-  console.log('🔍 Markdown 渲染问题诊断');
+  console.log('🔍 Markdown rendering diagnostics');
   console.log('🔍 ========================================');
   console.log('');
   
-  // 诊断 WuKongIM 原始消息
+  // Diagnose the raw WuKongIM message
   if (wkMessage) {
-    console.log('📋 1. WuKongIM 原始消息诊断');
+    console.log('📋 1. WuKongIM raw message diagnostics');
     console.log('-------------------------------------------');
     const wkResults = diagnoseWuKongIMMessage(wkMessage);
     wkResults.forEach(result => {
@@ -225,21 +225,21 @@ export const runFullDiagnostics = (wkMessage?: any, convertedMessage?: any): voi
                    result.status === 'warning' ? '⚠️' : 'ℹ️';
       console.log(`${icon} [${result.category}] ${result.message}`);
       if (result.details) {
-        console.log('   详情:', result.details);
+        console.log('   Details:', result.details);
       }
       if (result.suggestion) {
-        console.log('   💡 建议:', result.suggestion);
+        console.log('   💡 Suggestion:', result.suggestion);
       }
     });
     console.log('');
   } else {
-    console.log('⚠️ 未提供 WuKongIM 原始消息，跳过原始消息诊断');
+    console.log('⚠️ No WuKongIM raw message provided; skipping raw message diagnostics');
     console.log('');
   }
   
-  // 诊断转换后的消息
+  // Diagnose the converted message
   if (convertedMessage) {
-    console.log('📋 2. 转换后消息诊断');
+    console.log('📋 2. Converted message diagnostics');
     console.log('-------------------------------------------');
     const msgResults = diagnoseMessageMetadata(convertedMessage);
     msgResults.forEach(result => {
@@ -248,20 +248,20 @@ export const runFullDiagnostics = (wkMessage?: any, convertedMessage?: any): voi
                    result.status === 'warning' ? '⚠️' : 'ℹ️';
       console.log(`${icon} [${result.category}] ${result.message}`);
       if (result.details) {
-        console.log('   详情:', result.details);
+        console.log('   Details:', result.details);
       }
       if (result.suggestion) {
-        console.log('   💡 建议:', result.suggestion);
+        console.log('   💡 Suggestion:', result.suggestion);
       }
     });
     console.log('');
   } else {
-    console.log('⚠️ 未提供转换后的消息，跳过转换后消息诊断');
+    console.log('⚠️ No converted message provided; skipping converted message diagnostics');
     console.log('');
   }
   
-  // 总结和建议
-  console.log('📋 3. 总结和建议');
+  // Summary and recommendations
+  console.log('📋 3. Summary and recommendations');
   console.log('-------------------------------------------');
   
   if (wkMessage && convertedMessage) {
@@ -269,67 +269,67 @@ export const runFullDiagnostics = (wkMessage?: any, convertedMessage?: any): voi
     const hasStreamDataFlag = convertedMessage.metadata?.has_stream_data;
     
     if (hasStreamData && !hasStreamDataFlag) {
-      console.log('❌ 问题: WuKongIM 消息有 stream_data，但转换后的消息没有 has_stream_data 标记');
-      console.log('💡 建议:');
-      console.log('   1. 检查 src/stores/chatStore.ts 中的 convertWuKongIMToMessage 方法');
-      console.log('   2. 确保 metadata 中包含 has_stream_data 字段');
-      console.log('   3. 检查 src/services/wukongimApi.ts 中的 convertToMessage 方法');
+      console.log('❌ Problem: the WuKongIM message has stream_data but the converted message has no has_stream_data flag');
+      console.log('💡 Suggestions:');
+      console.log('   1. Check the convertWuKongIMToMessage method in src/stores/chatStore.ts');
+      console.log('   2. Make sure metadata contains the has_stream_data field');
+      console.log('   3. Check the convertToMessage method in src/services/wukongimApi.ts');
     } else if (hasStreamData && hasStreamDataFlag) {
-      console.log('✅ 正常: stream_data 和 has_stream_data 标记都正确');
-      console.log('💡 如果 Markdown 仍未渲染，检查:');
-      console.log('   1. MarkdownContent 组件是否正确导入');
-      console.log('   2. react-markdown 依赖是否安装');
-      console.log('   3. 浏览器控制台是否有错误');
+      console.log('✅ OK: stream_data and the has_stream_data flag are both correct');
+      console.log('💡 If Markdown still does not render, check:');
+      console.log('   1. Whether the MarkdownContent component is imported correctly');
+      console.log('   2. Whether the react-markdown dependency is installed');
+      console.log('   3. Whether the browser console shows errors');
     } else if (!hasStreamData) {
-      console.log('ℹ️ 这是普通消息（无 stream_data），不需要 Markdown 渲染');
+      console.log('ℹ️ This is a regular message (no stream_data); Markdown rendering is not needed');
     }
   } else {
-    console.log('ℹ️ 请提供 WuKongIM 原始消息和转换后的消息以进行完整诊断');
-    console.log('💡 使用方法:');
+    console.log('ℹ️ Provide both the raw WuKongIM message and the converted message for a full diagnosis');
+    console.log('💡 Usage:');
     console.log('   runFullDiagnostics(wkMessage, convertedMessage)');
   }
   
   console.log('');
   console.log('🔍 ========================================');
-  console.log('🔍 诊断完成');
+  console.log('🔍 Diagnosis complete');
   console.log('🔍 ========================================');
 };
 
 /**
- * 检查页面上的所有消息
+ * Check all messages on the page
  */
 export const diagnoseAllMessagesOnPage = (): void => {
-  console.log('🔍 检查页面上的所有消息...');
+  console.log('🔍 Checking all messages on the page...');
   console.log('');
   
-  // 尝试从 React DevTools 或全局状态获取消息
-  // 这里我们检查 DOM 中的消息元素
+  // Try to get messages from React DevTools or global state
+  // Here we check the message elements in the DOM
   const messageElements = document.querySelectorAll('[class*="ChatMessage"]');
   
   if (messageElements.length === 0) {
-    console.log('⚠️ 页面上没有找到消息元素');
-    console.log('💡 建议: 访问测试页面 /test/markdown 或打开一个聊天会话');
+    console.log('⚠️ No message elements found on the page');
+    console.log('💡 Suggestion: visit the test page /test/markdown or open a chat conversation');
     return;
   }
   
-  console.log(`📊 找到 ${messageElements.length} 个消息元素`);
+  console.log(`📊 Found ${messageElements.length} message elements`);
   console.log('');
   
-  // 检查 Markdown 内容元素
+  // Check the Markdown content elements
   const markdownElements = document.querySelectorAll('.markdown-content');
-  console.log(`📊 找到 ${markdownElements.length} 个 Markdown 内容元素`);
+  console.log(`📊 Found ${markdownElements.length} Markdown content elements`);
   
   if (markdownElements.length === 0) {
-    console.log('⚠️ 没有找到 Markdown 内容元素');
-    console.log('💡 可能的原因:');
-    console.log('   1. 所有消息的 has_stream_data 都为 false');
-    console.log('   2. MarkdownContent 组件未正确渲染');
-    console.log('   3. 页面上没有 AI 回复消息');
+    console.log('⚠️ No Markdown content elements found');
+    console.log('💡 Possible causes:');
+    console.log('   1. has_stream_data is false for all messages');
+    console.log('   2. The MarkdownContent component did not render correctly');
+    console.log('   3. There are no AI reply messages on the page');
   } else {
-    console.log('✅ 找到 Markdown 内容元素，Markdown 渲染功能正在工作');
+    console.log('✅ Markdown content elements found; Markdown rendering is working');
     
     markdownElements.forEach((el, i) => {
-      console.log(`   ${i + 1}. Markdown 元素:`, {
+      console.log(`   ${i + 1}. Markdown element:`, {
         hasWhiteClass: el.classList.contains('markdown-white'),
         childrenCount: el.children.length,
         textLength: el.textContent?.length
@@ -338,21 +338,21 @@ export const diagnoseAllMessagesOnPage = (): void => {
   }
   
   console.log('');
-  console.log('💡 要诊断具体消息，请使用:');
+  console.log('💡 To diagnose a specific message, use:');
   console.log('   diagnoseMessageMetadata(message)');
   console.log('   diagnoseWuKongIMMessage(wkMessage)');
   console.log('   runFullDiagnostics(wkMessage, convertedMessage)');
 };
 
-// 在开发环境中将诊断函数添加到全局对象
+// Add the diagnostic functions to the global object in development
 if (typeof window !== 'undefined' && import.meta.env.DEV) {
   (window as any).diagnoseMessageMetadata = diagnoseMessageMetadata;
   (window as any).diagnoseWuKongIMMessage = diagnoseWuKongIMMessage;
   (window as any).runFullDiagnostics = runFullDiagnostics;
   (window as any).diagnoseAllMessagesOnPage = diagnoseAllMessagesOnPage;
   
-  console.log('🔍 Markdown 诊断工具已加载');
-  console.log('🔍 可用命令:');
+  console.log('🔍 Markdown diagnostics tool loaded');
+  console.log('🔍 Available commands:');
   console.log('   - diagnoseMessageMetadata(message)');
   console.log('   - diagnoseWuKongIMMessage(wkMessage)');
   console.log('   - runFullDiagnostics(wkMessage, convertedMessage)');

@@ -127,11 +127,11 @@ const SkillFormModal: React.FC<SkillFormModalProps> = ({
     const url = githubUrl.trim();
 
     if (!url) {
-      e.github_url = t('skills.import.errors.urlRequired', '请输入 GitHub 目录地址');
+      e.github_url = t('skills.import.errors.urlRequired', 'Please enter a GitHub directory URL');
     } else if (!GITHUB_URL_PATTERN.test(url)) {
       e.github_url = t(
         'skills.import.errors.urlFormat',
-        '请输入有效的 GitHub 地址，支持目录或文件链接，如：https://github.com/owner/repo/tree/branch/path',
+        'Please enter a valid GitHub URL, supports directory or file links, e.g.: https://github.com/owner/repo/tree/branch/path',
       );
     }
 
@@ -143,7 +143,7 @@ const SkillFormModal: React.FC<SkillFormModalProps> = ({
     const e: FormErrors = {};
 
     if (!editForm.description.trim()) {
-      e.description = t('skills.form.errors.descRequired', '请输入技能描述');
+      e.description = t('skills.form.errors.descRequired', 'Please enter a description');
     }
 
     setErrors(e);
@@ -197,14 +197,14 @@ const SkillFormModal: React.FC<SkillFormModalProps> = ({
           is_featured: editForm.is_featured,
         };
         await SkillsApiService.updateSkill(skill!.name, payload);
-        showSuccess(t('skills.form.updateSuccess', '技能已更新'));
+        showSuccess(t('skills.form.updateSuccess', 'Skill updated'));
       } else {
         const payload: SkillImportRequest = {
           github_url: githubUrl.trim(),
           github_token: githubToken.trim() || undefined,
         };
         await SkillsApiService.importSkill(payload);
-        showSuccess(t('skills.import.success', '技能导入成功'));
+        showSuccess(t('skills.import.success', 'Skill imported successfully'));
       }
       onSaved?.();
       onClose();
@@ -212,8 +212,8 @@ const SkillFormModal: React.FC<SkillFormModalProps> = ({
       const msg = err instanceof Error ? err.message : String(err);
       showError(
         isEditMode
-          ? t('skills.form.updateFailed', '更新技能失败')
-          : t('skills.import.failed', '导入技能失败'),
+          ? t('skills.form.updateFailed', 'Failed to update skill')
+          : t('skills.import.failed', 'Failed to import skill'),
         msg,
       );
     } finally {
@@ -246,8 +246,8 @@ const SkillFormModal: React.FC<SkillFormModalProps> = ({
             )}
             <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
               {isEditMode
-                ? t('skills.form.editTitle', '编辑技能')
-                : t('skills.import.title', '从 GitHub 导入技能')}
+                ? t('skills.form.editTitle', 'Edit Skill')
+                : t('skills.import.title', 'Import Skill from GitHub')}
             </h2>
           </div>
           <button
@@ -268,7 +268,7 @@ const SkillFormModal: React.FC<SkillFormModalProps> = ({
               {/* Name (read-only) */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  {t('skills.form.name', '技能名称')}
+                  {t('skills.form.name', 'Skill Name')}
                 </label>
                 <input
                   type="text"
@@ -281,7 +281,7 @@ const SkillFormModal: React.FC<SkillFormModalProps> = ({
               {/* Description */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  {t('skills.form.description', '描述')}{' '}
+                  {t('skills.form.description', 'Description')}{' '}
                   <span className="text-red-500">*</span>
                 </label>
                 <textarea
@@ -305,7 +305,7 @@ const SkillFormModal: React.FC<SkillFormModalProps> = ({
               {/* Instructions */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  {t('skills.form.instructions', '技能指令 (Markdown)')}
+                  {t('skills.form.instructions', 'Skill Instructions (Markdown)')}
                 </label>
                 <textarea
                   rows={8}
@@ -324,7 +324,7 @@ const SkillFormModal: React.FC<SkillFormModalProps> = ({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    {t('skills.form.author', '作者')}
+                    {t('skills.form.author', 'Author')}
                   </label>
                   <input
                     type="text"
@@ -340,7 +340,7 @@ const SkillFormModal: React.FC<SkillFormModalProps> = ({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    {t('skills.form.license', '许可证')}
+                    {t('skills.form.license', 'License')}
                   </label>
                   <input
                     type="text"
@@ -360,7 +360,7 @@ const SkillFormModal: React.FC<SkillFormModalProps> = ({
               {/* Tags */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  {t('skills.form.tags', '标签')}
+                  {t('skills.form.tags', 'Tags')}
                 </label>
                 <div className="flex flex-wrap gap-1.5 mb-2">
                   {editForm.tags.map((tag) => (
@@ -388,7 +388,7 @@ const SkillFormModal: React.FC<SkillFormModalProps> = ({
                     onKeyDown={handleTagKeyDown}
                     placeholder={t(
                       'skills.form.tagPlaceholder',
-                      '输入标签后按回车',
+                      'Type a tag and press Enter',
                     )}
                     className="flex-1 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-colors"
                   />
@@ -411,7 +411,7 @@ const SkillFormModal: React.FC<SkillFormModalProps> = ({
               {/* GitHub URL */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  {t('skills.import.urlLabel', 'GitHub 技能目录地址')}{' '}
+                  {t('skills.import.urlLabel', 'GitHub Skill Directory URL')}{' '}
                   <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
@@ -436,7 +436,7 @@ const SkillFormModal: React.FC<SkillFormModalProps> = ({
                 <p className="mt-1.5 text-xs text-gray-400">
                   {t(
                     'skills.import.urlHint',
-                    '粘贴 GitHub 技能目录或文件地址（支持 /tree/ 和 /blob/ 链接），系统将自动下载整个目录',
+                    'Paste a GitHub directory or file URL (supports /tree/ and /blob/ links), the system will automatically download the entire directory',
                   )}
                 </p>
               </div>
@@ -452,7 +452,7 @@ const SkillFormModal: React.FC<SkillFormModalProps> = ({
                     <KeyRound className="w-3.5 h-3.5" />
                     {t(
                       'skills.import.addToken',
-                      '添加 GitHub Token（用于私有仓库或提高请求频率）',
+                      'Add GitHub Token (for private repos or higher rate limits)',
                     )}
                   </button>
                 ) : (
@@ -460,7 +460,7 @@ const SkillFormModal: React.FC<SkillFormModalProps> = ({
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       {t('skills.import.tokenLabel', 'GitHub Token')}{' '}
                       <span className="text-xs text-gray-400 font-normal">
-                        ({t('common.optional', '可选')})
+                        ({t('common.optional', 'Optional')})
                       </span>
                     </label>
                     <div className="relative">
@@ -476,7 +476,7 @@ const SkillFormModal: React.FC<SkillFormModalProps> = ({
                     <p className="mt-1 text-xs text-gray-400">
                       {t(
                         'skills.import.tokenHint',
-                        '用于访问私有仓库或提高 GitHub API 请求频率（匿名 60 次/小时，认证 5000 次/小时）',
+                        'For accessing private repos or increasing GitHub API rate limits (anonymous: 60/hr, authenticated: 5000/hr)',
                       )}
                     </p>
                   </div>
@@ -486,25 +486,25 @@ const SkillFormModal: React.FC<SkillFormModalProps> = ({
               {/* Info box */}
               <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/40 rounded-xl p-4">
                 <h4 className="text-sm font-medium text-blue-800 dark:text-blue-300 mb-2">
-                  {t('skills.import.infoTitle', '技能目录规范')}
+                  {t('skills.import.infoTitle', 'Skill Directory Specification')}
                 </h4>
                 <ul className="text-xs text-blue-700 dark:text-blue-400 space-y-1 list-disc list-inside">
                   <li>
                     {t(
                       'skills.import.infoItem1',
-                      '目录中必须包含 SKILL.md 文件（含 YAML frontmatter）',
+                      'Directory must contain a SKILL.md file with YAML frontmatter',
                     )}
                   </li>
                   <li>
                     {t(
                       'skills.import.infoItem2',
-                      'SKILL.md 的 frontmatter 中必须有 name 和 description 字段',
+                      'SKILL.md frontmatter must include name and description fields',
                     )}
                   </li>
                   <li>
                     {t(
                       'skills.import.infoItem3',
-                      '可选包含 scripts/、references/、assets/ 子目录',
+                      'May optionally include scripts/, references/, assets/ subdirectories',
                     )}
                   </li>
                 </ul>
@@ -519,7 +519,7 @@ const SkillFormModal: React.FC<SkillFormModalProps> = ({
             onClick={onClose}
             className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors"
           >
-            {t('common.cancel', '取消')}
+            {t('common.cancel', 'Cancel')}
           </button>
           <button
             onClick={handleSubmit}
@@ -528,8 +528,8 @@ const SkillFormModal: React.FC<SkillFormModalProps> = ({
           >
             {isSaving && <Loader2 className="w-4 h-4 animate-spin" />}
             {isEditMode
-              ? t('common.save', '保存')
-              : t('skills.import.submit', '导入技能')}
+              ? t('common.save', 'Save')
+              : t('skills.import.submit', 'Import Skill')}
           </button>
         </div>
       </div>

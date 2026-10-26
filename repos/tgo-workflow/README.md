@@ -1,4 +1,4 @@
-# TGO Workflow Engine
+# Pelatis Workflow Engine
 
 AI Agent Workflow 后端引擎，基于 FastAPI 和 Celery 构建。
 

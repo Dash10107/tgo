@@ -37,7 +37,7 @@ const ToolRow: React.FC<ToolRowProps> = ({
           onClick={onRemove}
           className="text-gray-400 hover:text-red-500 transition-colors"
           disabled={disabled}
-          title={t('common.remove', '移除')}
+          title={t('common.remove', 'Remove')}
         >
           <XCircle className="w-4 h-4" />
         </button>

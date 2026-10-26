@@ -88,7 +88,7 @@ class ChatCompletionRequest(BaseModel):
     with the addition of provider_id for selecting LLM provider credentials.
     """
 
-    # TGO-AI specific: provider credentials lookup
+    # Pelatis-AI specific: provider credentials lookup
     provider_id: uuid.UUID = Field(
         ...,
         description="UUID of the LLM provider to use (from ai_llm_providers table)",
@@ -172,7 +172,7 @@ class ChatCompletionRequest(BaseModel):
         description="Random seed for deterministic outputs",
     )
 
-    # TGO-AI Extension: Dynamic Tool Loading
+    # Pelatis-AI Extension: Dynamic Tool Loading
     tool_ids: Optional[List[uuid.UUID]] = Field(
         default=None,
         description="Tool IDs to load from database (will be converted to function definitions)",

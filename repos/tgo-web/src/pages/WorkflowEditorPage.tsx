@@ -63,7 +63,7 @@ const WorkflowEditorPage: React.FC = () => {
       }).catch(error => {
         creatingRef.current = false;
         console.error('Failed to create workflow:', error);
-        showToast('error', t('workflow.messages.createFailed', '创建失败'), '');
+        showToast('error', t('workflow.messages.createFailed', 'Create Failed'), '');
       });
     }
     
@@ -75,7 +75,7 @@ const WorkflowEditorPage: React.FC = () => {
 
   const handleBack = () => {
     if (isDirty) {
-      const confirmed = window.confirm(t('workflow.messages.unsavedChanges', '有未保存的更改，确定要离开吗？'));
+      const confirmed = window.confirm(t('workflow.messages.unsavedChanges', 'You have unsaved changes. Are you sure you want to close?'));
       if (!confirmed) return;
     }
     navigate('/ai/workflows');
@@ -93,7 +93,7 @@ const WorkflowEditorPage: React.FC = () => {
             <div className="p-2 rounded-xl group-hover:bg-gray-100 dark:group-hover:bg-gray-800 transition-colors border border-transparent group-hover:border-gray-200/50 dark:group-hover:border-gray-700/50">
               <ChevronLeft className="w-5 h-5" />
             </div>
-            <span className="text-sm font-bold">{t('common.back', '返回')}</span>
+            <span className="text-sm font-bold">{t('common.back', 'Back')}</span>
           </button>
 
           <div className="h-8 w-px bg-gray-200/50 dark:bg-gray-800" />
@@ -101,7 +101,7 @@ const WorkflowEditorPage: React.FC = () => {
           {isLoadingCurrentWorkflow ? (
             <div className="flex items-center gap-2 text-gray-400">
               <Loader2 className="w-4 h-4 animate-spin text-purple-500" />
-              <span className="text-sm font-bold tracking-wider">{t('common.loading', '加载中...')}</span>
+              <span className="text-sm font-bold tracking-wider">{t('common.loading', 'Loading...')}</span>
             </div>
           ) : currentWorkflow ? (
             <div className="flex items-center gap-4">
@@ -114,7 +114,7 @@ const WorkflowEditorPage: React.FC = () => {
                   value={currentWorkflow.name}
                   onChange={(e) => updateWorkflowMeta({ name: e.target.value })}
                   className="text-lg font-bold text-gray-900 dark:text-gray-100 bg-transparent border-none focus:outline-none focus:ring-0 p-0 h-7 min-w-[240px] hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-xl transition-all px-2 -ml-2 focus:bg-gray-50 dark:focus:bg-gray-800/50"
-                  placeholder={t('workflow.namePlaceholder', '未命名工作流')}
+                  placeholder={t('workflow.namePlaceholder', 'Workflow name')}
                 />
                 <div className="flex items-center gap-2 mt-0.5">
                   <span className={`text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-lg border shadow-sm ${
@@ -129,7 +129,7 @@ const WorkflowEditorPage: React.FC = () => {
                       <span className="text-gray-300 dark:text-gray-600 font-bold">•</span>
                       <span className="text-[10px] text-amber-500 font-bold uppercase tracking-widest animate-pulse flex items-center gap-1.5">
                         <div className="w-2 h-2 rounded-full bg-amber-500 shadow-sm shadow-amber-200"></div>
-                        {t('common.unsaved_changes', '未保存更改')}
+                        {t('common.unsaved_changes', 'Unsaved Changes')}
                       </span>
                     </>
                   )}
@@ -159,10 +159,10 @@ const WorkflowEditorPage: React.FC = () => {
                 ? 'bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-gray-900 dark:border-white shadow-lg'
                 : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
             }`}
-            title={t('workflow.settings', '设置')}
+            title={t('workflow.settings', 'Settings')}
           >
             <Settings className={`w-4 h-4 ${showSettings ? 'animate-spin-slow' : ''}`} />
-            <span className="hidden sm:inline">{t('common.settings', '设置')}</span>
+            <span className="hidden sm:inline">{t('common.settings', 'Settings')}</span>
           </button>
         </div>
       </header>
@@ -185,7 +185,7 @@ const WorkflowEditorPage: React.FC = () => {
               <div className="text-center">
                 <Loader2 className="w-10 h-10 animate-spin text-purple-600 mx-auto mb-4" />
                 <p className="text-gray-500 dark:text-gray-400 text-sm font-bold uppercase tracking-widest">
-                  {t('workflow.loading', '正在加载工作流...')}
+                  {t('workflow.loading', 'Loading workflow...')}
                 </p>
               </div>
             </div>
@@ -207,7 +207,7 @@ const WorkflowEditorPage: React.FC = () => {
                   <Settings className="w-5 h-5" />
                 </div>
                 <h3 className="font-bold text-gray-900 dark:text-gray-100 text-sm uppercase tracking-wider">
-                  {t('workflow.settings', '工作流设置')}
+                  {t('workflow.settings', 'Settings')}
                 </h3>
               </div>
               <button 
@@ -223,7 +223,7 @@ const WorkflowEditorPage: React.FC = () => {
               <div className="space-y-2.5">
                 <label className="text-[11px] uppercase font-bold text-gray-400 tracking-widest flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-purple-500"></div>
-                  {t('workflow.fields.name', '名称')}
+                  {t('workflow.fields.name', 'Name')}
                 </label>
                 <input
                   type="text"
@@ -237,14 +237,14 @@ const WorkflowEditorPage: React.FC = () => {
               <div className="space-y-2.5">
                 <label className="text-[11px] uppercase font-bold text-gray-400 tracking-widest flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                  {t('workflow.fields.description', '描述')}
+                  {t('workflow.fields.description', 'Description')}
                 </label>
                 <textarea
                   value={currentWorkflow.description || ''}
                   onChange={(e) => updateWorkflowMeta({ description: e.target.value })}
                   rows={4}
                   className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none transition-all text-sm dark:text-gray-100 resize-none leading-relaxed"
-                  placeholder={t('workflow.fields.description_placeholder', '描述此工作流的功能...')}
+                  placeholder={t('workflow.fields.description_placeholder', 'Describe what this workflow does...')}
                 />
               </div>
 
@@ -252,7 +252,7 @@ const WorkflowEditorPage: React.FC = () => {
               <div className="space-y-2.5">
                 <label className="text-[11px] uppercase font-bold text-gray-400 tracking-widest flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-yellow-500"></div>
-                  {t('workflow.fields.status', '状态')}
+                  {t('workflow.fields.status', 'Status')}
                 </label>
                 <div className="grid grid-cols-3 gap-2 p-1 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-700">
                   {(['draft', 'active', 'archived'] as const).map((status) => (
@@ -279,7 +279,7 @@ const WorkflowEditorPage: React.FC = () => {
               <div className="space-y-2.5">
                 <label className="text-[11px] uppercase font-bold text-gray-400 tracking-widest flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-indigo-500"></div>
-                  {t('workflow.fields.tags', '标签')}
+                  {t('workflow.fields.tags', 'Tags')}
                 </label>
                 <input
                   type="text"
@@ -287,7 +287,7 @@ const WorkflowEditorPage: React.FC = () => {
                   onChange={(e) => updateWorkflowMeta({ 
                     tags: e.target.value.split(',').map(t => t.trim()).filter(Boolean)
                   })}
-                  placeholder={t('workflow.tagsPlaceholder', '用逗号分隔')}
+                  placeholder={t('workflow.tagsPlaceholder', 'Separate with commas')}
                   className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none transition-all text-sm dark:text-gray-100"
                 />
               </div>
@@ -296,19 +296,19 @@ const WorkflowEditorPage: React.FC = () => {
               <div className="p-6 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-3xl border border-purple-100 dark:border-purple-800/50 shadow-sm">
                 <div className="flex items-center gap-2 mb-4">
                   <Info className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                  <span className="text-[11px] font-bold text-purple-700 dark:text-purple-300 uppercase tracking-widest">{t('workflow.fields.workflow_info', '工作流详情')}</span>
+                  <span className="text-[11px] font-bold text-purple-700 dark:text-purple-300 uppercase tracking-widest">{t('workflow.fields.workflow_info', 'Workflow Info')}</span>
                 </div>
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">{t('workflow.fields.version', '版本')}</span>
+                    <span className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">{t('workflow.fields.version', 'Version')}</span>
                     <span className="text-xs font-mono font-bold text-gray-900 dark:text-gray-100 bg-white/50 dark:bg-gray-800/50 px-2 py-0.5 rounded-lg border border-purple-100/50 dark:border-purple-700/50">v{currentWorkflow.version}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">{t('workflow.fields.total_nodes', '节点总数')}</span>
+                    <span className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">{t('workflow.fields.total_nodes', 'Total Nodes')}</span>
                     <span className="text-xs font-mono font-bold text-gray-900 dark:text-gray-100 bg-white/50 dark:bg-gray-800/50 px-2 py-0.5 rounded-lg border border-purple-100/50 dark:border-purple-700/50">{currentWorkflow.definition.nodes.length}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">{t('common.tableCreated', '创建于')}</span>
+                    <span className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">{t('common.tableCreated', 'Created')}</span>
                     <span className="text-[10px] font-mono font-bold text-gray-700 dark:text-gray-300">{new Date(currentWorkflow.created_at).toLocaleDateString()}</span>
                   </div>
                 </div>

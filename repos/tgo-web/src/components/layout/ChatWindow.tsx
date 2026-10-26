@@ -148,7 +148,7 @@ const ChatWindow: React.FC<ChatWindowProps> = React.memo(({ activeChat, onSendMe
             onSendMessage?.(message);
           } catch (e: any) {
             const errorKey = 'chat.send.agentErrorLog';
-            const errorDefault = 'AI员工消息发送失败';
+            const errorDefault = 'Failed to send AI agent message';
             console.error(t(errorKey, errorDefault), e);
             showApiError(showToast, e);
           }
@@ -199,7 +199,7 @@ const ChatWindow: React.FC<ChatWindowProps> = React.memo(({ activeChat, onSendMe
           updateMessageByClientMsgNo(nowId, { metadata: { ws_sent: true, ws_send_error: false } as any });
           onSendMessage?.(message);
         } catch (e) {
-          // 使用 i18n 翻译 WsSendError
+          // Use i18n to translate WsSendError
           let errMsg: string;
           if (e instanceof WsSendError) {
             errMsg = t(e.i18nKey, e.defaultMessage);
@@ -258,7 +258,7 @@ const ChatWindow: React.FC<ChatWindowProps> = React.memo(({ activeChat, onSendMe
     let cancelled = false;
     const locate = async () => {
       try {
-        // 清空并重新加载目标消息上下文，避免断层
+        // Clear and reload the target message context to avoid gaps
         setLoadingHistory(true);
         clearHistoricalMessages(channelId, channelType);
         await loadMessageContext(channelId, channelType, targetLoc.messageSeq, 20);

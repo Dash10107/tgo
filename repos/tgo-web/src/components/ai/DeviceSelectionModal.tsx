@@ -38,7 +38,7 @@ const DeviceSelectionModal: React.FC<DeviceSelectionModalProps> = ({
     if (isOpen) {
       loadDevices().catch((err) => {
         console.error('Failed to load devices:', err);
-        showToast('error', t('common.loadFailed', '加载失败'), t('agents.deviceSelectModal.loadFailedDesc', '无法加载设备列表，请稍后重试'));
+        showToast('error', t('common.loadFailed', 'Load Failed'), t('agents.deviceSelectModal.loadFailedDesc', 'Failed to load device list. Please try again later.'));
       });
     }
   }, [isOpen, loadDevices, showToast, t]);
@@ -80,7 +80,7 @@ const DeviceSelectionModal: React.FC<DeviceSelectionModalProps> = ({
   const handleRetry = () => {
     loadDevices().catch((err) => {
       console.error('Failed to retry loading devices:', err);
-      showToast('error', t('common.retryFailed', '重试失败'), t('agents.deviceSelectModal.retryFailedDesc', '无法加载设备列表，请检查网络连接'));
+      showToast('error', t('common.retryFailed', 'Retry Failed'), t('agents.deviceSelectModal.retryFailedDesc', 'Failed to load device list. Please check your network connection.'));
     });
   };
 
@@ -92,7 +92,7 @@ const DeviceSelectionModal: React.FC<DeviceSelectionModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            {t('agents.deviceSelectModal.title', '选择设备')}
+            {t('agents.deviceSelectModal.title', 'Select Device')}
           </h3>
           <button
             onClick={onClose}
@@ -110,7 +110,7 @@ const DeviceSelectionModal: React.FC<DeviceSelectionModalProps> = ({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t('agents.deviceSelectModal.searchPlaceholder', '搜索设备...')}
+              placeholder={t('agents.deviceSelectModal.searchPlaceholder', 'Search devices...')}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
             />
           </div>
@@ -120,12 +120,12 @@ const DeviceSelectionModal: React.FC<DeviceSelectionModalProps> = ({
         <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
           <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-300">
             <span>
-              {t('agents.deviceSelectModal.totalDevices', '共 {{count}} 台设备', { count: devices.length })}
+              {t('agents.deviceSelectModal.totalDevices', '{{count}} devices total', { count: devices.length })}
             </span>
             <span>
               {tempSelectedDeviceId
-                ? t('agents.deviceSelectModal.selectedOne', '已选择 1 台')
-                : t('agents.deviceSelectModal.selectedNone', '未选择')}
+                ? t('agents.deviceSelectModal.selectedOne', '1 selected')
+                : t('agents.deviceSelectModal.selectedNone', 'None selected')}
             </span>
           </div>
         </div>
@@ -139,7 +139,7 @@ const DeviceSelectionModal: React.FC<DeviceSelectionModalProps> = ({
                 <div className="text-center">
                   <RefreshCw className="w-6 h-6 animate-spin text-gray-400 dark:text-gray-500 mx-auto mb-2" />
                   <p className="text-gray-500 dark:text-gray-400 text-sm">
-                    {t('agents.deviceSelectModal.loading', '正在加载设备...')}
+                    {t('agents.deviceSelectModal.loading', 'Loading devices...')}
                   </p>
                 </div>
               </div>
@@ -153,14 +153,14 @@ const DeviceSelectionModal: React.FC<DeviceSelectionModalProps> = ({
                     <X className="w-6 h-6 text-red-600 dark:text-red-400" />
                   </div>
                   <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
-                    {t('common.loadFailed', '加载失败')}
+                    {t('common.loadFailed', 'Load Failed')}
                   </h3>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">{error}</p>
                   <button
                     onClick={handleRetry}
                     className="px-3 py-1.5 bg-blue-500 dark:bg-blue-600 text-white text-xs rounded hover:bg-blue-600 dark:hover:bg-blue-700 transition-colors"
                   >
-                    {t('common.retry', '重试')}
+                    {t('common.retry', 'Retry')}
                   </button>
                 </div>
               </div>
@@ -172,7 +172,7 @@ const DeviceSelectionModal: React.FC<DeviceSelectionModalProps> = ({
                 {filteredDevices.length === 0 ? (
                   <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                     <Monitor className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <p>{t('agents.deviceSelectModal.noDevices', '暂无可用设备')}</p>
+                    <p>{t('agents.deviceSelectModal.noDevices', 'No devices available')}</p>
                   </div>
                 ) : (
                   filteredDevices.map((device) => {
@@ -225,8 +225,8 @@ const DeviceSelectionModal: React.FC<DeviceSelectionModalProps> = ({
                               }`}
                             />
                             {isOnline
-                              ? t('agents.deviceSelectModal.statusOnline', '在线')
-                              : t('agents.deviceSelectModal.statusOffline', '离线')}
+                              ? t('agents.deviceSelectModal.statusOnline', 'Online')
+                              : t('agents.deviceSelectModal.statusOffline', 'Offline')}
                           </span>
                           <input
                             type="radio"
@@ -253,7 +253,7 @@ const DeviceSelectionModal: React.FC<DeviceSelectionModalProps> = ({
               onClose();
             }}
           >
-            <span>{t('agents.deviceSelectModal.manageDevices', '管理设备')}</span>
+            <span>{t('agents.deviceSelectModal.manageDevices', 'Manage Devices')}</span>
             <ExternalLink className="w-4 h-4" />
           </button>
         </div>
@@ -264,13 +264,13 @@ const DeviceSelectionModal: React.FC<DeviceSelectionModalProps> = ({
             onClick={handleCancel}
             className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600"
           >
-            {t('common.cancel', '取消')}
+            {t('common.cancel', 'Cancel')}
           </button>
           <button
             onClick={handleConfirm}
             className="px-4 py-2 text-sm font-medium text-white bg-blue-600 dark:bg-blue-700 border border-transparent rounded-md hover:bg-blue-700 dark:hover:bg-blue-800"
           >
-            {t('agents.deviceSelectModal.confirmSelection', '确认选择')}
+            {t('agents.deviceSelectModal.confirmSelection', 'Confirm Selection')}
           </button>
         </div>
       </div>

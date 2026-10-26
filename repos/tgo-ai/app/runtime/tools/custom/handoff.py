@@ -22,10 +22,10 @@ def create_handoff_tool(
     client = EventClient(ctx)
 
     error_messages = {
-        "not_configured": "抱歉，当前无法为您发起人工服务请求，我们已记录该问题并会尽快处理。请稍后再试或直接联系客服。",
-        "api_error": "抱歉，人工服务请求未能成功提交。请稍后重试或联系技术支持。",
-        "http_error": "抱歉，网络异常导致人工服务请求未能提交。请稍后重试或联系技术支持。",
-        "unexpected_error": "抱歉，出现异常，暂时无法为您发起人工服务。请稍后重试或联系技术支持。",
+        "not_configured": "Sorry, a human service request cannot be started right now. We have logged the issue and will handle it soon. Please try again later or contact support directly.",
+        "api_error": "Sorry, the human service request could not be submitted. Please try again later or contact technical support.",
+        "http_error": "Sorry, a network error prevented the human service request from being submitted. Please try again later or contact technical support.",
+        "unexpected_error": "Sorry, something went wrong and a human service request cannot be started right now. Please try again later or contact technical support.",
     }
 
     async def request_human_support(
@@ -53,16 +53,16 @@ def create_handoff_tool(
     return Function(
         name="request_human_support",
         description=(
-            "当用户明确要求人工或你判断需要人工介入时调用此工具，用于发起人工支持流程。"
-            "请在参数中简要说明原因与紧急程度。"
+            "Call this tool when the user explicitly asks for a human or you judge that human intervention is needed, to start the human support flow. "
+            "Briefly state the reason and the urgency in the parameters."
         ),
         parameters={
             "type": "object",
             "properties": {
-                "reason": {"type": "string", "description": "触发人工介入的原因（必填）"},
-                "urgency": {"type": "string", "description": "紧急程度：low|normal|high|urgent（默认 normal）"},
-                "channel": {"type": "string", "description": "期望的人工渠道（如 phone/wechat/email/ticket 等，可选）"},
-                "metadata": {"type": "object", "description": "其他上下文字段（可选）"},
+                "reason": {"type": "string", "description": "Reason for triggering human intervention (required)"},
+                "urgency": {"type": "string", "description": "Urgency: low|normal|high|urgent (default normal)"},
+                "channel": {"type": "string", "description": "Preferred human channel (e.g. phone/wechat/email/ticket; optional)"},
+                "metadata": {"type": "object", "description": "Other context fields (optional)"},
             },
             "required": ["reason"],
         },

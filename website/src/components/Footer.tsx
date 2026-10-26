@@ -44,7 +44,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           <div className="lg:col-span-1">
             <div className="flex items-center space-x-2 mb-4">
-              <img src="/logo.svg" alt="Tgo" className="w-8 h-8 rounded-lg" />
+              <img src="/logo.svg" alt="Pelatis" className="w-8 h-8 rounded-lg" />
               <span className="text-xl font-bold">{t("Footer.title")}</span>
             </div>
             <p className="text-gray-400 text-sm mb-4">

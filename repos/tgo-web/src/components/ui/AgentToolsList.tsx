@@ -16,8 +16,8 @@ interface AgentToolsListProps {
 }
 
 /**
- * Agent工具列表组件
- * 用于显示AI员工关联的工具列表（基于API响应的工具对象）
+ * Agent tools list component
+ * Shows the list of tools linked to an AI agent (based on tool objects from the API response)
  */
 const AgentToolsList: React.FC<AgentToolsListProps> = ({
   tools,
@@ -30,8 +30,8 @@ const AgentToolsList: React.FC<AgentToolsListProps> = ({
   showLabel = false
 }) => {
   const { t } = useTranslation();
-  const defaultEmptyText = emptyText ?? t('agents.card.noTools', '未关联工具');
-  // 如果没有关联工具，显示空状态
+  const defaultEmptyText = emptyText ?? t('agents.card.noTools', 'No tools associated');
+  // If there are no linked tools, show the empty state
   if (!tools || tools.length === 0) {
     return (
       <div className={`flex items-center text-gray-500 ${className}`}>
@@ -41,7 +41,7 @@ const AgentToolsList: React.FC<AgentToolsListProps> = ({
     );
   }
 
-  // 处理显示数量限制
+  // Handle the display count limit
   const displayTools = maxDisplay ? tools.slice(0, maxDisplay) : tools;
   const remainingCount = maxDisplay && tools.length > maxDisplay 
     ? tools.length - maxDisplay 
@@ -52,7 +52,7 @@ const AgentToolsList: React.FC<AgentToolsListProps> = ({
       {showLabel && (
         <div className="flex items-center text-[13px] font-medium text-gray-700 mb-1.5">
           <Wrench className="w-3.5 h-3.5 mr-1.5" />
-          {t('agents.toolsList.label', '关联工具')} ({tools.length})
+          {t('agents.toolsList.label', 'Associated Tools')} ({tools.length})
         </div>
       )}
 
@@ -72,7 +72,7 @@ const AgentToolsList: React.FC<AgentToolsListProps> = ({
             inline-flex items-center rounded-md border bg-gray-100 text-gray-600 border-gray-200
             ${size === 'xs' ? 'px-1.5 py-0.5 text-[11px]' : size === 'sm' ? 'px-2 py-1 text-xs' : 'px-3 py-1.5 text-sm'}
           `}>
-            +{remainingCount} {t('common.more', '更多')}
+            +{remainingCount} {t('common.more', 'more')}
           </span>
         )}
       </div>

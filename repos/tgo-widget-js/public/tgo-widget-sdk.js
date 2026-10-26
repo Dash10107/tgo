@@ -71,7 +71,7 @@
     // UI iframe fills the container; load from same origin as SDK to avoid cross-origin issues
     const ui = createIframe({
       name: UI_IFRAME_NAME,
-      title: 'TGO Widget',
+      title: 'Pelatis Widget',
       style: {
         position: 'absolute', inset: '0', width: '100%', height: '100%',
         border: '0', display: 'block'
@@ -88,7 +88,7 @@
       const uiUrl = new URL('./ui-shell.html', baseUrl);
       ui.src = uiUrl.toString();
     } catch (e) {
-      console.error('[TGO SDK] Failed to set UI iframe src', e);
+      console.error('[Pelatis SDK] Failed to set UI iframe src', e);
     }
 
     container.appendChild(ui);
@@ -114,12 +114,12 @@
     });
     btn.appendChild(contentWrap);
 
-    // default icon: TGO logo image (preserve original color)
+    // default icon: Pelatis logo image (preserve original color)
     const _scriptEl = getCurrentScript();
     const _baseDir = dirnameFromScript(_scriptEl);
     const logoImg = document.createElement('img');
     logoImg.src = new URL('./logo.svg', _baseDir).toString();
-    logoImg.alt = 'TGO';
+    logoImg.alt = 'Pelatis';
     logoImg.setAttribute('aria-hidden', 'true');
     Object.assign(logoImg.style, { width:'28px', height:'28px', display:'block' });
     contentWrap.appendChild(logoImg);
@@ -239,7 +239,7 @@
   function createControllerFrame(baseUrl, opts){
     const ctrl = createIframe({
       name: CTRL_IFRAME_NAME,
-      title: 'TGO Controller',
+      title: 'Pelatis Controller',
       style: { position:'absolute', width:'0', height:'0', border:'0', opacity:'0', pointerEvents:'none' },
       'aria-hidden': 'true'
     });
@@ -252,7 +252,7 @@
       if (opts && opts.apiKey) ctrlUrl.searchParams.set('apiKey', String(opts.apiKey));
       ctrl.src = ctrlUrl.toString();
     } catch (e) {
-      console.error('[TGO SDK] Failed to create controller iframe', e);
+      console.error('[Pelatis SDK] Failed to create controller iframe', e);
     }
 
     // Notify UI-ready once when the controller finishes its first load
@@ -260,7 +260,7 @@
       try { 
         window.frames[CTRL_IFRAME_NAME]?.postMessage({ type:'tgo:ui-ready', name:UI_IFRAME_NAME }, '*'); 
       } catch(e) {
-        console.error('[TGO SDK] Failed to notify controller iframe', e);
+        console.error('[Pelatis SDK] Failed to notify controller iframe', e);
       }
     }, { once: true });
 
@@ -577,20 +577,20 @@
         }
         // Handle unread count
         if(d && d.type === 'TGO_WIDGET_UNREAD' && d.payload){
-          console.log('[TGO SDK] Received TGO_WIDGET_UNREAD, count:', d.payload.count);
+          console.log('[Pelatis SDK] Received TGO_WIDGET_UNREAD, count:', d.payload.count);
           try { 
             if (state.launcher && state.launcher.setUnreadCount) {
               state.launcher.setUnreadCount(d.payload.count);
-              console.log('[TGO SDK] Called setUnreadCount with:', d.payload.count);
+              console.log('[Pelatis SDK] Called setUnreadCount with:', d.payload.count);
             } else {
-              console.warn('[TGO SDK] Launcher or setUnreadCount not available');
+              console.warn('[Pelatis SDK] Launcher or setUnreadCount not available');
             }
-          } catch(e){ console.error('[TGO SDK] Error setting unread count:', e); }
+          } catch(e){ console.error('[Pelatis SDK] Error setting unread count:', e); }
         }
         // Handle toast message preview
         if(d && d.type === 'TGO_SHOW_TOAST' && d.payload){
-          console.log('[TGO SDK] Received TGO_SHOW_TOAST:', d.payload);
-          try { showToast(d.payload); } catch(e){ console.error('[TGO SDK] Error showing toast:', e); }
+          console.log('[Pelatis SDK] Received TGO_SHOW_TOAST:', d.payload);
+          try { showToast(d.payload); } catch(e){ console.error('[Pelatis SDK] Error showing toast:', e); }
         }
       });
 
@@ -613,7 +613,7 @@
     if (__tgo_lastInstance) return __tgo_lastInstance;
     const script = getCurrentScript();
     const base = dirnameFromScript(script);
-    console.log('[TGO SDK] init', base);
+    console.log('[Pelatis SDK] init', base);
     __tgo_lastInstance = inject(base, opts||{});
     return __tgo_lastInstance;
   }
@@ -636,7 +636,7 @@
   // ------- Public API -------
   const queue = [];
   let booted = false;
-  function flush(){ while(queue.length) { const [fn, args] = queue.shift(); try{ api[fn]?.apply(null, args);}catch(e){console.error('[TGO SDK]', e);} } }
+  function flush(){ while(queue.length) { const [fn, args] = queue.shift(); try{ api[fn]?.apply(null, args);}catch(e){console.error('[Pelatis SDK]', e);} } }
 
   const api = {
     init: function(){

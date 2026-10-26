@@ -81,80 +81,80 @@ def _build_platform_agent_kwargs(platform: Platform) -> dict[str, str]:
 
 @router.post(
     "/completion",
-    summary="流式聊天完成接口",
+    summary="Streaming chat completion endpoint",
     tags=["Chat"],
     description="""
-## 概述
-访客聊天接口，支持 Server-Sent Events (SSE) 流式响应和非流式 JSON 响应。
+## Overview
+Visitor chat endpoint supporting Server-Sent Events (SSE) streaming responses and non-streaming JSON responses.
 
-## 认证方式
-通过请求体中的 `api_key` 字段传递平台 API Key。
+## Authentication
+The platform API key is passed in the `api_key` field of the request body.
 
-## 请求参数
-| 参数 | 类型 | 必填 | 说明 |
+## Request parameters
+| Parameter | Type | Required | Description |
 |------|------|------|------|
-| api_key | string | ✅ | 平台 API Key |
-| message | string | ✅ | 用户消息内容 |
-| from_uid | string | ✅ | 平台用户唯一标识 |
-| extra | object | ❌ | 额外数据（会随消息转发） |
-| timeout_seconds | int | ❌ | 超时时间（默认120秒） |
-| channel_id | string | ❌ | 自定义频道ID |
-| channel_type | int | ❌ | 频道类型（默认251=客服） |
-| system_message | string | ❌ | AI系统提示词 |
-| expected_output | string | ❌ | 期望的输出格式描述 |
-| wukongim_only | bool | ❌ | 是否仅发送到WuKongIM不返回流（默认false） |
-| stream | bool | ❌ | 是否使用流式响应（默认true）。false返回完整JSON |
+| api_key | string | ✅ | Platform API key |
+| message | string | ✅ | User message content |
+| from_uid | string | ✅ | Unique platform user identifier |
+| extra | object | ❌ | Extra data (forwarded with the message) |
+| timeout_seconds | int | ❌ | Timeout (default 120 seconds) |
+| channel_id | string | ❌ | Custom channel ID |
+| channel_type | int | ❌ | Channel type (default 251 = customer service) |
+| system_message | string | ❌ | AI system prompt |
+| expected_output | string | ❌ | Description of the expected output format |
+| wukongim_only | bool | ❌ | Send to WuKongIM only without returning a stream (default false) |
+| stream | bool | ❌ | Whether to use streaming (default true). false returns the complete JSON |
 
-## 响应模式
+## Response modes
 
-### 1. 流式响应（stream=true，默认）
-返回 `text/event-stream` 格式的 SSE 流。
+### 1. Streaming response (stream=true, default)
+Returns an SSE stream in `text/event-stream` format.
 
-### 2. 非流式响应（stream=false）
-返回 JSON 格式的完整响应：
+### 2. Non-streaming response (stream=false)
+Returns the complete response as JSON:
 ```json
 {
   "success": true,
-  "message": "AI回复的完整内容...",
-  "visitor_id": "访客UUID"
+  "message": "Full content of the AI reply...",
+  "visitor_id": "Visitor UUID"
 }
 ```
 
-## SSE 响应事件类型（仅 stream=true 时）
+## SSE event types (only when stream=true)
 
-### 成功事件
-| event_type | 说明 | data 结构 |
+### Success events
+| event_type | Description | data structure |
 |------------|------|-----------|
-| `agent_execution_started` | AI开始处理 | `{}` |
-| `agent_content_chunk` | AI输出内容块 | `{"content_chunk": "文本块"}` |
-| `agent_response_complete` | AI回复完成 | `{}` |
-| `workflow_completed` | AI工作流完成 | `{}` |
-| `accepted` | 请求已接受（wukongim_only=true时） | `{"message": "Request accepted..."}` |
+| `agent_execution_started` | AI started processing | `{}` |
+| `agent_content_chunk` | AI output content chunk | `{"content_chunk": "text chunk"}` |
+| `agent_response_complete` | AI reply complete | `{}` |
+| `workflow_completed` | AI workflow complete | `{}` |
+| `accepted` | Request accepted (when wukongim_only=true) | `{"message": "Request accepted..."}` |
 
-### 错误/状态事件
-| event_type | 说明 | data 结构 |
+### Error/status events
+| event_type | Description | data structure |
 |------------|------|-----------|
-| `error` | 发生错误 | `{"message": "错误信息", "visitor_id": "..."}` |
-| `queued` | 访客已加入等待队列（无可用客服） | `{"message": "...", "visitor_id": "...", "queue_position": 1}` |
-| `ai_disabled` | AI已禁用 | `{"message": "AI responses are disabled..."}` |
-| `assist_mode` | AI处于辅助模式（人工优先） | `{"message": "Human service requested, AI is in assist mode"}` |
-| `workflow_failed` | AI工作流执行失败 | `{"message": "错误详情"}` |
+| `error` | An error occurred | `{"message": "error message", "visitor_id": "..."}` |
+| `queued` | Visitor added to the waiting queue (no staff available) | `{"message": "...", "visitor_id": "...", "queue_position": 1}` |
+| `ai_disabled` | AI is disabled | `{"message": "AI responses are disabled..."}` |
+| `assist_mode` | AI is in assist mode (humans first) | `{"message": "Human service requested, AI is in assist mode"}` |
+| `workflow_failed` | AI workflow execution failed | `{"message": "error details"}` |
 
-## 错误场景
+## Error scenarios
 
-### 1. 无效的 API Key
-返回 HTTP 401:
+### 1. Invalid API key
+Returns HTTP 401:
 ```json
 {"detail": "Invalid platform API key"}
 ```
 
-### 2. 平台未关联项目
-返回 HTTP 400:
+### 2. Platform not linked to a project
+Returns HTTP 400:
 ```json
 {"detail": "Platform not associated with any project"}
 ```
 
-### 3. 客服分配失败
+### 3. Staff assignment failed
 
 **stream=true（SSE）:**
 ```
@@ -166,7 +166,7 @@ data: {"event_type": "error", "data": {"success": false, "event_type": "error", 
 {"success": false, "event_type": "error", "message": "Transfer failed: ...", "visitor_id": "..."}
 ```
 
-### 4. 无可用客服（已加入队列）
+### 4. No staff available (added to queue)
 
 **stream=true（SSE）:**
 ```
@@ -178,7 +178,7 @@ data: {"event_type": "queued", "data": {"success": false, "message": "...", "vis
 {"success": false, "event_type": "queued", "message": "Added to waiting queue at position 1", "visitor_id": "...", "queue_position": 1}
 ```
 
-### 5. 无分配客服
+### 5. No assigned staff
 
 **stream=true（SSE）:**
 ```
@@ -190,7 +190,7 @@ data: {"event_type": "error", "data": {"message": "No staff assigned to this vis
 {"detail": {"success": false, "event_type": "error", "message": "No staff assigned to this visitor", "visitor_id": "..."}}
 ```
 
-### 6. AI已禁用
+### 6. AI disabled
 
 **stream=true（SSE）:**
 ```
@@ -202,7 +202,7 @@ data: {"event_type": "ai_disabled", "data": {"message": "AI responses are disabl
 {"detail": {"success": false, "event_type": "ai_disabled", "message": "AI responses are disabled..."}}
 ```
 
-### 7. AI服务错误
+### 7. AI service error
 
 **stream=true（SSE）:**
 ```
@@ -214,26 +214,26 @@ data: {"event_type": "error", "data": {"message": "AI service error: ..."}}
 {"detail": "AI service error: ..."}
 ```
 
-## SSE 响应格式示例
+## SSE response format example
 ```
 data: {"event_type": "agent_execution_started", "data": {}}
 
-data: {"event_type": "agent_content_chunk", "data": {"content_chunk": "你好"}}
+data: {"event_type": "agent_content_chunk", "data": {"content_chunk": "Hello"}}
 
-data: {"event_type": "agent_content_chunk", "data": {"content_chunk": "，有什么"}}
+data: {"event_type": "agent_content_chunk", "data": {"content_chunk": ", how can"}}
 
-data: {"event_type": "agent_content_chunk", "data": {"content_chunk": "可以帮助您的？"}}
+data: {"event_type": "agent_content_chunk", "data": {"content_chunk": " I help you?"}}
 
 data: {"event_type": "workflow_completed", "data": {}}
 ```
 
-## 前端使用示例
+## Frontend usage example
 ```javascript
 const eventSource = new EventSource('/api/v1/chat/completion', {
   method: 'POST',
   body: JSON.stringify({
     api_key: 'your-api-key',
-    message: '你好',
+    message: 'Hello',
     from_uid: 'user123'
   })
 });
@@ -242,17 +242,17 @@ const eventSource = new EventSource('/api/v1/chat/completion', {
       const data = JSON.parse(event.data);
       switch (data.event_type) {
         case 'agent_content_chunk':
-          // 追加内容到界面
+          // Append content to the UI
           appendText(data.data.content_chunk);
           break;
         case 'workflow_completed':
         case 'agent_response_complete':
-          // 完成处理
+          // Done
           eventSource.close();
           break;
     case 'error':
     case 'queued':
-      // 处理错误或排队状态
+      // Handle error or queued state
       handleError(data.data);
       eventSource.close();
       break;
@@ -262,28 +262,28 @@ const eventSource = new EventSource('/api/v1/chat/completion', {
 """,
     responses={
         200: {
-                "description": "成功响应（流式或JSON）",
+                "description": "Success response (streaming or JSON)",
                 "content": {
                     "text/event-stream": {
-                        "example": 'data: {"event_type": "agent_content_chunk", "data": {"content_chunk": "你好"}}\n\n'
+                        "example": 'data: {"event_type": "agent_content_chunk", "data": {"content_chunk": "Hello"}}\n\n'
                     },
                     "application/json": {
                         "example": {
                         "success": True,
-                        "message": "你好，有什么可以帮助您的？",
+                        "message": "Hello, how can I help you?",
                         "visitor_id": "550e8400-e29b-41d4-a716-446655440000"
                     }
                 }
             }
         },
-        401: {"description": "无效的 API Key"},
-        400: {"description": "平台未关联项目"},
-        500: {"description": "AI服务错误（stream=false时）"},
-        503: {"description": "无可用客服"},
+        401: {"description": "Invalid API key"},
+        400: {"description": "Platform not linked to a project"},
+        500: {"description": "AI service error (when stream=false)"},
+        503: {"description": "No staff available"},
     }
 )
 async def chat_completion(req: ChatCompletionRequest, db: Session = Depends(get_db)) -> StreamingResponse:
-    """流式聊天完成接口 - 详细说明请查看接口描述。"""
+    """Streaming chat completion endpoint - see the endpoint description for details."""
     # 1) Validate Platform API key and get project
     platform, project = chat_service.validate_platform_and_project(req.api_key, db)
 
@@ -1273,22 +1273,22 @@ async def handle_ui_user_action(
 
 @router.delete(
     "/memory",
-    summary="清除会话记忆",
+    summary="Clear conversation memory",
     tags=["Chat"],
     description="""
-    清除智能体会话的 AI 记忆，并发送系统消息通知。
+    Clear the AI memory of the agent conversation and send a system notification message.
     
-    该接口会将 `channel_id` + `channel_type` 转换为 AI 服务所需的 `session_id` 并调用清除。
-    清除成功后，会向该频道发送一条 'memory_cleared' 类型的系统消息。
+    This endpoint converts `channel_id` + `channel_type` into the `session_id` required by the AI service and calls the clear.
+    After a successful clear, a system message of type 'memory_cleared' is sent to the AI channel.
     """,
 )
 async def clear_chat_memory(
-    channel_id: str = Query(..., description="频道 ID"),
-    channel_type: int = Query(..., description="频道类型"),
+    channel_id: str = Query(..., description="Channel ID"),
+    channel_type: int = Query(..., description="Channel type"),
     current_user: Staff = Depends(require_permission("chat:send")),
     db: Session = Depends(get_db),
 ) -> Dict[str, Any]:
-    """清除智能体会话的 AI 记忆。"""
+    """Clear the AI memory of the agent conversation."""
     # 1) Build session_id for AI service
     staff_uid = f"{current_user.id}-staff"
     session_id = get_session_id(staff_uid, channel_id, channel_type)

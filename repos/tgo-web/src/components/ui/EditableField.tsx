@@ -70,7 +70,7 @@ const EditableField: React.FC<EditableFieldProps> = ({
       await onSave(editValue);
       setIsEditing(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('common.saveFailed', '保存失败'));
+      setError(err instanceof Error ? err.message : t('common.saveFailed', 'Save failed'));
     } finally {
       setIsLoading(false);
     }

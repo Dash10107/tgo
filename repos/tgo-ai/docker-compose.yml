@@ -2,7 +2,7 @@ include:
   - docker-compose-base.yml
 
 services:
-  # TGO AI Service
+  # Pelatis AI Service
   tgo-ai-service:
     build: .
     ports:

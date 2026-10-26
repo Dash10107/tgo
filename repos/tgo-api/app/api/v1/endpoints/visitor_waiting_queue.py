@@ -99,33 +99,33 @@ def _build_queue_detail_response(entry: VisitorWaitingQueue) -> WaitingQueueDeta
 @router.get(
     "",
     response_model=WaitingQueueListResponse,
-    summary="获取等待队列列表",
-    description="获取当前项目的访客等待队列列表，支持分页和筛选。",
+    summary="List waiting queue",
+    description="List the project's visitor waiting queue, with pagination and filtering.",
 )
 async def list_waiting_queue(
     status: Optional[WaitingStatusEnum] = Query(
-        None, description="按状态筛选"
+        None, description="Filter by status"
     ),
     source: Optional[QueueSourceEnum] = Query(
-        None, description="按来源筛选"
+        None, description="Filter by source"
     ),
     urgency: Optional[QueueUrgencyEnum] = Query(
-        None, description="按紧急程度筛选"
+        None, description="Filter by urgency"
     ),
     visitor_id: Optional[UUID] = Query(
-        None, description="按访客ID筛选"
+        None, description="Filter by visitor ID"
     ),
-    limit: int = Query(20, ge=1, le=100, description="每页数量"),
-    offset: int = Query(0, ge=0, description="跳过数量"),
+    limit: int = Query(20, ge=1, le=100, description="Items per page"),
+    offset: int = Query(0, ge=0, description="Number of items to skip"),
     db: Session = Depends(get_db),
     current_user: Staff = Depends(require_permission("visitors:read")),
 ) -> WaitingQueueListResponse:
     """
-    获取等待队列列表。
+    List the waiting queue.
     
-    - 默认按优先级降序、位置升序排列（高优先级、先入队的排前面）
-    - 支持按状态、来源、紧急程度、访客ID筛选
-    - 返回访客和客服的简要信息
+    - Sorted by priority descending, then position ascending (higher priority and earlier entries first)
+    - Supports filtering by status, source, urgency and visitor ID
+    - Returns brief visitor and staff info
     """
     # Build query
     query = db.query(VisitorWaitingQueue).filter(
@@ -179,22 +179,22 @@ async def list_waiting_queue(
 @router.get(
     "/waiting",
     response_model=WaitingQueueListResponse,
-    summary="获取等待中的队列",
-    description="快捷接口：只返回状态为 waiting 的队列条目。",
+    summary="Get waiting queue entries",
+    description="Shortcut endpoint: returns only queue entries whose status is waiting.",
 )
 async def list_waiting_only(
     urgency: Optional[QueueUrgencyEnum] = Query(
-        None, description="按紧急程度筛选"
+        None, description="Filter by urgency"
     ),
-    limit: int = Query(20, ge=1, le=100, description="每页数量"),
-    offset: int = Query(0, ge=0, description="跳过数量"),
+    limit: int = Query(20, ge=1, le=100, description="Items per page"),
+    offset: int = Query(0, ge=0, description="Number of items to skip"),
     db: Session = Depends(get_db),
     current_user: Staff = Depends(require_permission("visitors:read")),
 ) -> WaitingQueueListResponse:
     """
-    获取等待中的队列（只返回 waiting 状态）。
+    Get waiting queue entries (waiting status only).
     
-    这是一个快捷接口，专门用于客服查看待接入的访客列表。
+    A shortcut endpoint dedicated to staff viewing the list of visitors awaiting pickup.
     """
     query = db.query(VisitorWaitingQueue).filter(
         VisitorWaitingQueue.project_id == current_user.project_id,
@@ -236,17 +236,17 @@ async def list_waiting_only(
 
 @router.get(
     "/count",
-    summary="获取等待队列数量",
-    description="获取当前项目等待中的访客数量。",
+    summary="Get waiting queue count",
+    description="Get the number of waiting visitors in the current project.",
 )
 async def get_waiting_count(
     db: Session = Depends(get_db),
     current_user: Staff = Depends(require_permission("visitors:read")),
 ) -> dict:
     """
-    获取等待队列数量统计。
+    Get waiting queue count statistics.
     
-    返回各状态的数量统计。
+    Returns the count for each status.
     """
     project_id = current_user.project_id
     
@@ -270,15 +270,15 @@ async def get_waiting_count(
 @router.get(
     "/{entry_id}",
     response_model=WaitingQueueDetailResponse,
-    summary="获取队列条目详情",
-    description="根据ID获取单个队列条目的详细信息。",
+    summary="Get queue entry details",
+    description="Get the details of a single queue entry by ID.",
 )
 async def get_queue_entry(
     entry_id: UUID,
     db: Session = Depends(get_db),
     current_user: Staff = Depends(require_permission("visitors:read")),
 ) -> WaitingQueueDetailResponse:
-    """获取单个队列条目详情。"""
+    """Get the details of a single queue entry."""
     entry = (
         db.query(VisitorWaitingQueue)
         .options(
@@ -304,8 +304,8 @@ async def get_queue_entry(
 @router.post(
     "/accept",
     response_model=AcceptVisitorResponse,
-    summary="接入访客",
-    description="客服接入等待队列中的访客。（改用 /visitors/{visitor_id}/accept 接口）",
+    summary="Accept visitor",
+    description="Staff accepts a visitor from the waiting queue. (Use the /visitors/{visitor_id}/accept endpoint instead.)",
 )
 async def accept_visitor(
     request: AcceptVisitorRequest,
@@ -313,11 +313,11 @@ async def accept_visitor(
     current_user: Staff = Depends(require_permission("visitors:update")),
 ) -> AcceptVisitorResponse:
     """
-    客服接入访客。
+    Staff accepts a visitor.
     
-    - 从等待队列中接入指定的访客
-    - 调用 transfer_to_staff 完成分配
-    - 更新队列状态为 assigned
+    - Accept the given visitor from the waiting queue
+    - Call transfer_to_staff to complete the assignment
+    - Update the queue status to assigned
     """
     # Find the queue entry by visitor_id (get the latest waiting entry)
     entry = (
@@ -387,7 +387,7 @@ async def accept_visitor(
     
     return AcceptVisitorResponse(
         success=True,
-        message="访客已成功接入",
+        message="Visitor accepted successfully",
         entry_id=entry.id,
         visitor_id=entry.visitor_id,
         staff_id=current_user.id,
@@ -400,19 +400,19 @@ async def accept_visitor(
 
 @router.post(
     "/{entry_id}/cancel",
-    summary="取消队列条目",
-    description="取消等待队列中的条目（访客离开或其他原因）。",
+    summary="Cancel queue entry",
+    description="Cancel an entry in the waiting queue (visitor left or another reason).",
 )
 async def cancel_queue_entry(
     entry_id: UUID,
-    reason: Optional[str] = Query(None, max_length=255, description="取消原因"),
+    reason: Optional[str] = Query(None, max_length=255, description="Cancellation reason"),
     db: Session = Depends(get_db),
     current_user: Staff = Depends(require_permission("visitors:update")),
 ) -> dict:
     """
-    取消队列条目。
+    Cancel a queue entry.
     
-    用于访客离开或其他需要取消等待的情况。
+    Used when a visitor leaves or the wait needs to be cancelled for another reason.
     """
     entry = db.query(VisitorWaitingQueue).filter(
         VisitorWaitingQueue.id == entry_id,
@@ -449,6 +449,6 @@ async def cancel_queue_entry(
     
     return {
         "success": True,
-        "message": "队列条目已取消",
+        "message": "Queue entry cancelled",
         "entry_id": str(entry_id),
     }

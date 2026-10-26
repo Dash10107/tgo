@@ -226,17 +226,17 @@ const OnboardingWelcome: React.FC = () => {
             <Rocket className="w-8 h-8 text-white" />
           </div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            {t('onboarding.welcome.title', '欢迎使用 TGO')}
+            {t('onboarding.welcome.title', 'Welcome to Pelatis')}
           </h2>
           <p className="text-gray-600 dark:text-gray-400">
-            {t('onboarding.welcome.subtitle', '完成以下步骤，开启智能客服之旅')}
+            {t('onboarding.welcome.subtitle', 'Complete the following steps to start your AI customer service journey')}
           </p>
         </div>
 
         {/* Progress bar */}
         <div className="px-8 py-4">
           <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-2">
-            <span>{t('onboarding.welcome.progress', '完成进度')}</span>
+            <span>{t('onboarding.welcome.progress', 'Progress')}</span>
             <span className="font-medium">{progressPercentage}%</span>
           </div>
           <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
@@ -282,7 +282,7 @@ const OnboardingWelcome: React.FC = () => {
                 </p>
               </div>
               <div className="shrink-0 text-xs text-gray-500 dark:text-gray-400">
-                {t('onboarding.welcome.estimatedTime', '约 2 分钟')}
+                {t('onboarding.welcome.estimatedTime', '~2 min')}
               </div>
             </div>
           </div>
@@ -295,7 +295,7 @@ const OnboardingWelcome: React.FC = () => {
             disabled={isLoading}
             className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 transition-colors"
           >
-            {t('onboarding.welcome.skip', '跳过引导')}
+            {t('onboarding.welcome.skip', 'Skip Guide')}
           </button>
 
           <div className="flex items-center gap-3">
@@ -303,14 +303,14 @@ const OnboardingWelcome: React.FC = () => {
               onClick={handleLater}
               className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
-              {t('onboarding.welcome.later', '稍后设置')}
+              {t('onboarding.welcome.later', 'Setup Later')}
             </button>
             <button
               onClick={handleStartStep}
               disabled={isLoading || !nextStep}
               className="px-5 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors flex items-center gap-2 shadow-lg shadow-blue-500/25"
             >
-              {t('onboarding.welcome.start', '开始配置')}
+              {t('onboarding.welcome.start', 'Start Setup')}
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>

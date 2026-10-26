@@ -352,7 +352,7 @@ import socket
 import json
 
 def connect_to_server(host="localhost", port=9876, device_token=None, bind_code=None):
-    """连接到 TGO Device Control 服务器"""
+    """连接到 Pelatis Device Control 服务器"""
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((host, port))
     print(f"Connected to {host}:{port}")
@@ -407,7 +407,7 @@ if __name__ == "__main__":
     sock = connect_to_server(device_token="your-saved-device-token")
 ```
 
-> **注意**: 以上是客户端示例。服务端由 TGO Device Control 服务实现，使用绑定码/设备令牌进行认证。
+> **注意**: 以上是客户端示例。服务端由 Pelatis Device Control 服务实现，使用绑定码/设备令牌进行认证。
 
 ## 断线重连
 

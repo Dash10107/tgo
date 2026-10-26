@@ -20,7 +20,7 @@ services:
   wukongim:
     image: registry.cn-shanghai.aliyuncs.com/wukongim/wukongim:v2.2.5-20260422
 
-  # TGO application services - using Alibaba Cloud ACR
+  # Pelatis application services - using Alibaba Cloud ACR
   tgo-rag-worker:
     image: registry.cn-shanghai.aliyuncs.com/tgoai/tgo-rag:latest
 

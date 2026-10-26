@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "tgo-plugin-runtime"
 version = "1.0.0"
-description = "TGO-Tech Plugin Runtime Service - Plugin management and execution"
-authors = ["TGO-Tech <tech@tgo-tech.com>"]
+description = "Pelatis Plugin Runtime Service - Plugin management and execution"
+authors = ["Pelatis <tech@tgo-tech.com>"]
 readme = "README.md"
 packages = [{include = "app"}]
 

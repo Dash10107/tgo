@@ -1,155 +1,155 @@
 /**
- * 访客API测试工具
- * 用于测试访客属性更新功能
+ * Visitor API test tool
+ * Used to test the visitor attribute update feature
  */
 
 import { visitorApiService } from '@/services/visitorApi';
 import type { VisitorAttributesUpdateRequest } from '@/services/visitorApi';
 
 /**
- * 测试访客属性更新功能
+ * Test the visitor attribute update feature
  */
 export const testVisitorAttributeUpdate = async (visitorId: string): Promise<void> => {
-  console.log('🧪 开始测试访客属性更新功能...');
+  console.log('🧪 Starting visitor attribute update test...');
 
   try {
-    // 1. 测试基本信息更新
-    console.log('🧪 测试基本信息更新...');
+    // 1. Test basic info update
+    console.log('🧪 Testing basic info update...');
     const basicInfoUpdate: VisitorAttributesUpdateRequest = {
-      name: '测试用户',
+      name: 'Test User',
       email: 'test@example.com',
       phone_number: '+86 138-0000-0000'
     };
 
     const basicInfoResponse = await visitorApiService.updateVisitorAttributes(visitorId, basicInfoUpdate);
-    console.log('✅ 基本信息更新成功:', basicInfoResponse);
+    console.log('✅ Basic info updated successfully:', basicInfoResponse);
 
-    // 2. 测试公司和职位信息更新
-    console.log('🧪 测试公司和职位信息更新...');
+    // 2. Test company and job title update
+    console.log('🧪 Testing company and job title update...');
     const companyUpdate: VisitorAttributesUpdateRequest = {
-      company: '测试科技有限公司',
-      job_title: '产品经理',
-      source: '官网咨询'
+      company: 'Test Technology Co., Ltd.',
+      job_title: 'Product Manager',
+      source: 'Website inquiry'
     };
 
     const companyResponse = await visitorApiService.updateVisitorAttributes(visitorId, companyUpdate);
-    console.log('✅ 公司信息更新成功:', companyResponse);
+    console.log('✅ Company info updated successfully:', companyResponse);
 
-    // 3. 测试自定义属性更新
-    console.log('🧪 测试自定义属性更新...');
+    // 3. Test custom attribute update
+    console.log('🧪 Testing custom attribute update...');
     const customAttributesUpdate: VisitorAttributesUpdateRequest = {
       custom_attributes: {
-        '兴趣爱好': '阅读、旅行',
-        '购买意向': '高',
-        '预算范围': '10万-50万',
-        '决策周期': '3个月内'
+        'Hobbies': 'Reading, travel',
+        'Purchase intent': 'High',
+        'Budget range': '100k-500k',
+        'Decision cycle': 'Within 3 months'
       }
     };
 
     const customAttributesResponse = await visitorApiService.updateVisitorAttributes(visitorId, customAttributesUpdate);
-    console.log('✅ 自定义属性更新成功:', customAttributesResponse);
+    console.log('✅ Custom attributes updated successfully:', customAttributesResponse);
 
-    // 4. 测试备注更新
-    console.log('🧪 测试备注更新...');
+    // 4. Test note update
+    console.log('🧪 Testing note update...');
     const noteUpdate: VisitorAttributesUpdateRequest = {
-      note: '这是一个重要的潜在客户，对我们的产品表现出浓厚兴趣，需要重点跟进。已安排下周进行产品演示。'
+      note: 'An important potential customer who has shown strong interest in our products and needs close follow-up. A product demo is scheduled for next week.'
     };
 
     const noteResponse = await visitorApiService.updateVisitorAttributes(visitorId, noteUpdate);
-    console.log('✅ 备注更新成功:', noteResponse);
+    console.log('✅ Note updated successfully:', noteResponse);
 
-    // 5. 测试综合更新
-    console.log('🧪 测试综合更新...');
+    // 5. Test comprehensive update
+    console.log('🧪 Testing comprehensive update...');
     const comprehensiveUpdate: VisitorAttributesUpdateRequest = {
-      name: '综合测试用户',
+      name: 'Comprehensive Test User',
       email: 'comprehensive@test.com',
       phone_number: '+86 139-0000-0000',
-      company: '综合测试科技有限公司',
-      job_title: '技术总监',
-      source: '朋友推荐',
-      note: '这是一个综合功能测试的备注信息，包含了所有可更新的字段。',
+      company: 'Comprehensive Test Technology Co., Ltd.',
+      job_title: 'Technical Director',
+      source: 'Friend referral',
+      note: 'Note for a comprehensive feature test, covering all updatable fields.',
       custom_attributes: {
-        '测试类型': '综合测试',
-        '测试时间': new Date().toISOString(),
-        '测试状态': '进行中',
-        '优先级': '高'
+        'Test type': 'Comprehensive test',
+        'Test time': new Date().toISOString(),
+        'Test status': 'In progress',
+        'Priority': 'High'
       }
     };
 
     const comprehensiveResponse = await visitorApiService.updateVisitorAttributes(visitorId, comprehensiveUpdate);
-    console.log('✅ 综合更新成功:', comprehensiveResponse);
+    console.log('✅ Comprehensive update succeeded:', comprehensiveResponse);
 
-    console.log('🎉 所有访客属性更新测试通过！');
+    console.log('🎉 All visitor attribute update tests passed!');
 
   } catch (error) {
-    console.error('❌ 访客属性更新测试失败:', error);
+    console.error('❌ Visitor attribute update test failed:', error);
     throw error;
   }
 };
 
 /**
- * 测试获取访客信息功能
+ * Test the get-visitor-info feature
  */
 export const testGetVisitor = async (visitorId: string): Promise<void> => {
-  console.log('🧪 开始测试获取访客信息功能...');
+  console.log('🧪 Starting get-visitor-info test...');
 
   try {
     const visitorResponse = await visitorApiService.getVisitor(visitorId);
-    console.log('✅ 获取访客信息成功:', visitorResponse);
+    console.log('✅ Visitor info fetched successfully:', visitorResponse);
 
-    // 测试数据转换
+    // Test data transformation
     const transformedVisitor = visitorApiService.transformToVisitor(visitorResponse);
-    console.log('✅ 访客数据转换成功:', transformedVisitor);
+    console.log('✅ Visitor data transformed successfully:', transformedVisitor);
 
-    console.log('🎉 获取访客信息测试通过！');
+    console.log('🎉 Get-visitor-info test passed!');
 
   } catch (error) {
-    console.error('❌ 获取访客信息测试失败:', error);
+    console.error('❌ Get-visitor-info test failed:', error);
     throw error;
   }
 };
 
 /**
- * 测试访客数据转换功能
+ * Test the visitor data transformation feature
  */
 export const testVisitorDataTransform = async (visitorId: string): Promise<void> => {
-  console.log('🧪 开始测试访客数据转换功能...');
+  console.log('🧪 Starting visitor data transformation test...');
 
   try {
     const visitorResponse = await visitorApiService.getVisitor(visitorId);
-    console.log('✅ 获取访客信息成功:', visitorResponse);
+    console.log('✅ Visitor info fetched successfully:', visitorResponse);
 
     const transformedVisitor = visitorApiService.transformToVisitor(visitorResponse);
-    console.log('✅ 访客数据转换成功:', transformedVisitor);
+    console.log('✅ Visitor data transformed successfully:', transformedVisitor);
 
-    console.log('🎉 访客数据转换测试通过！');
+    console.log('🎉 Visitor data transformation test passed!');
 
   } catch (error) {
-    console.error('❌ 访客数据转换测试失败:', error);
+    console.error('❌ Visitor data transformation test failed:', error);
     throw error;
   }
 };
 
 /**
- * 运行所有访客API测试
+ * Run all visitor API tests
  */
 export const runAllVisitorApiTests = async (visitorId: string): Promise<void> => {
-  console.log('🚀 开始运行所有访客API测试...');
+  console.log('🚀 Running all visitor API tests...');
 
   try {
     await testGetVisitor(visitorId);
     await testVisitorDataTransform(visitorId);
     await testVisitorAttributeUpdate(visitorId);
 
-    console.log('🎉 所有访客API测试完成！');
+    console.log('🎉 All visitor API tests complete!');
 
   } catch (error) {
-    console.error('❌ 访客API测试失败:', error);
+    console.error('❌ Visitor API test failed:', error);
   }
 };
 
 /**
- * 在浏览器控制台中暴露测试函数
+ * Expose the test functions in the browser console
  */
 if (typeof window !== 'undefined') {
   (window as any).testVisitorAttributeUpdate = testVisitorAttributeUpdate;
@@ -157,9 +157,9 @@ if (typeof window !== 'undefined') {
   (window as any).testVisitorDataTransform = testVisitorDataTransform;
   (window as any).runAllVisitorApiTests = runAllVisitorApiTests;
 
-  console.log('🧪 访客API测试工具已加载');
-  console.log('🧪 使用 testVisitorAttributeUpdate("visitor_id") 测试属性更新');
-  console.log('🧪 使用 testGetVisitor("visitor_id") 测试获取访客信息');
-  console.log('🧪 使用 testVisitorDataTransform("visitor_id") 测试数据转换');
-  console.log('🧪 使用 runAllVisitorApiTests("visitor_id") 运行所有测试');
+  console.log('🧪 Visitor API test tool loaded');
+  console.log('🧪 Use testVisitorAttributeUpdate("visitor_id") to test attribute updates');
+  console.log('🧪 Use testGetVisitor("visitor_id") to test fetching visitor info');
+  console.log('🧪 Use testVisitorDataTransform("visitor_id") to test data transformation');
+  console.log('🧪 Use runAllVisitorApiTests("visitor_id") to run all tests');
 }

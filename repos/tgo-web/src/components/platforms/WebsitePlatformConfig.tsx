@@ -31,10 +31,10 @@ type WebsiteWidgetConfig = {
 
 // Note: Default values will be translated at runtime using t() function
 const getDefaultWebsiteConfig = (t: any): WebsiteWidgetConfig => ({
-  widgetTitle: t('platforms.website.defaults.widgetTitle', '欢迎光临'),
+  widgetTitle: t('platforms.website.defaults.widgetTitle', 'Welcome'),
   themeColor: '#1E40AF', // blue-800
   logoUrl: '',
-  welcomeMessage: t('platforms.website.defaults.welcomeMessage', '您好！有什么可以帮您？'),
+  welcomeMessage: t('platforms.website.defaults.welcomeMessage', 'Hello! How can I help you?'),
   position: 'bottom-right',
   displayMode: 'small',
 });
@@ -161,7 +161,7 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
   const [formValues, setFormValues] = useState<WebsiteWidgetConfig>(initialFormValues);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const apiKey: string = useMemo(() => ((platform.config as any)?.apiKey ?? ''), [platform.config]);
-  // 裁剪弹窗状态
+  // Crop modal state
   const [cropOpen, setCropOpen] = useState(false);
   const [cropSrc, setCropSrc] = useState<string>('');
   const [pendingFile, setPendingFile] = useState<File | null>(null);
@@ -237,7 +237,7 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
   // Generate and download example HTML file with embedded API key
   const handleDownloadExample = useCallback(() => {
     const scriptUrl = getWidgetScriptBase();
-    const platformDisplayName = platform.display_name || platform.name || 'TGO Widget';
+    const platformDisplayName = platform.display_name || platform.name || 'Pelatis Widget';
 
     const htmlContent = `<!DOCTYPE html>
 <html lang="en">
@@ -323,7 +323,7 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
 <body>
     <div class="container">
         <h1>🎉 ${t('platforms.website.download.welcomeTitle', 'Welcome!')}</h1>
-        <p>${t('platforms.website.download.welcomeDesc', 'Your TGO chat widget is now integrated! Click the chat button in the bottom-right corner to start a conversation.')}</p>
+        <p>${t('platforms.website.download.welcomeDesc', 'Your Pelatis chat widget is now integrated! Click the chat button in the bottom-right corner to start a conversation.')}</p>
 
         <div class="info-box">
             <h3>📋 ${t('platforms.website.download.integrationCode', 'Integration Code')}</h3>
@@ -337,7 +337,7 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
 
     <div class="arrow">👇</div>
 
-    <!-- TGO Widget SDK - Your API Key is pre-configured -->
+    <!-- Pelatis Widget SDK - Your API Key is pre-configured -->
     <script src="${scriptUrl}?api_key=${apiKey}" async></script>
 </body>
 </html>`;
@@ -355,8 +355,8 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
 
     showSuccess(
       showToast,
-      t('platforms.website.download.success', '下载成功'),
-      t('platforms.website.download.successDesc', '示例文件已下载，请在浏览器中打开查看效果')
+      t('platforms.website.download.success', 'Download Successful'),
+      t('platforms.website.download.successDesc', 'Example file has been downloaded, open it in a browser to see the result')
     );
   }, [apiKey, platform.id, platform.display_name, platform.name, showToast, t]);
 
@@ -398,7 +398,7 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
           resetPlatformConfig(platform.id);
         }
       }
-      showSuccess(showToast, t('platforms.website.messages.saveSuccess', '保存成功'), t('platforms.website.messages.saveSuccessMessage', '平台信息已更新'));
+      showSuccess(showToast, t('platforms.website.messages.saveSuccess', 'Saved Successfully'), t('platforms.website.messages.saveSuccessMessage', 'Platform information has been updated'));
     } catch (e) {
       showApiError(showToast, e);
     }
@@ -408,8 +408,8 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
     <main className="flex flex-col flex-1 min-h-0 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <header className="px-6 py-4 border-b border-gray-200/80 dark:border-gray-700/80 flex justify-between items-center bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg sticky top-0 z-10">
         <div>
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">{platform.name} - {t('platforms.website.header.title', '网站小部件配置')}</h2>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('platforms.website.header.subtitle', '调整左侧配置，右侧预览会实时更新')}</p>
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">{platform.name} - {t('platforms.website.header.title', 'Website Widget Configuration')}</h2>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('platforms.website.header.subtitle', 'Adjust the configuration on the left, the preview on the right will update in real-time')}</p>
         </div>
         <div className="flex items-center gap-3">
           <button
@@ -417,7 +417,7 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
             onClick={() => setConfirmOpen(true)}
             className={`px-3 py-1.5 text-sm rounded-md ${isDeleting ? 'bg-red-400 text-white' : 'bg-red-600 dark:bg-red-500 text-white hover:bg-red-700 dark:hover:bg-red-600'}`}
           >
-            {isDeleting ? t('platforms.website.buttons.deleting', '删除中…') : t('platforms.website.buttons.delete', '删除')}
+            {isDeleting ? t('platforms.website.buttons.deleting', 'Deleting...') : t('platforms.website.buttons.delete', 'Delete')}
           </button>
           <button
             disabled={isUpdating || isDeleting || isToggling}
@@ -427,10 +427,10 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
               try {
                 if (isEnabled) {
                   await disablePlatform(platform.id);
-                  showSuccess(showToast, t('platforms.website.messages.disabled', '平台已禁用'));
+                  showSuccess(showToast, t('platforms.website.messages.disabled', 'Platform disabled'));
                 } else {
                   await enablePlatform(platform.id);
-                  showSuccess(showToast, t('platforms.website.messages.enabled', '平台已启用'));
+                  showSuccess(showToast, t('platforms.website.messages.enabled', 'Platform enabled'));
                 }
               } catch (e) {
                 showApiError(showToast, e);
@@ -440,14 +440,14 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
             }}
             className={`px-3 py-1.5 text-sm rounded-md text-white ${isEnabled ? 'bg-gray-600 dark:bg-gray-500 hover:bg-gray-700 dark:hover:bg-gray-600' : 'bg-green-600 dark:bg-green-500 hover:bg-green-700 dark:hover:bg-green-600'} ${isToggling ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
-            {isToggling ? (isEnabled ? t('platforms.website.buttons.disabling', '禁用中…') : t('platforms.website.buttons.enabling', '启用中…')) : (isEnabled ? t('platforms.website.buttons.disable', '禁用') : t('platforms.website.buttons.enable', '启用'))}
+            {isToggling ? (isEnabled ? t('platforms.website.buttons.disabling', 'Disabling...') : t('platforms.website.buttons.enabling', 'Enabling...')) : (isEnabled ? t('platforms.website.buttons.disable', 'Disable') : t('platforms.website.buttons.enable', 'Enable'))}
           </button>
           <button
             disabled={!canSave || isUpdating}
             onClick={handleSave}
             className={`px-3 py-1.5 text-sm rounded-md ${canSave ? 'bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600' : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'}`}
           >
-            {isUpdating ? t('platforms.website.buttons.saving', '保存中…') : t('platforms.website.buttons.save', '保存')}
+            {isUpdating ? t('platforms.website.buttons.saving', 'Saving...') : t('platforms.website.buttons.save', 'Save')}
           </button>
         </div>
       </header>
@@ -455,20 +455,20 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
       <div className="flex flex-1 min-h-0 flex-col lg:flex-row gap-4 p-6">
         {/* Left: form */}
         <section className="lg:w-2/5 w-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-5 rounded-lg shadow-sm border border-gray-200/60 dark:border-gray-700/60 space-y-4 overflow-y-auto min-h-0 auto-hide-scrollbar">
-          {/* 平台名称（置于表单最上方） */}
+          {/* Platform name (placed at the top of the form) */}
           <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.website.form.name', '名称')}</label>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.website.form.name', 'Name')}</label>
             <input
               type="text"
               value={platformName}
               onChange={(e) => setPlatformName(e.target.value)}
               className="w-full text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-700/50 dark:text-gray-200"
-              placeholder={t('platforms.website.form.namePlaceholder', '请输入平台名称')}
+              placeholder={t('platforms.website.form.namePlaceholder', 'Please enter platform name')}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.website.form.widgetTitle', '访客窗口标题')}</label>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.website.form.widgetTitle', 'Visitor Window Title')}</label>
             <input
               type="text"
               value={formValues.widgetTitle}
@@ -478,7 +478,7 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.website.form.themeColor', '主题颜色')}</label>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.website.form.themeColor', 'Theme Color')}</label>
             <input
               type="color"
               value={formValues.themeColor}
@@ -494,7 +494,7 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 className="relative group w-24 h-24 md:w-28 md:h-28 border border-dashed border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 flex items-center justify-center overflow-hidden hover:border-blue-400 dark:hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition"
-                aria-label={t('platforms.website.form.uploadLogo', '上传 Logo')}
+                aria-label={t('platforms.website.form.uploadLogo', 'Upload Logo')}
               >
                 {formValues.logoUrl ? (
                   <img src={formValues.logoUrl} alt="Logo" className="w-full h-full object-contain transition-opacity group-hover:opacity-80" />
@@ -503,10 +503,10 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
                     <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4-4 4 4 4-4 4 4M4 8h16" />
                     </svg>
-                    {t('platforms.website.form.clickUpload', '点击上传')}
+                    {t('platforms.website.form.clickUpload', 'Click to Upload')}
                   </div>
                 )}
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 text-white text-xs flex items-center justify-center transition">{t('platforms.website.form.clickUpload', '点击上传')}</div>
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 text-white text-xs flex items-center justify-center transition">{t('platforms.website.form.clickUpload', 'Click to Upload')}</div>
               </button>
               <div className="flex-1 flex flex-col gap-2">
                 <input
@@ -519,12 +519,12 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
                     if (!file) return;
                     const MAX_SIZE = 2 * 1024 * 1024; // 2MB
                     if (file.size > MAX_SIZE) {
-                      showApiError(showToast, new Error(t('platforms.website.errors.fileTooLarge', '图片大小不能超过 2MB')));
+                      showApiError(showToast, new Error(t('platforms.website.errors.fileTooLarge', 'Image size must not exceed 2MB')));
                       if (fileInputRef.current) fileInputRef.current.value = '';
                       return;
                     }
                     if (!file.type.startsWith('image/')) {
-                      showApiError(showToast, new Error(t('platforms.website.errors.invalidFileType', '仅支持图片文件')));
+                      showApiError(showToast, new Error(t('platforms.website.errors.invalidFileType', 'Only image files are supported')));
                       if (fileInputRef.current) fileInputRef.current.value = '';
                       return;
                     }
@@ -534,14 +534,14 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
                       setPendingFile(file);
                       setCropOpen(true);
                     } catch (err) {
-                      showApiError(showToast, err || new Error(t('platforms.website.errors.cropperFailed', '无法打开裁剪器')));
+                      showApiError(showToast, err || new Error(t('platforms.website.errors.cropperFailed', 'Unable to open the cropper')));
                       if (fileInputRef.current) fileInputRef.current.value = '';
                     }
                   }}
                   className="hidden"
                 />
                 {uploadingLogo && (
-                  <p className="text-xs text-gray-400 dark:text-gray-500">{t('platforms.website.form.uploading', '上传中…')}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">{t('platforms.website.form.uploading', 'Uploading…')}</p>
                 )}
                 {formValues.logoUrl && (
                   <div className="flex gap-2">
@@ -554,25 +554,25 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
                           await platformsApiService.updatePlatform(platform.id, { logo_url: null } as any);
                           await fetchPlatformById(platform.id);
                           setFormValues(v => ({ ...v, logoUrl: '' }));
-                          showSuccess(showToast, t('platforms.website.messages.logoRemoved', '已移除'), t('platforms.website.messages.logoRemovedMessage', 'Logo 已清除'));
+                          showSuccess(showToast, t('platforms.website.messages.logoRemoved', 'Removed'), t('platforms.website.messages.logoRemovedMessage', 'Logo has been cleared'));
                         } catch (err) {
-                          showApiError(showToast, err || new Error(t('platforms.website.errors.removeLogoFailed', '暂不支持移除 Logo，请上传新的图片覆盖')));
+                          showApiError(showToast, err || new Error(t('platforms.website.errors.removeLogoFailed', 'Removing the logo is not supported yet; upload a new image to replace it')));
                         } finally {
                           setUploadingLogo(false);
                         }
                       }}
                     >
-                      {t('platforms.website.buttons.remove', '移除')}
+                      {t('platforms.website.buttons.remove', 'Remove')}
                     </button>
                   </div>
                 )}
-                <p className="text-xs text-gray-600 dark:text-gray-400">{t('platforms.website.form.logoHint', '建议尺寸：72x72 像素。支持 PNG/JPG/SVG，最大 2MB。')}</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">{t('platforms.website.form.logoHint', 'Recommended size: 72x72 pixels. Supports PNG/JPG/SVG, max 2MB.')}</p>
               </div>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.website.form.welcomeMessage', '欢迎语')}</label>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.website.form.welcomeMessage', 'Welcome Message')}</label>
             <textarea
               rows={3}
               value={formValues.welcomeMessage}
@@ -582,32 +582,32 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.website.form.position', '位置')}</label>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.website.form.position', 'Position')}</label>
             <select
               value={formValues.position}
               onChange={e => handleChange({ position: e.target.value as WebsiteWidgetConfig['position'] })}
               className="w-full text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-700/50 dark:text-gray-200"
             >
-              <option value="bottom-right">{t('platforms.website.form.positionBottomRight', '右下角')}</option>
-              <option value="bottom-left">{t('platforms.website.form.positionBottomLeft', '左下角')}</option>
-              <option value="top-right">{t('platforms.website.form.positionTopRight', '右上角')}</option>
-              <option value="top-left">{t('platforms.website.form.positionTopLeft', '左上角')}</option>
+              <option value="bottom-right">{t('platforms.website.form.positionBottomRight', 'Bottom Right')}</option>
+              <option value="bottom-left">{t('platforms.website.form.positionBottomLeft', 'Bottom Left')}</option>
+              <option value="top-right">{t('platforms.website.form.positionTopRight', 'Top Right')}</option>
+              <option value="top-left">{t('platforms.website.form.positionTopLeft', 'Top Left')}</option>
             </select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.website.form.displayMode', '默认显示方式')}</label>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.website.form.displayMode', 'Default Display Mode')}</label>
             <select
               value={formValues.displayMode}
               onChange={e => handleChange({ displayMode: e.target.value as WebsiteWidgetConfig['displayMode'] })}
               className="w-full text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-700/50 dark:text-gray-200"
             >
-              <option value="small">{t('platforms.website.form.displayModeSmall', '小窗口')}</option>
-              <option value="big">{t('platforms.website.form.displayModeBig', '大窗口')}</option>
+              <option value="small">{t('platforms.website.form.displayModeSmall', 'Small Window')}</option>
+              <option value="big">{t('platforms.website.form.displayModeBig', 'Big Window')}</option>
             </select>
           </div>
 
-          {/* API Key（移动到主表单，位置字段之后） */}
+          {/* API Key (moved to the main form, after the location field) */}
           <div>
             <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('platforms.website.form.apiKey', 'API Key')}</label>
             <div className="flex flex-wrap items-center gap-2">
@@ -615,7 +615,7 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
                 type={showApiKey ? 'text' : 'password'}
                 readOnly
                 value={apiKey || ''}
-                placeholder={apiKey ? '' : t('platforms.website.form.noApiKey', '暂无 API Key')}
+                placeholder={apiKey ? '' : t('platforms.website.form.noApiKey', 'No API Key yet')}
                 className="flex-1 min-w-[160px] text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md bg-gray-50 dark:bg-gray-700/50 dark:text-gray-200"
               />
               <button
@@ -623,37 +623,37 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
                 className="px-2 py-1 text-xs rounded-md bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200"
                 onClick={() => setShowApiKey(v => !v)}
               >
-                {showApiKey ? t('platforms.website.buttons.hide', '隐藏') : t('platforms.website.buttons.show', '显示')}
+                {showApiKey ? t('platforms.website.buttons.hide', 'Hide') : t('platforms.website.buttons.show', 'Show')}
               </button>
               <button
                 type="button"
                 className="px-2 py-1 text-xs rounded-md bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600 disabled:opacity-50"
                 onClick={async () => {
                   if (!apiKey) return;
-                  try { await navigator.clipboard.writeText(apiKey); showSuccess(showToast, t('platforms.website.messages.copied', '已复制'), t('platforms.website.messages.apiKeyCopied', 'API Key 已复制到剪贴板')); }
+                  try { await navigator.clipboard.writeText(apiKey); showSuccess(showToast, t('platforms.website.messages.copied', 'Copied'), t('platforms.website.messages.apiKeyCopied', 'Copied')); }
                   catch (e) { showApiError(showToast, e); }
                 }}
                 disabled={!apiKey}
               >
-                {t('platforms.website.buttons.copy', '复制')}
+                {t('platforms.website.buttons.copy', 'Copy')}
               </button>
               <button
                 type="button"
                 className="px-2 py-1 text-xs rounded-md bg-amber-500 dark:bg-amber-600 text-white hover:bg-amber-600 dark:hover:bg-amber-700 disabled:opacity-50"
                 onClick={async () => {
                   try {
-                    if (!confirm(t('platforms.website.confirm.regenerateApiKey', '确定要重新生成 API Key 吗？现有嵌入脚本将需要更新。'))) return;
+                    if (!confirm(t('platforms.website.confirm.regenerateApiKey', 'Are you sure you want to regenerate the API Key? Existing embed scripts will need to be updated.'))) return;
                     await regenerateApiKey(platform.id);
-                    showSuccess(showToast, t('platforms.website.messages.updated', '已更新'), t('platforms.website.messages.apiKeyRegenerated', 'API Key 已重新生成'));
+                    showSuccess(showToast, t('platforms.website.messages.updated', 'Updated'), t('platforms.website.messages.apiKeyRegenerated', 'Updated'));
                   } catch (e) {
                     showApiError(showToast, e);
                   }
                 }}
               >
-                {t('platforms.website.buttons.regenerate', '重新生成')}
+                {t('platforms.website.buttons.regenerate', 'Regenerate')}
               </button>
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('platforms.website.form.apiKeyHint', '用于网站集成脚本的鉴权标识，请妥善保管。')}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('platforms.website.form.apiKeyHint', 'Authentication identifier for website integration script, please keep it safe.')}</p>
           </div>
 
           {/* AI Settings */}
@@ -689,15 +689,15 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
             className="w-full px-5 py-3 flex items-center justify-between hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors"
             onClick={() => setEmbedOpen(v => !v)}
           >
-            <h3 className="text-md font-semibold text-gray-700 dark:text-gray-200">{t('platforms.website.embed.title', '网站集成代码')}</h3>
+            <h3 className="text-md font-semibold text-gray-700 dark:text-gray-200">{t('platforms.website.embed.title', 'Website Integration Code')}</h3>
             <svg className={`w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform ${embedOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </button>
           {embedOpen && (
             <div className="px-5 pb-5 pt-2 space-y-4">
-              {/* 嵌入代码 */}
-              <p className="text-xs text-gray-500 dark:text-gray-400" dangerouslySetInnerHTML={{ __html: t('platforms.website.embed.instruction', '将以下代码复制并粘贴到您网站的 <code>&lt;head&gt;</code> 或 <code>&lt;body&gt;</code> 中：') }} />
+              {/* Embed code */}
+              <p className="text-xs text-gray-500 dark:text-gray-400" dangerouslySetInnerHTML={{ __html: t('platforms.website.embed.instruction', 'Copy and paste the following code into the <code>&lt;head&gt;</code> or <code>&lt;body&gt;</code> of your website:') }} />
               {(() => {
                 const snippet = `<script src="${getWidgetScriptBase()}?api_key=${apiKey}" async></script>`;
                 return (
@@ -708,11 +708,11 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
                         type="button"
                         className="px-2 py-1 text-xs rounded bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600 disabled:opacity-50"
                         onClick={async () => {
-                          try { await navigator.clipboard.writeText(snippet); showSuccess(showToast, t('platforms.website.messages.copied', '已复制'), t('platforms.website.messages.embedCodeCopied', '嵌入代码已复制到剪贴板')); } catch (e) { showApiError(showToast, e); }
+                          try { await navigator.clipboard.writeText(snippet); showSuccess(showToast, t('platforms.website.messages.copied', 'Copied'), t('platforms.website.messages.embedCodeCopied', 'Copied')); } catch (e) { showApiError(showToast, e); }
                         }}
                         disabled={!apiKey}
                       >
-                        {t('platforms.website.buttons.copy', '复制')}
+                        {t('platforms.website.buttons.copy', 'Copy')}
                       </button>
                     </div>
                   </div>
@@ -722,7 +722,7 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
               {/* Download Example Button */}
               <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
                 <div className="text-xs text-gray-500 dark:text-gray-400">
-                  {t('platforms.website.download.hint', '下载完整的集成示例文件，包含预配置的 API Key')}
+                  {t('platforms.website.download.hint', 'Download a complete integration example file with pre-configured API Key')}
                 </div>
                 <button
                   type="button"
@@ -731,7 +731,7 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
                   disabled={!apiKey}
                 >
                   <Download className="w-3.5 h-3.5" />
-                  {t('platforms.website.buttons.downloadExample', '下载示例')}
+                  {t('platforms.website.buttons.downloadExample', 'Download Example')}
                 </button>
               </div>
             </div>
@@ -759,19 +759,19 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
         onConfirm={async (blob: Blob, dataUrl: string) => {
           try {
             setUploadingLogo(true);
-            // 本地预览裁剪后的结果
+            // Local preview of the cropped result
             setFormValues(v => ({ ...v, logoUrl: dataUrl }));
-            // 从 Blob 构建 File
+            // Build a File from the Blob
             const mime = pendingFile?.type || 'image/png';
             const ext = mime === 'image/jpeg' ? 'jpg' : (mime.split('/')[1] || 'png');
             const croppedFile = new File([blob], `logo-cropped.${ext}`, { type: mime });
-            // 通过专用接口上传
+            // Upload through the dedicated endpoint
             const resp = await platformsApiService.uploadPlatformLogo(platform.id, croppedFile);
             setFormValues(v => ({ ...v, logoUrl: (resp as any).logo_url || dataUrl }));
             await fetchPlatformById(platform.id);
-            showSuccess(showToast, t('platforms.website.messages.uploadSuccess', '上传成功'), t('platforms.website.messages.logoUpdated', 'Logo 已更新'));
+            showSuccess(showToast, t('platforms.website.messages.uploadSuccess', 'Upload Successful'), t('platforms.website.messages.logoUpdated', 'Logo updated'));
           } catch (err) {
-            showApiError(showToast, err || new Error(t('platforms.website.errors.uploadFailed', '上传失败，请重试')));
+            showApiError(showToast, err || new Error(t('platforms.website.errors.uploadFailed', 'Upload failed, please try again')));
           } finally {
             setUploadingLogo(false);
             setCropOpen(false);
@@ -785,10 +785,10 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
 
       <ConfirmDialog
         isOpen={confirmOpen}
-        title={t('platforms.website.confirm.deleteTitle', '删除平台')}
-        message={t('platforms.website.confirm.deleteMessage', '确定要删除此平台吗？')}
-        confirmText={t('platforms.website.confirm.confirmText', '删除')}
-        cancelText={t('platforms.website.confirm.cancelText', '取消')}
+        title={t('platforms.website.confirm.deleteTitle', 'Delete Platform')}
+        message={t('platforms.website.confirm.deleteMessage', 'Are you sure you want to delete this platform?')}
+        confirmText={t('platforms.website.confirm.confirmText', 'Delete')}
+        cancelText={t('platforms.website.confirm.cancelText', 'Cancel')}
         confirmVariant="danger"
         isLoading={isDeleting}
         onCancel={() => setConfirmOpen(false)}
@@ -801,7 +801,7 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
               ? (idx < platforms.length - 1 ? platforms[idx + 1]?.id : (idx > 0 ? platforms[idx - 1]?.id : null))
               : null;
             await deletePlatform(platform.id);
-            showSuccess(showToast, t('platforms.website.messages.deleteSuccess', '平台已删除'), t('platforms.website.messages.deleteSuccessMessage', '平台已删除'));
+            showSuccess(showToast, t('platforms.website.messages.deleteSuccess', 'Platform Deleted'), t('platforms.website.messages.deleteSuccessMessage', 'Platform has been deleted'));
             setConfirmOpen(false);
             if (nextId) navigate(`/platforms/${nextId}`);
             else navigate('/platforms');

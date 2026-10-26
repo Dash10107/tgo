@@ -6,7 +6,7 @@ sidebar_position: 2
 
 # Restart and Upgrade
 
-This page explains how to manage TGO service start/stop and version upgrades.
+This page explains how to manage Pelatis service start/stop and version upgrades.
 
 ## Service Management
 
@@ -165,7 +165,7 @@ Example output:
 
 ```
 =========================================
-  TGO Service Health Check
+  Pelatis Service Health Check
 =========================================
 
   ✅ tgo-api           running (healthy)

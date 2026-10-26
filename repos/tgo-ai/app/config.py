@@ -190,11 +190,11 @@ class Settings(BaseSettings):
     # with the appropriate prefixes (SUPERVISOR_RUNTIME__ and TOOLS_RUNTIME__)
     supervisor_runtime: SupervisorRuntimeSettings = Field(
         default_factory=lambda: SupervisorRuntimeSettings(_env_file=".env"),
-        description="Supervisor运行时配置",
+        description="Supervisor runtime configuration",
     )
     tools_runtime: ToolsRuntimeSettings = Field(
         default_factory=lambda: ToolsRuntimeSettings(_env_file=".env"),
-        description="工具智能体运行时配置",
+        description="Tool agent runtime configuration",
     )
 
     # Testing Configuration

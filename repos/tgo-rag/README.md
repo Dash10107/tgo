@@ -1,10 +1,10 @@
-# TGO RAG Service
+# Pelatis RAG Service
 
 A production-ready **Retrieval-Augmented Generation (RAG)** service built with FastAPI, providing comprehensive document processing, vector storage, and advanced semantic search capabilities for AI-powered applications.
 
 ## 🚀 Overview
 
-The TGO RAG Service is a microservice designed to handle the complete document lifecycle for RAG operations - from file upload and processing to semantic search and context retrieval. It features a modern, scalable architecture with multi-tenant support, async processing, and enterprise-grade reliability.
+The Pelatis RAG Service is a microservice designed to handle the complete document lifecycle for RAG operations - from file upload and processing to semantic search and context retrieval. It features a modern, scalable architecture with multi-tenant support, async processing, and enterprise-grade reliability.
 
 ### Key Capabilities
 
@@ -33,7 +33,7 @@ The TGO RAG Service is a microservice designed to handle the complete document l
 
 ```mermaid
 graph TB
-    subgraph "TGO RAG Service"
+    subgraph "Pelatis RAG Service"
         API[FastAPI API Server]
         WORKER[Celery Workers]
         SCHEDULER[Celery Beat Scheduler]
@@ -263,7 +263,7 @@ Configure the service using environment variables. Copy `.env.example` to `.env`
 
 ```bash
 # Application Settings
-APP_NAME="TGO RAG Service"
+APP_NAME="Pelatis RAG Service"
 APP_VERSION="0.1.0"
 ENVIRONMENT=development
 DEBUG=true
@@ -485,7 +485,7 @@ We welcome contributions! Please follow these guidelines:
 
 ## 📄 License
 
-This project is proprietary software owned by TGO-Tech. All rights reserved.
+This project is proprietary software owned by Pelatis. All rights reserved.
 
 ## 🆘 Support
 
@@ -498,4 +498,4 @@ For support and questions:
 
 ---
 
-**Built with ❤️ by the TGO-Tech Team**
+**Built with ❤️ by the Pelatis Team**

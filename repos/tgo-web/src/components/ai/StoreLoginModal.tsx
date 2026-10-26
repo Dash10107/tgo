@@ -16,7 +16,7 @@ const StoreLoginModal: React.FC<StoreLoginModalProps> = ({ isOpen, onClose }) =>
   const { showToast } = useToast();
   const { exchangeCode, isLoading } = useStoreAuthStore();
   
-  // 使用 Ref 保证 handleMessage 始终能访问最新的 exchangeCode 和 onClose
+  // Use a Ref so handleMessage always has access to the latest exchangeCode and onClose
   const exchangeCodeRef = useRef(exchangeCode);
   const onCloseRef = useRef(onClose);
   const showToastRef = useRef(showToast);
@@ -30,7 +30,7 @@ const StoreLoginModal: React.FC<StoreLoginModalProps> = ({ isOpen, onClose }) =>
   }, [exchangeCode, onClose, showToast, t]);
 
   const handleOpenLogin = async () => {
-    // 1. 先同步打开空白窗口（不会被拦截）
+    // 1. Open a blank window synchronously first (it will not be blocked)
     const width = 520;
     const height = 680;
     const left = window.screenX + (window.outerWidth - width) / 2;
@@ -48,11 +48,11 @@ const StoreLoginModal: React.FC<StoreLoginModalProps> = ({ isOpen, onClose }) =>
     }
 
     try {
-      // 2. 异步获取配置
+      // 2. Fetch the config asynchronously
       const config = await storeApi.getStoreConfig();
       const storeWebUrl = config.store_web_url || 'http://localhost:3002';
 
-      // 3. 生成 PKCE 参数
+      // 3. Generate the PKCE parameters
       const codeVerifier = generateCodeVerifier();
       const codeChallenge = await generateCodeChallenge(codeVerifier);
       const state = crypto.randomUUID();
@@ -65,18 +65,18 @@ const StoreLoginModal: React.FC<StoreLoginModalProps> = ({ isOpen, onClose }) =>
       
       console.log('[StoreLoginModal] Navigating popup to:', loginUrl);
       
-      // 4. 更新已打开窗口的 URL
+      // 4. Update the URL of the already opened window
       popup.location.href = loginUrl;
     } catch (error) {
       console.error('[StoreLoginModal] Failed to initiate login:', error);
-      popup.close(); // 出错时关闭窗口
+      popup.close(); // Close the window on error
       showToast('error', t('common.error'), t('tools.store.model.initLoginFailed'));
     }
   };
 
   useEffect(() => {
     const messageHandler = async (event: MessageEvent) => {
-      // 忽略来自非预期的 Origin 的消息（安全考虑）
+      // Ignore messages from unexpected origins (for security)
       // if (event.origin !== TOOL_STORE_URLS.WEB) return; 
 
       const data = event.data;
@@ -118,8 +118,8 @@ const StoreLoginModal: React.FC<StoreLoginModalProps> = ({ isOpen, onClose }) =>
     };
   }, []);
 
-  // 注意：即使 isOpen 为 false，我们也不 return null，而是控制 UI 的可见性
-  // 这样可以确保 useEffect 中的监听器始终处于活动状态
+  // Note: even when isOpen is false we do not return null; we control UI visibility instead
+  // This ensures the listener in useEffect always stays active
   return (
     <>
       {isOpen && (

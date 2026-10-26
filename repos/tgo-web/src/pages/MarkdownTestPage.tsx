@@ -4,13 +4,13 @@ import type { Message } from '@/types';
 import { markdownExamples } from '@/utils/markdownTest';
 
 /**
- * Markdown 渲染测试页面
- * 用于验证和测试 Markdown 渲染功能
+ * Markdown rendering test page
+ * Used to verify and test Markdown rendering
  */
 const MarkdownTestPage: React.FC = () => {
   const [selectedExample, setSelectedExample] = useState<string>('aiResponse');
 
-  // 创建测试消息
+  // Create a test message
   const createTestMessage = (
     id: string,
     content: string,
@@ -23,7 +23,7 @@ const MarkdownTestPage: React.FC = () => {
       timestamp: new Date().toISOString(),
       type,
       fromInfo: {
-        name: type === 'visitor' ? '测试访客' : 'AI 助手',
+        name: type === 'visitor' ? 'Test Visitor' : 'AI Assistant',
         avatar: type === 'visitor'
           ? 'https://i.pravatar.cc/32?img=1'
           : 'https://i.pravatar.cc/32?img=2',
@@ -40,10 +40,10 @@ const MarkdownTestPage: React.FC = () => {
     };
   };
 
-  // 测试消息列表
+  // Test message list
   const testMessages: Array<{ title: string; message: Message }> = [
     {
-      title: '访客消息 - 带 Markdown（stream_data）',
+      title: 'Visitor message - with Markdown (stream_data)',
       message: createTestMessage(
         '1',
         markdownExamples[selectedExample as keyof typeof markdownExamples],
@@ -52,16 +52,16 @@ const MarkdownTestPage: React.FC = () => {
       )
     },
     {
-      title: '访客消息 - 纯文本（无 stream_data）',
+      title: 'Visitor message - plain text (no stream_data)',
       message: createTestMessage(
         '2',
-        '这是一条普通的文本消息，不应该渲染 Markdown。**这不应该是粗体**',
+        'This is a regular text message and should not render Markdown. **This should not be bold**',
         'visitor',
         false
       )
     },
     {
-      title: 'AI 助手消息 - 带 Markdown（stream_data）',
+      title: 'AI assistant message - with Markdown (stream_data)',
       message: createTestMessage(
         '3',
         markdownExamples[selectedExample as keyof typeof markdownExamples],
@@ -70,10 +70,10 @@ const MarkdownTestPage: React.FC = () => {
       )
     },
     {
-      title: 'AI 助手消息 - 纯文本（无 stream_data）',
+      title: 'AI assistant message - plain text (no stream_data)',
       message: createTestMessage(
         '4',
-        '这是一条普通的 AI 回复，不应该渲染 Markdown。**这不应该是粗体**',
+        'This is a regular AI reply and should not render Markdown. **This should not be bold**',
         'staff',
         false
       )
@@ -81,33 +81,33 @@ const MarkdownTestPage: React.FC = () => {
   ];
 
   const exampleOptions = [
-    { value: 'basic', label: '基本格式' },
-    { value: 'lists', label: '列表' },
-    { value: 'code', label: '代码块' },
-    { value: 'links', label: '链接和图片' },
-    { value: 'blockquote', label: '引用' },
-    { value: 'table', label: '表格' },
-    { value: 'mixed', label: '混合格式' },
-    { value: 'aiResponse', label: 'AI 回复示例' }
+    { value: 'basic', label: 'Basic formatting' },
+    { value: 'lists', label: 'Lists' },
+    { value: 'code', label: 'Code blocks' },
+    { value: 'links', label: 'Links and images' },
+    { value: 'blockquote', label: 'Blockquote' },
+    { value: 'table', label: 'Table' },
+    { value: 'mixed', label: 'Mixed formatting' },
+    { value: 'aiResponse', label: 'AI reply example' }
   ];
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-6xl mx-auto">
-        {/* 页面标题 */}
+        {/* Page title */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Markdown 渲染功能测试
+            Markdown Rendering Test
           </h1>
           <p className="text-gray-600">
-            验证 stream_data 字段的 Markdown 渲染功能是否正常工作
+            Verify that Markdown rendering of the stream_data field works correctly
           </p>
         </div>
 
-        {/* 控制面板 */}
+        {/* Control panel */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            选择测试示例
+            Select a test example
           </h2>
           <div className="flex flex-wrap gap-2">
             {exampleOptions.map(option => (
@@ -126,22 +126,22 @@ const MarkdownTestPage: React.FC = () => {
           </div>
         </div>
 
-        {/* 测试说明 */}
+        {/* Test notes */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
           <h3 className="text-lg font-semibold text-blue-900 mb-3">
-            📋 测试说明
+            📋 Test notes
           </h3>
           <ul className="space-y-2 text-blue-800">
-            <li>✅ 带 <code className="bg-blue-100 px-2 py-0.5 rounded">stream_data</code> 的消息应该渲染 Markdown 格式</li>
-            <li>✅ 不带 <code className="bg-blue-100 px-2 py-0.5 rounded">stream_data</code> 的消息应该显示纯文本</li>
-            <li>✅ 访客消息使用白色背景，深色文本</li>
-            <li>✅ AI 助手消息使用蓝色背景，白色文本</li>
-            <li>✅ 代码块应该有语言标签和灰色背景</li>
-            <li>✅ 链接应该在新窗口打开</li>
+            <li>✅ Messages with <code className="bg-blue-100 px-2 py-0.5 rounded">stream_data</code> should render Markdown formatting</li>
+            <li>✅ Messages without <code className="bg-blue-100 px-2 py-0.5 rounded">stream_data</code> should show plain text</li>
+            <li>✅ Visitor messages use a white background with dark text</li>
+            <li>✅ AI assistant messages use a blue background with white text</li>
+            <li>✅ Code blocks should have a language label and a gray background</li>
+            <li>✅ Links should open in a new window</li>
           </ul>
         </div>
 
-        {/* 测试消息显示 */}
+        {/* Test message display */}
         <div className="space-y-6">
           {testMessages.map(({ title, message }, index) => (
             <div key={index} className="bg-white rounded-lg shadow-sm p-6">
@@ -155,14 +155,14 @@ const MarkdownTestPage: React.FC = () => {
                       ? 'bg-green-100 text-green-800'
                       : 'bg-gray-100 text-gray-800'
                   }`}>
-                    {message.metadata?.has_stream_data ? 'Markdown 渲染' : '纯文本'}
+                    {message.metadata?.has_stream_data ? 'Markdown rendering' : 'Plain text'}
                   </span>
                   <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                     message.type === 'visitor'
                       ? 'bg-purple-100 text-purple-800'
                       : 'bg-blue-100 text-blue-800'
                   }`}>
-                    {message.type === 'visitor' ? '访客' : 'AI 助手'}
+                    {message.type === 'visitor' ? 'Visitor' : 'AI Assistant'}
                   </span>
                 </div>
               </div>
@@ -174,39 +174,39 @@ const MarkdownTestPage: React.FC = () => {
           ))}
         </div>
 
-        {/* 控制台测试命令 */}
+        {/* Console test commands */}
         <div className="bg-gray-900 text-gray-100 rounded-lg p-6 mt-6">
           <h3 className="text-lg font-semibold mb-3">
-            🧪 控制台测试命令
+            🧪 Console test commands
           </h3>
           <div className="space-y-2 font-mono text-sm">
             <div className="bg-gray-800 p-3 rounded">
-              <span className="text-green-400">// 运行所有测试</span>
+              <span className="text-green-400">// Run all tests</span>
               <br />
               <span className="text-yellow-300">runAllMarkdownTests()</span>
             </div>
             <div className="bg-gray-800 p-3 rounded">
-              <span className="text-green-400">// 检查 Markdown 元素</span>
+              <span className="text-green-400">// Check Markdown elements</span>
               <br />
               <span className="text-yellow-300">testMarkdownRendering()</span>
             </div>
             <div className="bg-gray-800 p-3 rounded">
-              <span className="text-green-400">// 查看示例内容</span>
+              <span className="text-green-400">// View example content</span>
               <br />
               <span className="text-yellow-300">console.log(markdownExamples.aiResponse)</span>
             </div>
             <div className="bg-gray-800 p-3 rounded">
-              <span className="text-green-400">// 检查依赖</span>
+              <span className="text-green-400">// Check dependencies</span>
               <br />
               <span className="text-yellow-300">checkMarkdownDependencies()</span>
             </div>
           </div>
         </div>
 
-        {/* 原始内容预览 */}
+        {/* Raw content preview */}
         <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            📝 当前示例的原始 Markdown 内容
+            📝 Raw Markdown content of the current example
           </h3>
           <pre className="bg-gray-50 p-4 rounded-lg overflow-x-auto text-sm">
             <code className="text-gray-800">
@@ -215,36 +215,36 @@ const MarkdownTestPage: React.FC = () => {
           </pre>
         </div>
 
-        {/* 检查清单 */}
+        {/* Checklist */}
         <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            ✓ 功能检查清单
+            ✓ Feature checklist
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <h4 className="font-medium text-gray-700">Markdown 元素</h4>
+              <h4 className="font-medium text-gray-700">Markdown elements</h4>
               <ul className="space-y-1 text-sm text-gray-600">
-                <li>□ 标题（H1-H6）</li>
-                <li>□ 粗体和斜体</li>
-                <li>□ 列表（有序/无序）</li>
-                <li>□ 代码块和行内代码</li>
-                <li>□ 链接和图片</li>
-                <li>□ 表格</li>
-                <li>□ 引用</li>
-                <li>□ 分隔线</li>
+                <li>□ Headings (H1-H6)</li>
+                <li>□ Bold and italic</li>
+                <li>□ Lists (ordered/unordered)</li>
+                <li>□ Code blocks and inline code</li>
+                <li>□ Links and images</li>
+                <li>□ Tables</li>
+                <li>□ Blockquotes</li>
+                <li>□ Horizontal rules</li>
               </ul>
             </div>
             <div className="space-y-2">
-              <h4 className="font-medium text-gray-700">样式和功能</h4>
+              <h4 className="font-medium text-gray-700">Styles and behavior</h4>
               <ul className="space-y-1 text-sm text-gray-600">
-                <li>□ 访客消息样式正确</li>
-                <li>□ AI 消息样式正确（白色文本）</li>
-                <li>□ 代码块有语言标签</li>
-                <li>□ 链接新窗口打开</li>
-                <li>□ 纯文本消息不渲染 Markdown</li>
-                <li>□ 图片懒加载</li>
-                <li>□ 响应式布局</li>
-                <li>□ 无控制台错误</li>
+                <li>□ Visitor message styling is correct</li>
+                <li>□ AI message styling is correct (white text)</li>
+                <li>□ Code blocks have a language label</li>
+                <li>□ Links open in a new window</li>
+                <li>□ Plain text messages do not render Markdown</li>
+                <li>□ Images are lazy-loaded</li>
+                <li>□ Responsive layout</li>
+                <li>□ No console errors</li>
               </ul>
             </div>
           </div>

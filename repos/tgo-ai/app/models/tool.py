@@ -30,8 +30,8 @@ class ToolType(str, Enum):
 
 class ToolSourceType(str, Enum):
     """Tool source type enumeration."""
-    LOCAL = "LOCAL"           # 本地配置的工具
-    STORE = "STORE"           # 从商店安装的工具
+    LOCAL = "LOCAL"           # Locally configured tool
+    STORE = "STORE"           # Tool installed from the store
 
 
 class Tool(BaseModel):

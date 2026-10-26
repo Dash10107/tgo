@@ -5,6 +5,7 @@ import { storeApi } from '@/services/storeApi';
 import apiClient from '@/services/api';
 import type { ToolStoreUser, LoginFormData } from '@/types';
 
+import i18n from '@/i18n';
 interface StoreAuthState {
   isAuthenticated: boolean;
   accessToken: string | null;
@@ -52,7 +53,7 @@ export const useStoreAuthStore = create<StoreAuthState>()(
         } catch (error: any) {
           set({
             isLoading: false,
-            error: error.response?.data?.detail || '登录失败',
+            error: error.response?.data?.detail || i18n.t('storeAuth.loginFailed', 'Login failed'),
           });
           throw error;
         }
@@ -72,7 +73,7 @@ export const useStoreAuthStore = create<StoreAuthState>()(
         } catch (error: any) {
           set({
             isLoading: false,
-            error: error.response?.data?.detail || '授权码交换失败',
+            error: error.response?.data?.detail || i18n.t('storeAuth.exchangeFailed', 'Failed to exchange the authorization code'),
           });
           throw error;
         }
@@ -91,7 +92,7 @@ export const useStoreAuthStore = create<StoreAuthState>()(
           error: null,
         });
         
-        // 同时清理相关的持久化存储
+        // Also clean up the related persisted storage
         localStorage.removeItem(STORAGE_KEYS.TOOLSTORE_AUTH);
         localStorage.removeItem(STORAGE_KEYS.TOOLSTORE_TOKEN);
         localStorage.removeItem(STORAGE_KEYS.TOOLSTORE_REFRESH_TOKEN);
@@ -128,11 +129,11 @@ export const useStoreAuthStore = create<StoreAuthState>()(
           set({ user, isAuthenticated: true, isVerifying: false });
           return true;
         } catch (error: any) {
-          // 如果 401 且有 refresh token，尝试刷新
+          // If 401 and there is a refresh token, try to refresh
           if (error.response?.status === 401 && refreshToken) {
             try {
               await refreshAccessToken();
-              // 刷新成功后再试一次 verify
+              // After a successful refresh, try verify once more
               const user = await storeApi.getMe();
               set({ user, isAuthenticated: true, isVerifying: false });
               return true;
@@ -143,7 +144,7 @@ export const useStoreAuthStore = create<StoreAuthState>()(
             }
           }
           
-          // 其他错误或刷新失败
+          // Other errors or refresh failure
           logout();
           set({ isVerifying: false });
           return false;

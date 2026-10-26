@@ -50,14 +50,14 @@ export function TgoSection() {
                 width={2940}
                 height={1840}
                 src={`/${lang}/home.png`}
-                alt="Tgo Hero Image"
+                alt="Pelatis Hero Image"
                 className="rounded-lg w-full hidden dark:block"
               />
               <Image
                 width={2940}
                 height={1840}
                 src={`/${lang}/home.png`}
-                alt="Tgo Hero Image"
+                alt="Pelatis Hero Image"
                 className="rounded-lg w-full block dark:hidden"
               />
             </div>

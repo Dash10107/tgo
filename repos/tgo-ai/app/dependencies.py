@@ -130,13 +130,13 @@ def get_llm_provider_service(db: AsyncSession = Depends(get_db)) -> LLMProviderS
 
 @lru_cache
 def get_tools_runtime_service() -> ToolsRuntimeService:
-    """获取工具智能体运行时服务实例 (singleton)."""
+    """Get the tool agent runtime service instance (singleton)."""
     return ToolsRuntimeService(runtime_settings=settings.tools_runtime)
 
 
 @lru_cache
 def get_supervisor_runtime_service() -> SupervisorRuntimeService:
-    """获取Supervisor运行时服务实例 (singleton)."""
+    """Get the Supervisor runtime service instance (singleton)."""
     return SupervisorRuntimeService(
         session_factory=AsyncSessionLocal,
         tools_runtime_service=get_tools_runtime_service(),

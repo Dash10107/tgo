@@ -34,22 +34,22 @@ const VisitorTable: React.FC<VisitorTableProps> = ({ visitors, onVisitorClick })
       <thead className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-900/95">
         <tr className="border-b border-gray-200 dark:border-gray-700">
           <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-            {t('visitor.table.visitor', '访客')}
+            {t('visitor.table.visitor', 'Visitor')}
           </th>
           <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-            {t('visitor.table.platform', '来源平台')}
+            {t('visitor.table.platform', 'Platform')}
           </th>
           <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-            {t('visitor.table.lastVisit', '最后访问')}
+            {t('visitor.table.lastVisit', 'Last Visit')}
           </th>
           <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-            {t('visitor.table.lastOnline', '最后在线')}
+            {t('visitor.table.lastOnline', 'Last Online')}
           </th>
           <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-            {t('visitor.table.tags', '标签')}
+            {t('visitor.table.tags', 'Tags')}
           </th>
           <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right">
-            {t('visitor.table.actions', '操作')}
+            {t('visitor.table.actions', 'Actions')}
           </th>
         </tr>
       </thead>
@@ -57,7 +57,7 @@ const VisitorTable: React.FC<VisitorTableProps> = ({ visitors, onVisitorClick })
             {(!visitors || visitors.length === 0) ? (
               <tr>
                 <td colSpan={5} className="px-6 py-10 text-center text-gray-500 dark:text-gray-400">
-                  {t('visitor.table.empty', '暂无访客数据')}
+                  {t('visitor.table.empty', 'No visitor data')}
                 </td>
               </tr>
             ) : (
@@ -72,7 +72,7 @@ const VisitorTable: React.FC<VisitorTableProps> = ({ visitors, onVisitorClick })
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
                         <ChatAvatar
-                          displayName={v.name || v.display_nickname || v.nickname_zh || v.nickname || t('visitor.unknown', '未知访客')}
+                          displayName={v.name || v.display_nickname || v.nickname_zh || v.nickname || t('visitor.unknown', 'Unknown Visitor')}
                           displayAvatar={v.avatar_url || ''}
                           visitorStatus={v.is_online ? 'online' : 'offline'}
                           sizePx={40}
@@ -81,7 +81,7 @@ const VisitorTable: React.FC<VisitorTableProps> = ({ visitors, onVisitorClick })
                         />
                         <div className="flex flex-col min-w-0">
                           <span className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate max-w-[150px]">
-                            {v.name || v.display_nickname || v.nickname_zh || v.nickname || t('visitor.fallbackName', '访客 {{suffix}}').replace('{{suffix}}', (v.platform_open_id || '').slice(-4))}
+                            {v.name || v.display_nickname || v.nickname_zh || v.nickname || t('visitor.fallbackName', 'Visitor {{suffix}}').replace('{{suffix}}', (v.platform_open_id || '').slice(-4))}
                           </span>
                           <span className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[150px]">
                             {v.email || v.phone_number || v.platform_open_id || '-'}
@@ -132,13 +132,13 @@ const VisitorTable: React.FC<VisitorTableProps> = ({ visitors, onVisitorClick })
                         <button
                           onClick={(e) => handleGoToChat(e, v.id)}
                           className="text-gray-400 hover:text-green-600 dark:hover:text-green-400 p-1 rounded-md hover:bg-green-50 dark:hover:bg-green-900/20 transition-all"
-                          title={t('chat.openChat', '打开聊天')}
+                          title={t('chat.openChat', 'Open Chat')}
                         >
                           <Icon name="MessageCircle" size={16} />
                         </button>
                         <button
                           className="text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 p-1 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all"
-                          title={t('common.details', '详情')}
+                          title={t('common.details', 'Details')}
                         >
                           <Icon name="ExternalLink" size={16} />
                         </button>

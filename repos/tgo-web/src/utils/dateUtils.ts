@@ -51,15 +51,15 @@ export function diffMinutesFromNow(iso?: string | null): number | null {
 }
 
 /**
- * Build last-seen text with special handling for <1 minute: "刚刚在线".
- * Otherwise, if within 60 minutes, show "X分钟前在线".
+ * Build last-seen text with special handling for <1 minute: "Just now".
+ * Otherwise, if within 60 minutes, show "Last seen X min ago".
  */
 export function buildLastSeenText(iso?: string | null, isOnline?: boolean | null): string | null {
   if (isOnline) return null;
   const mins = diffMinutesFromNow(iso);
   if (mins == null) return null;
-  if (mins === 0) return i18n.t('time.lastSeen.justNow', { defaultValue: '刚刚在线' });
-  if (mins > 0 && mins <= 60)   return i18n.t('time.lastSeen.minutesAgo', { mins, defaultValue: `${mins}分钟前在线` });
+  if (mins === 0) return i18n.t('time.lastSeen.justNow', { defaultValue: 'Online just now' });
+  if (mins > 0 && mins <= 60)   return i18n.t('time.lastSeen.minutesAgo', { mins, defaultValue: `Online {{mins}} minutes ago` });
   return null;
 }
 
@@ -88,29 +88,29 @@ export function formatOnlineDuration(minutes: number | null | undefined, isOnlin
   }
 
   if (isOnline && minutes === 0) {
-    return i18n.t('visitor.onlineStatus.online', '在线');
+    return i18n.t('visitor.onlineStatus.online', 'Online');
   }
 
   if (minutes === 0) {
-    return i18n.t('visitor.onlineStatus.justNow', '刚刚');
+    return i18n.t('visitor.onlineStatus.justNow', 'Just now');
   }
 
   if (minutes < 60) {
-    return i18n.t('visitor.onlineStatus.minutesAgo', { count: minutes, defaultValue: `${minutes} 分钟前` });
+    return i18n.t('visitor.onlineStatus.minutesAgo', { count: minutes, defaultValue: `{{count}}m ago` });
   }
 
   const hours = Math.floor(minutes / 60);
   if (hours < 24) {
-    return i18n.t('visitor.onlineStatus.hoursAgo', { count: hours, defaultValue: `${hours} 小时前` });
+    return i18n.t('visitor.onlineStatus.hoursAgo', { count: hours, defaultValue: `{{count}}h ago` });
   }
 
   const days = Math.floor(hours / 24);
   if (days < 7) {
-    return i18n.t('visitor.onlineStatus.daysAgo', { count: days, defaultValue: `${days} 天前` });
+    return i18n.t('visitor.onlineStatus.daysAgo', { count: days, defaultValue: `{{count}}d ago` });
   }
 
   const weeks = Math.floor(days / 7);
-  return i18n.t('visitor.onlineStatus.weeksAgo', { count: weeks, defaultValue: `${weeks} 周前` });
+  return i18n.t('visitor.onlineStatus.weeksAgo', { count: weeks, defaultValue: `{{count}}w ago` });
 }
 
 /**
@@ -124,19 +124,19 @@ export function formatRelativeTime(iso?: string | null): string {
   const now = new Date();
   const diffSec = Math.max(0, Math.floor((now.getTime() - d.getTime()) / 1000));
   
-  if (diffSec < 60) return i18n.t('time.relative.justNow', '刚刚');
+  if (diffSec < 60) return i18n.t('time.relative.justNow', 'Just now');
   
   const diffMin = Math.floor(diffSec / 60);
-  if (diffMin < 60) return i18n.t('time.relative.minutesAgo', { count: diffMin, defaultValue: `${diffMin}分钟前` });
+  if (diffMin < 60) return i18n.t('time.relative.minutesAgo', { count: diffMin, defaultValue: `{{count}} minutes ago` });
   
   const diffHour = Math.floor(diffMin / 60);
-  if (diffHour < 24) return i18n.t('time.relative.hoursAgo', { count: diffHour, defaultValue: `${diffHour}小时前` });
+  if (diffHour < 24) return i18n.t('time.relative.hoursAgo', { count: diffHour, defaultValue: `{{count}} hours ago` });
   
   const diffDay = Math.floor(diffHour / 24);
   const hh = String(d.getHours()).padStart(2, '0');
   const mm = String(d.getMinutes()).padStart(2, '0');
   
-  if (diffDay === 1) return i18n.t('time.relative.yesterdayAt', { time: `${hh}:${mm}`, defaultValue: `昨天 ${hh}:${mm}` });
+  if (diffDay === 1) return i18n.t('time.relative.yesterdayAt', { time: `${hh}:${mm}`, defaultValue: `Yesterday {{time}}` });
   
   return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')} ${hh}:${mm}`;
 }

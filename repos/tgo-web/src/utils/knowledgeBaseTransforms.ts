@@ -228,19 +228,19 @@ const extractFileType = (contentType: string, filename: string): string => {
 const transformFileStatus = (status: string): string => {
   switch (status) {
     case 'pending':
-      return i18n.t('knowledge.detail.pending', { defaultValue: '等待处理' });
+      return i18n.t('knowledge.detail.pending', { defaultValue: 'Pending' });
     case 'processing':
-      return i18n.t('knowledge.detail.processing', { defaultValue: '处理中' });
+      return i18n.t('knowledge.detail.processing', { defaultValue: 'Processing' });
     case 'chunking_documents':
-      return i18n.t('knowledge.detail.chunking', { defaultValue: '分段中' });
+      return i18n.t('knowledge.detail.chunking', { defaultValue: 'Chunking' });
     case 'generating_embeddings':
-      return i18n.t('knowledge.detail.embedding', { defaultValue: '生成向量中' });
+      return i18n.t('knowledge.detail.embedding', { defaultValue: 'Embedding' });
     case 'completed':
-      return i18n.t('knowledge.detail.processed', { defaultValue: '已处理' });
+      return i18n.t('knowledge.detail.processed', { defaultValue: 'Processed' });
     case 'failed':
-      return i18n.t('knowledge.detail.error', { defaultValue: '错误' });
+      return i18n.t('knowledge.detail.error', { defaultValue: 'Error' });
     case 'archived':
-      return i18n.t('knowledge.detail.archived', { defaultValue: '已归档' });
+      return i18n.t('knowledge.detail.archived', { defaultValue: 'Archived' });
     default:
       return status;
   }

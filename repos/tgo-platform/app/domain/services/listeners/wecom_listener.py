@@ -22,11 +22,11 @@ from app.api.wecom_utils import get_wecom_visitor_profile
 class WeComPlatformConfig(BaseModel):
     """Per-platform WeCom configuration stored in Platform.config when type='wecom'."""
 
-    corp_id: str = ""     # 企业ID (required for wecom_kf, optional for wecom_bot)
-    agent_id: str = ""    # 应用ID (required for wecom_kf, optional for wecom_bot)
-    app_secret: str = ""  # 应用密钥 (required for wecom_kf, optional for wecom_bot)
-    token: str = ""       # 回调签名 Token
-    encoding_aes_key: str | None = None  # 消息加密密钥（可选）
+    corp_id: str = ""     # Corp ID (required for wecom_kf, optional for wecom_bot)
+    agent_id: str = ""    # App ID (required for wecom_kf, optional for wecom_bot)
+    app_secret: str = ""  # App secret (required for wecom_kf, optional for wecom_bot)
+    token: str = ""       # Callback signature token
+    encoding_aes_key: str | None = None  # Message encryption key (optional)
 
     # Consumer processing configuration
     processing_batch_size: int = 10

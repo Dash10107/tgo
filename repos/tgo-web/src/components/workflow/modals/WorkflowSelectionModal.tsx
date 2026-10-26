@@ -52,7 +52,7 @@ const WorkflowSelectionModal: React.FC<WorkflowSelectionModalProps> = ({
     if (isOpen && workflows.length === 0) {
       loadWorkflows().catch(error => {
         console.error('Failed to load workflows:', error);
-        showToast('error', t('common.loadFailed', '加载失败'), t('workflow.selectModal.loadFailedDesc', '无法加载工作流列表'));
+        showToast('error', t('common.loadFailed', 'Load Failed'), t('workflow.selectModal.loadFailedDesc', 'Failed to load workflows'));
       });
     }
   }, [isOpen, workflows.length, loadWorkflows, showToast, t]);
@@ -106,7 +106,7 @@ const WorkflowSelectionModal: React.FC<WorkflowSelectionModalProps> = ({
   const handleRetry = () => {
     loadWorkflows().catch(error => {
       console.error('Failed to retry loading workflows:', error);
-      showToast('error', t('common.retryFailed', '重试失败'), t('workflow.selectModal.retryFailedDesc', '无法加载工作流列表'));
+      showToast('error', t('common.retryFailed', 'Retry Failed'), t('workflow.selectModal.retryFailedDesc', 'Failed to load workflows'));
     });
   };
 
@@ -117,9 +117,9 @@ const WorkflowSelectionModal: React.FC<WorkflowSelectionModalProps> = ({
       archived: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400',
     };
     const labels: Record<string, string> = {
-      active: t('workflow.status.active', '已启用'),
-      draft: t('workflow.status.draft', '草稿'),
-      archived: t('workflow.status.archived', '已归档'),
+      active: t('workflow.status.active', 'Active'),
+      draft: t('workflow.status.draft', 'Draft'),
+      archived: t('workflow.status.archived', 'Archived'),
     };
     return (
       <span className={`px-2 py-0.5 text-xs rounded-full ${styles[status] || styles.draft}`}>
@@ -136,7 +136,7 @@ const WorkflowSelectionModal: React.FC<WorkflowSelectionModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            {t('workflow.selectModal.title', '选择工作流')}
+            {t('workflow.selectModal.title', 'Select Workflow')}
           </h3>
           <button
             onClick={onClose}
@@ -154,7 +154,7 @@ const WorkflowSelectionModal: React.FC<WorkflowSelectionModalProps> = ({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t('workflow.selectModal.searchPlaceholder', '搜索工作流...')}
+              placeholder={t('workflow.selectModal.searchPlaceholder', 'Search workflows...')}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
             />
           </div>
@@ -169,7 +169,7 @@ const WorkflowSelectionModal: React.FC<WorkflowSelectionModalProps> = ({
                 <div className="text-center">
                   <RefreshCw className="w-6 h-6 animate-spin text-gray-400 dark:text-gray-500 mx-auto mb-2" />
                   <p className="text-gray-500 dark:text-gray-400 text-sm">
-                    {t('workflow.selectModal.loading', '正在加载工作流...')}
+                    {t('workflow.selectModal.loading', 'Loading workflows...')}
                   </p>
                 </div>
               </div>
@@ -183,14 +183,14 @@ const WorkflowSelectionModal: React.FC<WorkflowSelectionModalProps> = ({
                     <X className="w-6 h-6 text-red-600 dark:text-red-400" />
                   </div>
                   <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
-                    {t('common.loadFailed', '加载失败')}
+                    {t('common.loadFailed', 'Load Failed')}
                   </h3>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">{workflowsError}</p>
                   <button
                     onClick={handleRetry}
                     className="px-3 py-1.5 bg-blue-500 dark:bg-blue-600 text-white text-xs rounded hover:bg-blue-600 dark:hover:bg-blue-700 transition-colors"
                   >
-                    {t('common.retry', '重试')}
+                    {t('common.retry', 'Retry')}
                   </button>
                 </div>
               </div>
@@ -202,13 +202,13 @@ const WorkflowSelectionModal: React.FC<WorkflowSelectionModalProps> = ({
                 {filteredWorkflows.length === 0 ? (
                   <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                     <GitBranch className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <p>{t('workflow.selectModal.noMatch', '未找到匹配的工作流')}</p>
+                    <p>{t('workflow.selectModal.noMatch', 'No matching workflows found')}</p>
                     <button
                       onClick={handleManageWorkflows}
                       className="mt-3 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm flex items-center gap-1 mx-auto"
                     >
                       <Plus className="w-4 h-4" />
-                      <span>{t('workflow.selectModal.createNew', '创建新工作流')}</span>
+                      <span>{t('workflow.selectModal.createNew', 'Create New Workflow')}</span>
                     </button>
                   </div>
                 ) : (
@@ -246,7 +246,7 @@ const WorkflowSelectionModal: React.FC<WorkflowSelectionModalProps> = ({
                               {getStatusBadge(workflow.status)}
                             </div>
                             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
-                              {workflow.description || t('workflow.noDescription', '暂无描述')}
+                              {workflow.description || t('workflow.noDescription', 'No description')}
                             </p>
                             <div className="flex items-center gap-3 mt-2 text-xs text-gray-400 dark:text-gray-500">
                               <span>v{workflow.version}</span>
@@ -279,7 +279,7 @@ const WorkflowSelectionModal: React.FC<WorkflowSelectionModalProps> = ({
             onClick={handleManageWorkflows}
             className="flex items-center space-x-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm transition-colors"
           >
-            <span>{t('workflow.selectModal.manageWorkflows', '管理工作流')}</span>
+            <span>{t('workflow.selectModal.manageWorkflows', 'Manage Workflows')}</span>
             <ExternalLink className="w-4 h-4" />
           </button>
         </div>
@@ -290,13 +290,13 @@ const WorkflowSelectionModal: React.FC<WorkflowSelectionModalProps> = ({
             onClick={handleCancel}
             className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600"
           >
-            {t('common.cancel', '取消')}
+            {t('common.cancel', 'Cancel')}
           </button>
           <button
             onClick={handleConfirm}
             className="px-4 py-2 text-sm font-medium text-white bg-blue-600 dark:bg-blue-700 border border-transparent rounded-md hover:bg-blue-700 dark:hover:bg-blue-800"
           >
-            {t('workflow.selectModal.confirmSelection', '确认选择 ({{count}})', { count: tempSelectedWorkflows.length })}
+            {t('workflow.selectModal.confirmSelection', 'Confirm Selection ({{count}})', { count: tempSelectedWorkflows.length })}
           </button>
         </div>
       </div>

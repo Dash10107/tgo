@@ -1,1 +1,1 @@
-"""Test package for TGO-Tech AI Service."""
+"""Test package for Pelatis AI Service."""

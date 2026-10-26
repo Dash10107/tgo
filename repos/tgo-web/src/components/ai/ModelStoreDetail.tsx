@@ -32,7 +32,7 @@ const ModelStoreDetail: React.FC<ModelStoreDetailProps> = ({
     <StoreDetailPanel
       isOpen={isOpen}
       onClose={onClose}
-      title={t('tools.store.model.details', '模型详情')}
+      title={t('tools.store.model.details', 'Model Details')}
       footer={
         isInstalled ? (
           <div className="flex flex-col gap-4">

@@ -24,7 +24,7 @@ const FileMessage: React.FC<MessageComponentProps> = ({ message, isStaff }) => {
   const typedPayload = message.payload as any | undefined;
 
   const fileUrl = ((typedPayload?.type === MessagePayloadType.FILE && (typedPayload as any)?.url) || (message.metadata as any)?.file_url || '') as string;
-  const fileName = ((typedPayload?.type === MessagePayloadType.FILE && (typedPayload as any)?.name) || (message.metadata as any)?.file_name || '[文件]') as string;
+  const fileName = ((typedPayload?.type === MessagePayloadType.FILE && (typedPayload as any)?.name) || (message.metadata as any)?.file_name || '[File]') as string;
   const fileSize = ((typedPayload?.type === MessagePayloadType.FILE && (typedPayload as any)?.size) || (message.metadata as any)?.file_size) as number | undefined;
 
   const fileUploading = message.metadata?.upload_status === 'uploading';
@@ -53,9 +53,9 @@ const FileMessage: React.FC<MessageComponentProps> = ({ message, isStaff }) => {
         const size = (message.metadata as any)?.file_size || f.size;
         updateMessageByClientMsgNo(clientKey, { metadata: { file_url: url, upload_progress: 100, upload_status: 'completed' } });
         // try send via WS
-        const payload: any = { type: MessagePayloadType.FILE, content: '[文件]', url, name, size, timestamp: Date.now() };
+        const payload: any = { type: MessagePayloadType.FILE, content: '[File]', url, name, size, timestamp: Date.now() };
         try {
-          if (!isConnected) throw new Error('WebSocket 未连接，无法发送文件消息');
+          if (!isConnected) throw new Error('WebSocket is not connected; cannot send the file message');
           await sendWsMessage(message.channelId as string, message.channelType as number, payload, clientKey);
           updateMessageByClientMsgNo(clientKey, { metadata: { ws_sent: true, ws_send_error: false } });
         } catch (err) {
@@ -79,7 +79,7 @@ const FileMessage: React.FC<MessageComponentProps> = ({ message, isStaff }) => {
     <div
       className={wrapperClass}
       role="button"
-      aria-label={t('chat.messages.file.aria', '文件')}
+      aria-label={t('chat.messages.file.aria', 'File')}
       onClick={() => {
         if (fileUploadError) {
           retryFileUpload();
@@ -91,13 +91,13 @@ const FileMessage: React.FC<MessageComponentProps> = ({ message, isStaff }) => {
       <div className="flex items-center space-x-3">
         {getFileIcon(fileName, 'w-8 h-8', 32)}
         <div className="flex-1 min-w-0">
-          <div className="text-sm text-gray-800 dark:text-gray-200 truncate">{fileName || t('chat.messages.file.placeholder', '[文件]')}</div>
+          <div className="text-sm text-gray-800 dark:text-gray-200 truncate">{fileName || t('chat.messages.file.placeholder', '[File]')}</div>
           <div className="text-xs text-gray-500 dark:text-gray-400">
-            {fileUploadError ? t('chat.messages.file.uploadFailedRetry', '上传失败，点击重试') : (fileUploading ? t('chat.messages.file.uploadingWithPercent', '上传中 {{percent}}%', { percent: fileUploadProgress ?? 0 }) : formatBytes(fileSize))}
+            {fileUploadError ? t('chat.messages.file.uploadFailedRetry', 'Upload failed, click to retry') : (fileUploading ? t('chat.messages.file.uploadingWithPercent', 'Uploading {{percent}}%', { percent: fileUploadProgress ?? 0 }) : formatBytes(fileSize))}
           </div>
         </div>
         {fileUrl && !fileUploading && !fileUploadError ? (
-          <img src="https://unpkg.com/lucide-static@latest/icons/download.svg" alt={t('chat.messages.file.download', '下载')} className="w-5 h-5 opacity-70" />
+          <img src="https://unpkg.com/lucide-static@latest/icons/download.svg" alt={t('chat.messages.file.download', 'Download')} className="w-5 h-5 opacity-70" />
         ) : null}
       </div>
     </div>

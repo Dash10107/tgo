@@ -65,13 +65,13 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, tool }) 
     const newErrors: FormErrors = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = t('tools.editToolModal.errors.nameRequired', '请输入工具名称');
+      newErrors.name = t('tools.editToolModal.errors.nameRequired', 'Please enter tool name');
     } else if (!/^[a-zA-Z0-9_-]+$/.test(formData.name.trim())) {
-      newErrors.name = t('tools.editToolModal.errors.invalidName', '工具名称只能包含英文字母、数字、下划线和连字符');
+      newErrors.name = t('tools.editToolModal.errors.invalidName', 'Tool name can only contain letters, numbers, underscores and hyphens');
     }
 
     if (!formData.endpoint.trim()) {
-      newErrors.endpoint = t('tools.editToolModal.errors.endpointRequired', '请输入端点地址');
+      newErrors.endpoint = t('tools.editToolModal.errors.endpointRequired', 'Please enter endpoint');
     }
 
     setErrors(newErrors);
@@ -99,8 +99,8 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, tool }) 
 
       showToast(
         'success',
-        t('tools.editToolModal.success.title', '更新成功'),
-        t('tools.editToolModal.success.message', '{{name}} 已成功更新', { name: formData.name })
+        t('tools.editToolModal.success.title', 'Updated Successfully'),
+        t('tools.editToolModal.success.message', '{{name}} has been successfully updated', { name: formData.name })
       );
 
       // Refresh tool list
@@ -111,8 +111,8 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, tool }) 
       console.error('Failed to update tool:', error);
       showToast(
         'error',
-        t('tools.editToolModal.error.title', '更新失败'),
-        error instanceof Error ? error.message : t('tools.editToolModal.error.message', '更新工具失败，请稍后重试')
+        t('tools.editToolModal.error.title', 'Update Failed'),
+        error instanceof Error ? error.message : t('tools.editToolModal.error.message', 'Failed to update tool, please try again later')
       );
     } finally {
       setIsSubmitting(false);
@@ -139,10 +139,10 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, tool }) 
             </div>
             <div>
               <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                {t('tools.editToolModal.title', '编辑工具')}
+                {t('tools.editToolModal.title', 'Edit Tool')}
               </h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                {t('tools.editToolModal.subtitle', '修改 MCP 工具的连接配置')}
+                {t('tools.editToolModal.subtitle', 'Modify MCP tool connection configuration')}
               </p>
             </div>
           </div>
@@ -160,7 +160,7 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, tool }) 
           {/* Tool Name */}
           <div className="space-y-2">
             <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">
-              {t('tools.editToolModal.fields.name', '工具名称')}
+              {t('tools.editToolModal.fields.name', 'Tool Name')}
               <span className="text-red-500 ml-1">*</span>
             </label>
             <input
@@ -170,7 +170,7 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, tool }) 
               className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all dark:text-white outline-none ${
                 errors.name ? 'border-red-500' : 'border-gray-200 dark:border-gray-700'
               }`}
-              placeholder={t('tools.editToolModal.placeholders.name', '例如：weather-api')}
+              placeholder={t('tools.editToolModal.placeholders.name', 'e.g., weather-api')}
               disabled={isSubmitting}
             />
             {errors.name && (
@@ -184,14 +184,14 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, tool }) 
           {/* Description */}
           <div className="space-y-2">
             <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">
-              {t('tools.editToolModal.fields.description', '工具描述')}
+              {t('tools.editToolModal.fields.description', 'Tool Description')}
             </label>
             <textarea
               value={formData.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
               rows={3}
               className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all dark:text-white outline-none min-h-[100px]"
-              placeholder={t('tools.editToolModal.placeholders.description', '简要描述该工具的功能')}
+              placeholder={t('tools.editToolModal.placeholders.description', 'Brief description of the tool\'s functionality')}
               disabled={isSubmitting}
             />
           </div>
@@ -200,7 +200,7 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, tool }) 
             {/* Transport Type */}
             <div className="space-y-2">
               <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">
-                {t('tools.editToolModal.fields.transportType', '传输类型')}
+                {t('tools.editToolModal.fields.transportType', 'Transport Type')}
               </label>
               <select
                 value={formData.transport_type}
@@ -216,7 +216,7 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, tool }) 
             {/* Endpoint */}
             <div className="space-y-2">
               <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">
-                {t('tools.editToolModal.fields.endpoint', '端点地址')}
+                {t('tools.editToolModal.fields.endpoint', 'Endpoint')}
                 <span className="text-red-500 ml-1">*</span>
               </label>
               <input
@@ -226,7 +226,7 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, tool }) 
                 className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all dark:text-white outline-none ${
                   errors.endpoint ? 'border-red-500' : 'border-gray-200 dark:border-gray-700'
                 }`}
-                placeholder={t('tools.editToolModal.placeholders.endpoint', '例如：https://api.example.com/tool')}
+                placeholder={t('tools.editToolModal.placeholders.endpoint', 'e.g., https://api.example.com/tool')}
                 disabled={isSubmitting}
               />
               {errors.endpoint && (
@@ -241,14 +241,14 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, tool }) 
           {/* Tool Type - Read Only */}
           <div className="space-y-2">
             <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">
-              {t('tools.editToolModal.fields.toolType', '工具类型')}
+              {t('tools.editToolModal.fields.toolType', 'Tool Type')}
             </label>
             <div className="px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-500 dark:text-gray-400 cursor-not-allowed">
               {tool.tool_type}
             </div>
             <p className="text-xs text-gray-400 dark:text-gray-500 flex items-center">
               <AlertCircle className="w-3 h-3 mr-1" />
-              {t('tools.editToolModal.hints.toolTypeReadonly', '工具类型不可修改')}
+              {t('tools.editToolModal.hints.toolTypeReadonly', 'Tool type cannot be modified')}
             </p>
           </div>
         </form>
@@ -261,7 +261,7 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, tool }) 
             disabled={isSubmitting}
             className="px-6 py-2.5 text-sm font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all active:scale-95"
           >
-            {t('common.cancel', '取消')}
+            {t('common.cancel', 'Cancel')}
           </button>
           <button
             type="submit"
@@ -275,9 +275,9 @@ const EditToolModal: React.FC<EditToolModalProps> = ({ isOpen, onClose, tool }) 
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                {t('common.submitting', '提交中...')}
+                {t('common.submitting', 'Submitting...')}
               </div>
-            ) : t('tools.editToolModal.save', '保存修改')}
+            ) : t('tools.editToolModal.save', 'Save Changes')}
           </button>
         </div>
       </div>

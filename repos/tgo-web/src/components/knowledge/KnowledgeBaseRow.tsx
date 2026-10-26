@@ -7,6 +7,7 @@ import { getTagClasses } from '@/utils/tagColors';
 import { KNOWLEDGE_BASE_STATUS } from '@/constants/knowledgeBase';
 import type { KnowledgeBaseItem } from '@/types';
 
+import { useTranslation } from 'react-i18next';
 interface KnowledgeBaseRowProps {
   knowledgeBase: KnowledgeBaseItem;
   onAction?: (actionType: string, knowledgeBase: KnowledgeBaseItem) => void;
@@ -16,6 +17,7 @@ interface KnowledgeBaseRowProps {
  * Knowledge base table row component
  */
 const KnowledgeBaseRow: React.FC<KnowledgeBaseRowProps> = ({ knowledgeBase, onAction }) => {
+  const { t } = useTranslation();
   const statusConfig = KNOWLEDGE_BASE_STATUS[knowledgeBase.status];
 
   const handleAction = (actionType: string): void => {
@@ -68,7 +70,7 @@ const KnowledgeBaseRow: React.FC<KnowledgeBaseRowProps> = ({ knowledgeBase, onAc
 
       {/* Document Count */}
       <div className="text-sm text-gray-600">
-        {(knowledgeBase.fileCount ?? knowledgeBase.views ?? 0)} 文件
+        {(knowledgeBase.fileCount ?? knowledgeBase.views ?? 0)} {t('knowledge.row.files', 'files')}
       </div>
 
       {/* Last Updated */}
@@ -94,7 +96,7 @@ const KnowledgeBaseRow: React.FC<KnowledgeBaseRowProps> = ({ knowledgeBase, onAc
           variant="icon"
           icon="Pencil"
           size="sm"
-          title="编辑"
+          title={t('common.edit', 'Edit')}
           className="text-gray-400 hover:text-blue-600"
           onClick={() => handleAction('edit')}
         />
@@ -102,7 +104,7 @@ const KnowledgeBaseRow: React.FC<KnowledgeBaseRowProps> = ({ knowledgeBase, onAc
           variant="icon"
           icon="Share2"
           size="sm"
-          title="分享"
+          title={t('knowledge.row.share', 'Share')}
           className="text-gray-400 hover:text-blue-600"
           onClick={() => handleAction('share')}
         />
@@ -110,7 +112,7 @@ const KnowledgeBaseRow: React.FC<KnowledgeBaseRowProps> = ({ knowledgeBase, onAc
           variant="icon"
           icon="Trash2"
           size="sm"
-          title="删除"
+          title={t('common.delete', 'Delete')}
           className="text-gray-400 hover:text-red-600"
           onClick={() => handleAction('delete')}
         />

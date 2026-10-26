@@ -69,7 +69,7 @@ export class TransformUtils {
    */
   static transformToStoreCategory(category: string | null): ToolStoreCategory {
     const slug = category ? category.toLowerCase() : 'other';
-    const name_zh = category || '其他';
+    const name_zh = category || 'Other';
     return {
       id: slug,
       slug: slug,
@@ -90,10 +90,10 @@ export class TransformUtils {
         return {
           id: cat.id || cat.slug || 'other',
           slug: cat.slug || cat.id || 'other',
-          name_zh: cat.name_zh || cat.name || cat.label || '其他',
+          name_zh: cat.name_zh || cat.name || cat.label || 'Other',
           name_en: cat.name_en || cat.name || null,
           icon: cat.icon || 'Package',
-          label: cat.name_zh || cat.name || cat.label || '其他'
+          label: cat.name_zh || cat.name || cat.label || 'Other'
         };
       });
     }
@@ -109,11 +109,11 @@ export class TransformUtils {
   static transformSourceType(sourceType: ToolSourceType): string {
     switch (sourceType) {
       case 'MARKETPLACE':
-        return i18n.t('tools.source.marketplace', { defaultValue: '工具市场' });
+        return i18n.t('tools.source.marketplace', { defaultValue: 'Tool Marketplace' });
       case 'CUSTOM':
-        return i18n.t('tools.source.custom', { defaultValue: '自定义' });
+        return i18n.t('tools.source.custom', { defaultValue: 'Custom' });
       default:
-        return i18n.t('tools.source.unknown', { defaultValue: '未知' });
+        return i18n.t('tools.source.unknown', { defaultValue: 'Unknown' });
     }
   }
 
@@ -123,11 +123,11 @@ export class TransformUtils {
   static getAuthor(sourceType: ToolSourceType): string {
     switch (sourceType) {
       case 'MARKETPLACE':
-        return i18n.t('tools.author.marketplace', { defaultValue: '工具市场' });
+        return i18n.t('tools.author.marketplace', { defaultValue: 'Tool Marketplace' });
       case 'CUSTOM':
-        return i18n.t('tools.author.customUser', { defaultValue: '用户自定义' });
+        return i18n.t('tools.author.customUser', { defaultValue: 'User Custom' });
       default:
-        return i18n.t('tools.author.unknown', { defaultValue: '未知来源' });
+        return i18n.t('tools.author.unknown', { defaultValue: 'Unknown Source' });
     }
   }
 

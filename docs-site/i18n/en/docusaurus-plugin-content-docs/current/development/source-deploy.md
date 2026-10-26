@@ -6,7 +6,7 @@ sidebar_position: 1
 
 # Source Deployment
 
-This page explains how to build and deploy TGO from source code, suitable for customization or development debugging.
+This page explains how to build and deploy Pelatis from source code, suitable for customization or development debugging.
 
 ## Difference from Image Deployment
 
@@ -33,7 +33,7 @@ cd tgo
 
 ### 2. Initialize Submodules
 
-TGO service source code is managed as Git submodules in the `repos/` directory:
+Pelatis service source code is managed as Git submodules in the `repos/` directory:
 
 ```bash
 git submodule update --init --recursive

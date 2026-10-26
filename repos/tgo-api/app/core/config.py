@@ -18,7 +18,7 @@ class Settings(BaseSettings):
 
     # Project Information
     PROJECT_NAME: str = Field(
-        default="TGO-Tech API Service",
+        default="Pelatis API Service",
         description="Name of the project"
     )
     PROJECT_DESCRIPTION: str = Field(
@@ -37,7 +37,7 @@ class Settings(BaseSettings):
     )
     API_BASE_URL: str = Field(
         default="http://localhost:8000",
-        description="Public-facing base URL for this TGO API service (used to construct callback URLs)"
+        description="Public-facing base URL for this Pelatis API service (used to construct callback URLs)"
     )
 
     # Security
@@ -272,10 +272,10 @@ class Settings(BaseSettings):
         gt=0,
     )
 
-    # Platform Service settings (TGO Platform Service)
+    # Platform Service settings (Pelatis Platform Service)
     PLATFORM_SERVICE_URL: str = Field(
         default="http://localhost:8003",
-        description="URL of the TGO Platform Service",
+        description="URL of the Pelatis Platform Service",
     )
     PLATFORM_SERVICE_TIMEOUT: int = Field(
         default=15,
@@ -413,7 +413,7 @@ class Settings(BaseSettings):
         description="UUID for the unknown/fallback platform when platform data is missing"
     )
     UNKNOWN_PLATFORM_NAME: str = Field(
-        default="未知平台",
+        default="Unknown Platform",
         description="Display name for the unknown/fallback platform"
     )
 

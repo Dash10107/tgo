@@ -37,7 +37,7 @@ const Skills: React.FC = () => {
       );
     } catch (err) {
       showError(
-        t('skills.fetchFailed', '获取技能列表失败'),
+        t('skills.fetchFailed', 'Failed to fetch skills'),
         err instanceof Error ? err.message : String(err),
       );
     } finally {
@@ -95,7 +95,7 @@ const Skills: React.FC = () => {
           ),
         );
         showError(
-          t('skills.toggleFailed', '切换技能状态失败'),
+          t('skills.toggleFailed', 'Failed to toggle skill status'),
           err instanceof Error ? err.message : String(err),
         );
       }
@@ -109,17 +109,17 @@ const Skills: React.FC = () => {
   const handleDelete = async (skill: Skill) => {
     if (skill.is_official) return;
     const confirmed = window.confirm(
-      t('skills.deleteConfirm', '确定要删除技能 "{{name}}" 吗？此操作不可撤销。', { name: skill.name }),
+      t('skills.deleteConfirm', 'Are you sure you want to delete skill "{{name}}"? This action cannot be undone.', { name: skill.name }),
     );
     if (!confirmed) return;
 
     try {
       await SkillsApiService.deleteSkill(skill.name);
-      showSuccess(t('skills.deleteSuccess', '技能已删除'));
+      showSuccess(t('skills.deleteSuccess', 'Skill deleted'));
       fetchSkills();
     } catch (err) {
       showError(
-        t('skills.deleteFailed', '删除技能失败'),
+        t('skills.deleteFailed', 'Failed to delete skill'),
         err instanceof Error ? err.message : String(err),
       );
     }
@@ -135,10 +135,10 @@ const Skills: React.FC = () => {
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
             <LuZap className="w-7 h-7 text-blue-600" />
-            {t('skills.title', '技能管理')}
+            {t('skills.title', 'Skills Management')}
           </h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            {t('skills.subtitle', '为 AI 员工定义可复用的专业指令集')}
+            {t('skills.subtitle', 'Define reusable professional instruction sets for AI agents')}
           </p>
         </div>
 
@@ -148,7 +148,7 @@ const Skills: React.FC = () => {
             <LuSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
             <input
               type="text"
-              placeholder={t('skills.search.placeholder', '搜索技能...')}
+              placeholder={t('skills.search.placeholder', 'Search skills...')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 pr-4 py-2 w-48 lg:w-64 bg-gray-100/50 dark:bg-gray-800/50 border-transparent focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 rounded-xl text-sm transition-all outline-none"
@@ -162,7 +162,7 @@ const Skills: React.FC = () => {
             onClick={openImportModal}
           >
             <Github className="w-4 h-4" />
-            <span className="hidden lg:inline">{t('skills.import.submit', '导入技能')}</span>
+            <span className="hidden lg:inline">{t('skills.import.submit', 'Import Skill')}</span>
           </button>
         </div>
       </header>
@@ -176,12 +176,12 @@ const Skills: React.FC = () => {
             <div className="relative z-10">
               <h3 className="text-xl font-bold flex items-center gap-2">
                 <LuZap className="w-6 h-6" />
-                {t('skills.banner.title', '打造专业技能')}
+                {t('skills.banner.title', 'Build Professional Skills')}
               </h3>
               <p className="text-blue-100 text-sm mt-1 opacity-90 max-w-xl">
                 {t(
                   'skills.banner.description',
-                  '通过创建技能，您可以将复杂的任务拆解为标准化的指令模板。让 AI 员工像专家一样，遵循最佳实践来完成代码审查、文案创作、数据分析等特定任务。',
+                  'By creating skills, you can break down complex tasks into standardized instruction templates. Enable AI agents to complete specific tasks like code review, copywriting, and data analysis like experts following best practices.',
                 )}
               </p>
             </div>
@@ -190,7 +190,7 @@ const Skills: React.FC = () => {
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
-                {t('skills.listTitle', '技能列表')}
+                {t('skills.listTitle', 'Skills List')}
               </h3>
             </div>
 
@@ -208,10 +208,10 @@ const Skills: React.FC = () => {
                   <LuZap className="w-8 h-8 text-gray-300 dark:text-gray-600" />
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">
-                  {t('skills.empty.title', '暂无技能')}
+                  {t('skills.empty.title', 'No skills yet')}
                 </h3>
                 <p className="text-gray-500 dark:text-gray-400 text-sm max-w-sm text-center">
-                  {t('skills.empty.description', '创建您的第一个技能，让 AI 员工更专业')}
+                  {t('skills.empty.description', 'Create your first skill to make AI agents more professional')}
                 </p>
               </div>
             )}

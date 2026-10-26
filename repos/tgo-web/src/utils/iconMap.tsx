@@ -1,7 +1,7 @@
-// 图标映射：从lucide图标名称到React组件
+// Icon map: from lucide icon names to React components
 import React from 'react';
 import {
-  // 基础图标
+  // Basic icons
   Plus,
   Search,
   Settings,
@@ -14,12 +14,12 @@ import {
   Share2,
   MoreHorizontal as Ellipsis,
   
-  // 导航图标
+  // Navigation icons
   ChevronLeft,
   ChevronRight,
   ArrowUpDown,
   
-  // 界面图标
+  // Interface icons
   Smile,
   Scissors,
   Image,
@@ -34,7 +34,7 @@ import {
   CirclePlus,
   Inbox,
   
-  // 通信图标
+  // Communication icons
   Bot,
   Users,
   Globe,
@@ -43,17 +43,17 @@ import {
   Webhook,
   Circle,
   
-  // 工具图标
+  // Tool icons
   Wrench,
   Activity,
   
-  // 其他
+  // Other
   type LucideIcon
 } from 'lucide-react';
 
-// 图标映射对象
+// Icon map object
 export const iconMap: Record<string, LucideIcon> = {
-  // 基础操作
+  // Basic actions
   'plus': Plus,
   'search': Search,
   'settings': Settings,
@@ -66,12 +66,12 @@ export const iconMap: Record<string, LucideIcon> = {
   'share-2': Share2,
   'ellipsis': Ellipsis,
   
-  // 导航
+  // Navigation
   'chevron-left': ChevronLeft,
   'chevron-right': ChevronRight,
   'arrow-down-up': ArrowUpDown,
   
-  // 界面元素
+  // Interface elements
   'smile': Smile,
   'scissors': Scissors,
   'image': Image,
@@ -86,7 +86,7 @@ export const iconMap: Record<string, LucideIcon> = {
   'circle-plus': CirclePlus,
   'inbox': Inbox,
   
-  // 通信和渠道
+  // Communication and channels
   'bot': Bot,
   'users': Users,
   'globe': Globe,
@@ -95,17 +95,17 @@ export const iconMap: Record<string, LucideIcon> = {
   'custom': Webhook,
   'circle': Circle,
 
-  // 工具
+  // Tools
   'wrench': Wrench,
   'activity': Activity
 };
 
-// 获取图标组件的辅助函数
+// Helper function to get an icon component
 export const getIcon = (iconName: string): LucideIcon | null => {
   return iconMap[iconName] || null;
 };
 
-// 图标组件包装器，用于统一处理className和其他属性
+// Icon component wrapper that handles className and other props uniformly
 interface IconProps {
   name: string;
   className?: string;

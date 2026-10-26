@@ -27,11 +27,11 @@ from app.infra.visitor_client import VisitorService
 class DingTalkPlatformConfig(BaseModel):
     """Per-platform DingTalk Bot configuration stored in Platform.config when type='dingtalk_bot'."""
 
-    app_key: str = ""         # 应用Key
-    app_secret: str = ""      # 应用Secret
-    robot_code: str = ""      # 机器人编码
-    aes_key: str | None = None  # 消息加密密钥（可选）
-    token: str | None = None    # 签名 Token（可选）
+    app_key: str = ""         # App key
+    app_secret: str = ""      # App secret
+    robot_code: str = ""      # Robot code
+    aes_key: str | None = None  # Message encryption key (optional)
+    token: str | None = None    # Signature token (optional)
 
     # Consumer processing configuration
     processing_batch_size: int = 10

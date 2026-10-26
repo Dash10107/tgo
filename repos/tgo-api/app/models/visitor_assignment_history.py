@@ -15,10 +15,10 @@ from app.core.database import Base
 class AssignmentSource(str, Enum):
     """Source of assignment decision."""
     
-    LLM = "llm"           # LLM自动分配
-    MANUAL = "manual"     # 人工手动分配
-    RULE = "rule"         # 规则分配（如轮询、负载均衡等）
-    TRANSFER = "transfer" # 转接
+    LLM = "llm"           # Automatic assignment by LLM
+    MANUAL = "manual"     # Manual assignment by staff
+    RULE = "rule"         # Rule-based assignment (e.g. round-robin, load balancing)
+    TRANSFER = "transfer" # Transfer
 
 
 class VisitorAssignmentHistory(Base):

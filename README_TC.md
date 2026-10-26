@@ -10,9 +10,9 @@
   <a href="https://tgo.ai">官網</a> | <a href="https://tgo.ai">文檔</a>
 </p>
 
-## TGO 介紹
+## Pelatis 介紹
 
-TGO 是一個開源的 AI 智能體客服平台，致力於幫助企業「組建智能體團隊為客戶服務」。它集成了多渠道接入、智能體編排、知識庫管理（RAG）、人工坐席協作等核心功能。
+Pelatis 是一個開源的 AI 智能體客服平台，致力於幫助企業「組建智能體團隊為客戶服務」。它集成了多渠道接入、智能體編排、知識庫管理（RAG）、人工坐席協作等核心功能。
 
 <img src="resources/home.png" width="100%">
 
@@ -103,7 +103,7 @@ REF=latest curl -fsSL https://raw.githubusercontent.com/tgoai/tgo/main/bootstrap
 ## 🏗️ 系統架構
 
 <p align="center">
-  <img src="resources/architecture.svg" width="100%" alt="TGO 系統架構圖">
+  <img src="resources/architecture.svg" width="100%" alt="Pelatis 系統架構圖">
 </p>
 
 ## 產品預覽

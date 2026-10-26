@@ -154,9 +154,9 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ readOnly = false }
         event.preventDefault();
         if (isDirty) {
           saveWorkflow().then(() => {
-            showToast('success', t('workflow.messages.saveSuccess', '保存成功'), t('workflow.messages.saveSuccessDesc', '工作流已保存'));
+            showToast('success', t('workflow.messages.saveSuccess', 'Saved'), t('workflow.messages.saveSuccessDesc', 'Workflow saved successfully'));
           }).catch(() => {
-            showToast('error', t('workflow.messages.saveFailed', '保存失败'), t('workflow.messages.saveFailedDesc', '保存工作流时发生错误'));
+            showToast('error', t('workflow.messages.saveFailed', 'Save Failed'), t('workflow.messages.saveFailedDesc', 'An error occurred while saving'));
           });
         }
       }
@@ -258,7 +258,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ readOnly = false }
   if (!currentWorkflow) {
     return (
       <div className="flex items-center justify-center h-full bg-gray-50 dark:bg-gray-900">
-        <p className="text-gray-500 dark:text-gray-400">{t('workflow.selectModal.searchPlaceholder', '请选择或创建一个工作流')}</p>
+        <p className="text-gray-500 dark:text-gray-400">{t('workflow.selectModal.searchPlaceholder', 'Search workflows...')}</p>
       </div>
     );
   }
@@ -338,7 +338,7 @@ const ValidationErrorsPanel: React.FC = () => {
     <Panel position="bottom-center">
       <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-3 max-w-md">
         <h4 className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">
-          {t('workflow.messages.validateFailed', '验证错误')} ({validationErrors.length})
+          {t('workflow.messages.validateFailed', 'Validation Failed')} ({validationErrors.length})
         </h4>
         <ul className="space-y-1">
           {validationErrors.slice(0, 3).map((error, index) => (
@@ -348,7 +348,7 @@ const ValidationErrorsPanel: React.FC = () => {
           ))}
           {validationErrors.length > 3 && (
             <li className="text-xs text-red-500 dark:text-red-400">
-              ... {t('common.more_errors', `还有 ${validationErrors.length - 3} 个错误`, { count: validationErrors.length - 3 })}
+              ... {t('common.more_errors', `and {{count}} more errors`, { count: validationErrors.length - 3 })}
             </li>
           )}
         </ul>

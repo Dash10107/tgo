@@ -44,6 +44,8 @@ logger = get_logger("services.chat")
 
 ai_client = AIServiceClient()
 
+_TERMINAL_AI_EVENTS = {"workflow_completed", "agent_response_complete", "workflow_failed"}
+
 # ============================================================================
 # Validation & Helpers
 # ============================================================================
@@ -171,7 +173,7 @@ async def forward_ai_event_to_wukongim(
                 channel_id=channel_id,
                 channel_type=channel_type,
                 client_msg_no=client_msg_no,
-                payload={"type": 100, "content": "AI 正在思考中..."},
+                payload={"type": 100, "content": "AI is thinking..."},
             )
 
         elif event_type == "agent_content_chunk":
@@ -256,6 +258,7 @@ async def process_ai_stream_to_wukongim(
 ):
     """Process AI stream and forward events to WuKongIM, while yielding events for SSE."""
     full_content = ""
+    stream_terminated = False
     
     # 1) Notify acceptance immediately (caller may already have done this, but here for consistency)
     # yield {"event_type": "accepted", "visitor_id": visitor_id, "client_msg_no": client_msg_no}
@@ -286,10 +289,25 @@ async def process_ai_stream_to_wukongim(
             )
             if content_chunk:
                 full_content += content_chunk
+            if event_type in _TERMINAL_AI_EVENTS:
+                stream_terminated = True
 
             # Yield for SSE
             yield {"event_type": event_type, "data": data}
-            
+
+        # Safety net: upstream closed without a terminal event — close the
+        # WuKongIM stream so clients flush buffered text instead of hanging.
+        if not stream_terminated:
+            logger.warning("AI stream ended without terminal event; closing stream")
+            await forward_ai_event_to_wukongim(
+                event_type="workflow_completed",
+                event_data={},
+                channel_id=channel_id,
+                channel_type=channel_type,
+                client_msg_no=client_msg_no,
+                from_uid=from_uid,
+            )
+
     except Exception as e:
         logger.error(f"Error in AI stream processing: {e}")
         error_data = {"error_message": str(e)}
@@ -557,19 +575,19 @@ async def get_or_create_visitor(
     avatar_url: Optional[str] = None,
 ) -> tuple[Visitor, bool]:
     """
-    获取或创建访客。
+    Get or create a visitor.
     
-    如果访客存在且信息发生变化，自动更新并通知 WuKongIM。
+    If the visitor exists and its information changed, update it automatically and notify WuKongIM.
     
     Args:
-        db: 数据库会话
-        platform: 平台对象
-        platform_open_id: 平台用户ID
-        nickname: 昵称（可选）
-        avatar_url: 头像URL（可选）
+        db: Database session
+        platform: Platform object
+        platform_open_id: Platform user ID
+        nickname: Nickname (optional)
+        avatar_url: Avatar URL (optional)
         
     Returns:
-        tuple[Visitor, bool]: (访客对象, 是否发生了更新)
+        tuple[Visitor, bool]: (visitor object, whether it was updated)
     """
     visitor = (
         db.query(Visitor)
@@ -582,18 +600,18 @@ async def get_or_create_visitor(
     )
     
     if not visitor:
-        # 创建新访客
+        # Create a new visitor
         visitor = await visitor_service.create_visitor_with_channel(
             db=db,
             platform=platform,
             platform_open_id=platform_open_id,
-            name=nickname, # 同时设置 name
+            name=nickname, # Also set name
             nickname=nickname,
             avatar_url=avatar_url,
         )
         return visitor, True
     else:
-        # 更新访客信息（如果提供且发生变化）
+        # Update visitor info (if provided and changed)
         changed = False
         if nickname:
             if visitor.nickname != nickname:
@@ -602,7 +620,7 @@ async def get_or_create_visitor(
             if visitor.name != nickname:
                 visitor.name = nickname
                 changed = True
-            # 同步更新 nickname_zh 以确保两个字段一致
+            # Also update nickname_zh so both fields stay consistent
             if visitor.nickname_zh != nickname:
                 visitor.nickname_zh = nickname
                 changed = True
@@ -611,7 +629,7 @@ async def get_or_create_visitor(
             visitor.avatar_url = avatar_url
             changed = True
             
-        # 重置已关闭的访客状态
+        # Reset the closed visitor state
         if visitor.service_status == VisitorServiceStatus.CLOSED.value:
             visitor.service_status = VisitorServiceStatus.NEW.value
             changed = True

@@ -141,10 +141,10 @@ const DeviceManagement: React.FC = () => {
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
             <MonitorSmartphone className="w-7 h-7 text-blue-600" />
-            {t('deviceControl.title', '设备控制')}
+            {t('deviceControl.title', 'Device Control')}
           </h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            {t('deviceControl.subtitle', '管理 AI 员工可控制的远程设备')}
+            {t('deviceControl.subtitle', 'Manage remote devices controlled by AI agents')}
           </p>
         </div>
 
@@ -154,7 +154,7 @@ const DeviceManagement: React.FC = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
             <input
               type="text"
-              placeholder={t('deviceControl.search.placeholder', '搜索设备...')}
+              placeholder={t('deviceControl.search.placeholder', 'Search devices...')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 pr-4 py-2 w-48 lg:w-64 bg-gray-100/50 dark:bg-gray-800/50 border-transparent focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 rounded-xl text-sm transition-all outline-none"
@@ -166,7 +166,7 @@ const DeviceManagement: React.FC = () => {
             onClick={handleRefresh}
             disabled={isLoading}
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors"
-            title={t('common.refresh', '刷新')}
+            title={t('common.refresh', 'Refresh')}
           >
             <RefreshCw
               className={`w-5 h-5 text-gray-500 ${isLoading ? 'animate-spin' : ''}`}
@@ -177,11 +177,11 @@ const DeviceManagement: React.FC = () => {
           <button
             onClick={() => setShowSessionMonitor(true)}
             className="flex items-center gap-2 px-3 py-2 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-xl transition-colors group"
-            title={t('deviceControl.sessionMonitor.title', '会话监控')}
+            title={t('deviceControl.sessionMonitor.title', 'Session Monitor')}
           >
             <Activity className="w-5 h-5 text-purple-500 group-hover:text-purple-600" />
             <span className="hidden lg:inline text-sm font-medium text-gray-600 dark:text-gray-300 group-hover:text-purple-600 dark:group-hover:text-purple-400">
-              {t('deviceControl.sessionMonitor.title', '会话监控')}
+              {t('deviceControl.sessionMonitor.title', 'Session Monitor')}
             </span>
           </button>
 
@@ -194,7 +194,7 @@ const DeviceManagement: React.FC = () => {
           >
             <Plus className="w-4 h-4" />
             <span className="hidden lg:inline">
-              {t('deviceControl.addDevice', '添加设备')}
+              {t('deviceControl.addDevice', 'Add Device')}
             </span>
           </button>
         </div>
@@ -209,12 +209,12 @@ const DeviceManagement: React.FC = () => {
             <div className="relative z-10">
               <h3 className="text-xl font-bold flex items-center gap-2">
                 <MonitorSmartphone className="w-6 h-6" />
-                {t('deviceControl.banner.title', '远程设备控制')}
+                {t('deviceControl.banner.title', 'Remote Device Control')}
               </h3>
               <p className="text-blue-100 text-sm mt-1 opacity-90 max-w-xl">
                 {t(
                   'deviceControl.banner.description',
-                  '连接您的电脑或移动设备，让 AI 员工能够直接操控屏幕，完成更复杂的自动化任务。'
+                  'Connect your computer or mobile device to let AI agents control the screen directly for more complex automation tasks.'
                 )}
               </p>
             </div>
@@ -232,7 +232,7 @@ const DeviceManagement: React.FC = () => {
                     {devices.length}
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {t('deviceControl.stats.total', '总设备')}
+                    {t('deviceControl.stats.total', 'Total Devices')}
                   </p>
                 </div>
               </div>
@@ -247,7 +247,7 @@ const DeviceManagement: React.FC = () => {
                     {onlineCount}
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {t('deviceControl.stats.online', '在线')}
+                    {t('deviceControl.stats.online', 'Online')}
                   </p>
                 </div>
               </div>
@@ -262,7 +262,7 @@ const DeviceManagement: React.FC = () => {
                     {offlineCount}
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {t('deviceControl.stats.offline', '离线')}
+                    {t('deviceControl.stats.offline', 'Offline')}
                   </p>
                 </div>
               </div>
@@ -279,7 +279,7 @@ const DeviceManagement: React.FC = () => {
                   : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
               }`}
             >
-              {t('deviceControl.filter.all', '全部')}
+              {t('deviceControl.filter.all', 'All')}
             </button>
             <button
               onClick={() => setStatusFilter('online')}
@@ -289,7 +289,7 @@ const DeviceManagement: React.FC = () => {
                   : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
               }`}
             >
-              {t('deviceControl.filter.online', '在线')}
+              {t('deviceControl.filter.online', 'Online')}
             </button>
             <button
               onClick={() => setStatusFilter('offline')}
@@ -299,7 +299,7 @@ const DeviceManagement: React.FC = () => {
                   : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
               }`}
             >
-              {t('deviceControl.filter.offline', '离线')}
+              {t('deviceControl.filter.offline', 'Offline')}
             </button>
           </div>
 
@@ -312,7 +312,7 @@ const DeviceManagement: React.FC = () => {
                 onClick={handleRefresh}
                 className="ml-auto px-3 py-1 bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 rounded-lg text-sm font-medium transition-colors"
               >
-                {t('common.retry', '重试')}
+                {t('common.retry', 'Retry')}
               </button>
             </div>
           )}
@@ -346,15 +346,15 @@ const DeviceManagement: React.FC = () => {
               </div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                 {searchQuery || statusFilter !== 'all'
-                  ? t('deviceControl.empty.noResults', '没有找到匹配的设备')
-                  : t('deviceControl.empty.title', '还没有连接的设备')}
+                  ? t('deviceControl.empty.noResults', 'No matching devices found')
+                  : t('deviceControl.empty.title', 'No Connected Devices')}
               </h3>
               <p className="text-gray-500 dark:text-gray-400 max-w-md mb-6">
                 {searchQuery || statusFilter !== 'all'
-                  ? t('deviceControl.empty.tryOther', '尝试其他搜索条件或筛选')
+                  ? t('deviceControl.empty.tryOther', 'Try other search criteria or filters')
                   : t(
                       'deviceControl.empty.description',
-                      '点击"添加设备"按钮生成绑定码，然后在控制端软件中输入绑定码来连接您的设备。'
+                      'Click the "Add Device" button to generate a bind code, then enter the bind code in the control client software to connect your device.'
                     )}
               </p>
               {!searchQuery && statusFilter === 'all' && (
@@ -363,7 +363,7 @@ const DeviceManagement: React.FC = () => {
                   className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors"
                 >
                   <Plus className="w-5 h-5" />
-                  {t('deviceControl.addDevice', '添加设备')}
+                  {t('deviceControl.addDevice', 'Add Device')}
                 </button>
               )}
             </div>
@@ -400,13 +400,13 @@ const DeviceManagement: React.FC = () => {
 
       <ConfirmDialog
         isOpen={showDeleteConfirm}
-        title={t('deviceControl.delete.title', '确认删除')}
+        title={t('deviceControl.delete.title', 'Confirm Delete')}
         message={t('deviceControl.delete.message', {
           name: deviceToDelete?.device_name,
-          defaultValue: `确定要删除设备 "${deviceToDelete?.device_name}" 吗？此操作无法撤销。`,
+          defaultValue: `Are you sure you want to delete the device "${deviceToDelete?.device_name}"? This action cannot be undone.`,
         })}
-        confirmText={t('common.delete', '删除')}
-        cancelText={t('common.cancel', '取消')}
+        confirmText={t('common.delete', 'Delete')}
+        cancelText={t('common.cancel', 'Cancel')}
         confirmVariant="danger"
         onConfirm={handleDeleteConfirm}
         onCancel={() => {
@@ -418,13 +418,13 @@ const DeviceManagement: React.FC = () => {
 
       <ConfirmDialog
         isOpen={showDisconnectConfirm}
-        title={t('deviceControl.disconnect.title', '确认断开')}
+        title={t('deviceControl.disconnect.title', 'Confirm Disconnect')}
         message={t('deviceControl.disconnect.message', {
           name: deviceToDisconnect?.device_name,
-          defaultValue: `确定要断开设备 "${deviceToDisconnect?.device_name}" 的连接吗？`,
+          defaultValue: `Are you sure you want to disconnect the device "${deviceToDisconnect?.device_name}"?`,
         })}
-        confirmText={t('deviceControl.device.disconnect', '断开连接')}
-        cancelText={t('common.cancel', '取消')}
+        confirmText={t('deviceControl.device.disconnect', 'Disconnect')}
+        cancelText={t('common.cancel', 'Cancel')}
         confirmVariant="primary"
         onConfirm={handleDisconnectConfirm}
         onCancel={() => {
@@ -453,10 +453,10 @@ const DeviceManagement: React.FC = () => {
                 </div>
                 <div>
                   <h2 className="text-lg font-bold text-white">
-                    {t('deviceControl.sessionMonitor.modalTitle', 'Computer Use 会话监控')}
+                    {t('deviceControl.sessionMonitor.modalTitle', 'Computer Use Session Monitor')}
                   </h2>
                   <p className="text-purple-100 text-xs opacity-80">
-                    {t('deviceControl.sessionMonitor.modalSubtitle', '实时查看 AI 控制设备的执行状态')}
+                    {t('deviceControl.sessionMonitor.modalSubtitle', 'View the execution status of AI-controlled devices in real time')}
                   </p>
                 </div>
               </div>
@@ -483,15 +483,15 @@ const DeviceManagement: React.FC = () => {
                     <Activity className="w-12 h-12 text-purple-400" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                    {t('deviceControl.sessionMonitor.noSession', '暂无活动会话')}
+                    {t('deviceControl.sessionMonitor.noSession', 'No active sessions')}
                   </h3>
                   <p className="text-gray-500 dark:text-gray-400 max-w-md mb-6">
-                    {t('deviceControl.sessionMonitor.noSessionDesc', '当 AI 员工开始控制设备执行任务时，您可以在此处实时监控执行进度和操作步骤。')}
+                    {t('deviceControl.sessionMonitor.noSessionDesc', 'When an AI agent starts controlling a device to perform a task, you can monitor its progress and steps here in real time.')}
                   </p>
                   <div className="flex flex-col gap-2 text-sm text-gray-500 dark:text-gray-400">
-                    <p>💡 {t('deviceControl.sessionMonitor.tip1', '确保设备处于在线状态')}</p>
-                    <p>🤖 {t('deviceControl.sessionMonitor.tip2', '在团队配置中添加远程代理')}</p>
-                    <p>💬 {t('deviceControl.sessionMonitor.tip3', '通过对话让 AI 员工执行设备操作任务')}</p>
+                    <p>💡 {t('deviceControl.sessionMonitor.tip1', 'Make sure the device is online')}</p>
+                    <p>🤖 {t('deviceControl.sessionMonitor.tip2', 'Add a remote agent in the team configuration')}</p>
+                    <p>💬 {t('deviceControl.sessionMonitor.tip3', 'Ask the AI agent in a conversation to perform device operations')}</p>
                   </div>
                 </div>
               )}

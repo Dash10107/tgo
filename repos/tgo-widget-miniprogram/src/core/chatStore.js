@@ -9,6 +9,7 @@ var chatService = require('../services/chat')
 var uploadService = require('../services/upload')
 var systemInfoAdapter = require('../adapters/systemInfo')
 var types = require('./types')
+var i18n = require('./i18n')
 var platformStore = require('./platformStore')
 var uidUtil = require('../utils/uid')
 var jsonRenderUtils = require('../utils/jsonRender')
@@ -256,7 +257,7 @@ ChatStore.prototype._bindIMEvents = function () {
         if (!clientMsgNo) return
         var closeParser = activeParsers[clientMsgNo]
         if (closeParser) { closeParser.flush(); delete activeParsers[clientMsgNo] }
-        var errMsg = (eventData && eventData.payload && eventData.payload.end_reason > 0) ? '流异常结束' : undefined
+        var errMsg = (eventData && eventData.payload && eventData.payload.end_reason > 0) ? i18n.t('stream.endedAbnormally') : undefined
         self.finalizeStreamMessage(clientMsgNo, errMsg)
         self.markStreamingEnd()
         return
@@ -266,7 +267,7 @@ ChatStore.prototype._bindIMEvents = function () {
         if (!clientMsgNo) return
         var errParser = activeParsers[clientMsgNo]
         if (errParser) { errParser.flush(); delete activeParsers[clientMsgNo] }
-        var errMessage = (eventData && eventData.payload && eventData.payload.error) || '未知错误'
+        var errMessage = (eventData && eventData.payload && eventData.payload.error) || i18n.t('stream.unknownError')
         self.finalizeStreamMessage(clientMsgNo, errMessage)
         self.markStreamingEnd()
         return
@@ -418,7 +419,7 @@ ChatStore.prototype.uploadImage = function (tempFilePath) {
   var placeholder = {
     id: id,
     role: 'user',
-    payload: { type: 1, content: '图片上传中…' },
+    payload: { type: 1, content: i18n.t('upload.uploadingImage') },
     time: new Date(),
     status: 'uploading',
     uploadProgress: 0,
@@ -447,7 +448,7 @@ ChatStore.prototype.uploadImage = function (tempFilePath) {
     })
   }).catch(function (err) {
     console.error('[Chat] Upload failed:', err)
-    self._updateMessage(id, { status: undefined, uploadError: err && err.message ? err.message : '上传失败' })
+    self._updateMessage(id, { status: undefined, uploadError: err && err.message ? err.message : i18n.t('upload.failed') })
   })
 }
 

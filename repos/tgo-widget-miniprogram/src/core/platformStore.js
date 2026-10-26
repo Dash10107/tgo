@@ -11,7 +11,7 @@ var WELCOME_KEY = function (apiBase, platformApiKey) {
 var defaultConfig = {
   position: 'bottom-right',
   theme_color: '#2f80ed',
-  widget_title: 'Tgo',
+  widget_title: 'Pelatis',
   welcome_message: undefined,
   logo_url: undefined
 }

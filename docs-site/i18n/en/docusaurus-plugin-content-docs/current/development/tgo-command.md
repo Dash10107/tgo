@@ -1,12 +1,12 @@
 ---
 id: tgo-command
-title: TGO Commands
+title: Pelatis Commands
 sidebar_position: 4
 ---
 
-# TGO Commands
+# Pelatis Commands
 
-`tgo.sh` is the main management script for TGO, providing all common commands for deployment, operations, and configuration.
+`tgo.sh` is the main management script for Pelatis, providing all common commands for deployment, operations, and configuration.
 
 ## Command Overview
 

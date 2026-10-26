@@ -11,7 +11,7 @@ const program = new Command();
 
 program
   .name('tgo-widget')
-  .description('TGO Widget CLI - Visitor-facing CLI + MCP Server')
+  .description('Pelatis Widget CLI - Visitor-facing CLI + MCP Server')
   .version('0.1.0')
   .option('-s, --server <url>', 'API server URL')
   .option('-k, --api-key <key>', 'Platform API Key')

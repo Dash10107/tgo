@@ -52,8 +52,8 @@ const LoadingStates: React.FC<LoadingStatesProps> = React.memo(({
             <ChevronUp className="w-4 h-4 mr-2" />
           )}
           {isLoadingMore 
-            ? t('chat.history.loading', '加载中...') 
-            : t('chat.history.loadMore', '加载更多历史消息')
+            ? t('chat.history.loading', 'Loading historical messages...') 
+            : t('chat.history.loadMore', 'Load more historical messages')
           }
         </button>
       </div>
@@ -66,7 +66,7 @@ const LoadingStates: React.FC<LoadingStatesProps> = React.memo(({
       <div className="flex items-center justify-center h-32">
         <Loader2 className="w-6 h-6 animate-spin text-blue-500 dark:text-blue-400 mr-2" />
         <span className="text-gray-600 dark:text-gray-400">
-          {t('chat.history.loading', '加载历史消息中...')}
+          {t('chat.history.loading', 'Loading historical messages...')}
         </span>
       </div>
     );
@@ -82,7 +82,7 @@ const LoadingStates: React.FC<LoadingStatesProps> = React.memo(({
           onClick={onRetry}
           className="px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 transition-colors"
         >
-          {t('chat.history.retry', '重试')}
+          {t('chat.history.retry', 'Retry')}
         </button>
       </div>
     );

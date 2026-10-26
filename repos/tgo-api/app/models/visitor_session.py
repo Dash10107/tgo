@@ -14,8 +14,8 @@ from app.core.database import Base
 class SessionStatus(str, Enum):
     """Session status enumeration."""
     
-    OPEN = "open"       # 会话进行中
-    CLOSED = "closed"   # 会话已关闭
+    OPEN = "open"       # Session in progress
+    CLOSED = "closed"   # Session closed
 
 
 class VisitorSession(Base):

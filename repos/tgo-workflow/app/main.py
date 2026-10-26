@@ -34,7 +34,7 @@ from app.schemas.common import MessageResponse, HealthCheckResponse
 
 @app.get("/", response_model=MessageResponse)
 async def root():
-    return MessageResponse(message="TGO Workflow API is running")
+    return MessageResponse(message="Pelatis Workflow API is running")
 
 @app.get("/health", response_model=HealthCheckResponse)
 async def health_check():

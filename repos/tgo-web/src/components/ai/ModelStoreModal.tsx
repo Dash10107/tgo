@@ -174,7 +174,7 @@ const ModelStoreModal: React.FC<ModelStoreModalProps> = ({ isOpen, onClose }) =>
       <StoreModalBase isOpen={isOpen} onClose={onClose}
         sidebar={
           <StoreSidebar 
-            title={t('tools.store.model.title', '模型商店')}
+            title={t('tools.store.model.title', 'Model Store')}
             icon={<Sparkles className="w-5 h-5" />}
             categories={categories}
             selectedCategory={selectedCategory}
@@ -186,7 +186,7 @@ const ModelStoreModal: React.FC<ModelStoreModalProps> = ({ isOpen, onClose }) =>
           <StoreHeader 
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
-            searchPlaceholder={t('tools.store.model.searchPlaceholder', '搜索模型...')}
+            searchPlaceholder={t('tools.store.model.searchPlaceholder', 'Search model name, provider or capabilities...')}
             onClose={onClose}
             themeColor="blue"
             userStatus={

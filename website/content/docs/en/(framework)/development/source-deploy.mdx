@@ -1,6 +1,6 @@
 ---
 title: Source Deployment
-description: How to build and deploy TGO from source code, suitable for custom modifications or development debugging scenarios.
+description: How to build and deploy Pelatis from source code, suitable for custom modifications or development debugging scenarios.
 ---
 
 ## Differences from Image Deployment
@@ -28,7 +28,7 @@ cd tgo
 
 ### 2. Execute Source Installation
 
-To deploy TGO from source code, use the `--source` parameter:
+To deploy Pelatis from source code, use the `--source` parameter:
 
 ```bash
 ./tgo.sh install --source
@@ -108,7 +108,7 @@ docker compose exec tgo-api bash
 
 ## Installation Mode Rememberance
 
-TGO will remember your installation mode and save it in the `./data/.tgo-install-mode` file.
+Pelatis will remember your installation mode and save it in the `./data/.tgo-install-mode` file.
 
 After the initial installation, subsequent `upgrade` commands will automatically use the same mode:
 

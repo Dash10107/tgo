@@ -13,11 +13,11 @@ import type { Node } from 'reactflow';
  * Available workflow node types
  */
 export type WorkflowNodeType = 
-  | 'input'      // 用户输入触发
-  | 'timer'      // 定时触发
-  | 'webhook'    // Webhook 触发
-  | 'event'      // 事件触发
-  | 'answer'     // 回复/输出节点
+  | 'input'      // User input trigger
+  | 'timer'      // Scheduled trigger
+  | 'webhook'    // Webhook trigger
+  | 'event'      // Event trigger
+  | 'answer'     // Reply / output node
   | 'agent' 
   | 'tool' 
   | 'condition' 

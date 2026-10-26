@@ -7,20 +7,20 @@ type Theme = 'light' | 'dark' | 'system';
 type SidebarState = 'expanded' | 'collapsed' | 'hidden';
 
 interface UIState {
-  // 主题设置
+  // Theme settings
   theme: Theme;
 
-  // 布局状态
+  // Layout state
   sidebarState: SidebarState;
   chatListCollapsed: boolean;
   visitorPanelCollapsed: boolean;
   aiMenuCollapsed: boolean;
 
-  // 加载状态
+  // Loading state
   globalLoading: boolean;
   loadingMessage: string;
 
-  // 通知状态
+  // Notification state
   notifications: Array<{
     id: string;
     type: 'success' | 'error' | 'warning' | 'info';
@@ -31,37 +31,37 @@ interface UIState {
     duration?: number;
   }>;
 
-  // 模态框状态
+  // Modal state
   modals: Record<string, {
     isOpen: boolean;
     data?: any;
   }>;
 
-  // 响应式状态
+  // Responsive state
   isMobile: boolean;
   isTablet: boolean;
   screenWidth: number;
   screenHeight: number;
 
-  // 连接状态
+  // Connection state
   isConnected: boolean;
   isConnecting: boolean;
   connectionError: string | null;
 
-  // 用户偏好
+  // User preferences
   preferences: {
-    language: 'zh-CN' | 'en-US';
+    language: 'en-US' | 'hi-IN' | 'mr-IN' | 'zh-CN';
     fontSize: 'small' | 'medium' | 'large';
     density: 'compact' | 'comfortable' | 'spacious';
     animations: boolean;
     soundEnabled: boolean;
     autoSave: boolean;
-    // 通知相关设置
-    notificationEnabled: boolean;      // 是否启用桌面通知
-    notificationSound: boolean;        // 是否播放声音
-    notifyOnBackground: boolean;       // 页面不可见时通知
-    notifyOnOtherConversation: boolean; // 其他会话消息通知
-    notifyOnNewVisitor: boolean;       // 新访客通知
+    // Notification related settings
+    notificationEnabled: boolean;      // Whether desktop notifications are enabled
+    notificationSound: boolean;        // Whether to play a sound
+    notifyOnBackground: boolean;       // Notify when the page is not visible
+    notifyOnOtherConversation: boolean; // Notify for messages from other conversations
+    notifyOnNewVisitor: boolean;       // Notify for new visitors
   };
 
   // Actions
@@ -72,38 +72,38 @@ interface UIState {
   setVisitorPanelCollapsed: (collapsed: boolean) => void;
   setAIMenuCollapsed: (collapsed: boolean) => void;
 
-  // 加载状态
+  // Loading state
   setGlobalLoading: (loading: boolean, message?: string) => void;
 
-  // 通知管理
+  // Notification management
   addNotification: (notification: Omit<UIState['notifications'][0], 'id' | 'timestamp'>) => void;
   removeNotification: (id: string) => void;
   clearNotifications: () => void;
 
-  // 模态框管理
+  // Modal management
   openModal: (modalId: string, data?: any) => void;
   closeModal: (modalId: string) => void;
   closeAllModals: () => void;
 
-  // 响应式更新
+  // Responsive updates
   updateScreenSize: (width: number, height: number) => void;
 
-  // 连接状态更新
+  // Connection state updates
   setConnectionStatus: (status: { isConnected: boolean; isConnecting: boolean; error?: string }) => void;
 
-  // 用户偏好
+  // User preferences
   updatePreferences: (preferences: Partial<UIState['preferences']>) => void;
   resetPreferences: () => void;
 }
 
 const defaultPreferences: UIState['preferences'] = {
-  language: 'zh-CN',
+  language: 'en-US',
   fontSize: 'medium',
   density: 'comfortable',
   animations: true,
   soundEnabled: true,
   autoSave: true,
-  // 通知相关默认设置
+  // Default notification settings
   notificationEnabled: true,
   notificationSound: true,
   notifyOnBackground: true,
@@ -115,7 +115,7 @@ export const useUIStore = create<UIState>()(
   devtools(
     persist(
       (set, get) => ({
-        // 初始状态
+        // Initial state
         theme: 'system',
         sidebarState: 'expanded',
         chatListCollapsed: false,
@@ -138,7 +138,7 @@ export const useUIStore = create<UIState>()(
         setTheme: (theme) => {
           set({ theme }, false, 'setTheme');
 
-          // 应用主题到DOM
+          // Apply the theme to the DOM
           if (typeof document !== 'undefined') {
             const root = document.documentElement;
             if (theme === 'dark') {
@@ -169,13 +169,13 @@ export const useUIStore = create<UIState>()(
         setVisitorPanelCollapsed: (collapsed) => set({ visitorPanelCollapsed: collapsed }, false, 'setVisitorPanelCollapsed'),
         setAIMenuCollapsed: (collapsed) => set({ aiMenuCollapsed: collapsed }, false, 'setAIMenuCollapsed'),
 
-        // 加载状态
+        // Loading state
         setGlobalLoading: (loading, message = '') => set({
           globalLoading: loading,
           loadingMessage: message
         }, false, 'setGlobalLoading'),
 
-        // 通知管理
+        // Notification management
         addNotification: (notification) => {
           const id = Date.now().toString();
           const newNotification = {
@@ -194,7 +194,7 @@ export const useUIStore = create<UIState>()(
             'addNotification'
           );
 
-          // 自动关闭通知
+          // Auto-close notifications
           if (newNotification.autoClose) {
             setTimeout(() => {
               get().removeNotification(id);
@@ -212,7 +212,7 @@ export const useUIStore = create<UIState>()(
 
         clearNotifications: () => set({ notifications: [] }, false, 'clearNotifications'),
 
-        // 模态框管理
+        // Modal management
         openModal: (modalId, data) => set(
           (state) => ({
             modals: {
@@ -247,7 +247,7 @@ export const useUIStore = create<UIState>()(
           'closeAllModals'
         ),
 
-        // 响应式更新
+        // Responsive updates
         updateScreenSize: (width, height) => {
           const isMobile = width < 768;
           const isTablet = width >= 768 && width < 1024;
@@ -257,19 +257,19 @@ export const useUIStore = create<UIState>()(
             screenHeight: height,
             isMobile,
             isTablet,
-            // 在移动设备上自动折叠侧边栏
+            // Auto-collapse the sidebar on mobile devices
             sidebarState: isMobile ? 'collapsed' : get().sidebarState
           }, false, 'updateScreenSize');
         },
 
-        // 连接状态更新
+        // Connection state updates
         setConnectionStatus: (status) => set({
           isConnected: status.isConnected,
           isConnecting: status.isConnecting,
           connectionError: status.error || null
         }, false, 'setConnectionStatus'),
 
-        // 用户偏好
+        // User preferences
         updatePreferences: (newPreferences) => set(
           (state) => ({
             preferences: { ...state.preferences, ...newPreferences }
@@ -285,7 +285,7 @@ export const useUIStore = create<UIState>()(
       {
         name: STORAGE_KEYS.UI,
         partialize: (state) => ({
-          // 持久化用户偏好和布局设置
+          // Persist user preferences and layout settings
           theme: state.theme,
           sidebarState: state.sidebarState,
           chatListCollapsed: state.chatListCollapsed,
@@ -299,21 +299,21 @@ export const useUIStore = create<UIState>()(
   )
 );
 
-// 初始化响应式监听
+// Initialize responsive listeners
 if (typeof window !== 'undefined') {
   const updateSize = () => {
     useUIStore.getState().updateScreenSize(window.innerWidth, window.innerHeight);
   };
 
   window.addEventListener('resize', updateSize);
-  updateSize(); // 初始化
+  updateSize(); // Initialize
 
-  // 监听系统主题变化
+  // Listen for system theme changes
   const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
   const handleThemeChange = () => {
     const { theme, setTheme } = useUIStore.getState();
     if (theme === 'system') {
-      setTheme('system'); // 触发重新应用主题
+      setTheme('system'); // Trigger re-applying the theme
     }
   };
 

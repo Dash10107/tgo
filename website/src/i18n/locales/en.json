@@ -15,7 +15,7 @@
   },
   "CoreCapabilities": {
     "title": "Core Capabilities",
-    "description": "TGO provides a series of core capabilities to help developers build and manage applications more efficiently.",
+    "description": "Pelatis provides a series of core capabilities to help developers build and manage applications more efficiently.",
     "cards": {
       "intelligentOrchestration": {
         "title": "AI Agent Orchestration",
@@ -79,12 +79,12 @@
     }
   },
   "GetStarted": {
-    "heading": "Get Started with Tgo",
-    "subheading": "Quickly start using Tgo to build your AI customer service application.",
+    "heading": "Get Started with Pelatis",
+    "subheading": "Quickly start using Pelatis to build your AI customer service application.",
     "cards": {
       "docs": {
         "title": "Quickstart Guide",
-        "description": "Detailed documentation and tutorials to help you get started with Tgo."
+        "description": "Detailed documentation and tutorials to help you get started with Pelatis."
       },
       "github": {
         "title": "GitHub Repository",
@@ -97,8 +97,8 @@
     }
   },
   "Footer": {
-    "title": "Tgo",
-    "description": "Tgo is an open-source AI customer service platform committed to helping enterprises [build AI agent teams to serve customers].",
+    "title": "Pelatis",
+    "description": "Pelatis is an open-source AI customer service platform committed to helping enterprises [build AI agent teams to serve customers].",
     "store": {
       "title": "Store",
       "toolStore": "Tool Store",
@@ -109,6 +109,6 @@
       "docs": "Documentation",
       "contact": "Contact Us"
     },
-    "copyright": "2026 Tgo AI-Powered Customer Service System. All rights reserved."
+    "copyright": "2026 Pelatis AI-Powered Customer Service System. All rights reserved."
   }
 }

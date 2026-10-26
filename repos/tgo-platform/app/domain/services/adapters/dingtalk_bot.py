@@ -12,7 +12,7 @@ from app.api.dingtalk_utils import dingtalk_send_text
 
 
 class DingTalkBotAdapter(BasePlatformAdapter):
-    """Outbound adapter for DingTalk Bot (钉钉机器人).
+    """Outbound adapter for DingTalk Bot.
 
     - Non-streaming: sends the final aggregated content via sessionWebhook
     - Uses session_webhook from callback message to reply (required)

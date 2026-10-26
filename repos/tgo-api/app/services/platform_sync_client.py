@@ -1,4 +1,4 @@
-"""Client for synchronizing Platform records to the TGO Platform Service.
+"""Client for synchronizing Platform records to the Pelatis Platform Service.
 
 This module encapsulates HTTP calls to the external Platform Service so callers
 can focus on business logic. Endpoints are derived from settings and the

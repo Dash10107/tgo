@@ -1,1 +1,1 @@
-"""TGO Device Control Service."""
+"""Pelatis Device Control Service."""

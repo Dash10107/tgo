@@ -270,7 +270,7 @@ def add_project_role_permission(
 def log_startup_banner() -> None:
     """Log beautiful startup banner."""
     startup_log("╔══════════════════════════════════════════════════════════════╗")
-    startup_log("║                    🚀 TGO API Service                        ║")
+    startup_log("║                    🚀 Pelatis API Service                        ║")
     startup_log("║                  Core Business Logic Service                 ║")
     startup_log("╚══════════════════════════════════════════════════════════════╝")
     startup_log("")

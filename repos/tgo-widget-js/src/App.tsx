@@ -9,6 +9,7 @@ import { useChatStore, usePlatformStore } from './store'
 import { resolveApiKey, resolveMode } from './utils/url'
 import { recordVisitorActivity } from './services/visitorActivity'
 import { ThemeProvider } from './contexts/ThemeContext'
+import i18n from './i18n'
 
 
 const WidgetWrap = styled.div`
@@ -79,8 +80,8 @@ export default function App(){
 
     let content = ''
     if (lastMsg.payload.type === 1) content = lastMsg.payload.content
-    else if (lastMsg.payload.type === 2) content = '[图片]'
-    else if (lastMsg.payload.type === 3) content = '[文件]'
+    else if (lastMsg.payload.type === 2) content = i18n.t('image.placeholder')
+    else if (lastMsg.payload.type === 3) content = i18n.t('file.placeholder')
     else if (lastMsg.streamData) content = lastMsg.streamData
 
     if (content) {
@@ -88,7 +89,7 @@ export default function App(){
         window.parent?.postMessage({ 
           type: 'TGO_SHOW_TOAST', 
           payload: { 
-            title: pConfig.widget_title || 'Tgo',
+            title: pConfig.widget_title || 'Pelatis',
             body: content,
             icon: pConfig.logo_url || undefined,
             id: lastMsg.id
@@ -145,7 +146,7 @@ export default function App(){
 
   const onSend = (text: string)=>{ void sendMessage(text) }
 
-  const title = useMemo(()=> pConfig?.widget_title || 'Tgo', [pConfig?.widget_title])
+  const title = useMemo(()=> pConfig?.widget_title || 'Pelatis', [pConfig?.widget_title])
 
   const theme = useMemo(()=>{
     const c = pConfig?.theme_color || '#2f80ed'

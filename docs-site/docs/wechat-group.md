@@ -1,6 +1,6 @@
 # 微信交流群
 
-欢迎扫码加入 TGO 微信交流群，与我们一起交流讨论！
+欢迎扫码加入 Pelatis 微信交流群，与我们一起交流讨论！
 
 <div style={{textAlign: 'center', margin: '2rem 0'}}>
   <img 

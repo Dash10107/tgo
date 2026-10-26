@@ -225,22 +225,22 @@ async def wecom_kf_send_image_msg(access_token: str, open_kfid: str, external_us
         content={"media_id": media_id},
     )
 
-# --- WeCom Bot (智能机器人) response API via response_url ----------------------
+# --- WeCom Bot (smart bot) response API via response_url ----------------------
 async def wecom_bot_send_response(
     response_url: str,
     msgtype: str,
     content: dict,
     timeout: Optional[int] = None,
 ) -> dict:
-    """Send a response via WeCom Bot response_url (智能机器人主动回复).
+    """Send a response via WeCom Bot response_url (smart bot proactive reply).
 
     This is used to reply to messages received by the bot. The response_url
     is provided in the incoming message callback.
 
     Docs: https://developer.work.weixin.qq.com/document/path/101138
 
-    IMPORTANT: The 主动回复消息 API only supports:
-    - markdown: {"content": "消息内容"}
+    IMPORTANT: The proactive reply message API only supports:
+    - markdown: {"content": "message content"}
     - template_card: {...}
 
     NOTE: "text" message type is NOT supported by this API!
@@ -277,14 +277,14 @@ async def wecom_bot_send_response_text(
 
     Docs: https://developer.work.weixin.qq.com/document/path/101138
 
-    NOTE: The 主动回复消息 API does NOT support "text" type!
+    NOTE: The proactive reply message API does NOT support "text" type!
     We use "markdown" type to send plain text responses.
 
     Args:
         response_url: The response URL from the incoming message
         content: Message text content (max 20480 bytes)
     """
-    # Use markdown type since text type is not supported by 主动回复消息 API
+    # Use markdown type since text type is not supported by the proactive reply message API
     return await wecom_bot_send_response(response_url, msgtype="markdown", content={"content": content[:20480]}, timeout=timeout)
 
 
@@ -552,7 +552,7 @@ async def sync_kf_messages(
                 db,
                 platform_id=platform_id,
                 message_id=msgid,
-                source_type="wecom_kf",  # WeCom Customer Service (客服)
+                source_type="wecom_kf",  # WeCom Customer Service
                 from_user=ext_uid or "",
                 open_kfid=open_kf_id,
                 msg_type=msgtype,

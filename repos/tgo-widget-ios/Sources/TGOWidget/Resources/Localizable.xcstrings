@@ -1,9 +1,7 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "Attach image" : {
-
-    },
+    "Attach image" : {},
     "chat.attach_image" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -17,6 +15,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "添加图片"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "छवि जोड़ें"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "प्रतिमा जोडा"
           }
         }
       }
@@ -35,6 +45,18 @@
             "state" : "translated",
             "value" : "关闭"
           }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "बंद करें"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "बंद करा"
+          }
         }
       }
     },
@@ -51,6 +73,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "连接中..."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "कनेक्ट हो रहा है..."
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "कनेक्ट होत आहे..."
           }
         }
       }
@@ -69,6 +103,18 @@
             "state" : "translated",
             "value" : "发送失败"
           }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "विफल"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "अयशस्वी"
+          }
         }
       }
     },
@@ -85,6 +131,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "图片加载失败"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "छवि लोड नहीं हो सकी"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "प्रतिमा लोड करता आली नाही"
           }
         }
       }
@@ -103,6 +161,18 @@
             "state" : "translated",
             "value" : "输入消息..."
           }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "संदेश लिखें..."
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "संदेश लिहा..."
+          }
         }
       }
     },
@@ -119,6 +189,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "加载更早的消息"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "पुराने संदेश लोड करें"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "जुने संदेश लोड करा"
           }
         }
       }
@@ -137,6 +219,18 @@
             "state" : "translated",
             "value" : "加载中..."
           }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "लोड हो रहा है..."
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "लोड होत आहे..."
+          }
         }
       }
     },
@@ -153,6 +247,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在线"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ऑनलाइन"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ऑनलाइन"
           }
         }
       }
@@ -171,6 +277,18 @@
             "state" : "translated",
             "value" : "重试"
           }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "पुनः प्रयास करें"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "पुन्हा प्रयत्न करा"
+          }
         }
       }
     },
@@ -187,6 +305,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "发送"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "भेजें"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "पाठवा"
           }
         }
       }
@@ -205,6 +335,18 @@
             "state" : "translated",
             "value" : "发送中..."
           }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "भेजा जा रहा है..."
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "पाठवत आहे..."
+          }
         }
       }
     },
@@ -222,45 +364,33 @@
             "state" : "translated",
             "value" : "停止生成"
           }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "उत्तर बनाना रोकें"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "उत्तर तयार करणे थांबवा"
+          }
         }
       }
     },
-    "Close" : {
-
-    },
-    "Close preview" : {
-
-    },
-    "Connecting..." : {
-
-    },
-    "Failed" : {
-
-    },
-    "Image failed to load" : {
-
-    },
-    "Load earlier messages" : {
-
-    },
-    "Online" : {
-
-    },
-    "Retry" : {
-
-    },
-    "Send message" : {
-
-    },
-    "Sending..." : {
-
-    },
-    "Stop generating" : {
-
-    },
-    "Type a message..." : {
-
-    }
+    "Close" : {},
+    "Close preview" : {},
+    "Connecting..." : {},
+    "Failed" : {},
+    "Image failed to load" : {},
+    "Load earlier messages" : {},
+    "Online" : {},
+    "Retry" : {},
+    "Send message" : {},
+    "Sending..." : {},
+    "Stop generating" : {},
+    "Type a message..." : {}
   },
   "version" : "1.0"
 }

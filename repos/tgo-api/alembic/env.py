@@ -26,7 +26,7 @@ target_metadata = Base.metadata
 
 
 def include_name(name, type_, parent_names):
-    """只管理 api_* 前缀的表，避免与 SaaS 迁移冲突。"""
+    """Only manage tables with the api_* prefix to avoid conflicts with SaaS migrations."""
     if type_ == "table":
         return name.startswith("api_")
     return True

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document provides comprehensive information about the testing strategy and implementation for the TGO RAG Service. The test suite is designed to achieve high code coverage while maintaining reliability and avoiding external dependencies.
+This document provides comprehensive information about the testing strategy and implementation for the Pelatis RAG Service. The test suite is designed to achieve high code coverage while maintaining reliability and avoiding external dependencies.
 
 ## Test Structure
 

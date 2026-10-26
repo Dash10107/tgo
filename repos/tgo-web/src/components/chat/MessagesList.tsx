@@ -46,7 +46,7 @@ export interface MessagesListProps {
   scrollToSeq?: number | null;
   /** Callback when the component finished scrolling/highlighting */
   onScrolledToSeq?: () => void;
-  /** 发送消息回调（用于 Widget 中的 msg:// 协议） */
+  /** Callback for sending a message (used by the msg:// protocol in Widgets) */
   onSendMessage?: (message: string) => void;
 }
 
@@ -444,7 +444,7 @@ const MessagesListComponent: React.FC<MessagesListProps> = ({
           <>
             {/* Render Combined Messages with Time Separators (like WeChat) */}
             {combinedMessages.map(({ key, message }, index) => {
-              // 获取当前消息的时间戳（秒）
+              // Get the timestamp of the current message (seconds)
               const currentTimestamp = message.timestamp 
                 ? (typeof message.timestamp === 'string' ? new Date(message.timestamp).getTime() / 1000 : message.timestamp)
                 : 0;
@@ -453,28 +453,28 @@ const MessagesListComponent: React.FC<MessagesListProps> = ({
               let timeSeparatorText = '';
               
               if (index === 0) {
-                // 第一条消息总是显示时间
+                // The first message always shows the time
                 showTimeSeparator = true;
               } else {
-                // 获取上一条消息的时间戳
+                // Get the timestamp of the previous message
                 const prevMessage = combinedMessages[index - 1].message;
                 const prevTimestamp = prevMessage.timestamp
                   ? (typeof prevMessage.timestamp === 'string' ? new Date(prevMessage.timestamp).getTime() / 1000 : prevMessage.timestamp)
                   : 0;
                 
-                // 如果时间差超过5分钟（300秒），显示时间分隔符
+                // If the time gap exceeds 5 minutes (300 seconds), show a time separator
                 const TIME_GAP_THRESHOLD = 300; // 5 minutes in seconds
                 if (currentTimestamp - prevTimestamp >= TIME_GAP_THRESHOLD) {
                   showTimeSeparator = true;
                 }
               }
               
-              // 格式化时间分隔符文本
+              // Format the time separator text
               if (showTimeSeparator && currentTimestamp > 0) {
                 const date = new Date(currentTimestamp * 1000);
                 const now = new Date();
                 
-                // 计算日期差（使用日期比较而不是毫秒差，更准确）
+                // Compute the day difference (compare dates rather than milliseconds; more accurate)
                 const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
                 const msgDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
                 const diffDays = Math.floor((today.getTime() - msgDate.getTime()) / (1000 * 60 * 60 * 24));
@@ -485,26 +485,26 @@ const MessagesListComponent: React.FC<MessagesListProps> = ({
                 });
                 
                 if (diffDays === 0) {
-                  // 今天：只显示时间
+                  // Today: show only the time
                   timeSeparatorText = timeString;
                 } else if (diffDays === 1) {
-                  // 昨天
-                  timeSeparatorText = `${t('chat.history.yesterday', '昨天')} ${timeString}`;
+                  // Yesterday
+                  timeSeparatorText = `${t('chat.history.yesterday', 'Yesterday')} ${timeString}`;
                 } else if (diffDays < 7) {
-                  // 一周内：显示星期几
+                  // Within a week: show the weekday
                   const weekdays = [
-                    t('chat.history.weekday.sunday', '星期日'),
-                    t('chat.history.weekday.monday', '星期一'),
-                    t('chat.history.weekday.tuesday', '星期二'),
-                    t('chat.history.weekday.wednesday', '星期三'),
-                    t('chat.history.weekday.thursday', '星期四'),
-                    t('chat.history.weekday.friday', '星期五'),
-                    t('chat.history.weekday.saturday', '星期六'),
+                    t('chat.history.weekday.sunday', 'Sunday'),
+                    t('chat.history.weekday.monday', 'Monday'),
+                    t('chat.history.weekday.tuesday', 'Tuesday'),
+                    t('chat.history.weekday.wednesday', 'Wednesday'),
+                    t('chat.history.weekday.thursday', 'Thursday'),
+                    t('chat.history.weekday.friday', 'Friday'),
+                    t('chat.history.weekday.saturday', 'Saturday'),
                   ];
                   const weekday = weekdays[date.getDay()];
                   timeSeparatorText = `${weekday} ${timeString}`;
                 } else {
-                  // 更早：显示完整日期
+                  // Earlier: show the full date
                   timeSeparatorText = `${date.toLocaleDateString('zh-CN')} ${timeString}`;
                 }
               }
@@ -528,7 +528,7 @@ const MessagesListComponent: React.FC<MessagesListProps> = ({
             })}
 
             {isLoadingMoreNewer ? (
-              <div className="text-center py-2 text-gray-400 dark:text-gray-500 text-xs">{t('chat.history.loadingNewer', '加载中...')}</div>
+              <div className="text-center py-2 text-gray-400 dark:text-gray-500 text-xs">{t('chat.history.loadingNewer', 'Loading...')}</div>
             ) : null}
             <div ref={messagesEndRef} />
           </>

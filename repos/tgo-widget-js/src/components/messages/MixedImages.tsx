@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import ImageMessage from './ImageMessage'
 import { Grid, GridImg, GridItem } from './messageStyles'
 import { getGridLayout } from './messageUtils'
@@ -15,13 +16,14 @@ interface SquareItemProps {
 }
 
 function SquareItem({ url, moreCount = 0, onClick }: SquareItemProps){
+  const { t } = useTranslation()
   const [error, setError] = useState(false)
   return (
-    <GridItem onClick={onClick} title={moreCount>0?`+${moreCount}`:'点击查看大图'}>
+    <GridItem onClick={onClick} title={moreCount>0?`+${moreCount}`:t('image.clickToViewLarge')}>
       {!error ? (
-        <GridImg src={url} alt="[图片]" loading="lazy" onError={()=>setError(true)} />
+        <GridImg src={url} alt={t('image.placeholder')} loading="lazy" onError={()=>setError(true)} />
       ) : (
-        <div style={{width:'100%',height:'100%',display:'grid',placeItems:'center', color:'#9ca3af', fontSize:12}}>图片加载失败</div>
+        <div style={{width:'100%',height:'100%',display:'grid',placeItems:'center', color:'#9ca3af', fontSize:12}}>{t('image.loadFailed')}</div>
       )}
       {moreCount > 0 && (
         <div style={{position:'absolute',inset:0,background:'rgba(0,0,0,0.45)',color:'#fff',display:'grid',placeItems:'center',fontSize:18,fontWeight:600}}>
@@ -39,7 +41,7 @@ export default function MixedImages({ images }: MixedImagesProps){
   const layout = getGridLayout(visible.length)
   const isSingle = visible.length === 1
 
-  // 所有图片的 URL 列表
+  // URL list of all images
   const allImageUrls = useMemo(() => imgs.map(img => img.url), [imgs])
 
   const handleImageClick = (index: number) => {

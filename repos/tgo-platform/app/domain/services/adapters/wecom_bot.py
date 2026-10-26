@@ -8,15 +8,15 @@ from app.api.wecom_utils import wecom_bot_send_response_markdown
 
 
 class WeComBotAdapter(BasePlatformAdapter):
-    """Outbound adapter for WeCom Bot (企业微信智能机器人).
+    """Outbound adapter for WeCom Bot (smart bot).
 
     - Non-streaming: sends the final aggregated content via response_url
     - Uses response_url to reply to messages (required)
     - Only supports markdown format (text type is not supported by the API)
 
     Docs:
-    - 智能机器人: https://developer.work.weixin.qq.com/document/path/100719
-    - 主动回复消息: https://developer.work.weixin.qq.com/document/path/101138
+    - Smart bot: https://developer.work.weixin.qq.com/document/path/100719
+    - Proactive reply message: https://developer.work.weixin.qq.com/document/path/101138
     """
 
     supports_stream = False

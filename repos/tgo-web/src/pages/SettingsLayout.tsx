@@ -9,12 +9,12 @@ const SettingsLayout: React.FC = () => {
   const { t } = useTranslation();
 
   const items: Array<{ id: string; label: string }> = [
-    { id: 'profile', label: t('settings.menu.profile', '个人资料') },
-    { id: 'general', label: t('settings.menu.general', '通用') },
-    { id: 'notifications', label: t('settings.menu.notifications', '消息通知') },
-    { id: 'staff', label: t('settings.menu.staff', '人工坐席') },
-    { id: 'providers', label: t('settings.menu.providers', '模型提供商') },
-    { id: 'plugins', label: t('settings.menu.plugins', '插件管理') },
+    { id: 'profile', label: t('settings.menu.profile', 'Profile') },
+    { id: 'general', label: t('settings.menu.general', 'General') },
+    { id: 'notifications', label: t('settings.menu.notifications', 'Notifications') },
+    { id: 'staff', label: t('settings.menu.staff', 'Human Agents') },
+    { id: 'providers', label: t('settings.menu.providers', 'Model Providers') },
+    { id: 'plugins', label: t('settings.menu.plugins', 'Plugins') },
   ];
 
   const iconMap: Record<string, React.ReactNode> = {

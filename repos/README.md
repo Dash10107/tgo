@@ -1,6 +1,6 @@
-# TGO SaaS - 项目总览
+# Pelatis SaaS - 项目总览
 
-TGO 是一个 AI 驱动的全渠道客服平台，采用微服务架构，包含 8 个 Python 后端服务、1 个 Go Agent、2 个 React 前端、1 个微信小程序组件和 2 个 Node.js CLI 工具。
+Pelatis 是一个 AI 驱动的全渠道客服平台，采用微服务架构，包含 8 个 Python 后端服务、1 个 Go Agent、2 个 React 前端、1 个微信小程序组件和 2 个 Node.js CLI 工具。
 
 ## 项目列表
 

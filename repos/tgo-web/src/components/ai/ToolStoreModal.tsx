@@ -43,10 +43,10 @@ const ToolStoreModal: React.FC<ToolStoreModalProps> = ({ isOpen, onClose }) => {
       { 
         id: 'all', 
         slug: 'all', 
-        name_zh: '全部工具', 
+        name_zh: 'All Tools', 
         name_en: 'All Tools', 
         icon: 'Grid3X3', 
-        label: '全部工具' 
+        label: 'All Tools' 
       },
       ...data.map((cat: any) => ({
         id: cat.id,
@@ -105,7 +105,7 @@ const ToolStoreModal: React.FC<ToolStoreModalProps> = ({ isOpen, onClose }) => {
     }
 
     if (installedToolNames.has(tool.name.toLowerCase())) {
-      showToast('info', t('tools.store.installed', '已安装'), t('tools.store.installSuccessMessage', { name: tool.name }));
+      showToast('info', t('tools.store.installed', 'Installed'), t('tools.store.installSuccessMessage', { name: tool.name }));
       return;
     }
 
@@ -116,7 +116,7 @@ const ToolStoreModal: React.FC<ToolStoreModalProps> = ({ isOpen, onClose }) => {
       await storeApi.installTool(tool.id);
       await loadTools(false);
     } catch (error) {
-      showToast('error', t('common.error', '错误'), t('common.saveFailed', '保存失败'));
+      showToast('error', t('common.error', 'Error'), t('common.saveFailed', 'Save failed'));
     } finally {
       setInstallingId(null);
     }
@@ -127,7 +127,7 @@ const ToolStoreModal: React.FC<ToolStoreModalProps> = ({ isOpen, onClose }) => {
       <StoreModalBase isOpen={isOpen} onClose={onClose}
         sidebar={
           <StoreSidebar 
-            title={t('tools.toolStore', '工具商店')}
+            title={t('tools.toolStore', 'Tool Store')}
             icon={<Sparkles className="w-5 h-5" />}
             categories={categories}
             selectedCategory={selectedCategory}
@@ -139,7 +139,7 @@ const ToolStoreModal: React.FC<ToolStoreModalProps> = ({ isOpen, onClose }) => {
           <StoreHeader 
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
-            searchPlaceholder={t('tools.store.searchPlaceholder', '搜索工具、作者或标签...')}
+            searchPlaceholder={t('tools.store.searchPlaceholder', 'Search tools, authors or tags...')}
             onClose={onClose}
             themeColor="blue"
             userStatus={

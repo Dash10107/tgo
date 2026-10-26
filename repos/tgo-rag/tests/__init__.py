@@ -1,3 +1,3 @@
 """
-Test suite for TGO RAG Service.
+Test suite for Pelatis RAG Service.
 """

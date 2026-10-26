@@ -1,4 +1,5 @@
-/**
+
+import i18n from '@/i18n';/**
  * Format number with appropriate units (K, M, B)
  */
 export const formatNumber = (num: number): string => {
@@ -24,20 +25,20 @@ export const formatRelativeTime = (dateString: string): string => {
   const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
 
   if (diffInDays === 0) {
-    return '今天';
+    return i18n.t('time.relative.today', 'Today');
   } else if (diffInDays === 1) {
-    return '昨天';
+    return i18n.t('time.relative.yesterday', 'Yesterday');
   } else if (diffInDays < 7) {
-    return `${diffInDays} 天前`;
+    return i18n.t('time.relative.daysAgo', { count: diffInDays, defaultValue: '{{count}} days ago' });
   } else if (diffInDays < 30) {
     const weeks = Math.floor(diffInDays / 7);
-    return `${weeks} 周前`;
+    return i18n.t('time.relative.weeksAgo', { count: weeks, defaultValue: '{{count}} weeks ago' });
   } else if (diffInDays < 365) {
     const months = Math.floor(diffInDays / 30);
-    return `${months} 个月前`;
+    return i18n.t('time.relative.monthsAgo', { count: months, defaultValue: '{{count}} months ago' });
   } else {
     const years = Math.floor(diffInDays / 365);
-    return `${years} 年前`;
+    return i18n.t('time.relative.yearsAgo', { count: years, defaultValue: '{{count}} years ago' });
   }
 };
 

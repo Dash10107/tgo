@@ -73,7 +73,7 @@ class UploadController {
     _uploadTokens[messageId] = cancelToken;
 
     try {
-      // 1. 获取图片尺寸 (如果是图片)
+      // 1. Get the image dimensions (if it is an image)
       int width = 0;
       int height = 0;
       if (isImage) {
@@ -86,7 +86,7 @@ class UploadController {
         }
       }
 
-      // 2. 上传文件
+      // 2. Upload the file
       final response = await _uploadService.uploadFile(
         channelId: channelId,
         channelType: channelType,
@@ -120,13 +120,13 @@ class UploadController {
       _provider.updateMessagePayload(messageId, payload);
       _provider.updateMessageStatus(messageId, MessageStatus.sending);
 
-      // 3. 通过 IM 发送消息
+      // 3. Send the message via IM
       await _imService.sendPayload(payload.toJson(), clientMsgNo: clientMsgNo);
 
-      // 发送成功后，更新状态为 sent
+      // After a successful send, update the status to sent
       _provider.updateMessageStatus(messageId, MessageStatus.sent);
 
-      // 4. 再调用 completion 接口
+      // 4. Then call the completion API
       try {
         String content = '';
         if (payload is TextPayload) {
@@ -194,7 +194,7 @@ class UploadController {
     _uploadTokens[messageId] = cancelToken;
 
     try {
-      // 1. 获取图片尺寸 (如果是图片)
+      // 1. Get the image dimensions (if it is an image)
       int width = 0;
       int height = 0;
       if (isImage) {
@@ -207,7 +207,7 @@ class UploadController {
         }
       }
 
-      // 2. 上传
+      // 2. Upload
       final response = await _uploadService.uploadBytes(
         channelId: channelId,
         channelType: channelType,
@@ -241,13 +241,13 @@ class UploadController {
       _provider.updateMessagePayload(messageId, payload);
       _provider.updateMessageStatus(messageId, MessageStatus.sending);
 
-      // 3. 通过 IM 发送消息
+      // 3. Send the message via IM
       await _imService.sendPayload(payload.toJson(), clientMsgNo: clientMsgNo);
 
-      // 发送成功后，更新状态为 sent
+      // After a successful send, update the status to sent
       _provider.updateMessageStatus(messageId, MessageStatus.sent);
 
-      // 4. 再调用 completion 接口
+      // 4. Then call the completion API
       try {
         String content = '';
         if (payload is TextPayload) {

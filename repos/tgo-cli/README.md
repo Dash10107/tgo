@@ -1,6 +1,6 @@
 # tgo-cli
 
-TGO 客服系统的命令行工具，提供 **CLI** 和 **MCP Server** 双模式，让 AI Agent 能通过命令行或 MCP 协议执行与人类客服相同的操作。
+Pelatis 客服系统的命令行工具，提供 **CLI** 和 **MCP Server** 双模式，让 AI Agent 能通过命令行或 MCP 协议执行与人类客服相同的操作。
 
 ## 快速开始
 

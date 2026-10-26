@@ -12,7 +12,7 @@ from app.api.feishu_utils import feishu_get_tenant_access_token, feishu_reply_te
 
 
 class FeishuBotAdapter(BasePlatformAdapter):
-    """Outbound adapter for Feishu Bot (飞书机器人).
+    """Outbound adapter for Feishu Bot.
 
     - Non-streaming: sends the final aggregated content via Reply API
     - Uses message_id to reply to messages (required)

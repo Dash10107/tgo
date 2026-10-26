@@ -1,4 +1,4 @@
-# TGO Workspace — AGENTS.md
+# Pelatis Workspace — AGENTS.md
 
 > 最近校准: 2026-03-11
 

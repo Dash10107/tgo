@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     )
 
     # Service Info
-    SERVICE_NAME: str = Field(default="TGO Plugin Runtime")
+    SERVICE_NAME: str = Field(default="Pelatis Plugin Runtime")
     SERVICE_VERSION: str = Field(default="1.0.0")
 
     # Server Configuration
@@ -45,7 +45,7 @@ class Settings(BaseSettings):
     # AI Service Configuration (for tool sync)
     AI_SERVICE_URL: str = Field(
         default="http://localhost:8081",
-        description="URL of the TGO AI service for tool sync",
+        description="URL of the Pelatis AI service for tool sync",
     )
     AI_SERVICE_TIMEOUT: int = Field(
         default=30,

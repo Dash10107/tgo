@@ -69,7 +69,7 @@ export function getAvailableVariables(
         inputData.input_variables.forEach((v: any) => {
           variables.push({
             nodeId: node.id,
-            nodeLabel: data.label || '用户输入',
+            nodeLabel: data.label || 'User Input',
             nodeType: 'input',
             variableName: v.name,
             variableType: v.type,
@@ -82,9 +82,9 @@ export function getAvailableVariables(
       const refKey = webhookData.reference_key || 'webhook_1';
       
       const subFields = [
-        { name: 'body', type: 'object' as const, desc: '请求体' },
-        { name: 'params', type: 'object' as const, desc: '查询参数' },
-        { name: 'headers', type: 'object' as const, desc: '请求头' }
+        { name: 'body', type: 'object' as const, desc: 'Request body' },
+        { name: 'params', type: 'object' as const, desc: 'Query parameters' },
+        { name: 'headers', type: 'object' as const, desc: 'Request headers' }
       ];
 
       subFields.forEach(field => {
@@ -101,7 +101,7 @@ export function getAvailableVariables(
       const refKey = (data as any).reference_key || 'timer_1';
       variables.push({
         nodeId: node.id,
-        nodeLabel: data.label || '定时触发',
+        nodeLabel: data.label || 'Scheduled Trigger',
         nodeType: 'timer',
         variableName: 'timestamp',
         variableType: 'number',
@@ -112,15 +112,15 @@ export function getAvailableVariables(
       const refKey = nodeData.reference_key || `api_1`;
       
       const subFields = [
-        { name: 'body', type: 'string' as const, desc: '响应正文' },
-        { name: 'status_code', type: 'number' as const, desc: '状态码' },
-        { name: 'headers', type: 'object' as const, desc: '响应头' }
+        { name: 'body', type: 'string' as const, desc: 'Response body' },
+        { name: 'status_code', type: 'number' as const, desc: 'Status code' },
+        { name: 'headers', type: 'object' as const, desc: 'Response headers' }
       ];
 
       subFields.forEach(field => {
         variables.push({
           nodeId: node.id,
-          nodeLabel: data.label || 'API调用',
+          nodeLabel: data.label || 'API Call',
           nodeType: 'api',
           variableName: field.name,
           variableType: field.type,
@@ -140,7 +140,7 @@ export function getAvailableVariables(
       const refKey = (data as any).reference_key || 'llm_1';
       variables.push({
         nodeId: node.id,
-        nodeLabel: data.label || 'LLM调用',
+        nodeLabel: data.label || 'LLM Call',
         nodeType: 'llm',
         variableName: 'text',
         fullPath: `${refKey}.text`
@@ -149,7 +149,7 @@ export function getAvailableVariables(
       const refKey = (data as any).reference_key || 'tool_1';
       variables.push({
         nodeId: node.id,
-        nodeLabel: data.label || 'Tool工具',
+        nodeLabel: data.label || 'Tool',
         nodeType: 'tool',
         variableName: 'result',
         fullPath: `${refKey}.result`
@@ -159,14 +159,14 @@ export function getAvailableVariables(
       variables.push(
         {
           nodeId: node.id,
-          nodeLabel: data.label || '问题分类器',
+          nodeLabel: data.label || 'Question Classifier',
           nodeType: 'classifier',
           variableName: 'category_id',
           fullPath: `${refKey}.category_id`
         },
         {
           nodeId: node.id,
-          nodeLabel: data.label || '问题分类器',
+          nodeLabel: data.label || 'Question Classifier',
           nodeType: 'classifier',
           variableName: 'category_name',
           fullPath: `${refKey}.category_name`

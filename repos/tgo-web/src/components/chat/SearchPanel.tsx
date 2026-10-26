@@ -75,9 +75,9 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ open, onClose }) => {
 
   const tabs = useMemo(() => (
     [
-      { key: 'all' as SearchScope, label: t('search.tabs.all', '所有'), icon: 'Grid' },
-      { key: 'visitors' as SearchScope, label: t('search.tabs.visitors', '访客'), icon: 'Users' },
-      { key: 'messages' as SearchScope, label: t('search.tabs.messages', '消息'), icon: 'MessageSquareText' },
+      { key: 'all' as SearchScope, label: t('search.tabs.all', 'All'), icon: 'Grid' },
+      { key: 'visitors' as SearchScope, label: t('search.tabs.visitors', 'Visitors'), icon: 'Users' },
+      { key: 'messages' as SearchScope, label: t('search.tabs.messages', 'Messages'), icon: 'MessageSquareText' },
     ]
   ), [t]);
 
@@ -147,7 +147,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ open, onClose }) => {
         setHasMoreVisitors(resp.visitor_pagination?.has_next ?? false);
       }
     } catch (err) {
-      const msg = err instanceof Error ? err.message : t('search.errorGeneric', '搜索失败，请稍后重试');
+      const msg = err instanceof Error ? err.message : t('search.errorGeneric', 'Search failed, please try again later');
       setError(msg);
       showApiError(showToast, err);
     } finally {
@@ -244,7 +244,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ open, onClose }) => {
     });
 
     const displayName = isAgentChat
-      ? t('chat.header.agentFallback', 'AI员工')
+      ? t('chat.header.agentFallback', 'AI Employee')
       : name;
     const displayAvatar = avatar;
 
@@ -302,11 +302,11 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ open, onClose }) => {
     );
   };
 
-  // 打开既有会话（按 channelId/channelType 查找）
+  // Open an existing conversation (look up by channelId/channelType)
   const openConversation = useCallback((channelId?: string | null, channelType?: number | null) => {
     const chatsStore = useChatStore.getState();
     if (!channelId) {
-      showToast('info', t('search.toasts.notFoundTitle', '未找到会话'), t('search.toasts.noConversationInfo', '该结果缺少会话信息'));
+      showToast('info', t('search.toasts.notFoundTitle', 'Conversation not found'), t('search.toasts.noConversationInfo', 'This result lacks conversation info'));
       // Always close search panel after selecting a result
       onClose();
       return;
@@ -317,26 +317,26 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ open, onClose }) => {
       chatsStore.setActiveChat(chat);
       onClose();
     } else {
-      showToast('info', t('search.toasts.notFoundTitle', '未找到会话'), t('search.toasts.notInRecent', '该会话不在最近列表中，请尝试刷新'));
+      showToast('info', t('search.toasts.notFoundTitle', 'Conversation not found'), t('search.toasts.notInRecent', 'This conversation is not in the recent list. Try refreshing.'));
       // Still close the panel after click (UX expectation)
       onClose();
     }
   }, [onClose, showToast, t]);
 
-  // 打开访客最近会话（若不存在则创建）
+  // Open the visitor's recent conversation (create one if it does not exist)
   const openVisitorConversation = useCallback((v: VisitorBasicResponse) => {
     const chatsStore = useChatStore.getState();
     try {
       const visitorId = v?.id;
       if (!visitorId) {
-        showToast('warning', t('search.toasts.incompleteVisitorInfo', '访客信息不完整'), t('search.toasts.missingVisitorId', '缺少 visitor_id'));
+        showToast('warning', t('search.toasts.incompleteVisitorInfo', 'Visitor information is incomplete'), t('search.toasts.missingVisitorId', 'Missing visitor_id'));
         onClose();
         return;
       }
       const channelId = `${visitorId}-vtr`;
-      const channelType = 251; // 访客会话类型
+      const channelType = 251; // Visitor conversation type
 
-      // 1) 已存在则直接切换
+      // 1) If it already exists, switch to it directly
       const exist = chatsStore.chats.find(c => c.channelId === channelId && c.channelType === channelType);
       if (exist) {
         chatsStore.setActiveChat(exist);
@@ -344,8 +344,8 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ open, onClose }) => {
         return;
       }
 
-      // 2) 不存在则新建 Chat 对象并插入到顶部
-      const fallbackName = t('visitor.fallbackName', '访客 {{suffix}}').replace('{{suffix}}', v.platform_open_id.slice(-4));
+      // 2) Otherwise create a new Chat object and insert it at the top
+      const fallbackName = t('visitor.fallbackName', 'Visitor {{suffix}}').replace('{{suffix}}', v.platform_open_id.slice(-4));
       const rawName = (v.name || v.nickname || fallbackName) as string;
       const plainName = (rawName || '').replace(/<[^>]*>/g, '') || fallbackName;
 
@@ -397,14 +397,14 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ open, onClose }) => {
       chatsStore.setActiveChat(newChat);
       onClose();
     } catch (e) {
-      console.error('打开访客会话失败', e);
+      console.error('Failed to open visitor conversation', e);
       showApiError(showToast, e);
       onClose();
     }
   }, [onClose, showToast, t]);
 
   const renderVisitorItem = useCallback((v: VisitorBasicResponse) => {
-    const fallbackName = t('visitor.fallbackName', '访客 {{suffix}}').replace('{{suffix}}', v.platform_open_id.slice(-4));
+    const fallbackName = t('visitor.fallbackName', 'Visitor {{suffix}}').replace('{{suffix}}', v.platform_open_id.slice(-4));
     const rawName = (v.name || v.nickname || fallbackName) as string;
     const plainName = (rawName || '').replace(/<[^>]*>/g, '') || fallbackName;
     const nameHtml = DOMPurify.sanitize(rawName || '');
@@ -454,16 +454,16 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ open, onClose }) => {
               ref={inputRef}
               value={query}
               onChange={handleChange}
-              placeholder={t('search.placeholder', '搜索访客或消息')}
+              placeholder={t('search.placeholder', 'Search visitors or messages')}
               className="w-full pl-9 pr-9 py-2.5 text-sm border border-gray-200/70 rounded-full bg-gray-50/80 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/70 focus:border-blue-500"
             />
             {query && (
-              <button className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" onClick={handleClear} aria-label={t('common.clear', '清空')} title={t('common.clear', '清空')}>
+              <button className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" onClick={handleClear} aria-label={t('common.clear', 'Clear')} title={t('common.clear', 'Clear')}>
                 <Icon name="X" size={16} />
               </button>
             )}
           </div>
-          <button className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700" onClick={onClose} aria-label={t('common.close', '关闭')} title={t('common.close', '关闭')}>
+          <button className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700" onClick={onClose} aria-label={t('common.close', 'Close')} title={t('common.close', 'Close')}>
             <Icon name="X" size={18} />
           </button>
         </div>
@@ -486,7 +486,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ open, onClose }) => {
         {/* Tabs */}
         <div className="px-4 pt-2 border-b border-gray-100/80 dark:border-gray-700/80 bg-white/40 dark:bg-gray-800/40 backdrop-blur">
           <div className="flex items-center justify-between">
-            <div className="inline-flex items-center gap-1 rounded-md bg-gray-100/60 dark:bg-gray-700/60 p-1 ring-1 ring-inset ring-gray-200/60 dark:ring-gray-600/60" role="tablist" aria-label={t('search.aria.tablist', '搜索分类')}>
+            <div className="inline-flex items-center gap-1 rounded-md bg-gray-100/60 dark:bg-gray-700/60 p-1 ring-1 ring-inset ring-gray-200/60 dark:ring-gray-600/60" role="tablist" aria-label={t('search.aria.tablist', 'Search categories')}>
               {tabs.map(tab => {
                 const isActive = activeTab === tab.key;
                 return (
@@ -510,11 +510,11 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ open, onClose }) => {
         <div className="flex-1 overflow-auto px-4 py-3 bg-white/30 dark:bg-gray-800/30">
           {!query ? (
             <div className="h-full flex items-center justify-center text-gray-400 dark:text-gray-500 text-sm">
-              {t('search.emptyQueryHint', '输入关键词开始搜索')}
+              {t('search.emptyQueryHint', 'Enter a keyword to start searching')}
             </div>
           ) : (loading && !loadingMore) ? (
             <div className="h-full flex items-center justify-center text-gray-500 dark:text-gray-400 text-sm">
-              <Icon name="Loader2" className="animate-spin mr-2" size={16} /> {t('search.searching', '正在搜索...')}
+              <Icon name="Loader2" className="animate-spin mr-2" size={16} /> {t('search.searching', 'Searching...')}
             </div>
           ) : error ? (
             <div className="h-full flex items-center justify-center text-red-500 dark:text-red-400 text-sm">
@@ -525,9 +525,9 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ open, onClose }) => {
               <div className="space-y-6">
                 {/* Visitors section */}
                 <div>
-                  <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">{t('search.sections.visitors', '访客')}（{data.visitor_count ?? data.visitors.length}）</div>
+                  <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">{t('search.sections.visitors', 'Visitors')}（{data.visitor_count ?? data.visitors.length}）</div>
                   {data.visitors.length === 0 ? (
-                    <div className="text-sm text-gray-400 dark:text-gray-500">{t('search.empty.visitors', '未找到相关访客')}</div>
+                    <div className="text-sm text-gray-400 dark:text-gray-500">{t('search.empty.visitors', 'No related visitors found')}</div>
                   ) : (
                     <div className="divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-700 rounded-md border border-gray-100 dark:border-gray-600">
                       {data.visitors.slice(0, 10).map(v => (
@@ -540,9 +540,9 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ open, onClose }) => {
 
                 {/* Messages section */}
                 <div>
-                  <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">{t('search.sections.messages', '消息')}（{data.message_count ?? data.messages.length}）</div>
+                  <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">{t('search.sections.messages', 'Messages')}（{data.message_count ?? data.messages.length}）</div>
                   {data.messages.length === 0 ? (
-                    <div className="text-sm text-gray-400 dark:text-gray-500">{t('search.empty.messages', '未找到相关消息')}</div>
+                    <div className="text-sm text-gray-400 dark:text-gray-500">{t('search.empty.messages', 'No related messages found')}</div>
                   ) : (
                     <div className="divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-700 rounded-md border border-gray-100 dark:border-gray-600">
                       {data.messages.map(m => (
@@ -564,7 +564,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ open, onClose }) => {
             ) : activeTab === 'visitors' ? (
               <div>
                 {accumulatedVisitors.length === 0 ? (
-                  <div className="text-sm text-gray-400 dark:text-gray-500">{t('search.empty.visitors', '未找到相关访客')}</div>
+                  <div className="text-sm text-gray-400 dark:text-gray-500">{t('search.empty.visitors', 'No related visitors found')}</div>
                 ) : (
                   <>
                     <div className="divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-700 rounded-md border border-gray-100 dark:border-gray-600">
@@ -582,7 +582,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ open, onClose }) => {
             ) : (
               <div>
                 {data.messages.length === 0 ? (
-                  <div className="text-sm text-gray-400 dark:text-gray-500">{t('search.empty.messages', '未找到相关消息')}</div>
+                  <div className="text-sm text-gray-400 dark:text-gray-500">{t('search.empty.messages', 'No related messages found')}</div>
                 ) : (
                   <div className="divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-700 rounded-md border border-gray-100 dark:border-gray-600">
                     {data.messages.map(m => (
@@ -602,16 +602,16 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ open, onClose }) => {
               </div>
             )
           ) : (
-            <div className="h-full flex items-center justify-center text-gray-400 dark:text-gray-500 text-sm">{t('search.emptyQueryHint', '输入关键词开始搜索')}</div>
+            <div className="h-full flex items-center justify-center text-gray-400 dark:text-gray-500 text-sm">{t('search.emptyQueryHint', 'Enter a keyword to start searching')}</div>
           )}
         </div>
         <div className="px-4 py-2 border-t border-gray-100 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400 bg-white/60 dark:bg-gray-800/60 backdrop-blur flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="hidden md:inline">{t('search.footer.tip', '小提示：')}</span>
-            <span>{t('search.footer.escClose', 'Esc 关闭')}</span>
-            <span>{t('search.footer.enterOpen', 'Enter 打开')}</span>
+            <span className="hidden md:inline">{t('search.footer.tip', 'Tip:')}</span>
+            <span>{t('search.footer.escClose', 'Esc to close')}</span>
+            <span>{t('search.footer.enterOpen', 'Enter to open')}</span>
           </div>
-          <div className="text-gray-400 dark:text-gray-500">{t('search.footer.summary', '搜索访客和消息')}</div>
+          <div className="text-gray-400 dark:text-gray-500">{t('search.footer.summary', 'Search visitors and messages')}</div>
         </div>
       </div>
     </div>,

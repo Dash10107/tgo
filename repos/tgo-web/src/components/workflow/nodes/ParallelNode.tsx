@@ -13,7 +13,7 @@ import NodeExecutionOverlay from '../overlays/NodeExecutionOverlay';
 const ParallelNode: React.FC<NodeProps<ParallelNodeData>> = ({ id, data, selected }) => {
   const { t } = useTranslation();
   const branches = data.branches || 2;
-  const defaultLabel = t('workflow.node_types.parallel.label', '并行执行');
+  const defaultLabel = t('workflow.node_types.parallel.label', 'Parallel');
   
   return (
     <div

@@ -211,7 +211,7 @@ async def _run_sync_execution(
     perf_start = time.time()
     executor = WorkflowExecutor(workflow_definition, project_id=project_id)
     
-    # 定义同步模式下的回调（保存到 DB）
+    # Define the callback for sync mode (saves to DB)
     async def sync_on_node_complete(node_id, node_type, status, input, output, error, duration):
         node_exec = NodeExecution(
             id=str(uuid.uuid4()),
@@ -242,7 +242,7 @@ async def _run_sync_execution(
     perf_duration = time.time() - perf_start
     end_time_dt = datetime.utcnow()
     
-    # 更新最终状态
+    # Update the final status
     await db.execute(
         update(WorkflowExecution)
         .where(WorkflowExecution.id == execution_id)
@@ -362,7 +362,7 @@ async def execute_workflow(
         raise HTTPException(status_code=404, detail="Workflow not found")
 
     if request.stream:
-        # --- 1. 流式执行模式 (SSE) ---
+        # --- 1. Streaming execution mode (SSE) ---
         db_execution = await _create_execution_record(db, workflow_id, project_id, request.inputs, status="running")
         return StreamingResponse(
             _run_stream_execution(
@@ -376,7 +376,7 @@ async def execute_workflow(
             }
         )
     elif request.async_mode:
-        # --- 2. 异步执行模式 (Celery) ---
+        # --- 2. Async execution mode (Celery) ---
         db_execution = await _create_execution_record(db, workflow_id, project_id, request.inputs, status="pending")
         
         # Trigger Celery task
@@ -391,7 +391,7 @@ async def execute_workflow(
         result = await db.execute(stmt)
         return result.scalar_one()
     else:
-        # --- 3. 同步执行模式 (默认) ---
+        # --- 3. Sync execution mode (default) ---
         db_execution = await _create_execution_record(db, workflow_id, project_id, request.inputs, status="running")
         return await _run_sync_execution(
             workflow_id, project_id, db_execution.id, request.inputs, workflow.definition, db_execution.started_at, db

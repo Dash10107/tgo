@@ -44,7 +44,7 @@
     "description": "The label for the doc item '调试工具' in sidebar 'docsSidebar', linking to the doc development/debug-tools"
   },
   "sidebar.docsSidebar.doc.tgo 命令": {
-    "message": "TGO Commands",
+    "message": "Pelatis Commands",
     "description": "The label for the doc item 'tgo 命令' in sidebar 'docsSidebar', linking to the doc development/tgo-command"
   },
   "version.label": {

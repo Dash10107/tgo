@@ -1,11 +1,11 @@
 @import "tailwindcss";
 @import "./styles/markdown.css";
-/* 本地化 Inter 字体（替代 Google Fonts） */
+/* Localized Inter font (replaces Google Fonts) */
 @import "@fontsource/inter/400.css";
 @import "@fontsource/inter/500.css";
 @import "@fontsource/inter/600.css";
 @import "@fontsource/inter/700.css";
-/* 本地化 highlight.js 样式（替代 cdnjs） */
+/* Localized highlight.js styles (replaces cdnjs) */
 @import "highlight.js/styles/github.css";
 
 @config "../tailwind.config.js";
@@ -134,7 +134,7 @@ body {
   width: 100%;
   max-width: 28rem;
   min-width: 320px;
-  /* 确保文字正常显示 */
+  /* Make sure text displays normally */
   writing-mode: horizontal-tb;
   direction: ltr;
   text-orientation: mixed;
@@ -148,40 +148,40 @@ body {
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
 }
 
-/* 防止文字垂直显示的修复 */
+/* Fix to prevent text from rendering vertically */
 .modal-content * {
   writing-mode: horizontal-tb !important;
   text-orientation: mixed !important;
   direction: ltr !important;
 }
 
-/* 额外的文字显示修复 */
+/* Additional text rendering fixes */
 .about-modal-fix {
-  /* 强制水平文字方向 */
+  /* Force horizontal text direction */
   writing-mode: horizontal-tb !important;
   text-orientation: mixed !important;
   direction: ltr !important;
 
-  /* 确保正常的文字流 */
+  /* Ensure normal text flow */
   unicode-bidi: normal !important;
   text-align: start;
 
-  /* 防止任何可能的变换 */
+  /* Prevent any possible transforms */
   transform: none !important;
 
-  /* 确保正常的字体渲染 */
+  /* Ensure normal font rendering */
   font-feature-settings: normal;
   font-variant: normal;
 
-  /* 确保正常的行高和间距 */
+  /* Ensure normal line height and spacing */
   line-height: 1.5;
   letter-spacing: normal;
   word-spacing: normal;
 }
 
-/* 针对中文字符的特殊处理 */
+/* Special handling for CJK characters */
 .about-modal-fix .chinese-text {
-  font-family: "Inter", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", sans-serif;
+  font-family: "Inter", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   text-rendering: optimizeLegibility;
 }
 

@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "TGO-Tech API Service",
+    "title": "Pelatis API Service",
     "description": "Core Business Logic Microservice",
     "version": "0.1.0"
   },
@@ -4415,7 +4415,7 @@
           "Platforms"
         ],
         "summary": "Platform Callback Forward",
-        "description": "Forward third-party platform callbacks to the TGO Platform Service.\n\n- Validates the platform_api_key against platforms table (must be active and not soft-deleted)\n- Forwards body and query parameters to Platform Service\n- Returns Platform Service response verbatim (status, headers, body)",
+        "description": "Forward third-party platform callbacks to the Pelatis Platform Service.\n\n- Validates the platform_api_key against platforms table (must be active and not soft-deleted)\n- Forwards body and query parameters to Platform Service\n- Returns Platform Service response verbatim (status, headers, body)",
         "operationId": "platform_callback_forward_v1_platforms_callback__platform_api_key__post",
         "parameters": [
           {
@@ -11323,7 +11323,7 @@
           "Search"
         ],
         "summary": "Unified search across visitors and messages",
-        "description": "Search visitor profiles stored in TGO and historical chat messages in WuKongIM. Set scope to filter results to visitors or messages only.",
+        "description": "Search visitor profiles stored in Pelatis and historical chat messages in WuKongIM. Set scope to filter results to visitors or messages only.",
         "operationId": "unified_search_v1_search_get",
         "security": [
           {
@@ -11486,8 +11486,8 @@
           "Documentation",
           "Documentation"
         ],
-        "summary": "TGO API Documentation",
-        "description": "Swagger UI for the current TGO API service.",
+        "summary": "Pelatis API Documentation",
+        "description": "Swagger UI for the current Pelatis API service.",
         "operationId": "docs_api_v1_docs_api_get",
         "responses": {
           "200": {

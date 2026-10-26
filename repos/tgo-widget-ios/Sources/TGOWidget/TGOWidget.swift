@@ -3,7 +3,7 @@ import SwiftUI
 import UIKit
 #endif
 
-/// Public API entry point for TGO Widget
+/// Public API entry point for Pelatis Widget
 public final class TGOWidget {
     /// Shared configuration (set via `configure`)
     private static var sharedConfig: TGOConfig?

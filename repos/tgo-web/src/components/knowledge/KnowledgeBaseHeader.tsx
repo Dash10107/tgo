@@ -144,7 +144,7 @@ export const KnowledgeBaseHeader: React.FC<KnowledgeBaseHeaderProps> = ({
             <option value="">{t('knowledge.detail.allTypes')}</option>
             <option value="pdf">PDF</option>
             <option value="doc">Word</option>
-            <option value="txt">文本</option>
+            <option value="txt">{t('knowledge.fileTypes.text', 'Text')}</option>
             <option value="xlsx">Excel</option>
             <option value="ppt">PowerPoint</option>
           </select>

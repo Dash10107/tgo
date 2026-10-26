@@ -1,6 +1,6 @@
-# TGO Device Control Service
+# Pelatis Device Control Service
 
-TGO Device Control 是一个设备控制服务，允许 AI Agent 远程控制用户的电脑或移动设备。
+Pelatis Device Control 是一个设备控制服务，允许 AI Agent 远程控制用户的电脑或移动设备。
 
 ## 功能特性
 
@@ -102,4 +102,4 @@ app/
 
 ## 许可证
 
-Copyright © 2026 TGO-Tech
+Copyright © 2026 Pelatis

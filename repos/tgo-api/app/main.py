@@ -256,7 +256,7 @@ def create_app(
         startup_log(f"   📚 API Docs: http://localhost:8000/v1/docs")
         startup_log(f"   🏥 Health Check: http://localhost:8000/health")
         startup_log("")
-        startup_log("🎉 TGO-Tech API Service is ready!")
+        startup_log("🎉 Pelatis API Service is ready!")
         startup_log("═" * 64)
 
     # Register shutdown event
@@ -319,7 +319,7 @@ def create_app(
     @application.get("/")
     async def root() -> dict[str, str]:
         """Root endpoint."""
-        return {"message": "TGO-Tech API Service", "version": settings.PROJECT_VERSION}
+        return {"message": "Pelatis API Service", "version": settings.PROJECT_VERSION}
 
     @application.get("/health")
     async def health_check() -> dict[str, str]:

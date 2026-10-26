@@ -17,7 +17,7 @@ depends_on = None
 
 
 def upgrade() -> None:
-    # Add source_type column to distinguish between wecom_kf (客服) and wecom_bot (群机器人)
+    # Add source_type column to distinguish between wecom_kf (customer service) and wecom_bot (group bot)
     op.add_column(
         'pt_wecom_inbox',
         sa.Column('source_type', sa.String(length=20), server_default='wecom_kf', nullable=False)

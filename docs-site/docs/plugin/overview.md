@@ -6,11 +6,11 @@ sidebar_position: 1
 
 # 插件开发概述
 
-TGO 插件系统允许开发者通过标准化的接口扩展客服系统的功能。插件可以为访客面板添加自定义信息展示、扩展聊天工具栏、集成第三方应用等。
+Pelatis 插件系统允许开发者通过标准化的接口扩展客服系统的功能。插件可以为访客面板添加自定义信息展示、扩展聊天工具栏、集成第三方应用等。
 
-## 什么是 TGO 插件
+## 什么是 Pelatis 插件
 
-TGO 插件是一个独立运行的进程，通过 **Unix Socket** 与 TGO 宿主程序进行通讯。
+Pelatis 插件是一个独立运行的进程，通过 **Unix Socket** 与 Pelatis 宿主程序进行通讯。
 
 ### 核心优势
 - **语言无关**：支持任何能处理 Socket 通讯的语言。
@@ -32,15 +32,15 @@ TGO 插件是一个独立运行的进程，通过 **Unix Socket** 与 TGO 宿主
 2. **[SDK 开发指南](/plugin/sdk)**：深入了解 SDK 的 API、UI 构建器和 Action 系统。
 3. **[插件配置 (plugin.yml)](/plugin/manifest)**：详细了解如何配置插件的元数据、源码及构建方式。
 4. **[扩展点详解](/plugin/extension-points)**：详细了解各个可插点（访客面板、工具栏等）的交互逻辑。
-5. **[模版规范](/plugin/templates)**：了解 TGO 支持的所有 UI 组件模版。
+5. **[模版规范](/plugin/templates)**：了解 Pelatis 支持的所有 UI 组件模版。
 6. **[完整示例](/plugin/examples)**：通过真实的业务示例学习如何构建复杂的插件。
 
 ## 核心概念
 
-TGO 插件系统的交互基于以下核心概念：
+Pelatis 插件系统的交互基于以下核心概念：
 
 - **Extension Point (扩展点)**：插件挂载的位置，如 `visitor_panel` (访客面板) 或 `chat_toolbar` (工具栏)。
 - **Template (模版)**：描述 UI 结构的 JSON 数据。SDK 提供了丰富的 Builder（如 `Table`, `Form`, `Group`）来生成这些数据。
 - **Action (动作)**：指示宿主执行的具体操作，如 `OpenURL` (打开网页) 或 `ShowToast` (显示提示)。
 - **Capability (能力声明)**：插件在注册时声明自己支持哪些扩展点及其配置信息。
-- **plugin.yml (配置文件)**：插件的身份卡。定义了插件的 ID、版本、源码地址、构建方式及运行参数。它是 TGO 自动化管理插件的核心。
+- **plugin.yml (配置文件)**：插件的身份卡。定义了插件的 ID、版本、源码地址、构建方式及运行参数。它是 Pelatis 自动化管理插件的核心。

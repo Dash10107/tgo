@@ -57,7 +57,7 @@ const Sidebar: React.FC = () => {
   const isAdmin = user?.role === 'admin';
 
   // Filter navigation items based on user role
-  // Non-admin users cannot see 'channels' (接入平台) and 'ai' (AI 功能)
+  // Non-admin users cannot see 'channels' (Platform Integrations) and 'ai' (AI Features)
   const filteredItems = NAVIGATION_ITEMS.filter(item => {
     if (!isAdmin && (item.id === 'channels' || item.id === 'ai')) {
       return false;

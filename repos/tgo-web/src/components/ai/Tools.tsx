@@ -84,16 +84,16 @@ const ToolsContent: React.FC = () => {
               setShowEditToolModal(true);
             }
           } else {
-            showToast('error', t('tools.tools.edit.notFound', '工具未找到'), t('tools.tools.edit.notFoundMessage', '无法找到该工具的详细信息'));
+            showToast('error', t('tools.tools.edit.notFound', 'Tool Not Found'), t('tools.tools.edit.notFoundMessage', 'Unable to find detailed information for this tool'));
           }
           break;
         default:
-          showToast('warning', t('tools.tools.unknownAction.title', '未知操作'), t('tools.tools.unknownAction.message', { type: actionType, defaultValue: `不支持的操作类型: ${actionType}` }));
+          showToast('warning', t('tools.tools.unknownAction.title', 'Unknown action'), t('tools.tools.unknownAction.message', { type: actionType, defaultValue: 'Unsupported action type: {{type}}' }));
       }
     } catch (error) {
       console.error(`Tool action ${actionType} failed:`, error);
-      const errorMessage = error instanceof Error ? error.message : t('tools.tools.actionFailed.title', '操作失败');
-      showToast('error', t('tools.tools.actionFailed.title', '操作失败'), errorMessage);
+      const errorMessage = error instanceof Error ? error.message : t('tools.tools.actionFailed.title', 'Action failed');
+      showToast('error', t('tools.tools.actionFailed.title', 'Action failed'), errorMessage);
     }
   };
 
@@ -114,14 +114,14 @@ const ToolsContent: React.FC = () => {
     setIsDeleting(true);
     try {
       await deleteTool(toolToDelete.id);
-      showToast('success', t('tools.tools.delete.successTitle', '删除成功'), t('tools.tools.delete.successMessage', { name: toolToDelete.name, defaultValue: `工具 "${toolToDelete.name}" 已被删除` }));
+          <div className="col-span-1">{t('knowledge.table.statusColumn', 'Status')}</div>
       await loadTools(false);
       setShowDeleteConfirm(false);
       setToolToDelete(null);
     } catch (error) {
       console.error('Failed to delete tool:', error);
-      const errorMessage = error instanceof Error ? error.message : t('tools.tools.actionFailed.title', '操作失败');
-      showToast('error', t('tools.tools.actionFailed.title', '操作失败'), errorMessage);
+      const errorMessage = error instanceof Error ? error.message : t('tools.tools.actionFailed.title', 'Action failed');
+      showToast('error', t('tools.tools.actionFailed.title', 'Action failed'), errorMessage);
     } finally {
       setIsDeleting(false);
     }
@@ -134,10 +134,10 @@ const ToolsContent: React.FC = () => {
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
             <LuPackage className="w-7 h-7 text-blue-600" />
-            {t('tools.title', '工具管理')}
+            {t('tools.title', 'Tools')}
           </h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            {t('tools.subtitle', '配置和扩展 AI 员工的能力集')}
+            {t('tools.subtitle', 'Configure and extend the capabilities of AI agents')}
           </p>
         </div>
         
@@ -147,7 +147,7 @@ const ToolsContent: React.FC = () => {
             <LuSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
             <input 
               type="text"
-              placeholder={t('tools.search.placeholder', '搜索工具...')}
+              placeholder={t('tools.search.placeholder', 'Search tools...')}
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
               className="pl-10 pr-4 py-2 w-48 lg:w-64 bg-gray-100/50 dark:bg-gray-800/50 border-transparent focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 rounded-xl text-sm transition-all outline-none"
@@ -161,7 +161,7 @@ const ToolsContent: React.FC = () => {
             onClick={() => setShowToolStoreModal(true)}
           >
             <LuPackage className="w-4 h-4 text-blue-600" />
-            <span>{t('tools.toolStore', '工具商店')}</span>
+            <span>{t('tools.toolStore', 'Tool Store')}</span>
           </button>
 
           <button
@@ -169,14 +169,14 @@ const ToolsContent: React.FC = () => {
             onClick={() => setShowAddHTTPToolModal(true)}
           >
             <Globe className="w-4 h-4" />
-            <span className="hidden lg:inline">{t('tools.addHttpTool', '添加 HTTP 工具')}</span>
+            <span className="hidden lg:inline">{t('tools.addHttpTool', 'Add HTTP Tool')}</span>
           </button>
           <button
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-200 dark:shadow-none transition-all active:scale-95"
             onClick={() => setShowAddToolModal(true)}
           >
             <LuPackage className="w-4 h-4" />
-            <span className="hidden lg:inline">{t('tools.addMCPTool', '添加 MCP 工具')}</span>
+            <span className="hidden lg:inline">{t('tools.addMCPTool', 'Add MCP Tool')}</span>
           </button>
         </div>
       </header>
@@ -191,17 +191,17 @@ const ToolsContent: React.FC = () => {
             <div className="relative z-10">
               <h3 className="text-xl font-bold flex items-center gap-2">
                 <LuPackage className="w-6 h-6" />
-                {t('tools.banner.title', '增强 AI 能力')}
+                {t('tools.banner.title', 'Enhance AI Capabilities')}
               </h3>
               <p className="text-blue-100 text-sm mt-1 opacity-90 max-w-xl">
-                {t('tools.banner.description', '通过添加 HTTP 接口或 MCP 协议工具，您可以让 AI 员工具备搜索、查询数据库、调用外部服务等无限可能。')}
+                {t('tools.banner.description', 'By adding HTTP or MCP protocol tools, you can give AI agents unlimited possibilities such as searching, querying databases, and calling external services.')}
               </p>
             </div>
           </div>
 
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t('tools.listTitle', '工具列表')}</h3>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t('tools.listTitle', 'Tool List')}</h3>
             </div>
 
             {/* Tools List with Loading/Error States */}
@@ -214,8 +214,8 @@ const ToolsContent: React.FC = () => {
               <AiToolsGridSkeleton count={8} />
             ) : filteredTools.length === 0 ? (
               <AiToolsEmptyState
-                title={t('tools.tools.installedEmpty.title', '暂无已安装的工具')}
-                description={t('tools.tools.installedEmpty.description', '点击右上角按钮创建您的第一个工具')}
+                title={t('tools.tools.installedEmpty.title', 'No installed tools')}
+                description={t('tools.tools.installedEmpty.description', 'Click the "Add Tool" button in the top-right to create your first tool')}
               />
             ) : (
               <ToolsList
@@ -269,10 +269,10 @@ const ToolsContent: React.FC = () => {
 
       <ConfirmDialog
         isOpen={showDeleteConfirm}
-        title={t('tools.tools.confirmDelete.title', '确认删除')}
-        message={t('tools.tools.confirmDelete.message', { name: toolToDelete?.name, defaultValue: `确定要删除工具 "${toolToDelete?.name}" 吗？此操作无法撤销。` })}
-        confirmText={t('common.delete', '删除')}
-        cancelText={t('common.cancel', '取消')}
+        title={t('tools.tools.confirmDelete.title', 'Confirm Delete')}
+        message={t('tools.tools.confirmDelete.message', { name: toolToDelete?.name, defaultValue: 'Are you sure you want to delete the tool "{{name}}"? This action cannot be undone.' })}
+        confirmText={t('common.delete', 'Delete')}
+        cancelText={t('common.cancel', 'Cancel')}
         confirmVariant="danger"
         onConfirm={handleDeleteToolConfirm}
         onCancel={() => {

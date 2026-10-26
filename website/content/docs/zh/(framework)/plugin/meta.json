@@ -1,6 +1,6 @@
 {
   "title": "插件",
-  "description": "如何开发 TGO 系统的插件和扩展。",
+  "description": "如何开发 Pelatis 系统的插件和扩展。",
   "pages": [
     "overview",
     "quickstart",

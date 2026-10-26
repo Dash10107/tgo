@@ -1,6 +1,6 @@
-# TGO Widget iOS
+# Pelatis Widget iOS
 
-iOS (Swift) SDK for TGO customer service widget. Provides a drop-in chat UI that connects to TGO's backend API and WuKongIM for real-time messaging.
+iOS (Swift) SDK for Pelatis customer service widget. Provides a drop-in chat UI that connects to Pelatis's backend API and WuKongIM for real-time messaging.
 
 ## Requirements
 

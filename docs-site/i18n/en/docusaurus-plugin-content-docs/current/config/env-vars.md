@@ -6,11 +6,11 @@ sidebar_position: 1
 
 # Environment Variables
 
-TGO uses environment variables to configure various services. This page introduces the main configuration files and commonly used environment variables.
+Pelatis uses environment variables to configure various services. This page introduces the main configuration files and commonly used environment variables.
 
 ## Configuration File Structure
 
-TGO configuration is divided into two layers:
+Pelatis configuration is divided into two layers:
 
 ```
 tgo/

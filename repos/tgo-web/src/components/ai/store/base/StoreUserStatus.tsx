@@ -40,7 +40,7 @@ const StoreUserStatus: React.FC<StoreUserStatusProps> = ({
         onClick={onLoginClick}
         className={`hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-bold rounded-xl transition-all ${colorClasses[themeColor].split(' ')[0]} ${colorClasses[themeColor].split(' ')[1]}`}
       >
-        {t('tools.store.loginNow', '立即登录')}
+        {t('tools.store.loginNow', 'Login Now')}
       </button>
     );
   }
@@ -80,7 +80,7 @@ const StoreUserStatus: React.FC<StoreUserStatusProps> = ({
             className={`w-full p-2 flex items-center gap-2 text-xs font-bold rounded-lg transition-colors ${textClasses[themeColor]} hover:bg-gray-50 dark:hover:bg-gray-700`}
           >
             <CreditCard className="w-3.5 h-3.5" />
-            {t('tools.store.recharge', '充值')}
+            {t('tools.store.recharge', 'Top Up')}
           </button>
           <button 
             onClick={() => logout()}

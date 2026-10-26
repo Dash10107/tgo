@@ -1,13 +1,13 @@
 ---
 title: Plugins Overview
-description: Understand the basic concepts, advantages, and recommended development approaches of the TGO plugin system.
+description: Understand the basic concepts, advantages, and recommended development approaches of the Pelatis plugin system.
 ---
 
-TGO Plugin System allows developers to extend the functionality of the TGO customer service system through standardized interfaces. Plugins can add custom information display to the visitor panel, extend the chat toolbar, and integrate with third-party applications.
+Pelatis Plugin System allows developers to extend the functionality of the Pelatis customer service system through standardized interfaces. Plugins can add custom information display to the visitor panel, extend the chat toolbar, and integrate with third-party applications.
 
-## What is a TGO Plugin
+## What is a Pelatis Plugin
 
-A TGO Plugin is a separate process that communicates with the TGO host program via **Unix Socket**.
+A Pelatis Plugin is a separate process that communicates with the Pelatis host program via **Unix Socket**.
 
 ### Core Advantages
 - **Language Agnostic**：Supports any language that can handle Socket communication.
@@ -29,12 +29,12 @@ We highly recommend using the official **SDK** for development. The SDK encapsul
 2. **[SDK Development Guide](./sdk)**：Deep dive into the SDK's API, UI Builders, and Action System.
 3. **[Plugin Configuration (plugin.yml)](./manifest)**：Detailed guide on configuring plugin metadata, source code, and build settings.
 4. **[Extension Points Details](./extension-points)**：Comprehensive guide on the interaction logic of each pluggable point (visitor panel, chat toolbar, etc.).
-5. **[Template Specification](./templates)**：Learn about all the UI component templates supported by TGO.
+5. **[Template Specification](./templates)**：Learn about all the UI component templates supported by Pelatis.
 6. **[Complete Examples](./examples)**：Learn how to build complex plugins with real-world business examples.
 
 ## Core Concepts
 
-The TGO Plugin System's interaction is based on the following core concepts:
+The Pelatis Plugin System's interaction is based on the following core concepts:
 
 - **Extension Point**：Plugins mount points, such as `visitor_panel` (Visitor Panel) or `chat_toolbar` (Chat Toolbar).
 - **Template**：JSON data describing the UI structure. The SDK provides rich Builders (e.g., `Table`, `Form`, `Group`) to generate these templates.

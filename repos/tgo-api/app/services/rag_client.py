@@ -25,14 +25,14 @@ class RAGServiceClient:
         """Get headers for RAG service requests (no authentication)."""
         headers = {
             "Content-Type": "application/json",
-            "User-Agent": "TGO-API-Service/0.1.0",
+            "User-Agent": "Pelatis-API-Service/0.1.0",
         }
         return headers
 
     def _get_multipart_headers(self) -> Dict[str, str]:
         """Get headers for multipart requests (no authentication)."""
         headers = {
-            "User-Agent": "TGO-API-Service/0.1.0",
+            "User-Agent": "Pelatis-API-Service/0.1.0",
         }
         return headers
 

@@ -16,7 +16,7 @@ from app.api.wecom_utils import (
 
 
 class WeComAdapter(BasePlatformAdapter):
-    """Outbound adapter for WeCom (WeChat Work / 企业微信).
+    """Outbound adapter for WeCom (WeChat Work / Enterprise WeChat).
 
     - Non-streaming: sends the final aggregated content as a WeCom text message
     - Requires per-platform config: corp_id, agent_id, app_secret

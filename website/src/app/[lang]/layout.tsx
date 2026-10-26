@@ -5,14 +5,14 @@ import { defineI18nUI } from "fumadocs-ui/i18n";
 import { i18n } from "@/lib/i18n";
 
 export const metadata = {
-  title: "TGO",
+  title: "Pelatis",
   description:
     "开源智能客服系统文档（多智能体 · 知识库 · MCP 工具 · 多渠道接入）",
   icons: {
     icon: "/logo.svg",
   },
   keywords: [
-    "TGO",
+    "Pelatis",
     "AI智能客服",
     "智能客服",
     "多智能体",

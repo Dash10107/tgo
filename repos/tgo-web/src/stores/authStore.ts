@@ -8,6 +8,7 @@ import { useChatStore } from './chatStore';
 import type { LoginFormData, RegisterFormData } from '@/types';
 
 
+import i18n from '@/i18n';
 interface User {
   id: string;
   project_id: string;
@@ -93,7 +94,7 @@ export const useAuthStore = create<AuthState>()(
           console.log('🔐 Auth Store: State updated after login');
 
         } catch (error) {
-          let errorMessage = '登录失败';
+          let errorMessage = i18n.t('auth.loginFailed', 'Login failed');
 
           if (error instanceof APIError) {
             errorMessage = error.getUserMessage();
@@ -157,7 +158,7 @@ export const useAuthStore = create<AuthState>()(
           console.log('🔐 Auth Store: State updated after registration');
 
         } catch (error) {
-          let errorMessage = '注册失败';
+          let errorMessage = i18n.t('auth.registerFailed', 'Registration failed');
 
           if (error instanceof APIError) {
             errorMessage = error.getUserMessage();

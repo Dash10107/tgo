@@ -6,7 +6,7 @@ sidebar_position: 4
 
 # tgo 命令
 
-`tgo.sh` 是 TGO 的主要管理脚本，提供了部署、运维和配置的所有常用命令。
+`tgo.sh` 是 Pelatis 的主要管理脚本，提供了部署、运维和配置的所有常用命令。
 
 ## 命令概览
 
@@ -87,7 +87,7 @@ sidebar_position: 4
 
 ### uninstall
 
-卸载 TGO：
+卸载 Pelatis：
 
 ```bash
 ./tgo.sh uninstall [--source] [--cn]

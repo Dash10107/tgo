@@ -10,15 +10,13 @@ function formatMessageTime(input) {
   var now = new Date()
   var diff = now.getTime() - msgDate.getTime()
 
-  var lang = i18n.getLang()
-
   // < 1 minute
-  if (diff < 60 * 1000) return lang === 'zh' ? '刚才' : 'Just now'
+  if (diff < 60 * 1000) return i18n.t('time.justNow')
 
   // < 1 hour
   if (diff < 60 * 60 * 1000) {
     var minutes = Math.floor(diff / (60 * 1000))
-    return lang === 'zh' ? minutes + '分钟前' : minutes + 'm ago'
+    return i18n.t('time.minutesAgo', { count: minutes })
   }
 
   var startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
@@ -31,15 +29,13 @@ function formatMessageTime(input) {
 
   // Yesterday
   if (msgDate >= startOfYesterday) {
-    var prefix = lang === 'zh' ? '昨天' : 'Yesterday'
-    return prefix + ' ' + fmt(msgDate, 'HH:mm')
+    return i18n.t('time.yesterday') + ' ' + fmt(msgDate, 'HH:mm')
   }
 
   // Within 7 days
   var sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
   if (msgDate > sevenDaysAgo) {
-    var weekday = lang === 'zh' ? weekdayCN(msgDate) : weekdayEN(msgDate)
-    return weekday + ' ' + fmt(msgDate, 'HH:mm')
+    return weekdayName(msgDate) + ' ' + fmt(msgDate, 'HH:mm')
   }
 
   // Same year
@@ -74,12 +70,16 @@ function fmt(d, pattern) {
   return Y + '-' + M + '-' + D + ' ' + h + ':' + m
 }
 
-function weekdayCN(d) {
-  return ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'][d.getDay()]
+var WEEKDAYS = {
+  en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+  hi: ['रविवार', 'सोमवार', 'मंगलवार', 'बुधवार', 'गुरुवार', 'शुक्रवार', 'शनिवार'],
+  mr: ['रविवार', 'सोमवार', 'मंगळवार', 'बुधवार', 'गुरुवार', 'शुक्रवार', 'शनिवार'],
+  zh: ['\u661f\u671f\u65e5', '\u661f\u671f\u4e00', '\u661f\u671f\u4e8c', '\u661f\u671f\u4e09', '\u661f\u671f\u56db', '\u661f\u671f\u4e94', '\u661f\u671f\u516d']
 }
 
-function weekdayEN(d) {
-  return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]
+function weekdayName(d) {
+  var names = WEEKDAYS[i18n.getLang()] || WEEKDAYS.en
+  return names[d.getDay()]
 }
 
 module.exports = { formatMessageTime: formatMessageTime }

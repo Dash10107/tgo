@@ -1,2 +1,2 @@
-"""TGO Plugin Runtime Service."""
+"""Pelatis Plugin Runtime Service."""
 

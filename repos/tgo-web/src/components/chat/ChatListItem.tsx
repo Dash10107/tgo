@@ -27,7 +27,7 @@ export const ChatListItem: React.FC<ChatListItemProps> = React.memo(({ chat, isA
   const channelType = chat.channelType ?? DEFAULT_CHANNEL_TYPE;
 
   
-  // 判断是否是 agent 会话（channelId 以 -agent 结尾）
+  // Determine whether this is an agent conversation (channelId ends with -agent)
   const isAgentChat = channelId?.endsWith('-agent') ?? false;
 
   // Use unified hook for channel display info

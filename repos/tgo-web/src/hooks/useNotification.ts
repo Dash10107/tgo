@@ -1,10 +1,10 @@
 /**
- * useNotification - 通知管理 Hook
+ * useNotification - notification management hook
  * 
- * 用于：
- * - 管理通知权限状态
- * - 请求通知权限
- * - 检查浏览器支持
+ * Used to:
+ * - manage notification permission state
+ * - request notification permission
+ * - check browser support
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -17,24 +17,24 @@ import {
 import { useUIStore } from '@/stores/uiStore';
 
 export interface UseNotificationReturn {
-  /** 通知权限状态 */
+  /** Notification permission state */
   permission: NotificationPermission;
-  /** 浏览器是否支持通知 */
+  /** Whether the browser supports notifications */
   isSupported: boolean;
-  /** 是否正在请求权限 */
+  /** Whether permission is currently being requested */
   isRequesting: boolean;
-  /** 通知偏好设置 */
+  /** Notification preferences */
   preferences: NotificationPreferences;
-  /** 请求通知权限 */
+  /** Request notification permission */
   requestPermission: () => Promise<NotificationPermission>;
-  /** 更新通知偏好 */
+  /** Update notification preferences */
   updatePreferences: (prefs: Partial<NotificationPreferences>) => void;
-  /** 发送测试通知 */
+  /** Send a test notification */
   sendTestNotification: () => void;
 }
 
 /**
- * 通知管理 Hook
+ * Notification management hook
  */
 export const useNotification = (): UseNotificationReturn => {
   const [permission, setPermission] = useState<NotificationPermission>(
@@ -43,11 +43,11 @@ export const useNotification = (): UseNotificationReturn => {
   const [isRequesting, setIsRequesting] = useState(false);
   const isSupported = notificationService.isSupported();
 
-  // 从 uiStore 获取通知偏好设置
+  // Get notification preferences from uiStore
   const uiPreferences = useUIStore(state => state.preferences);
   const updateUIPreferences = useUIStore(state => state.updatePreferences);
 
-  // 将 uiStore 的偏好映射到通知偏好
+  // Map the uiStore preferences to notification preferences
   const preferences: NotificationPreferences = {
     notificationEnabled: uiPreferences.notificationEnabled ?? DEFAULT_NOTIFICATION_PREFERENCES.notificationEnabled,
     notificationSound: uiPreferences.notificationSound ?? DEFAULT_NOTIFICATION_PREFERENCES.notificationSound,
@@ -56,14 +56,14 @@ export const useNotification = (): UseNotificationReturn => {
     notifyOnNewVisitor: uiPreferences.notifyOnNewVisitor ?? DEFAULT_NOTIFICATION_PREFERENCES.notifyOnNewVisitor,
   };
 
-  // 监听权限变化（某些浏览器支持）
+  // Listen for permission changes (supported by some browsers)
   useEffect(() => {
     if (!isSupported) return;
 
-    // 初始获取权限状态
+    // Get the initial permission state
     setPermission(notificationService.getPermission());
 
-    // 监听页面可见性变化时重新检查权限
+    // Re-check the permission when page visibility changes
     const handleVisibilityChange = () => {
       setPermission(notificationService.getPermission());
     };
@@ -76,7 +76,7 @@ export const useNotification = (): UseNotificationReturn => {
   }, [isSupported]);
 
   /**
-   * 请求通知权限
+   * Request notification permission
    */
   const requestPermission = useCallback(async (): Promise<NotificationPermission> => {
     if (!isSupported) {
@@ -94,14 +94,14 @@ export const useNotification = (): UseNotificationReturn => {
   }, [isSupported]);
 
   /**
-   * 更新通知偏好设置
+   * Update notification preferences
    */
   const updatePreferences = useCallback((prefs: Partial<NotificationPreferences>) => {
     updateUIPreferences(prefs as any);
   }, [updateUIPreferences]);
 
   /**
-   * 发送测试通知
+   * Send a test notification
    */
   const sendTestNotification = useCallback(() => {
     notificationService.sendTestNotification();

@@ -1,40 +1,40 @@
 /**
- * Markdown 渲染功能测试工具
- * 用于在浏览器控制台中测试 Markdown 渲染功能
+ * Markdown rendering test tool
+ * Used to test Markdown rendering in the browser console
  */
 
 /**
- * 测试用的 Markdown 内容示例
+ * Sample Markdown content for testing
  */
 export const markdownExamples = {
-  basic: `# 标题 1
-## 标题 2
-### 标题 3
+  basic: `# Heading 1
+## Heading 2
+### Heading 3
 
-这是一段普通文本，包含**粗体**和*斜体*。
+This is a regular paragraph with **bold** and *italic* text.
 
-这是另一段文本，包含~~删除线~~。`,
+This is another paragraph with ~~strikethrough~~.`,
 
-  lists: `## 列表示例
+  lists: `## List example
 
-### 无序列表
-- 项目 1
-- 项目 2
-  - 子项目 2.1
-  - 子项目 2.2
-- 项目 3
+### Unordered list
+- Item 1
+- Item 2
+  - Sub-item 2.1
+  - Sub-item 2.2
+- Item 3
 
-### 有序列表
-1. 第一项
-2. 第二项
-3. 第三项`,
+### Ordered list
+1. First
+2. Second
+3. Third`,
 
-  code: `## 代码示例
+  code: `## Code example
 
-### 行内代码
-使用 \`console.log()\` 输出日志。
+### Inline code
+Use \`console.log()\` to print logs.
 
-### 代码块
+### Code block
 \`\`\`javascript
 function greet(name) {
   console.log(\`Hello, \${name}!\`);
@@ -50,44 +50,44 @@ def greet(name):
 greet("World")
 \`\`\``,
 
-  links: `## 链接和图片
+  links: `## Links and images
 
-### 链接
-访问 [Google](https://www.google.com) 搜索信息。
+### Links
+Visit [Google](https://www.google.com) to search for information.
 
-### 图片
-![示例图片](https://via.placeholder.com/300x200)`,
+### Images
+![Sample image](https://via.placeholder.com/300x200)`,
 
-  blockquote: `## 引用
+  blockquote: `## Blockquote
 
-> 这是一段引用文本。
-> 可以包含多行。
+> This is a quoted passage.
+> It can span multiple lines.
 >
-> 甚至可以包含**格式化**的文本。`,
+> It can even contain **formatted** text.`,
 
-  table: `## 表格
+  table: `## Table
 
-| 姓名 | 年龄 | 城市 |
+| Name | Age | City |
 |------|------|------|
-| 张三 | 25   | 北京 |
-| 李四 | 30   | 上海 |
-| 王五 | 28   | 广州 |`,
+| Zhang San | 25   | Beijing |
+| Li Si | 30   | Shanghai |
+| Wang Wu | 28   | Guangzhou |`,
 
-  mixed: `# AI 助手回复示例
+  mixed: `# AI assistant reply example
 
-你好！我是 AI 助手，很高兴为你服务。
+Hello! I'm an AI assistant, happy to help you.
 
-## 功能介绍
+## Features
 
-我可以帮助你完成以下任务：
+I can help you with the following tasks:
 
-1. **回答问题** - 提供准确的信息和解答
-2. **代码帮助** - 编写和调试代码
-3. **文档生成** - 创建各种格式的文档
+1. **Answering questions** - providing accurate information and answers
+2. **Code help** - writing and debugging code
+3. **Document generation** - creating documents in various formats
 
-### 代码示例
+### Code example
 
-这是一个简单的 JavaScript 函数：
+Here is a simple JavaScript function:
 
 \`\`\`javascript
 function calculateSum(a, b) {
@@ -95,33 +95,33 @@ function calculateSum(a, b) {
 }
 
 const result = calculateSum(5, 3);
-console.log(result); // 输出: 8
+console.log(result); // Output: 8
 \`\`\`
 
-### 重要提示
+### Important note
 
-> **注意**: 请确保在使用代码前进行充分测试。
+> **Note**: please test thoroughly before using the code.
 
-### 相关链接
+### Related links
 
-- [官方文档](https://example.com/docs)
-- [API 参考](https://example.com/api)
+- [Official docs](https://example.com/docs)
+- [API reference](https://example.com/api)
 
 ---
 
-如果你有任何问题，随时问我！`,
+If you have any questions, feel free to ask me!`,
 
-  aiResponse: `根据你的需求，我为你准备了以下解决方案：
+  aiResponse: `Based on your needs, I have prepared the following solution:
 
-## 方案概述
+## Solution overview
 
-这个方案包含三个主要步骤：
+This solution has three main steps:
 
-1. **数据准备** - 收集和整理必要的数据
-2. **处理流程** - 执行核心业务逻辑
-3. **结果验证** - 确保输出符合预期
+1. **Data preparation** - collect and organize the necessary data
+2. **Processing flow** - run the core business logic
+3. **Result validation** - make sure the output meets expectations
 
-### 实现代码
+### Implementation code
 
 \`\`\`typescript
 interface User {
@@ -131,98 +131,98 @@ interface User {
 }
 
 async function processUser(user: User): Promise<void> {
-  // 验证用户数据
+  // Validate user data
   if (!user.email) {
     throw new Error('Email is required');
   }
   
-  // 处理用户信息
+  // Process user info
   console.log(\`Processing user: \${user.name}\`);
   
-  // 保存到数据库
+  // Save to the database
   await saveToDatabase(user);
 }
 \`\`\`
 
-### 注意事项
+### Notes
 
-> ⚠️ **重要**: 
-> - 确保所有必填字段都已填写
-> - 验证邮箱格式的正确性
-> - 处理可能的异常情况
+> ⚠️ **Important**: 
+> - Make sure all required fields are filled in
+> - Validate the email format
+> - Handle possible exceptions
 
-### 测试结果
+### Test results
 
-| 测试项 | 状态 | 备注 |
+| Test item | Status | Remarks |
 |--------|------|------|
-| 数据验证 | ✅ 通过 | 所有字段验证正常 |
-| 业务逻辑 | ✅ 通过 | 处理流程正确 |
-| 异常处理 | ✅ 通过 | 错误处理完善 |
+| Data validation | ✅ Passed | All fields validated correctly |
+| Business logic | ✅ Passed | Processing flow is correct |
+| Exception handling | ✅ Passed | Error handling is thorough |
 
-希望这个方案能帮到你！如有疑问，请随时提问。`
+I hope this solution helps! If you have questions, feel free to ask.`
 };
 
 /**
- * 在控制台打印 Markdown 示例
+ * Print Markdown examples to the console
  */
 export const printMarkdownExamples = (): void => {
-  console.log('📝 Markdown 渲染测试示例');
+  console.log('📝 Markdown rendering test examples');
   console.log('');
-  console.log('可用的示例:');
-  console.log('- markdownExamples.basic - 基本格式');
-  console.log('- markdownExamples.lists - 列表');
-  console.log('- markdownExamples.code - 代码块');
-  console.log('- markdownExamples.links - 链接和图片');
-  console.log('- markdownExamples.blockquote - 引用');
-  console.log('- markdownExamples.table - 表格');
-  console.log('- markdownExamples.mixed - 混合格式');
-  console.log('- markdownExamples.aiResponse - AI 回复示例');
+  console.log('Available examples:');
+  console.log('- markdownExamples.basic - basic formatting');
+  console.log('- markdownExamples.lists - lists');
+  console.log('- markdownExamples.code - code blocks');
+  console.log('- markdownExamples.links - links and images');
+  console.log('- markdownExamples.blockquote - blockquote');
+  console.log('- markdownExamples.table - table');
+  console.log('- markdownExamples.mixed - mixed formatting');
+  console.log('- markdownExamples.aiResponse - AI reply example');
   console.log('');
-  console.log('使用方法:');
-  console.log('1. 复制任意示例内容');
-  console.log('2. 在聊天界面发送包含 stream_data 的消息');
-  console.log('3. 查看 Markdown 渲染效果');
+  console.log('Usage:');
+  console.log('1. Copy any example content');
+  console.log('2. Send a message containing stream_data in the chat interface');
+  console.log('3. Check the Markdown rendering result');
 };
 
 /**
- * 测试 Markdown 渲染是否正常工作
+ * Test whether Markdown rendering works correctly
  */
 export const testMarkdownRendering = (): void => {
-  console.log('🧪 测试 Markdown 渲染功能...');
+  console.log('🧪 Testing Markdown rendering...');
   console.log('');
 
-  // 检查 MarkdownContent 组件是否已加载
+  // Check whether the MarkdownContent component has been loaded
   const markdownElements = document.querySelectorAll('.markdown-content');
-  console.log(`📋 找到 ${markdownElements.length} 个 Markdown 内容元素`);
+  console.log(`📋 Found ${markdownElements.length} Markdown content elements`);
 
   if (markdownElements.length > 0) {
-    console.log('✅ Markdown 组件已正确加载');
+    console.log('✅ Markdown component loaded correctly');
     
     markdownElements.forEach((element, index) => {
-      console.log(`  元素 ${index + 1}:`, {
+      console.log(`  Element ${index + 1}:`, {
         hasWhiteClass: element.classList.contains('markdown-white'),
         childrenCount: element.children.length,
         textLength: element.textContent?.length || 0
       });
     });
   } else {
-    console.log('⚠️ 未找到 Markdown 内容元素');
-    console.log('提示: 请确保有包含 stream_data 的消息');
+    console.log('⚠️ No Markdown content elements found');
+    console.log('Hint: make sure there are messages containing stream_data');
   }
 
   console.log('');
-  console.log('💡 测试建议:');
-  console.log('1. 发送一条包含 Markdown 格式的消息');
-  console.log('2. 检查消息是否正确渲染为 HTML');
-  console.log('3. 验证代码块、列表、链接等元素的样式');
-  console.log('4. 测试在蓝色背景（客服消息）和白色背景（访客消息）下的显示效果');
+  console.log('💡 Testing suggestions:');
+  console.log('1. Send a message containing Markdown formatting');
+  console.log('2. Check that the message renders correctly as HTML');
+  console.log('3. Verify the styling of code blocks, lists, links and other elements');
+  console.log('4. Test the display on a blue background (agent messages) and a white background (visitor messages)');
 };
 
 /**
- * 检查 Markdown 相关的依赖是否已安装
+ * Check whether the Markdown-related dependencies are installed
  */
 export const checkMarkdownDependencies = (): void => {
-  console.log('🔍 检查 Markdown 依赖...');
+  console.log('🔍 Checking Markdown dependencies...');
   console.log('');
 
   const dependencies = [
@@ -232,56 +232,56 @@ export const checkMarkdownDependencies = (): void => {
     'rehype-sanitize'
   ];
 
-  console.log('需要的依赖包:');
+  console.log('Required packages:');
   dependencies.forEach(dep => {
     console.log(`  - ${dep}`);
   });
 
   console.log('');
-  console.log('✅ 如果应用正常运行，说明所有依赖已正确安装');
+  console.log('✅ If the app runs normally, all dependencies are installed correctly');
   console.log('');
-  console.log('💡 如果遇到问题，请运行:');
+  console.log('💡 If you run into problems, run:');
   console.log('npm install react-markdown remark-gfm rehype-raw rehype-sanitize');
 };
 
 /**
- * 显示 Markdown 语法帮助
+ * Show Markdown syntax help
  */
 export const showMarkdownHelp = (): void => {
-  console.log('📚 Markdown 语法帮助');
+  console.log('📚 Markdown syntax help');
   console.log('');
-  console.log('# 标题 1');
-  console.log('## 标题 2');
-  console.log('### 标题 3');
+  console.log('# Heading 1');
+  console.log('## Heading 2');
+  console.log('### Heading 3');
   console.log('');
-  console.log('**粗体文本**');
-  console.log('*斜体文本*');
-  console.log('~~删除线~~');
+  console.log('**Bold text**');
+  console.log('*Italic text*');
+  console.log('~~Strikethrough~~');
   console.log('');
-  console.log('- 无序列表项');
-  console.log('1. 有序列表项');
+  console.log('- Unordered list item');
+  console.log('1. Ordered list item');
   console.log('');
-  console.log('[链接文本](https://example.com)');
-  console.log('![图片描述](https://example.com/image.jpg)');
+  console.log('[Link text](https://example.com)');
+  console.log('![Image description](https://example.com/image.jpg)');
   console.log('');
-  console.log('`行内代码`');
+  console.log('`Inline code`');
   console.log('');
   console.log('```language');
-  console.log('代码块');
+  console.log('Code block');
   console.log('```');
   console.log('');
-  console.log('> 引用文本');
+  console.log('> Quoted text');
   console.log('');
-  console.log('| 表头1 | 表头2 |');
+  console.log('| Header 1 | Header 2 |');
   console.log('|-------|-------|');
-  console.log('| 单元格1 | 单元格2 |');
+  console.log('| Cell 1 | Cell 2 |');
 };
 
 /**
- * 运行所有 Markdown 测试
+ * Run all Markdown tests
  */
 export const runAllMarkdownTests = (): void => {
-  console.log('🚀 开始运行 Markdown 渲染功能测试...');
+  console.log('🚀 Running Markdown rendering tests...');
   console.log('');
   console.log('='.repeat(60));
   console.log('');
@@ -302,17 +302,17 @@ export const runAllMarkdownTests = (): void => {
   console.log('='.repeat(60));
   console.log('');
 
-  console.log('🎉 测试完成！');
+  console.log('🎉 Tests complete!');
   console.log('');
-  console.log('💡 使用说明:');
-  console.log('- checkMarkdownDependencies() - 检查依赖');
-  console.log('- testMarkdownRendering() - 测试渲染');
-  console.log('- printMarkdownExamples() - 查看示例');
-  console.log('- showMarkdownHelp() - 语法帮助');
-  console.log('- runAllMarkdownTests() - 运行所有测试');
+  console.log('💡 Usage:');
+  console.log('- checkMarkdownDependencies() - check dependencies');
+  console.log('- testMarkdownRendering() - test rendering');
+  console.log('- printMarkdownExamples() - view examples');
+  console.log('- showMarkdownHelp() - syntax help');
+  console.log('- runAllMarkdownTests() - run all tests');
 };
 
-// 在开发环境中将测试函数添加到全局对象
+// Add the test functions to the global object in development
 if (typeof window !== 'undefined' && import.meta.env.DEV) {
   (window as any).markdownExamples = markdownExamples;
   (window as any).checkMarkdownDependencies = checkMarkdownDependencies;
@@ -321,6 +321,6 @@ if (typeof window !== 'undefined' && import.meta.env.DEV) {
   (window as any).showMarkdownHelp = showMarkdownHelp;
   (window as any).runAllMarkdownTests = runAllMarkdownTests;
   
-  console.log('🧪 Markdown 测试工具已加载');
-  console.log('🧪 使用 runAllMarkdownTests() 运行所有测试');
+  console.log('🧪 Markdown test tool loaded');
+  console.log('🧪 Use runAllMarkdownTests() to run all tests');
 }

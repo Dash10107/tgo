@@ -1,8 +1,8 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "TGO RAG Service",
-    "description": "TGO-Tech RAG (Retrieval-Augmented Generation) Service for document processing and semantic search",
+    "title": "Pelatis RAG Service",
+    "description": "Pelatis RAG (Retrieval-Augmented Generation) Service for document processing and semantic search",
     "version": "0.1.0"
   },
   "paths": {

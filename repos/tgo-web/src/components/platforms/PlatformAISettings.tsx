@@ -112,9 +112,9 @@ const PlatformAISettings: React.FC<PlatformAISettingsProps> = ({
       >
         <span className="flex items-center gap-2">
           {expanded ? <FiChevronDown className="w-4 h-4" /> : <FiChevronRight className="w-4 h-4" />}
-          {t('platforms.aiSettings.title', 'AI 设置')}
+          {t('platforms.aiSettings.title', 'AI Settings')}
           <span className="text-xs font-normal text-gray-400 dark:text-gray-500">
-            ({t('platforms.aiSettings.optional', '可选')})
+            ({t('platforms.aiSettings.optional', 'Optional')})
           </span>
         </span>
       </button>
@@ -125,7 +125,7 @@ const PlatformAISettings: React.FC<PlatformAISettingsProps> = ({
           {/* AI Agent selector */}
           <div>
             <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
-              {t('platforms.aiSettings.agents', 'AI 员工')}
+              {t('platforms.aiSettings.agents', 'AI Agents')}
             </label>
             <div ref={dropdownRef} className="relative">
               {/* Selected agents display / trigger */}
@@ -136,8 +136,8 @@ const PlatformAISettings: React.FC<PlatformAISettingsProps> = ({
                 {selectedAgents.length === 0 ? (
                   <span className="text-gray-400 dark:text-gray-500 px-1">
                     {isLoadingAgents
-                      ? t('platforms.aiSettings.loadingAgents', '加载中...')
-                      : t('platforms.aiSettings.selectAgents', '选择 AI 员工')}
+                      ? t('platforms.aiSettings.loadingAgents', 'Loading...')
+                      : t('platforms.aiSettings.selectAgents', 'Select AI Agent')}
                   </span>
                 ) : (
                   selectedAgents.map(agent => (
@@ -168,8 +168,8 @@ const PlatformAISettings: React.FC<PlatformAISettingsProps> = ({
                   {agents.length === 0 ? (
                     <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
                       {isLoadingAgents
-                        ? t('platforms.aiSettings.loadingAgents', '加载中...')
-                        : t('platforms.aiSettings.noAgents', '暂无 AI 员工')}
+                        ? t('platforms.aiSettings.loadingAgents', 'Loading...')
+                        : t('platforms.aiSettings.noAgents', 'No AI Agents Available')}
                     </div>
                   ) : (
                     agents.map(agent => (
@@ -200,15 +200,15 @@ const PlatformAISettings: React.FC<PlatformAISettingsProps> = ({
             </div>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               {agentIds.length === 0
-                ? t('platforms.aiSettings.agentsHintDefault', '未选择时默认使用项目默认 AI 员工。')
-                : t('platforms.aiSettings.agentsHint', '选择分配给此平台的 AI 员工。')}
+                ? t('platforms.aiSettings.agentsHintDefault', 'If none selected, the project default AI agent will be used.')
+                : t('platforms.aiSettings.agentsHint', 'Select the AI agent assigned to this platform.')}
             </p>
           </div>
 
           {/* AI Mode Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
-              {t('platforms.aiSettings.mode', 'AI 模式')}
+              {t('platforms.aiSettings.mode', 'AI Mode')}
             </label>
             <div className="flex flex-wrap gap-4">
               <label className="inline-flex items-center cursor-pointer">
@@ -221,7 +221,7 @@ const PlatformAISettings: React.FC<PlatformAISettingsProps> = ({
                   className="w-4 h-4 text-blue-600 border-gray-300 dark:border-gray-600 focus:ring-blue-500"
                 />
                 <span className="ml-2 text-sm text-gray-700 dark:text-gray-200">
-                  {t('platforms.aiSettings.modeAuto', '自动')}
+                  {t('platforms.aiSettings.modeAuto', 'Auto')}
                 </span>
               </label>
               <label className="inline-flex items-center cursor-pointer">
@@ -234,7 +234,7 @@ const PlatformAISettings: React.FC<PlatformAISettingsProps> = ({
                   className="w-4 h-4 text-blue-600 border-gray-300 dark:border-gray-600 focus:ring-blue-500"
                 />
                 <span className="ml-2 text-sm text-gray-700 dark:text-gray-200">
-                  {t('platforms.aiSettings.modeAssist', '辅助')}
+                  {t('platforms.aiSettings.modeAssist', 'Assist')}
                 </span>
               </label>
               <label className="inline-flex items-center cursor-pointer">
@@ -247,14 +247,14 @@ const PlatformAISettings: React.FC<PlatformAISettingsProps> = ({
                   className="w-4 h-4 text-blue-600 border-gray-300 dark:border-gray-600 focus:ring-blue-500"
                 />
                 <span className="ml-2 text-sm text-gray-700 dark:text-gray-200">
-                  {t('platforms.aiSettings.modeOff', '关闭')}
+                  {t('platforms.aiSettings.modeOff', 'Off')}
                 </span>
               </label>
             </div>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              {aiMode === 'auto' && t('platforms.aiSettings.modeAutoHint', 'AI 自动处理所有消息。')}
-              {aiMode === 'assist' && t('platforms.aiSettings.modeAssistHint', '人工优先处理，超时后 AI 自动接管。')}
-              {aiMode === 'off' && t('platforms.aiSettings.modeOffHint', '禁用 AI，仅人工处理消息。')}
+              {aiMode === 'auto' && t('platforms.aiSettings.modeAutoHint', 'AI automatically handles all messages.')}
+              {aiMode === 'assist' && t('platforms.aiSettings.modeAssistHint', 'Human first, AI takes over after timeout.')}
+              {aiMode === 'off' && t('platforms.aiSettings.modeOffHint', 'Disable AI, only human handles messages.')}
             </p>
           </div>
 
@@ -262,18 +262,18 @@ const PlatformAISettings: React.FC<PlatformAISettingsProps> = ({
           {aiMode === 'assist' && (
             <div>
               <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
-                {t('platforms.aiSettings.timeout', '超时时间 (秒)')}
+                {t('platforms.aiSettings.timeout', 'Timeout (seconds)')}
               </label>
               <input
                 type="number"
                 min="0"
                 value={fallbackTimeout ?? ''}
                 onChange={handleTimeoutChange}
-                placeholder={t('platforms.aiSettings.timeoutPlaceholder', '例如：60')}
+                placeholder={t('platforms.aiSettings.timeoutPlaceholder', 'e.g., 60')}
                 className="w-full max-w-xs text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-700/50 dark:text-gray-200"
               />
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                {t('platforms.aiSettings.timeoutHint', '消息多少秒无回复后 AI 自动接管。设置为 0 表示 AI 不会接管。')}
+                {t('platforms.aiSettings.timeoutHint', 'Time in seconds before AI takes over when there\'s no reply. Set to 0 to prevent AI takeover.')}
               </p>
             </div>
           )}

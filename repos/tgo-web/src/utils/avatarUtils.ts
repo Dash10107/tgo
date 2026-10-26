@@ -1,4 +1,4 @@
-// Shared avatar generation utilities for the TGO Web application
+// Shared avatar generation utilities for the Pelatis Web application
 
 // Color mapping for default avatars (similar to Telegram's system)
 export const AVATAR_COLORS = [

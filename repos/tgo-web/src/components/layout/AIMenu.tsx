@@ -76,7 +76,7 @@ const AIMenu: React.FC = () => {
             <LuSparkles className="w-5 h-5" />
           </div>
           <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
-            {t('ai.menu.title', 'AI 功能')}
+            {t('ai.menu.title', 'AI Features')}
           </h3>
         </div>
         <p className="text-[11px] text-gray-400 font-bold uppercase tracking-[0.2em] pl-11">

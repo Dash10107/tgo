@@ -16,16 +16,16 @@ const SettingsSidebar: React.FC<SettingsSidebarProps> = ({ className = '' }) => 
   const isAdmin = user?.role === 'admin';
 
   const allItems: Array<{ id: string; label: string }> = [
-    { id: 'profile', label: t('settings.menu.profile', '个人资料') },
-    { id: 'general', label: t('settings.menu.general', '通用') },
-    { id: 'notifications', label: t('settings.menu.notifications', '消息通知') },
-    { id: 'staff', label: t('settings.menu.staff', '人工坐席') },
-    { id: 'providers', label: t('settings.menu.providers', '模型提供商') },
-    { id: 'plugins', label: t('settings.menu.plugins', '插件管理') },
+    { id: 'profile', label: t('settings.menu.profile', 'Profile') },
+    { id: 'general', label: t('settings.menu.general', 'General') },
+    { id: 'notifications', label: t('settings.menu.notifications', 'Notifications') },
+    { id: 'staff', label: t('settings.menu.staff', 'Human Agents') },
+    { id: 'providers', label: t('settings.menu.providers', 'Model Providers') },
+    { id: 'plugins', label: t('settings.menu.plugins', 'Plugins') },
   ];
 
   // Filter settings items based on user role
-  // Non-admin users cannot see 'staff' (人工坐席), 'providers' (模型提供商) and 'plugins' (插件管理)
+  // Non-admin users cannot see 'staff' (Human Agents), 'providers' (Model Providers) and 'plugins' (Plugin Management)
   const items = allItems.filter(item => {
     if (!isAdmin && (item.id === 'staff' || item.id === 'providers' || item.id === 'plugins')) {
       return false;
@@ -47,7 +47,7 @@ const SettingsSidebar: React.FC<SettingsSidebarProps> = ({ className = '' }) => 
       <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-2">
           <SettingsIcon className="w-4 h-4 text-gray-700 dark:text-gray-300" />
-          <h2 className="text-base font-semibold text-gray-800 dark:text-gray-100">{t('settings.title', '设置')}</h2>
+          <h2 className="text-base font-semibold text-gray-800 dark:text-gray-100">{t('settings.title', 'Settings')}</h2>
         </div>
       </div>
       <nav className="flex-1 overflow-y-auto p-2 space-y-1">
@@ -77,7 +77,7 @@ const SettingsSidebar: React.FC<SettingsSidebarProps> = ({ className = '' }) => 
         >
           <span className="inline-flex items-center gap-2">
             <FiInfo className="w-4 h-4" />
-            <span>{t('settings.menu.about', '关于')}</span>
+            <span>{t('settings.menu.about', 'About')}</span>
           </span>
         </NavLink>
         {isAuthenticated && (
@@ -92,7 +92,7 @@ const SettingsSidebar: React.FC<SettingsSidebarProps> = ({ className = '' }) => 
             className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
           >
             <FiLogOut className="w-4 h-4" />
-            <span>{t('settings.menu.logout', '退出登录')}</span>
+            <span>{t('settings.menu.logout', 'Logout')}</span>
           </button>
         )}
       </div>

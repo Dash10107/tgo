@@ -9,14 +9,14 @@
 
   <!-- Initializing state -->
   <view wx:if="{{initializing}}" class="init-loading">
-    <text class="init-text">连接中...</text>
+    <text class="init-text">{{labels.connecting}}</text>
   </view>
 
   <!-- Error state -->
   <view wx:elif="{{error && !messages.length}}" class="init-error">
     <text class="error-text">{{error}}</text>
     <view class="retry-btn" bindtap="_init">
-      <text class="retry-text">重试</text>
+      <text class="retry-text">{{labels.retry}}</text>
     </view>
   </view>
 

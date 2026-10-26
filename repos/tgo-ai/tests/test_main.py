@@ -12,7 +12,7 @@ def test_root_endpoint(client: TestClient) -> None:
     assert response.status_code == 200
     
     data = response.json()
-    assert data["service"] == "TGO-Tech AI Service"
+    assert data["service"] == "Pelatis AI Service"
     assert data["version"] == __version__
     assert "description" in data
 
@@ -41,5 +41,5 @@ def test_openapi_schema(client: TestClient) -> None:
     assert response.status_code == 200
     
     schema = response.json()
-    assert schema["info"]["title"] == "TGO-Tech AI Service"
+    assert schema["info"]["title"] == "Pelatis AI Service"
     assert schema["info"]["version"] == __version__

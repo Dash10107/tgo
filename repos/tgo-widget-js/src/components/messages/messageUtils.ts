@@ -1,5 +1,5 @@
-export function formatFileSize(bytes: number): string {
-  if (!Number.isFinite(bytes) || bytes <= 0) return '未知大小'
+export function formatFileSize(bytes: number, unknownLabel = 'Unknown size'): string {
+  if (!Number.isFinite(bytes) || bytes <= 0) return unknownLabel
   const KB = 1024, MB = KB*1024, GB = MB*1024
   if (bytes < KB) return `${bytes} B`
   if (bytes < MB) return `${(bytes/KB).toFixed(1)} KB`

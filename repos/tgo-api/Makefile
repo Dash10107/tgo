@@ -2,14 +2,14 @@
 
 # Default target
 help: ## Show this help message
-	@echo "TGO-Tech API Service - Development Commands"
+	@echo "Pelatis API Service - Development Commands"
 	@echo "==========================================="
 	@echo ""
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 # Development Environment
 dev: ## Start development environment (one-click startup)
-	@echo "🚀 Starting TGO-Tech API development environment..."
+	@echo "🚀 Starting Pelatis API development environment..."
 	@cp -n .env.example .env 2>/dev/null || true
 	@echo "📋 Environment file ready (.env)"
 	@docker-compose up -d postgres redis adminer

@@ -1,10 +1,10 @@
 openapi: 3.0.3
 info:
-  title: TGO-Tech API Service
+  title: Pelatis API Service
   description: |
-    **TGO-Tech API Service** - Core Business Logic Microservice
+    **Pelatis API Service** - Core Business Logic Microservice
     
-    This service handles user management, visitor interactions, and business operations for the TGO-Tech customer service platform.
+    This service handles user management, visitor interactions, and business operations for the Pelatis customer service platform.
     
     **Service Responsibilities:**
     - User authentication and authorization
@@ -40,7 +40,7 @@ info:
     - Handles staff-agent linking with AI Service coordination
   version: 1.0.0
   contact:
-    name: TGO-Tech API Support
+    name: Pelatis API Support
     email: api-support@tgo-tech.com
   license:
     name: Proprietary

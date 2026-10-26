@@ -1,6 +1,6 @@
-# TGO Widget for Flutter
+# Pelatis Widget for Flutter
 
-A Flutter package for integrating TGO customer service chat widget into your app. Easy to use, customizable, and feature-rich.
+A Flutter package for integrating Pelatis customer service chat widget into your app. Easy to use, customizable, and feature-rich.
 
 ## Features
 
@@ -34,7 +34,7 @@ import 'package:tgo_widget/tgo_widget.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize TGO Widget
+  // Initialize Pelatis Widget
   await TgoWidget.init(
     apiKey: 'your-platform-api-key',
     apiBase: 'https://api.tgo.ai', // Optional, defaults to https://api.tgo.ai
@@ -64,7 +64,7 @@ class MyHomePage extends StatelessWidget {
           // Your app content
           YourAppContent(),
           
-          // TGO Widget Launcher - adds floating button
+          // Pelatis Widget Launcher - adds floating button
           TgoWidgetLauncher(),
         ],
       ),
@@ -109,7 +109,7 @@ TgoWidget.hide(context);
 
 ## Visitor Management
 
-TGO Widget supports visitor identity management, allowing you to associate chat sessions with your app's users.
+Pelatis Widget supports visitor identity management, allowing you to associate chat sessions with your app's users.
 
 ### VisitorInfo Options
 

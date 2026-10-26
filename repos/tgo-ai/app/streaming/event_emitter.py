@@ -97,9 +97,12 @@ class StreamingEventEmitter(EventEmitter):
         self._stream_queue = asyncio.Queue()
     
     def disable_streaming(self) -> None:
-        """Disable streaming mode."""
+        """Disable streaming mode.
+
+        The queue is kept so SSE consumers can still drain events that were
+        emitted but not yet sent (e.g. the final chunks and workflow_completed).
+        """
         self._streaming_enabled = False
-        self._stream_queue = None
     
     def is_streaming_enabled(self) -> bool:
         """Check if streaming is enabled."""

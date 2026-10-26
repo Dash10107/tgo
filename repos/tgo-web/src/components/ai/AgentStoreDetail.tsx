@@ -59,7 +59,7 @@ const AgentStoreDetail: React.FC<AgentStoreDetailProps> = ({
     <StoreDetailPanel
       isOpen={isOpen}
       onClose={onClose}
-      title={t('modelDetail.details', '员工详情')}
+      title={t('modelDetail.details', 'Agent Details')}
       footer={
         <div className="flex flex-col gap-4">
           <button
@@ -72,15 +72,15 @@ const AgentStoreDetail: React.FC<AgentStoreDetailProps> = ({
             }`}
           >
             {isInstalled ? (
-              <><Check className="w-5 h-5" /> {t('common.installed', '已在团队中')}</>
+              <><Check className="w-5 h-5" /> {t('common.installed', 'Installed')}</>
             ) : installingId === agent.id ? (
-              <><Loader2 className="w-5 h-5 animate-spin" /> 招聘中...</>
+              <><Loader2 className="w-5 h-5 animate-spin" /> {t('agentStoreDetail.hiring', 'Hiring...')}</>
             ) : (
-              <><Plus className="w-5 h-5" /> {t('agents.store.hireNow', '立即招聘')}</>
+              <><Plus className="w-5 h-5" /> {t('agents.store.hireNow', 'Hire Now')}</>
             )}
           </button>
           <p className="text-center text-[10px] text-gray-400 font-bold uppercase tracking-widest">
-            招聘后该员工将立即出现在您的 AI 员工列表中
+            {t('agentStoreDetail.hireHint', 'After hiring, the agent will appear in your AI agent list immediately')}
           </p>
         </div>
       }
@@ -110,33 +110,33 @@ const AgentStoreDetail: React.FC<AgentStoreDetailProps> = ({
         </div>
 
         <section>
-          <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-4">{t('modelDetail.intro', '员工介绍')}</h3>
+          <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-4">{t('modelDetail.intro', 'Agent Introduction')}</h3>
           <p className="text-gray-600 dark:text-gray-400 leading-relaxed font-medium">
-            {description || '暂无详细描述'}
+            {description || t('agentStoreDetail.noDetailedDescription', 'No detailed description')}
           </p>
         </section>
 
         <section>
-          <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-4">技能配置</h3>
+          <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-4">{t('agentStoreDetail.skillConfig', 'Skill Configuration')}</h3>
           <div className="space-y-6">
             <div 
               onClick={() => agent.model?.id && onModelClick?.(agent.model.id)}
               className={`p-4 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800 transition-all ${agent.model?.id ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 hover:border-indigo-200 dark:hover:border-indigo-900 shadow-sm hover:shadow-md' : ''}`}
             >
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">推荐模型</p>
-              <p className="font-bold text-gray-900 dark:text-gray-100">{agent.model?.title_zh || agent.model?.name || '通用模型'}</p>
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{t('agentStoreDetail.recommendedModel', 'Recommended model')}</p>
+              <p className="font-bold text-gray-900 dark:text-gray-100">{agent.model?.title_zh || agent.model?.name || t('agentStoreDetail.generalModel', 'General model')}</p>
             </div>
 
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
                 <Wrench className="w-3 h-3" />
-                预装工具 ({agent.recommended_tools?.length || 0})
+                {t('agentStoreDetail.preinstalledTools', 'Pre-installed tools')} ({agent.recommended_tools?.length || 0})
               </div>
               
               {loadingTools ? (
                 <div className="p-8 bg-gray-50/50 dark:bg-gray-800/30 rounded-2xl border border-dashed border-gray-200 dark:border-gray-800 flex flex-col items-center justify-center gap-2">
                   <Loader2 className="w-5 h-5 text-indigo-500 animate-spin" />
-                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">加载工具详情...</span>
+                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{t('agentStoreDetail.loadingToolDetails', 'Loading tool details...')}</span>
                 </div>
               ) : toolsDetail.length > 0 ? (
                 <div className="grid grid-cols-1 gap-2">
@@ -159,7 +159,7 @@ const AgentStoreDetail: React.FC<AgentStoreDetailProps> = ({
                 </div>
               ) : (
                 <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-dashed border-gray-100 dark:border-gray-800 text-center">
-                  <p className="text-xs text-gray-400 font-medium">该员工暂无预装工具</p>
+                  <p className="text-xs text-gray-400 font-medium">{t('agentStoreDetail.noPreinstalledTools', 'This agent has no pre-installed tools')}</p>
                 </div>
               )}
             </div>

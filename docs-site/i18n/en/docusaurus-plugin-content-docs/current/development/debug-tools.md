@@ -6,11 +6,11 @@ sidebar_position: 3
 
 # Debug Tools
 
-TGO includes built-in debug tools to help you troubleshoot issues and monitor system status.
+Pelatis includes built-in debug tools to help you troubleshoot issues and monitor system status.
 
 ## Built-in Debug Tools
 
-TGO provides the following debug tool containers:
+Pelatis provides the following debug tool containers:
 
 | Tool | Purpose | Access URL |
 |------|---------|------------|

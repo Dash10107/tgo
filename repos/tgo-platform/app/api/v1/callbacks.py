@@ -209,7 +209,7 @@ async def _handle_wecom_webhook(platform: Platform, request: Request, db: AsyncS
         inbox_record = WeComInbox(
             platform_id=platform.id,
             message_id=message_id or "",
-            source_type="wecom_kf",  # WeCom Customer Service (客服)
+            source_type="wecom_kf",  # WeCom Customer Service
             from_user=from_user,
             open_kfid=open_kfid_val,
             msg_type=msg_type,
@@ -235,7 +235,7 @@ async def _handle_wecom_webhook(platform: Platform, request: Request, db: AsyncS
 
 
 async def _handle_wecom_bot_webhook(platform: Platform, request: Request, db: AsyncSession) -> dict[str, Any] | Response:
-    """Handle WeCom Bot (企业微信群机器人/智能机器人) webhook POST callback.
+    """Handle WeCom Bot (group bot / smart bot) webhook POST callback.
 
     WeCom Bot uses JSON format (not XML like regular WeCom):
     - Request body: {"encrypt": "..."} in JSON format
@@ -319,7 +319,7 @@ async def _handle_wecom_bot_webhook(platform: Platform, request: Request, db: As
                 message="encoding_aes_key is not configured for this WeCom Bot platform",
             )
 
-        # For wecom_bot (智能机器人), receiveid can be empty or corp_id
+        # For wecom_bot (smart bot), receiveid can be empty or corp_id
         corp_id = (config.get("corp_id") or "").strip()
         logging.info("[WECOM_BOT] Attempting to decrypt with corp_id=%s", corp_id[:8] + "..." if corp_id else "(empty)")
 
@@ -352,7 +352,7 @@ async def _handle_wecom_bot_webhook(platform: Platform, request: Request, db: As
         msg_data = body_json
 
     # Extract fields from the message JSON
-    # WeCom Bot (智能机器人) message format:
+    # WeCom Bot (smart bot) message format:
     # {
     #   "msgid": "...",
     #   "aibotid": "...",
@@ -361,7 +361,7 @@ async def _handle_wecom_bot_webhook(platform: Platform, request: Request, db: As
     #   "from": {"userid": "..."},
     #   "msgtype": "text",
     #   "response_url": "https://qyapi.weixin.qq.com/cgi-bin/aibot/response?response_code=...",
-    #   "text": {"content": "@bot 消息内容"}
+    #   "text": {"content": "@bot message content"}
     # }
     msg_type = str(msg_data.get("msgtype") or msg_data.get("MsgType") or "text").lower()
 
@@ -433,7 +433,7 @@ async def _handle_wecom_bot_webhook(platform: Platform, request: Request, db: As
         inbox_record = WeComInbox(
             platform_id=platform.id,
             message_id=message_id or str(uuid.uuid4()),  # Generate ID if not provided
-            source_type="wecom_bot",  # WeCom Bot (群机器人)
+            source_type="wecom_bot",  # WeCom Bot (group bot)
             from_user=from_user,
             open_kfid=chat_id or None,  # Use chat_id as open_kfid for wecom_bot
             msg_type=msg_type or "text",
@@ -464,7 +464,7 @@ async def _handle_feishu_bot_webhook(
     request: Request,
     db: AsyncSession,
 ) -> dict[str, Any] | Response:
-    """Handle Feishu Bot (飞书机器人) webhook POST callback.
+    """Handle Feishu Bot webhook POST callback.
 
     Feishu Bot uses JSON format:
     - URL verification: {"challenge": "...", "token": "...", "type": "url_verification"}
@@ -678,7 +678,7 @@ async def _handle_dingtalk_bot_webhook(
     request: Request,
     db: AsyncSession,
 ) -> dict[str, Any] | Response:
-    """Handle DingTalk Bot (钉钉机器人) webhook POST callback.
+    """Handle DingTalk Bot webhook POST callback.
 
     DingTalk Bot uses JSON format with signature verification:
     - X-DingTalk-Timestamp: Timestamp in milliseconds

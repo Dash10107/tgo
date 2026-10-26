@@ -56,7 +56,7 @@ Then restart services:
 
 **Solution**:
 
-TGO requires at least 4GB of memory. Check available memory:
+Pelatis requires at least 4GB of memory. Check available memory:
 
 ```bash
 free -h

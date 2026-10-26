@@ -1,5 +1,7 @@
 import 'package:intl/intl.dart';
 
+import '../i18n/tgo_localizations.dart';
+
 /// Utility class for formatting time
 class TimeFormat {
   /// Format message time for display
@@ -15,7 +17,7 @@ class TimeFormat {
     final diff = now.difference(time);
 
     if (diff.inMinutes < 1) {
-      return locale == 'zh' ? '刚刚' : 'Just now';
+      return TgoLocalizations(locale: locale).get('just_now');
     }
 
     final isToday = time.year == now.year &&
@@ -34,7 +36,7 @@ class TimeFormat {
     }
 
     if (isYesterday) {
-      return locale == 'zh' ? '昨天 $timeStr' : 'Yesterday $timeStr';
+      return '${TgoLocalizations(locale: locale).get('yesterday')} $timeStr';
     }
 
     if (time.year == now.year) {

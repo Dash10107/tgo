@@ -6,7 +6,7 @@ sidebar_position: 3
 
 # SDK 开发指南
 
-TGO SDK 封装了与宿主程序的 Socket 通讯细节，并提供了一套流式的 UI 构建器。
+Pelatis SDK 封装了与宿主程序的 Socket 通讯细节，并提供了一套流式的 UI 构建器。
 
 ## Go SDK (`tgo-plugin-go`)
 
@@ -74,4 +74,4 @@ plugin = MyPlugin(tcp_addr="localhost:8005", dev_token="YOUR_TOKEN")
 plugin.run()
 ```
 
-你可以从 TGO 管理后台的“设置 --> 插件管理 --> 调试令牌”中获取调试 Token。
+你可以从 Pelatis 管理后台的“设置 --> 插件管理 --> 调试令牌”中获取调试 Token。

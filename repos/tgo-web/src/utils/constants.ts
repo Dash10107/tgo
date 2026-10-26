@@ -41,7 +41,7 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
   }
 ];
 
-// AI功能菜单配置
+// AI feature menu config
 export const AI_MENU_ITEMS: NavigationItem[] = [
   {
     id: 'agents',
@@ -91,16 +91,16 @@ export const MESSAGE_TYPES = {
 
 // Tag colors mapping
 export const TAG_COLORS: Record<string, string> = {
-  '新用户': 'bg-blue-100 text-blue-700',
-  '来自搜索': 'bg-gray-100 text-gray-700',
-  '来自官网': 'bg-gray-100 text-gray-700',
-  '咨询产品A': 'bg-green-100 text-green-700',
-  '老客户': 'bg-purple-100 text-purple-700',
-  '技术支持': 'bg-indigo-100 text-indigo-700',
-  '待跟进': 'bg-yellow-100 text-yellow-700',
-  '投诉': 'bg-red-100 text-red-700',
-  '高优先级': 'bg-pink-100 text-pink-700',
-  '咨询售前': 'bg-gray-100 text-gray-700'
+  'New User': 'bg-blue-100 text-blue-700',
+  'From Search': 'bg-gray-100 text-gray-700',
+  'From Website': 'bg-gray-100 text-gray-700',
+  'Product A Inquiry': 'bg-green-100 text-green-700',
+  'Returning Customer': 'bg-purple-100 text-purple-700',
+  'Technical Support': 'bg-indigo-100 text-indigo-700',
+  'Follow-up Needed': 'bg-yellow-100 text-yellow-700',
+  'Complaint': 'bg-red-100 text-red-700',
+  'High Priority': 'bg-pink-100 text-pink-700',
+  'Pre-sales Inquiry': 'bg-gray-100 text-gray-700'
 } as const;
 
 // Avatar placeholder URLs

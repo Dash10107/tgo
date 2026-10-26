@@ -59,7 +59,7 @@ class UserInfoToolTests(unittest.IsolatedAsyncioTestCase):
 
             result = await tools[1].entrypoint(name="tt")
 
-        self.assertEqual(result, "已提交用户信息更新：name。感谢配合！")
+        self.assertEqual(result, "User info update submitted: name. Thank you for your cooperation!")
         self.assertIsNotNone(_FakeEventClient.last_call)
         self.assertEqual(
             _FakeEventClient.last_call,
@@ -70,10 +70,10 @@ class UserInfoToolTests(unittest.IsolatedAsyncioTestCase):
                     "metadata": None,
                 },
                 "error_messages": {
-                    "not_configured": "抱歉，当前无法处理用户信息，我们已记录该问题并会尽快处理。请稍后再试或直接联系客服。",
-                    "api_error": "抱歉，请求失败。请稍后重试或联系技术支持。",
-                    "http_error": "抱歉，网络异常。请稍后重试或联系技术支持。",
-                    "unexpected_error": "抱歉，出现异常。请稍后重试或联系技术支持。",
+                    "not_configured": "Sorry, user information cannot be processed right now. We have logged the issue and will handle it soon. Please try again later or contact support directly.",
+                    "api_error": "Sorry, the request failed. Please try again later or contact technical support.",
+                    "http_error": "Sorry, a network error occurred. Please try again later or contact technical support.",
+                    "unexpected_error": "Sorry, something went wrong. Please try again later or contact technical support.",
                 },
             },
         )

@@ -237,7 +237,7 @@ export const DocumentList: React.FC<DocumentListProps> = ({
                   <button
                     onClick={() => onViewQA(doc.id, doc.name)}
                     className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-md transition-colors"
-                    title={t('knowledge.detail.viewQA', '查看问答对')}
+                    title={t('knowledge.detail.viewQA', 'View Q&A pairs')}
                   >
                     <MessageSquare className="w-4 h-4" />
                   </button>
@@ -245,7 +245,7 @@ export const DocumentList: React.FC<DocumentListProps> = ({
                     onClick={() => onDownload(doc.id)}
                     disabled={downloadingFiles.has(doc.id)}
                     className="p-1.5 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    title={downloadingFiles.has(doc.id) ? '下载中...' : '下载文件'}
+                    title={downloadingFiles.has(doc.id) ? t('knowledge.documentList.downloading', 'Downloading...') : t('knowledge.documentList.download', 'Download file')}
                   >
                     {downloadingFiles.has(doc.id) ? (
                       <Loader className="w-4 h-4 animate-spin" />
@@ -257,7 +257,7 @@ export const DocumentList: React.FC<DocumentListProps> = ({
                     onClick={() => onDelete(doc.id)}
                     disabled={deletingFiles.has(doc.id)}
                     className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    title={deletingFiles.has(doc.id) ? '删除中...' : '删除文件'}
+                    title={deletingFiles.has(doc.id) ? t('knowledge.documentList.deleting', 'Deleting...') : t('knowledge.documentList.deleteFile', 'Delete file')}
                   >
                     {deletingFiles.has(doc.id) ? (
                       <Loader className="w-4 h-4 animate-spin" />

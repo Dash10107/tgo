@@ -76,7 +76,7 @@ const TableTemplate: React.FC<TableTemplateProps> = ({ title, columns, rows }) =
             {rows.length === 0 && (
               <tr>
                 <td colSpan={columns.length} className="px-3 py-8 text-center text-gray-400 italic">
-                  {t('common.noData', '暂无数据')}
+                  {t('common.noData', 'No data')}
                 </td>
               </tr>
             )}

@@ -50,13 +50,13 @@ def _sanitize_filename(name: str, limit: int = 100) -> str:
     return name[:limit]
 
 
-def _build_platform_list_item(platform: Platform, language: str = "zh") -> PlatformListItemResponse:
+def _build_platform_list_item(platform: Platform, language: str = "en") -> PlatformListItemResponse:
     """Build PlatformListItemResponse with language-aware name/display_name.
 
     Priority:
     1) If ``Platform.name`` is set, always use it.
     2) Otherwise, pick from the related PlatformTypeDefinition based on language:
-       - ``zh`` (default): use ``name`` (Chinese), fallback to "未命名平台".
+       - ``zh``: use ``name`` (Chinese), fallback to "Unnamed Platform".
        - non-``zh``: use ``name_en`` when available, otherwise ``name``,
          finally "Unnamed Platform".
     """
@@ -66,7 +66,7 @@ def _build_platform_list_item(platform: Platform, language: str = "zh") -> Platf
             localized_name = platform.name
         elif platform.platform_type:
             if language == "zh":
-                localized_name = getattr(platform.platform_type, "name", None) or "未命名平台"
+                localized_name = getattr(platform.platform_type, "name", None) or "Unnamed Platform"
             else:
                 localized_name = (
                     getattr(platform.platform_type, "name_en", None)
@@ -74,7 +74,7 @@ def _build_platform_list_item(platform: Platform, language: str = "zh") -> Platf
                     or "Unnamed Platform"
                 )
         else:
-            localized_name = "未命名平台" if language == "zh" else "Unnamed Platform"
+            localized_name = "Unnamed Platform"
 
         item.name = localized_name
         item.display_name = localized_name
@@ -84,7 +84,7 @@ def _build_platform_list_item(platform: Platform, language: str = "zh") -> Platf
     return item
 
 
-def _build_platform_response(platform: Platform, language: str = "zh") -> PlatformResponse:
+def _build_platform_response(platform: Platform, language: str = "en") -> PlatformResponse:
     """Build PlatformResponse with language-aware name/display_name."""
     response = PlatformResponse.model_validate(platform)
     try:
@@ -92,7 +92,7 @@ def _build_platform_response(platform: Platform, language: str = "zh") -> Platfo
             localized_name = platform.name
         elif platform.platform_type:
             if language == "zh":
-                localized_name = getattr(platform.platform_type, "name", None) or "未命名平台"
+                localized_name = getattr(platform.platform_type, "name", None) or "Unnamed Platform"
             else:
                 localized_name = (
                     getattr(platform.platform_type, "name_en", None)
@@ -100,7 +100,7 @@ def _build_platform_response(platform: Platform, language: str = "zh") -> Platfo
                     or "Unnamed Platform"
                 )
         else:
-            localized_name = "未命名平台" if language == "zh" else "Unnamed Platform"
+            localized_name = "Unnamed Platform"
 
         response.name = localized_name
         response.display_name = localized_name
@@ -113,7 +113,7 @@ def _build_platform_response(platform: Platform, language: str = "zh") -> Platfo
 async def list_platform_types(
     db: Session = Depends(get_db),
     current_user: Staff = Depends(require_permission("platforms:list")),
-    x_user_language: str = Header("zh", alias="X-User-Language"),
+    x_user_language: str = Header("en", alias="X-User-Language"),
 ) -> list[PlatformTypeDefinitionResponse]:
     """List available platform type definitions. Requires platforms:list permission."""
     logger.info(f"User {current_user.username} listing platform types")
@@ -129,7 +129,7 @@ async def list_platform_types(
         resp = PlatformTypeDefinitionResponse.model_validate(item)
         try:
             if x_user_language == "zh":
-                display_name = item.name or "未命名平台类型"
+                display_name = item.name or "Unnamed Platform Type"
             else:
                 display_name = (
                     item.name_en
@@ -150,7 +150,7 @@ async def list_platforms(
     params: PlatformListParams = Depends(),
     db: Session = Depends(get_db),
     current_user: Staff = Depends(require_permission("platforms:list")),
-    x_user_language: str = Header("zh", alias="X-User-Language"),
+    x_user_language: str = Header("en", alias="X-User-Language"),
 ) -> PlatformListResponse:
     """
     List platforms.
@@ -220,7 +220,7 @@ async def get_platform_info(
     platform_api_key: str | None = None,
     db: Session = Depends(get_db),
     x_platform_api_key: str | None = Header(None, alias="X-Platform-API-Key"),
-    x_user_language: str = Header("zh", alias="X-User-Language"),
+    x_user_language: str = Header("en", alias="X-User-Language"),
 ) -> PlatformResponse:
     """Get platform information by Platform API key.
 
@@ -263,7 +263,7 @@ async def create_platform(
     platform_data: PlatformCreate,
     db: Session = Depends(get_db),
     current_user: Staff = Depends(require_permission("platforms:create")),
-    x_user_language: str = Header("zh", alias="X-User-Language"),
+    x_user_language: str = Header("en", alias="X-User-Language"),
 ) -> PlatformResponse:
     """
     Create platform.
@@ -302,7 +302,7 @@ async def get_platform(
     platform_id: UUID,
     db: Session = Depends(get_db),
     current_user: Staff = Depends(require_permission("platforms:read")),
-    x_user_language: str = Header("zh", alias="X-User-Language"),
+    x_user_language: str = Header("en", alias="X-User-Language"),
 ) -> PlatformResponse:
     """Get platform details. Requires platforms:read permission."""
     logger.info(f"User {current_user.username} getting platform: {platform_id}")
@@ -333,7 +333,7 @@ async def update_platform(
     platform_data: PlatformUpdate,
     db: Session = Depends(get_db),
     current_user: Staff = Depends(require_permission("platforms:update")),
-    x_user_language: str = Header("zh", alias="X-User-Language"),
+    x_user_language: str = Header("en", alias="X-User-Language"),
 ) -> PlatformResponse:
     """
     Update platform.
@@ -471,7 +471,7 @@ async def enable_platform(
     platform_id: UUID,
     db: Session = Depends(get_db),
     current_user: Staff = Depends(require_permission("platforms:update")),
-    x_user_language: str = Header("zh", alias="X-User-Language"),
+    x_user_language: str = Header("en", alias="X-User-Language"),
 ) -> PlatformResponse:
     """Enable a platform (set is_active=True). Requires platforms:update permission."""
     logger.info("User %s enabling platform %s", current_user.username, str(platform_id))
@@ -511,7 +511,7 @@ async def disable_platform(
     platform_id: UUID,
     db: Session = Depends(get_db),
     current_user: Staff = Depends(require_permission("platforms:update")),
-    x_user_language: str = Header("zh", alias="X-User-Language"),
+    x_user_language: str = Header("en", alias="X-User-Language"),
 ) -> PlatformResponse:
     """Disable a platform (set is_active=False). Requires platforms:update permission."""
     logger.info("User %s disabling platform %s", current_user.username, str(platform_id))
@@ -672,7 +672,7 @@ async def enable_ai_for_platform(
     platform_id: UUID,
     db: Session = Depends(get_db),
     current_user: Staff = Depends(require_permission("platforms:update")),
-    x_user_language: str = Header("zh", alias="X-User-Language"),
+    x_user_language: str = Header("en", alias="X-User-Language"),
 ) -> PlatformResponse:
     """Enable AI for a platform (set ai_mode=auto). Requires platforms:update permission."""
     logger.info("User %s enabling AI for platform %s", current_user.username, str(platform_id))
@@ -704,7 +704,7 @@ async def disable_ai_for_platform(
     platform_id: UUID,
     db: Session = Depends(get_db),
     current_user: Staff = Depends(require_permission("platforms:update")),
-    x_user_language: str = Header("zh", alias="X-User-Language"),
+    x_user_language: str = Header("en", alias="X-User-Language"),
 ) -> PlatformResponse:
     """Disable AI for a platform (set ai_mode=off). Requires platforms:update permission."""
     logger.info("User %s disabling AI for platform %s", current_user.username, str(platform_id))
@@ -737,7 +737,7 @@ async def upload_platform_logo(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
     current_user: Staff = Depends(require_permission("platforms:update")),
-    x_user_language: str = Header("zh", alias="X-User-Language"),
+    x_user_language: str = Header("en", alias="X-User-Language"),
 ) -> PlatformResponse:
     """Upload or replace the logo image for a platform. Requires platforms:update permission.
 
@@ -873,13 +873,13 @@ async def wecom_callback_verify(
     request: Request,
     db: Session = Depends(get_db),
 ) -> Response:
-    """WeCom (企业微信/企业微信机器人) callback URL verification (GET).
+    """WeCom (Enterprise WeChat / WeCom bot) callback URL verification (GET).
 
     WeCom sends msg_signature, timestamp, nonce, and echostr for verification.
     We verify the signature and decrypt echostr (if encryption enabled), then
     return the decrypted plain text as the response body.
     
-    Supports both 'wecom' (企业微信) and 'wecom_bot' (企业微信机器人) platform types.
+    Supports both 'wecom' (Enterprise WeChat) and 'wecom_bot' (WeCom bot) platform types.
     """
     # 1) Validate platform
     platform = (
@@ -968,7 +968,7 @@ async def platform_callback_forward(
     request: Request,
     db: Session = Depends(get_db),
 ) -> Response:
-    """Forward third-party platform callbacks to the TGO Platform Service.
+    """Forward third-party platform callbacks to the Pelatis Platform Service.
 
     - Validates the platform_api_key against platforms table (must be active and not soft-deleted)
     - Forwards body and query parameters to Platform Service

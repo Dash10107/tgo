@@ -68,7 +68,7 @@ const WorkflowCard: React.FC<WorkflowCardProps> = ({
           textColor: 'text-green-600 dark:text-green-400',
           bgColor: 'bg-green-50 dark:bg-green-900/20',
           borderColor: 'border-green-200 dark:border-green-800',
-          title: t('workflow.status.active', '已启用') 
+          title: t('workflow.status.active', 'Active') 
         };
       case 'draft':
         return { 
@@ -76,7 +76,7 @@ const WorkflowCard: React.FC<WorkflowCardProps> = ({
           textColor: 'text-yellow-600 dark:text-yellow-400',
           bgColor: 'bg-yellow-50 dark:bg-yellow-900/20',
           borderColor: 'border-yellow-200 dark:border-yellow-800',
-          title: t('workflow.status.draft', '草稿') 
+          title: t('workflow.status.draft', 'Draft') 
         };
       case 'archived':
         return { 
@@ -84,7 +84,7 @@ const WorkflowCard: React.FC<WorkflowCardProps> = ({
           textColor: 'text-gray-500 dark:text-gray-400',
           bgColor: 'bg-gray-50 dark:bg-gray-700/30',
           borderColor: 'border-gray-200 dark:border-gray-700',
-          title: t('workflow.status.archived', '已归档') 
+          title: t('workflow.status.archived', 'Archived') 
         };
       default:
         return { 
@@ -139,14 +139,14 @@ const WorkflowCard: React.FC<WorkflowCardProps> = ({
             {showMenu && (
               <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-1 z-20 animate-in fade-in zoom-in-95 duration-200">
                 <button onClick={() => { onEdit(workflow.id); setShowMenu(false); }} className="w-full flex items-center px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                  <Pencil className="w-4 h-4 mr-2" /> {t('common.edit', '编辑')}
+                  <Pencil className="w-4 h-4 mr-2" /> {t('common.edit', 'Edit')}
                 </button>
                 <button onClick={() => { onDuplicate(workflow.id); setShowMenu(false); }} className="w-full flex items-center px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                  <Copy className="w-4 h-4 mr-2" /> {t('common.duplicate', '复制')}
+                  <Copy className="w-4 h-4 mr-2" /> {t('common.duplicate', 'Duplicate')}
                 </button>
                 <div className="h-px bg-gray-100 dark:bg-gray-700 my-1"></div>
                 <button onClick={() => { onDelete(workflow.id); setShowMenu(false); }} className="w-full flex items-center px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
-                  <Trash2 className="w-4 h-4 mr-2" /> {t('common.delete', '删除')}
+                  <Trash2 className="w-4 h-4 mr-2" /> {t('common.delete', 'Delete')}
                 </button>
               </div>
             )}
@@ -154,7 +154,7 @@ const WorkflowCard: React.FC<WorkflowCardProps> = ({
         </div>
 
         <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4 line-clamp-2 h-10 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
-          {workflow.description || t('workflow.noDescription', '暂无描述信息')}
+          {workflow.description || t('workflow.noDescription', 'No description')}
         </p>
 
         <div className="space-y-3">
@@ -179,7 +179,7 @@ const WorkflowCard: React.FC<WorkflowCardProps> = ({
           
           <div className="flex items-center text-[11px] text-gray-500 dark:text-gray-500 bg-gray-50 dark:bg-gray-800/50 px-2 py-1.5 rounded-lg border border-gray-100/50 dark:border-gray-700/50">
             <RefreshCw className="w-3.5 h-3.5 mr-2 opacity-70" />
-            <span>{t('workflow.lastUpdated', '更新于')} {new Date(workflow.updated_at).toLocaleDateString()}</span>
+            <span>{t('workflow.lastUpdated', 'Updated')} {new Date(workflow.updated_at).toLocaleDateString()}</span>
           </div>
         </div>
       </div>
@@ -190,12 +190,12 @@ const WorkflowCard: React.FC<WorkflowCardProps> = ({
           className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-purple-200 dark:shadow-none transition-all duration-200 active:scale-95"
         >
           <Eye className="w-3.5 h-3.5" />
-          {t('workflow.viewWorkflow', '查看工作流')}
+          {t('workflow.viewWorkflow', 'View Workflow')}
         </button>
         <button
           onClick={() => onEdit(workflow.id)}
           className="p-2 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 rounded-xl border border-gray-100 dark:border-gray-600 transition-all duration-200 hover:bg-purple-50 dark:hover:bg-purple-900/30"
-          title={t('common.edit', '编辑')}
+          title={t('common.edit', 'Edit')}
         >
           <Pencil className="w-4 h-4" />
         </button>
@@ -277,7 +277,7 @@ const WorkflowManagement: React.FC = () => {
       navigate(`/ai/workflows/${newWorkflow.id}/edit`);
     } catch (error) {
       console.error('Failed to create workflow:', error);
-      showToast('error', t('workflow.messages.createFailed', '创建失败'), '');
+      showToast('error', t('workflow.messages.createFailed', 'Create Failed'), '');
     } finally {
       setIsCreating(false);
     }
@@ -290,9 +290,9 @@ const WorkflowManagement: React.FC = () => {
   const handleDuplicate = async (id: string) => {
     try {
       await duplicateWorkflow(id);
-      showToast('success', t('workflow.messages.duplicateSuccess', '复制成功'), '');
+      showToast('success', t('workflow.messages.duplicateSuccess', 'Duplicated'), '');
     } catch {
-      showToast('error', t('workflow.messages.duplicateFailed', '复制失败'), '');
+      showToast('error', t('workflow.messages.duplicateFailed', 'Duplicate Failed'), '');
     }
   };
 
@@ -302,10 +302,10 @@ const WorkflowManagement: React.FC = () => {
     setIsDeleting(true);
     try {
       await deleteWorkflow(deleteTarget.id);
-      showToast('success', t('workflow.messages.deleteSuccess', '删除成功'), '');
+      showToast('success', t('workflow.messages.deleteSuccess', 'Deleted'), '');
       setDeleteTarget(null);
     } catch {
-      showToast('error', t('workflow.messages.deleteFailed', '删除失败'), '');
+      showToast('error', t('workflow.messages.deleteFailed', 'Delete Failed'), '');
     } finally {
       setIsDeleting(false);
     }
@@ -322,10 +322,10 @@ const WorkflowManagement: React.FC = () => {
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
             <GitBranch className="w-7 h-7 text-purple-600" />
-            {t('workflow.management.title', '工作流管理')}
+            {t('workflow.management.title', 'Workflow Management')}
           </h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            {t('workflow.management.subtitle', '编排复杂的 AI 任务流程')}
+            {t('workflow.management.subtitle', 'Orchestrate complex AI task flows')}
           </p>
         </div>
         
@@ -334,7 +334,7 @@ const WorkflowManagement: React.FC = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-purple-500 transition-colors" />
             <input 
               type="text"
-              placeholder={t('common.search', '搜索...')}
+              placeholder={t('common.search', 'Search')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 pr-4 py-2 w-64 bg-gray-100/50 dark:bg-gray-800/50 border-transparent focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 rounded-xl text-sm transition-all outline-none"
@@ -348,7 +348,7 @@ const WorkflowManagement: React.FC = () => {
               className="p-2 text-gray-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-xl transition-all"
               onClick={handleRefresh}
               disabled={isLoadingWorkflows}
-              title={t('common.refresh', '刷新')}
+              title={t('common.refresh', 'Refresh')}
             >
               <RefreshCw className={`w-5 h-5 ${isLoadingWorkflows ? 'animate-spin' : ''}`} />
             </button>
@@ -358,7 +358,7 @@ const WorkflowManagement: React.FC = () => {
               disabled={isCreating}
             >
               {isCreating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-              <span className="hidden sm:inline">{t('workflow.actions.create', '创建工作流')}</span>
+              <span className="hidden sm:inline">{t('workflow.actions.create', 'Create Workflow')}</span>
             </button>
           </div>
         </div>
@@ -374,10 +374,10 @@ const WorkflowManagement: React.FC = () => {
             <div className="relative z-10">
               <h3 className="text-xl font-bold flex items-center gap-2">
                 <GitBranch className="w-6 h-6" />
-                {t('workflow.banner.title', '自动化工作流')}
+                {t('workflow.banner.title', 'Automated Workflows')}
               </h3>
               <p className="text-purple-100 text-sm mt-1 opacity-90 max-w-xl">
-                {t('workflow.banner.description', '通过图形化界面编排 AI 节点、条件分支和自定义工具，实现从简单对话到复杂业务逻辑的自动化处理。')}
+                {t('workflow.banner.description', 'Orchestrate AI nodes, conditional branches, and custom tools through a graphical interface to achieve automated processing from simple conversations to complex business logic.')}
               </p>
             </div>
             <div className="flex items-center gap-2 relative z-10">
@@ -391,10 +391,10 @@ const WorkflowManagement: React.FC = () => {
                       : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
                   }`}
                 >
-                  {status === 'all' ? t('common.all', '全部') :
-                   status === 'active' ? t('workflow.status.active', '已启用') :
-                   status === 'draft' ? t('workflow.status.draft', '草稿') :
-                   t('workflow.status.archived', '已归档')}
+                  {status === 'all' ? t('common.all', 'All') :
+                   status === 'active' ? t('workflow.status.active', 'Active') :
+                   status === 'draft' ? t('workflow.status.draft', 'Draft') :
+                   t('workflow.status.archived', 'Archived')}
                 </button>
               ))}
             </div>
@@ -402,7 +402,7 @@ const WorkflowManagement: React.FC = () => {
 
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t('workflow.listTitle', '工作流列表')}</h3>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t('workflow.listTitle', 'Workflow List')}</h3>
             </div>
 
             {/* Error State */}
@@ -411,13 +411,13 @@ const WorkflowManagement: React.FC = () => {
                 <div className="w-16 h-16 bg-red-50 dark:bg-red-900/20 rounded-2xl flex items-center justify-center text-red-500 mb-4">
                   <Trash2 className="w-8 h-8" />
                 </div>
-                <p className="text-gray-900 dark:text-gray-100 font-bold mb-2">{t('common.error', '出错了')}</p>
+                <p className="text-gray-900 dark:text-gray-100 font-bold mb-2">{t('common.error', 'Error')}</p>
                 <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">{workflowsError}</p>
                 <button
                   onClick={handleRefresh}
                   className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl transition-all"
                 >
-                  {t('common.retry', '重试')}
+                  {t('common.retry', 'Retry')}
                 </button>
               </div>
             ) : isLoadingWorkflows && workflows.length === 0 ? (
@@ -432,10 +432,10 @@ const WorkflowManagement: React.FC = () => {
                   <GitBranch className="w-10 h-10" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                  {searchQuery || statusFilter !== 'all' ? t('workflow.empty.noResults', '未找到匹配的工作流') : t('workflow.empty.title', '暂无工作流')}
+                  {searchQuery || statusFilter !== 'all' ? t('workflow.empty.noResults', 'No matching workflows found') : t('workflow.empty.title', 'No Workflows')}
                 </h3>
                 <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-sm text-center">
-                  {searchQuery || statusFilter !== 'all' ? t('workflow.empty.noResultsDesc', '请尝试调整搜索关键词或筛选条件') : t('workflow.empty.description', '点击「创建工作流」按钮开始构建您的第一个自动化流程')}
+                  {searchQuery || statusFilter !== 'all' ? t('workflow.empty.noResultsDesc', 'Try adjusting your search keywords or filters') : t('workflow.empty.description', 'Click the "Create Workflow" button to build your first automated process')}
                 </p>
                 {!searchQuery && statusFilter === 'all' && (
                   <button
@@ -443,7 +443,7 @@ const WorkflowManagement: React.FC = () => {
                     className="inline-flex items-center px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl shadow-lg shadow-purple-200 dark:shadow-none transition-all active:scale-95"
                   >
                     <Plus className="w-5 h-5 mr-2" />
-                    {t('workflow.actions.create', '创建工作流')}
+                    {t('workflow.actions.create', 'Create Workflow')}
                   </button>
                 )}
               </div>
@@ -495,10 +495,10 @@ const WorkflowManagement: React.FC = () => {
       {/* Delete Confirmation */}
       <ConfirmDialog
         isOpen={!!deleteTarget}
-        title={t('workflow.modal.delete.title', '删除工作流')}
-        message={t('workflow.modal.delete.message', `确定要删除工作流 "${deleteTarget?.name}" 吗？此操作不可撤销。`, { name: deleteTarget?.name })}
-        confirmText={t('common.delete', '删除')}
-        cancelText={t('common.cancel', '取消')}
+        title={t('workflow.modal.delete.title', 'Delete Workflow')}
+        message={t('workflow.modal.delete.message', `Are you sure you want to delete workflow "{{name}}"? This action cannot be undone.`, { name: deleteTarget?.name })}
+        confirmText={t('common.delete', 'Delete')}
+        cancelText={t('common.cancel', 'Cancel')}
         confirmVariant="danger"
         onConfirm={handleDeleteConfirm}
         onCancel={() => setDeleteTarget(null)}

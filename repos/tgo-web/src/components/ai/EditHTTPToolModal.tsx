@@ -123,17 +123,17 @@ const EditHTTPToolModal: React.FC<EditHTTPToolModalProps> = ({ isOpen, onClose, 
     const newErrors: FormErrors = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = t('tools.addHttpToolModal.errors.nameRequired', '请输入工具名称');
+      newErrors.name = t('tools.addHttpToolModal.errors.nameRequired', 'Please enter tool name');
     } else if (!/^[a-zA-Z0-9_-]+$/.test(formData.name.trim())) {
-      newErrors.name = t('tools.addHttpToolModal.errors.invalidName', '工具名称只能包含英文字母、数字、下划线和连字符');
+      newErrors.name = t('tools.addHttpToolModal.errors.invalidName', 'Tool name can only contain letters, numbers, underscores and hyphens');
     }
 
     if (!formData.description.trim()) {
-      newErrors.description = t('tools.addHttpToolModal.errors.descriptionRequired', '请输入工具描述');
+      newErrors.description = t('tools.addHttpToolModal.errors.descriptionRequired', 'Please enter tool description');
     }
 
     if (!formData.endpoint.trim()) {
-      newErrors.endpoint = t('tools.addHttpToolModal.errors.endpointRequired', '请输入接口地址');
+      newErrors.endpoint = t('tools.addHttpToolModal.errors.endpointRequired', 'Please enter API endpoint');
     }
 
     setErrors(newErrors);
@@ -172,8 +172,8 @@ const EditHTTPToolModal: React.FC<EditHTTPToolModalProps> = ({ isOpen, onClose, 
 
       showToast(
         'success',
-        t('tools.editHttpToolModal.success.title', '更新成功'),
-        t('tools.editHttpToolModal.success.message', 'HTTP 工具 {{name}} 已成功更新', { name: formData.name })
+        t('tools.editHttpToolModal.success.title', 'Updated Successfully'),
+        t('tools.editHttpToolModal.success.message', 'HTTP tool {{name}} has been updated', { name: formData.name })
       );
 
       await loadTools(false);
@@ -182,8 +182,8 @@ const EditHTTPToolModal: React.FC<EditHTTPToolModalProps> = ({ isOpen, onClose, 
       console.error('Failed to update HTTP tool:', error);
       showToast(
         'error',
-        t('tools.editHttpToolModal.error.title', '更新失败'),
-        error instanceof Error ? error.message : t('tools.editHttpToolModal.error.message', '更新 HTTP 工具失败')
+        t('tools.editHttpToolModal.error.title', 'Update Failed'),
+        error instanceof Error ? error.message : t('tools.editHttpToolModal.error.message', 'Failed to update HTTP tool')
       );
     } finally {
       setIsSubmitting(false);
@@ -203,10 +203,10 @@ const EditHTTPToolModal: React.FC<EditHTTPToolModalProps> = ({ isOpen, onClose, 
             </div>
             <div>
               <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                {t('tools.editHttpToolModal.title', '编辑 HTTP 工具')}
+                {t('tools.editHttpToolModal.title', 'Edit HTTP Tool')}
               </h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                {t('tools.editHttpToolModal.subtitle', '修改外部 API 接口的配置信息')}
+                {t('tools.editHttpToolModal.subtitle', 'Update external API endpoint configuration')}
               </p>
             </div>
           </div>
@@ -226,13 +226,13 @@ const EditHTTPToolModal: React.FC<EditHTTPToolModalProps> = ({ isOpen, onClose, 
           <section className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-6">
             <div className="flex items-center gap-2 mb-2 text-blue-600 dark:text-blue-400">
               <Info className="w-5 h-5" />
-              <h3 className="font-bold">{t('tools.addHttpToolModal.sections.basic', '基本信息')}</h3>
+              <h3 className="font-bold">{t('tools.addHttpToolModal.sections.basic', 'Basic Information')}</h3>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">
-                  {t('tools.addHttpToolModal.fields.name', '工具名称')}
+                  {t('tools.addHttpToolModal.fields.name', 'Tool Name')}
                   <span className="text-red-500 ml-1">*</span>
                 </label>
                 <input
@@ -240,14 +240,14 @@ const EditHTTPToolModal: React.FC<EditHTTPToolModalProps> = ({ isOpen, onClose, 
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
                   className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all dark:text-white outline-none ${errors.name ? 'border-red-500' : 'border-gray-200 dark:border-gray-700'}`}
-                  placeholder={t('tools.addHttpToolModal.placeholders.name', '例如: search_user')}
+                  placeholder={t('tools.addHttpToolModal.placeholders.name', 'e.g., search_user')}
                 />
                 {errors.name && <p className="text-xs text-red-500 font-medium">{errors.name}</p>}
               </div>
 
               <div className="space-y-2">
                 <label className="block text-sm font-bold text-gray-700 dark:text-gray-200">
-                  {t('tools.addHttpToolModal.fields.description', '工具描述')}
+                  {t('tools.addHttpToolModal.fields.description', 'Tool Description')}
                   <span className="text-red-500 ml-1">*</span>
                 </label>
                 <input
@@ -255,7 +255,7 @@ const EditHTTPToolModal: React.FC<EditHTTPToolModalProps> = ({ isOpen, onClose, 
                   value={formData.description}
                   onChange={(e) => handleInputChange('description', e.target.value)}
                   className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all dark:text-white outline-none ${errors.description ? 'border-red-500' : 'border-gray-200 dark:border-gray-700'}`}
-                  placeholder={t('tools.addHttpToolModal.placeholders.description', '描述工具的功能，帮助 AI 理解调用时机')}
+                  placeholder={t('tools.addHttpToolModal.placeholders.description', 'Describe the tool\'s function to help AI understand when to call it')}
                 />
                 {errors.description && <p className="text-xs text-red-500 font-medium">{errors.description}</p>}
               </div>
@@ -266,7 +266,7 @@ const EditHTTPToolModal: React.FC<EditHTTPToolModalProps> = ({ isOpen, onClose, 
           <section className="bg-white dark:bg-gray-900 rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm space-y-6">
             <div className="flex items-center gap-2 mb-2 text-purple-600 dark:text-purple-400">
               <Settings className="w-5 h-5" />
-              <h3 className="font-bold">{t('tools.addHttpToolModal.sections.config', '接口配置')}</h3>
+              <h3 className="font-bold">{t('tools.addHttpToolModal.sections.config', 'API Configuration')}</h3>
             </div>
 
             <div className="space-y-6">
@@ -274,7 +274,7 @@ const EditHTTPToolModal: React.FC<EditHTTPToolModalProps> = ({ isOpen, onClose, 
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="sm:w-32">
                   <label className="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">
-                    {t('tools.addHttpToolModal.fields.method', '请求方法')}
+                    {t('tools.addHttpToolModal.fields.method', 'HTTP Method')}
                   </label>
                   <select
                     value={formData.method}
@@ -290,7 +290,7 @@ const EditHTTPToolModal: React.FC<EditHTTPToolModalProps> = ({ isOpen, onClose, 
                 </div>
                 <div className="flex-1">
                   <label className="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">
-                    {t('tools.addHttpToolModal.fields.endpoint', '接口地址 (Endpoint)')}
+                    {t('tools.addHttpToolModal.fields.endpoint', 'API Endpoint')}
                     <span className="text-red-500 ml-1">*</span>
                   </label>
                   <input
@@ -308,14 +308,14 @@ const EditHTTPToolModal: React.FC<EditHTTPToolModalProps> = ({ isOpen, onClose, 
               <div className="space-y-4 pt-2">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-bold text-gray-700 dark:text-gray-200">
-                    {t('tools.addHttpToolModal.fields.headers', '请求头 (Headers)')}
+                    {t('tools.addHttpToolModal.fields.headers', 'Request Headers')}
                   </label>
                   <button
                     type="button"
                     onClick={addHeader}
                     className="px-3 py-1.5 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 text-xs font-bold rounded-lg hover:bg-purple-100 transition-all flex items-center"
                   >
-                    <Plus className="w-3.5 h-3.5 mr-1" /> {t('tools.addHttpToolModal.addHeader', '添加 Header')}
+                    <Plus className="w-3.5 h-3.5 mr-1" /> {t('tools.addHttpToolModal.addHeader', 'Add Header')}
                   </button>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -356,14 +356,14 @@ const EditHTTPToolModal: React.FC<EditHTTPToolModalProps> = ({ isOpen, onClose, 
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
                 <ListTree className="w-5 h-5" />
-                <h3 className="font-bold">{t('tools.addHttpToolModal.fields.parameters', '输入参数')}</h3>
+                <h3 className="font-bold">{t('tools.addHttpToolModal.fields.parameters', 'Input Parameters')}</h3>
               </div>
               <button
                 type="button"
                 onClick={addParameter}
                 className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-bold rounded-xl transition-all flex items-center shadow-lg shadow-green-200 dark:shadow-none active:scale-95"
               >
-                <Plus className="w-4 h-4 mr-1.5" /> {t('tools.addHttpToolModal.addParameter', '添加参数')}
+                <Plus className="w-4 h-4 mr-1.5" /> {t('tools.addHttpToolModal.addParameter', 'Add Parameter')}
               </button>
             </div>
             
@@ -373,7 +373,7 @@ const EditHTTPToolModal: React.FC<EditHTTPToolModalProps> = ({ isOpen, onClose, 
                   <Terminal className="w-6 h-6" />
                 </div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {t('tools.addHttpToolModal.params.empty', '定义 AI 调用接口时需要的动态参数')}
+                  {t('tools.addHttpToolModal.params.empty', 'Define dynamic parameters needed when AI calls the endpoint')}
                 </p>
               </div>
             ) : (
@@ -381,11 +381,11 @@ const EditHTTPToolModal: React.FC<EditHTTPToolModalProps> = ({ isOpen, onClose, 
                 <table className="w-full text-sm text-left">
                   <thead className="bg-gray-50/80 dark:bg-gray-800 text-gray-700 dark:text-gray-200 font-bold border-b border-gray-100 dark:border-gray-800">
                     <tr>
-                      <th className="px-4 py-4 w-1/4">{t('tools.addHttpToolModal.params.name', '参数名')}</th>
-                      <th className="px-4 py-4 w-1/6">{t('tools.addHttpToolModal.params.type', '类型')}</th>
-                      <th className="px-4 py-4">{t('tools.addHttpToolModal.params.desc', '描述')}</th>
-                      <th className="px-4 py-4 w-20 text-center">{t('tools.addHttpToolModal.params.required', '必填')}</th>
-                      <th className="px-4 py-4 w-16 text-center">{t('common.action', '操作')}</th>
+                      <th className="px-4 py-4 w-1/4">{t('tools.addHttpToolModal.params.name', 'Name')}</th>
+                      <th className="px-4 py-4 w-1/6">{t('tools.addHttpToolModal.params.type', 'Type')}</th>
+                      <th className="px-4 py-4">{t('tools.addHttpToolModal.params.desc', 'Description')}</th>
+                      <th className="px-4 py-4 w-20 text-center">{t('tools.addHttpToolModal.params.required', 'Required')}</th>
+                      <th className="px-4 py-4 w-16 text-center">{t('common.action', 'Action')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50 dark:divide-gray-800 bg-white dark:bg-gray-900">
@@ -419,7 +419,7 @@ const EditHTTPToolModal: React.FC<EditHTTPToolModalProps> = ({ isOpen, onClose, 
                             value={param.description}
                             onChange={(e) => updateParameter(index, 'description', e.target.value)}
                             className="w-full px-3 py-2 bg-transparent border border-transparent hover:border-gray-200 dark:hover:border-gray-700 focus:bg-gray-50 dark:focus:bg-gray-800 rounded-lg outline-none transition-all dark:text-white"
-                            placeholder={t('tools.addHttpToolModal.placeholders.paramDesc', '参数功能描述...')}
+                            placeholder={t('tools.addHttpToolModal.placeholders.paramDesc', 'Parameter description...')}
                           />
                         </td>
                         <td className="px-2 py-3 text-center">
@@ -456,7 +456,7 @@ const EditHTTPToolModal: React.FC<EditHTTPToolModalProps> = ({ isOpen, onClose, 
             disabled={isSubmitting}
             className="px-6 py-2.5 text-sm font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all active:scale-95"
           >
-            {t('common.cancel', '取消')}
+            {t('common.cancel', 'Cancel')}
           </button>
           <button
             type="submit"
@@ -470,9 +470,9 @@ const EditHTTPToolModal: React.FC<EditHTTPToolModalProps> = ({ isOpen, onClose, 
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                {t('common.submitting', '提交中...')}
+                {t('common.submitting', 'Submitting...')}
               </div>
-            ) : t('tools.editHttpToolModal.save', '保存修改')}
+            ) : t('tools.editHttpToolModal.save', 'Save Changes')}
           </button>
         </div>
       </div>

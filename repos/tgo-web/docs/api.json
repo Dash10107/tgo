@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "TGO-Tech API Service",
+    "title": "Pelatis API Service",
     "description": "Core Business Logic Microservice",
     "version": "0.1.0"
   },
@@ -1787,8 +1787,8 @@
         "tags": [
           "Visitors"
         ],
-        "summary": "接入访客",
-        "description": "客服接入访客（无论访客是否在排队中）。如果访客正在排队，会自动更新其排队状态。",
+        "summary": "Accept visitor",
+        "description": "Staff accepts a visitor (whether or not the visitor is queued). If the visitor is queued, the queue status is updated automatically.",
         "operationId": "accept_visitor_direct_v1_visitors__visitor_id__accept_post",
         "security": [
           {
@@ -2621,8 +2621,8 @@
         "tags": [
           "Visitor Waiting Queue"
         ],
-        "summary": "获取等待队列列表",
-        "description": "获取当前项目的访客等待队列列表，支持分页和筛选。",
+        "summary": "List waiting queue",
+        "description": "List the project's visitor waiting queue, with pagination and filtering.",
         "operationId": "list_waiting_queue_v1_visitor_waiting_queue_get",
         "security": [
           {
@@ -2643,10 +2643,10 @@
                   "type": "null"
                 }
               ],
-              "description": "按状态筛选",
+              "description": "Filter by status",
               "title": "Status"
             },
-            "description": "按状态筛选"
+            "description": "Filter by status"
           },
           {
             "name": "source",
@@ -2661,10 +2661,10 @@
                   "type": "null"
                 }
               ],
-              "description": "按来源筛选",
+              "description": "Filter by source",
               "title": "Source"
             },
-            "description": "按来源筛选"
+            "description": "Filter by source"
           },
           {
             "name": "urgency",
@@ -2679,10 +2679,10 @@
                   "type": "null"
                 }
               ],
-              "description": "按紧急程度筛选",
+              "description": "Filter by urgency",
               "title": "Urgency"
             },
-            "description": "按紧急程度筛选"
+            "description": "Filter by urgency"
           },
           {
             "name": "visitor_id",
@@ -2698,10 +2698,10 @@
                   "type": "null"
                 }
               ],
-              "description": "按访客ID筛选",
+              "description": "Filter by visitor ID",
               "title": "Visitor Id"
             },
-            "description": "按访客ID筛选"
+            "description": "Filter by visitor ID"
           },
           {
             "name": "limit",
@@ -2711,11 +2711,11 @@
               "type": "integer",
               "maximum": 100,
               "minimum": 1,
-              "description": "每页数量",
+              "description": "Items per page",
               "default": 20,
               "title": "Limit"
             },
-            "description": "每页数量"
+            "description": "Items per page"
           },
           {
             "name": "offset",
@@ -2724,11 +2724,11 @@
             "schema": {
               "type": "integer",
               "minimum": 0,
-              "description": "跳过数量",
+              "description": "Number of items to skip",
               "default": 0,
               "title": "Offset"
             },
-            "description": "跳过数量"
+            "description": "Number of items to skip"
           }
         ],
         "responses": {
@@ -2760,8 +2760,8 @@
         "tags": [
           "Visitor Waiting Queue"
         ],
-        "summary": "获取等待中的队列",
-        "description": "快捷接口：只返回状态为 waiting 的队列条目。",
+        "summary": "Get waiting queue entries",
+        "description": "Shortcut endpoint: returns only queue entries whose status is waiting.",
         "operationId": "list_waiting_only_v1_visitor_waiting_queue_waiting_get",
         "security": [
           {
@@ -2782,10 +2782,10 @@
                   "type": "null"
                 }
               ],
-              "description": "按紧急程度筛选",
+              "description": "Filter by urgency",
               "title": "Urgency"
             },
-            "description": "按紧急程度筛选"
+            "description": "Filter by urgency"
           },
           {
             "name": "limit",
@@ -2795,11 +2795,11 @@
               "type": "integer",
               "maximum": 100,
               "minimum": 1,
-              "description": "每页数量",
+              "description": "Items per page",
               "default": 20,
               "title": "Limit"
             },
-            "description": "每页数量"
+            "description": "Items per page"
           },
           {
             "name": "offset",
@@ -2808,11 +2808,11 @@
             "schema": {
               "type": "integer",
               "minimum": 0,
-              "description": "跳过数量",
+              "description": "Number of items to skip",
               "default": 0,
               "title": "Offset"
             },
-            "description": "跳过数量"
+            "description": "Number of items to skip"
           }
         ],
         "responses": {
@@ -2844,8 +2844,8 @@
         "tags": [
           "Visitor Waiting Queue"
         ],
-        "summary": "获取等待队列数量",
-        "description": "获取当前项目等待中的访客数量。",
+        "summary": "Get waiting queue count",
+        "description": "Get the number of waiting visitors in the current project.",
         "operationId": "get_waiting_count_v1_visitor_waiting_queue_count_get",
         "responses": {
           "200": {
@@ -2873,8 +2873,8 @@
         "tags": [
           "Visitor Waiting Queue"
         ],
-        "summary": "获取队列条目详情",
-        "description": "根据ID获取单个队列条目的详细信息。",
+        "summary": "Get queue entry details",
+        "description": "Get the details of a single queue entry by ID.",
         "operationId": "get_queue_entry_v1_visitor_waiting_queue__entry_id__get",
         "security": [
           {
@@ -2922,8 +2922,8 @@
         "tags": [
           "Visitor Waiting Queue"
         ],
-        "summary": "接入访客",
-        "description": "客服接入等待队列中的访客。（改用 /visitors/{visitor_id}/accept 接口）",
+        "summary": "Accept visitor",
+        "description": "Staff accepts a visitor from the waiting queue. (Use the /visitors/{visitor_id}/accept endpoint instead.)",
         "operationId": "accept_visitor_v1_visitor_waiting_queue_accept_post",
         "requestBody": {
           "content": {
@@ -2969,8 +2969,8 @@
         "tags": [
           "Visitor Waiting Queue"
         ],
-        "summary": "取消队列条目",
-        "description": "取消等待队列中的条目（访客离开或其他原因）。",
+        "summary": "Cancel queue entry",
+        "description": "Cancel an entry in the waiting queue (visitor left or another reason).",
         "operationId": "cancel_queue_entry_v1_visitor_waiting_queue__entry_id__cancel_post",
         "security": [
           {
@@ -3002,10 +3002,10 @@
                   "type": "null"
                 }
               ],
-              "description": "取消原因",
+              "description": "Cancellation reason",
               "title": "Reason"
             },
-            "description": "取消原因"
+            "description": "Cancellation reason"
           }
         ],
         "responses": {
@@ -4374,7 +4374,7 @@
           "Platforms"
         ],
         "summary": "Wecom Callback Verify",
-        "description": "WeCom (企业微信/企业微信机器人) callback URL verification (GET).\n\nWeCom sends msg_signature, timestamp, nonce, and echostr for verification.\nWe verify the signature and decrypt echostr (if encryption enabled), then\nreturn the decrypted plain text as the response body.\n\nSupports both 'wecom' (企业微信) and 'wecom_bot' (企业微信机器人) platform types.",
+        "description": "WeCom (Enterprise WeChat / WeCom bot) callback URL verification (GET).\n\nWeCom sends msg_signature, timestamp, nonce, and echostr for verification.\nWe verify the signature and decrypt echostr (if encryption enabled), then\nreturn the decrypted plain text as the response body.\n\nSupports both 'wecom' (Enterprise WeChat) and 'wecom_bot' (WeCom bot) platform types.",
         "operationId": "wecom_callback_verify_v1_platforms_callback__platform_api_key__get",
         "parameters": [
           {
@@ -4415,7 +4415,7 @@
           "Platforms"
         ],
         "summary": "Platform Callback Forward",
-        "description": "Forward third-party platform callbacks to the TGO Platform Service.\n\n- Validates the platform_api_key against platforms table (must be active and not soft-deleted)\n- Forwards body and query parameters to Platform Service\n- Returns Platform Service response verbatim (status, headers, body)",
+        "description": "Forward third-party platform callbacks to the Pelatis Platform Service.\n\n- Validates the platform_api_key against platforms table (must be active and not soft-deleted)\n- Forwards body and query parameters to Platform Service\n- Returns Platform Service response verbatim (status, headers, body)",
         "operationId": "platform_callback_forward_v1_platforms_callback__platform_api_key__post",
         "parameters": [
           {
@@ -11397,8 +11397,8 @@
           "Chat",
           "Chat"
         ],
-        "summary": "流式聊天完成接口",
-        "description": "## 概述\n访客聊天接口，支持 Server-Sent Events (SSE) 流式响应和非流式 JSON 响应。\n\n## 认证方式\n通过请求体中的 `api_key` 字段传递平台 API Key。\n\n## 请求参数\n| 参数 | 类型 | 必填 | 说明 |\n|------|------|------|------|\n| api_key | string | ✅ | 平台 API Key |\n| message | string | ✅ | 用户消息内容 |\n| from_uid | string | ✅ | 平台用户唯一标识 |\n| extra | object | ❌ | 额外数据（会随消息转发） |\n| timeout_seconds | int | ❌ | 超时时间（默认120秒） |\n| channel_id | string | ❌ | 自定义频道ID |\n| channel_type | int | ❌ | 频道类型（默认251=客服） |\n| system_message | string | ❌ | AI系统提示词 |\n| expected_output | string | ❌ | 期望的输出格式描述 |\n| wukongim_only | bool | ❌ | 是否仅发送到WuKongIM不返回流（默认false） |\n| stream | bool | ❌ | 是否使用流式响应（默认true）。false返回完整JSON |\n\n## 响应模式\n\n### 1. 流式响应（stream=true，默认）\n返回 `text/event-stream` 格式的 SSE 流。\n\n### 2. 非流式响应（stream=false）\n返回 JSON 格式的完整响应：\n```json\n{\n  \"success\": true,\n  \"message\": \"AI回复的完整内容...\",\n  \"visitor_id\": \"访客UUID\"\n}\n```\n\n## SSE 响应事件类型（仅 stream=true 时）\n\n### 成功事件\n| event_type | 说明 | data 结构 |\n|------------|------|-----------|\n| `team_run_started` | AI开始处理 | `{}` |\n| `team_run_content` | AI输出内容块 | `{\"content\": \"文本块\"}` |\n| `team_run_completed` | AI处理完成 | `{}` |\n| `workflow_completed` | AI处理完成 | `{}` |\n| `accepted` | 请求已接受（wukongim_only=true时） | `{\"message\": \"Request accepted...\"}` |\n\n### 错误/状态事件\n| event_type | 说明 | data 结构 |\n|------------|------|-----------|\n| `error` | 发生错误 | `{\"message\": \"错误信息\", \"visitor_id\": \"...\"}` |\n| `queued` | 访客已加入等待队列（无可用客服） | `{\"message\": \"...\", \"visitor_id\": \"...\", \"queue_position\": 1}` |\n| `ai_disabled` | AI已禁用 | `{\"message\": \"AI responses are disabled...\"}` |\n| `assist_mode` | AI处于辅助模式（人工优先） | `{\"message\": \"Human service requested, AI is in assist mode\"}` |\n| `workflow_failed` | AI工作流执行失败 | `{\"message\": \"错误详情\"}` |\n\n## 错误场景\n\n### 1. 无效的 API Key\n返回 HTTP 401:\n```json\n{\"detail\": \"Invalid platform API key\"}\n```\n\n### 2. 平台未关联项目\n返回 HTTP 400:\n```json\n{\"detail\": \"Platform not associated with any project\"}\n```\n\n### 3. 客服分配失败\n\n**stream=true（SSE）:**\n```\ndata: {\"event_type\": \"error\", \"data\": {\"success\": false, \"event_type\": \"error\", \"message\": \"...\", \"visitor_id\": \"...\"}}\n```\n\n**stream=false（JSON）:**\n```json\n{\"success\": false, \"event_type\": \"error\", \"message\": \"Transfer failed: ...\", \"visitor_id\": \"...\"}\n```\n\n### 4. 无可用客服（已加入队列）\n\n**stream=true（SSE）:**\n```\ndata: {\"event_type\": \"queued\", \"data\": {\"success\": false, \"message\": \"...\", \"visitor_id\": \"...\", \"queue_position\": 1}}\n```\n\n**stream=false（JSON）:**\n```json\n{\"success\": false, \"event_type\": \"queued\", \"message\": \"Added to waiting queue at position 1\", \"visitor_id\": \"...\", \"queue_position\": 1}\n```\n\n### 5. 无分配客服\n\n**stream=true（SSE）:**\n```\ndata: {\"event_type\": \"error\", \"data\": {\"message\": \"No staff assigned to this visitor\", \"visitor_id\": \"...\"}}\n```\n\n**stream=false（HTTP 503）:**\n```json\n{\"detail\": {\"success\": false, \"event_type\": \"error\", \"message\": \"No staff assigned to this visitor\", \"visitor_id\": \"...\"}}\n```\n\n### 6. AI已禁用\n\n**stream=true（SSE）:**\n```\ndata: {\"event_type\": \"ai_disabled\", \"data\": {\"message\": \"AI responses are disabled...\"}}\n```\n\n**stream=false（HTTP 403）:**\n```json\n{\"detail\": {\"success\": false, \"event_type\": \"ai_disabled\", \"message\": \"AI responses are disabled...\"}}\n```\n\n### 7. AI服务错误\n\n**stream=true（SSE）:**\n```\ndata: {\"event_type\": \"error\", \"data\": {\"message\": \"AI service error: ...\"}}\n```\n\n**stream=false（HTTP 500）:**\n```json\n{\"detail\": \"AI service error: ...\"}\n```\n\n## SSE 响应格式示例\n```\ndata: {\"event_type\": \"team_run_started\", \"data\": {}}\n\ndata: {\"event_type\": \"team_run_content\", \"data\": {\"content\": \"你好\"}}\n\ndata: {\"event_type\": \"team_run_content\", \"data\": {\"content\": \"，有什么\"}}\n\ndata: {\"event_type\": \"team_run_content\", \"data\": {\"content\": \"可以帮助您的？\"}}\n\ndata: {\"event_type\": \"workflow_completed\", \"data\": {}}\n```\n\n## 前端使用示例\n```javascript\nconst eventSource = new EventSource('/api/v1/chat/completion', {\n  method: 'POST',\n  body: JSON.stringify({\n    api_key: 'your-api-key',\n    message: '你好',\n    from_uid: 'user123'\n  })\n});\n\neventSource.onmessage = (event) =\u003E {\n  const data = JSON.parse(event.data);\n  switch (data.event_type) {\n    case 'team_run_content':\n      // 追加内容到界面\n      appendText(data.data.content);\n      break;\n    case 'workflow_completed':\n      // 完成处理\n      eventSource.close();\n      break;\n    case 'error':\n    case 'queued':\n      // 处理错误或排队状态\n      handleError(data.data);\n      eventSource.close();\n      break;\n  }\n};\n```",
+        "summary": "Streaming chat completion endpoint",
+        "description": "\n## Overview\nVisitor chat endpoint supporting Server-Sent Events (SSE) streaming responses and non-streaming JSON responses.\n\n## Authentication\nThe platform API key is passed in the `api_key` field of the request body.\n\n## Request parameters\n| Parameter | Type | Required | Description |\n|------|------|------|------|\n| api_key | string | ✅ | Platform API key |\n| message | string | ✅ | User message content |\n| from_uid | string | ✅ | Unique platform user identifier |\n| extra | object | ❌ | Extra data (forwarded with the message) |\n| timeout_seconds | int | ❌ | Timeout (default 120 seconds) |\n| channel_id | string | ❌ | Custom channel ID |\n| channel_type | int | ❌ | Channel type (default 251 = customer service) |\n| system_message | string | ❌ | AI system prompt |\n| expected_output | string | ❌ | Description of the expected output format |\n| wukongim_only | bool | ❌ | Send to WuKongIM only without returning a stream (default false) |\n| stream | bool | ❌ | Whether to use streaming (default true). false returns the complete JSON |\n\n## Response modes\n\n### 1. Streaming response (stream=true, default)\nReturns an SSE stream in `text/event-stream` format.\n\n### 2. Non-streaming response (stream=false)\nReturns the complete response as JSON:\n```json\n{\n  \"success\": true,\n  \"message\": \"Full content of the AI reply...\",\n  \"visitor_id\": \"Visitor UUID\"\n}\n```\n\n## SSE event types (only when stream=true)\n\n### Success events\n| event_type | Description | data structure |\n|------------|------|-----------|\n| `agent_execution_started` | AI started processing | `{}` |\n| `agent_content_chunk` | AI output content chunk | `{\"content_chunk\": \"text chunk\"}` |\n| `agent_response_complete` | AI reply complete | `{}` |\n| `workflow_completed` | AI workflow complete | `{}` |\n| `accepted` | Request accepted (when wukongim_only=true) | `{\"message\": \"Request accepted...\"}` |\n\n### Error/status events\n| event_type | Description | data structure |\n|------------|------|-----------|\n| `error` | An error occurred | `{\"message\": \"error message\", \"visitor_id\": \"...\"}` |\n| `queued` | Visitor added to the waiting queue (no staff available) | `{\"message\": \"...\", \"visitor_id\": \"...\", \"queue_position\": 1}` |\n| `ai_disabled` | AI is disabled | `{\"message\": \"AI responses are disabled...\"}` |\n| `assist_mode` | AI is in assist mode (humans first) | `{\"message\": \"Human service requested, AI is in assist mode\"}` |\n| `workflow_failed` | AI workflow execution failed | `{\"message\": \"error details\"}` |\n\n## Error scenarios\n\n### 1. Invalid API key\nReturns HTTP 401:\n```json\n{\"detail\": \"Invalid platform API key\"}\n```\n\n### 2. Platform not linked to a project\nReturns HTTP 400:\n```json\n{\"detail\": \"Platform not associated with any project\"}\n```\n\n### 3. Staff assignment failed\n\n**stream=true（SSE）:**\n```\ndata: {\"event_type\": \"error\", \"data\": {\"success\": false, \"event_type\": \"error\", \"message\": \"...\", \"visitor_id\": \"...\"}}\n```\n\n**stream=false（JSON）:**\n```json\n{\"success\": false, \"event_type\": \"error\", \"message\": \"Transfer failed: ...\", \"visitor_id\": \"...\"}\n```\n\n### 4. No staff available (added to queue)\n\n**stream=true（SSE）:**\n```\ndata: {\"event_type\": \"queued\", \"data\": {\"success\": false, \"message\": \"...\", \"visitor_id\": \"...\", \"queue_position\": 1}}\n```\n\n**stream=false（JSON）:**\n```json\n{\"success\": false, \"event_type\": \"queued\", \"message\": \"Added to waiting queue at position 1\", \"visitor_id\": \"...\", \"queue_position\": 1}\n```\n\n### 5. No assigned staff\n\n**stream=true（SSE）:**\n```\ndata: {\"event_type\": \"error\", \"data\": {\"message\": \"No staff assigned to this visitor\", \"visitor_id\": \"...\"}}\n```\n\n**stream=false（HTTP 503）:**\n```json\n{\"detail\": {\"success\": false, \"event_type\": \"error\", \"message\": \"No staff assigned to this visitor\", \"visitor_id\": \"...\"}}\n```\n\n### 6. AI disabled\n\n**stream=true（SSE）:**\n```\ndata: {\"event_type\": \"ai_disabled\", \"data\": {\"message\": \"AI responses are disabled...\"}}\n```\n\n**stream=false（HTTP 403）:**\n```json\n{\"detail\": {\"success\": false, \"event_type\": \"ai_disabled\", \"message\": \"AI responses are disabled...\"}}\n```\n\n### 7. AI service error\n\n**stream=true（SSE）:**\n```\ndata: {\"event_type\": \"error\", \"data\": {\"message\": \"AI service error: ...\"}}\n```\n\n**stream=false（HTTP 500）:**\n```json\n{\"detail\": \"AI service error: ...\"}\n```\n\n## SSE response format example\n```\ndata: {\"event_type\": \"agent_execution_started\", \"data\": {}}\n\ndata: {\"event_type\": \"agent_content_chunk\", \"data\": {\"content_chunk\": \"Hello\"}}\n\ndata: {\"event_type\": \"agent_content_chunk\", \"data\": {\"content_chunk\": \", how can\"}}\n\ndata: {\"event_type\": \"agent_content_chunk\", \"data\": {\"content_chunk\": \" I help you?\"}}\n\ndata: {\"event_type\": \"workflow_completed\", \"data\": {}}\n```\n\n## Frontend usage example\n```javascript\nconst eventSource = new EventSource('/api/v1/chat/completion', {\n  method: 'POST',\n  body: JSON.stringify({\n    api_key: 'your-api-key',\n    message: 'Hello',\n    from_uid: 'user123'\n  })\n});\n\n    eventSource.onmessage = (event) => {\n      const data = JSON.parse(event.data);\n      switch (data.event_type) {\n        case 'agent_content_chunk':\n          // Append content to the UI\n          appendText(data.data.content_chunk);\n          break;\n        case 'workflow_completed':\n        case 'agent_response_complete':\n          // Done\n          eventSource.close();\n          break;\n    case 'error':\n    case 'queued':\n      // Handle error or queued state\n      handleError(data.data);\n      eventSource.close();\n      break;\n  }\n};\n```\n",
         "operationId": "chat_completion_v1_chat_completion_post",
         "requestBody": {
           "content": {
@@ -11412,7 +11412,7 @@
         },
         "responses": {
           "200": {
-            "description": "成功响应（流式或JSON）",
+            "description": "Success response (streaming or JSON)",
             "content": {
               "application/json": {
                 "schema": {
@@ -11420,26 +11420,26 @@
                 },
                 "example": {
                   "success": true,
-                  "message": "你好，有什么可以帮助您的？",
+                  "message": "Hello, how can I help you?",
                   "visitor_id": "550e8400-e29b-41d4-a716-446655440000"
                 }
               },
               "text/event-stream": {
-                "example": "data: {\"event_type\": \"team_run_content\", \"data\": {\"content\": \"你好\"}}\n\n"
+                "example": "data: {\"event_type\": \"team_run_content\", \"data\": {\"content\": \"Hello\"}}\n\n"
               }
             }
           },
           "401": {
-            "description": "无效的 API Key"
+            "description": "Invalid API key"
           },
           "400": {
-            "description": "平台未关联项目"
+            "description": "Platform not linked to a project"
           },
           "500": {
-            "description": "AI服务错误（stream=false时）"
+            "description": "AI service error (when stream=false)"
           },
           "503": {
-            "description": "无可用客服"
+            "description": "No staff available"
           },
           "422": {
             "description": "Validation Error",
@@ -11953,8 +11953,8 @@
         "tags": [
           "Conversations"
         ],
-        "summary": "同步我的会话列表",
-        "description": "同步当前客服在 WuKongIM 中的所有会话列表（包含历史会话），包含最近消息和频道信息。",
+        "summary": "Sync my conversation list",
+        "description": "Sync all of the current staff member's conversations in WuKongIM (including historical ones), with recent messages and channel info.",
         "operationId": "sync_my_conversations_v1_conversations_my_post",
         "security": [
           {
@@ -11978,10 +11978,10 @@
                   "type": "null"
                 }
               ],
-              "description": "访客标签ID（Base64），支持多个 tag_id（OR 关系）。提供后仅返回匹配标签的访客会话。",
+              "description": "Visitor tag IDs (Base64); multiple tag_ids are supported (OR relation). When provided, only visitor conversations matching the tags are returned.",
               "title": "Tag Ids"
             },
-            "description": "访客标签ID（Base64），支持多个 tag_id（OR 关系）。提供后仅返回匹配标签的访客会话。"
+            "description": "Visitor tag IDs (Base64); multiple tag_ids are supported (OR relation). When provided, only visitor conversations matching the tags are returned."
           },
           {
             "name": "manual_service_contain",
@@ -11989,11 +11989,11 @@
             "required": false,
             "schema": {
               "type": "boolean",
-              "description": "如果为 true，则仅返回 tags 中包含“转人工(Manual Service)”标签的访客会话（可与 tag_ids 组合，AND 关系）。",
+              "description": "If true, only return visitor conversations whose tags include the \"Manual Service\" tag (can be combined with tag_ids, AND relation).",
               "default": false,
               "title": "Manual Service Contain"
             },
-            "description": "如果为 true，则仅返回 tags 中包含“转人工(Manual Service)”标签的访客会话（可与 tag_ids 组合，AND 关系）。"
+            "description": "If true, only return visitor conversations whose tags include the \"Manual Service\" tag (can be combined with tag_ids, AND relation)."
           },
           {
             "name": "x-user-language",
@@ -12051,8 +12051,8 @@
         "tags": [
           "Conversations"
         ],
-        "summary": "获取所有服务过的访客会话",
-        "description": "获取当前客服服务过的所有访客会话列表（基于 VisitorSession 表，包括已关闭的会话），支持分页。",
+        "summary": "Get all served visitor sessions",
+        "description": "Get the list of all visitor sessions the current staff member has served (based on the VisitorSession table, including closed sessions), with pagination.",
         "operationId": "sync_all_conversations_v1_conversations_all_post",
         "security": [
           {
@@ -12068,11 +12068,11 @@
               "type": "integer",
               "maximum": 100,
               "minimum": 1,
-              "description": "每个会话返回的最近消息数量",
+              "description": "Number of recent messages to return per session",
               "default": 20,
               "title": "Msg Count"
             },
-            "description": "每个会话返回的最近消息数量"
+            "description": "Number of recent messages to return per session"
           },
           {
             "name": "only_completed_recent",
@@ -12080,11 +12080,11 @@
             "required": false,
             "schema": {
               "type": "boolean",
-              "description": "如果为 true，则仅返回“已完成(Closed)”的最近会话（按每个访客最近一次已关闭会话时间排序）",
+              "description": "If true, only return recent \"Closed\" sessions (ordered by each visitor's most recent closed session time)",
               "default": false,
               "title": "Only Completed Recent"
             },
-            "description": "如果为 true，则仅返回“已完成(Closed)”的最近会话（按每个访客最近一次已关闭会话时间排序）"
+            "description": "If true, only return recent \"Closed\" sessions (ordered by each visitor's most recent closed session time)"
           },
           {
             "name": "limit",
@@ -12094,11 +12094,11 @@
               "type": "integer",
               "maximum": 100,
               "minimum": 1,
-              "description": "每页返回的会话数量",
+              "description": "Number of sessions per page",
               "default": 20,
               "title": "Limit"
             },
-            "description": "每页返回的会话数量"
+            "description": "Number of sessions per page"
           },
           {
             "name": "offset",
@@ -12107,11 +12107,11 @@
             "schema": {
               "type": "integer",
               "minimum": 0,
-              "description": "跳过的会话数量",
+              "description": "Number of sessions to skip",
               "default": 0,
               "title": "Offset"
             },
-            "description": "跳过的会话数量"
+            "description": "Number of sessions to skip"
           }
         ],
         "responses": {
@@ -12143,8 +12143,8 @@
         "tags": [
           "Conversations"
         ],
-        "summary": "获取等待中访客的会话",
-        "description": "获取所有等待中（未分配）访客的 WuKongIM 会话列表，用于客服查看待接入访客的对话内容，支持分页。",
+        "summary": "Get sessions of waiting visitors",
+        "description": "Get the WuKongIM conversation list of all waiting (unassigned) visitors so staff can view the conversations of visitors awaiting pickup, with pagination.",
         "operationId": "sync_waiting_conversations_v1_conversations_waiting_post",
         "security": [
           {
@@ -12160,11 +12160,11 @@
               "type": "integer",
               "maximum": 100,
               "minimum": 1,
-              "description": "每个会话返回的最近消息数量",
+              "description": "Number of recent messages to return per session",
               "default": 20,
               "title": "Msg Count"
             },
-            "description": "每个会话返回的最近消息数量"
+            "description": "Number of recent messages to return per session"
           },
           {
             "name": "limit",
@@ -12174,11 +12174,11 @@
               "type": "integer",
               "maximum": 100,
               "minimum": 1,
-              "description": "每页返回的会话数量",
+              "description": "Number of sessions per page",
               "default": 20,
               "title": "Limit"
             },
-            "description": "每页返回的会话数量"
+            "description": "Number of sessions per page"
           },
           {
             "name": "offset",
@@ -12187,11 +12187,11 @@
             "schema": {
               "type": "integer",
               "minimum": 0,
-              "description": "跳过的会话数量",
+              "description": "Number of sessions to skip",
               "default": 0,
               "title": "Offset"
             },
-            "description": "跳过的会话数量"
+            "description": "Number of sessions to skip"
           }
         ],
         "responses": {
@@ -12223,8 +12223,8 @@
         "tags": [
           "Conversations"
         ],
-        "summary": "按访客标签获取最近会话",
-        "description": "按访客标签（tag_id，支持多个）筛选访客，并返回这些访客的最近会话列表（按最新会话时间倒序），支持分页。返回结果包含 conversations + channels（channels.extra 与 /channels/info 保持一致）。",
+        "summary": "Get recent sessions by visitor tag",
+        "description": "Filter visitors by visitor tag (tag_id, multiple supported) and return their recent conversation list (newest first), with pagination. The result contains conversations + channels (channels.extra is consistent with /channels/info).",
         "operationId": "sync_recent_conversations_by_visitor_tags_v1_conversations_by_tags_recent_get",
         "security": [
           {
@@ -12248,10 +12248,10 @@
                   "type": "null"
                 }
               ],
-              "description": "访客标签ID（Base64），支持多个 tag_id（OR 关系）",
+              "description": "Visitor tag IDs (Base64); multiple tag_ids supported (OR relation)",
               "title": "Tag Ids"
             },
-            "description": "访客标签ID（Base64），支持多个 tag_id（OR 关系）"
+            "description": "Visitor tag IDs (Base64); multiple tag_ids supported (OR relation)"
           },
           {
             "name": "manual_service_contain",
@@ -12259,11 +12259,11 @@
             "required": false,
             "schema": {
               "type": "boolean",
-              "description": "如果为 true，则要求访客 tags 中包含“转人工(Manual Service)”标签（可与 tag_ids 组合，AND 关系）",
+              "description": "If true, require the visitor's tags to include the \"Manual Service\" tag (can be combined with tag_ids, AND relation)",
               "default": false,
               "title": "Manual Service Contain"
             },
-            "description": "如果为 true，则要求访客 tags 中包含“转人工(Manual Service)”标签（可与 tag_ids 组合，AND 关系）"
+            "description": "If true, require the visitor's tags to include the \"Manual Service\" tag (can be combined with tag_ids, AND relation)"
           },
           {
             "name": "msg_count",
@@ -12273,11 +12273,11 @@
               "type": "integer",
               "maximum": 100,
               "minimum": 1,
-              "description": "每个会话返回的最近消息数量（默认 1）",
+              "description": "Number of recent messages to return per session (default 1)",
               "default": 1,
               "title": "Msg Count"
             },
-            "description": "每个会话返回的最近消息数量（默认 1）"
+            "description": "Number of recent messages to return per session (default 1)"
           },
           {
             "name": "limit",
@@ -12287,11 +12287,11 @@
               "type": "integer",
               "maximum": 100,
               "minimum": 1,
-              "description": "每页返回的会话数量",
+              "description": "Number of sessions per page",
               "default": 20,
               "title": "Limit"
             },
-            "description": "每页返回的会话数量"
+            "description": "Number of sessions per page"
           },
           {
             "name": "offset",
@@ -12300,11 +12300,11 @@
             "schema": {
               "type": "integer",
               "minimum": 0,
-              "description": "跳过的会话数量",
+              "description": "Number of sessions to skip",
               "default": 0,
               "title": "Offset"
             },
-            "description": "跳过的会话数量"
+            "description": "Number of sessions to skip"
           },
           {
             "name": "x-user-language",
@@ -12352,8 +12352,8 @@
         "tags": [
           "Conversations"
         ],
-        "summary": "设置会话未读数",
-        "description": "设置指定会话的未读消息数量。",
+        "summary": "Set conversation unread count",
+        "description": "Set the unread message count of the given conversation.",
         "operationId": "set_conversation_unread_v1_conversations_unread_put",
         "requestBody": {
           "content": {
@@ -12403,8 +12403,8 @@
         "tags": [
           "Conversations"
         ],
-        "summary": "删除会话",
-        "description": "从会话列表中删除指定的会话。",
+        "summary": "Delete conversation",
+        "description": "Delete the given conversation from the conversation list.",
         "operationId": "delete_conversation_v1_conversations_delete",
         "requestBody": {
           "content": {
@@ -12454,8 +12454,8 @@
         "tags": [
           "Conversations"
         ],
-        "summary": "同步频道消息",
-        "description": "同步指定频道的历史消息记录。",
+        "summary": "Sync channel messages",
+        "description": "Sync the historical messages of the given channel.",
         "operationId": "sync_channel_messages_v1_conversations_messages_post",
         "requestBody": {
           "content": {
@@ -12501,8 +12501,8 @@
         "tags": [
           "Sessions"
         ],
-        "summary": "通过会话ID关闭会话",
-        "description": "关闭指定的会话，更新会话状态和最后消息信息，并发送系统通知。",
+        "summary": "Close session by session ID",
+        "description": "Close the given session, update its status and last-message info, and send a system notification.",
         "operationId": "close_session_by_id_v1_sessions__session_id__close_post",
         "security": [
           {
@@ -12550,8 +12550,8 @@
         "tags": [
           "Sessions"
         ],
-        "summary": "通过访客ID关闭会话",
-        "description": "关闭指定访客当前进行中的会话。如果访客有多个进行中的会话，关闭最新的一个。",
+        "summary": "Close session by visitor ID",
+        "description": "Close the visitor's current open session. If the visitor has several open sessions, the latest one is closed.",
         "operationId": "close_session_by_visitor_id_v1_sessions_visitor__visitor_id__close_post",
         "security": [
           {
@@ -12599,8 +12599,8 @@
         "tags": [
           "Sessions"
         ],
-        "summary": "转接会话",
-        "description": "将当前会话转接给另一个客服。",
+        "summary": "Transfer session",
+        "description": "Transfer the current session to another staff member.",
         "operationId": "transfer_session_v1_sessions__session_id__transfer_post",
         "security": [
           {
@@ -12658,8 +12658,8 @@
         "tags": [
           "Sessions"
         ],
-        "summary": "通过访客ID转接会话",
-        "description": "将指定访客的当前会话转接给另一个客服。",
+        "summary": "Transfer session by visitor ID",
+        "description": "Transfer the visitor's current session to another staff member.",
         "operationId": "transfer_session_by_visitor_id_v1_sessions_visitor__visitor_id__transfer_post",
         "security": [
           {
@@ -12718,7 +12718,7 @@
           "Search"
         ],
         "summary": "Unified search across visitors and messages",
-        "description": "Search visitor profiles stored in TGO and historical chat messages in WuKongIM. Set scope to filter results to visitors or messages only.",
+        "description": "Search visitor profiles stored in Pelatis and historical chat messages in WuKongIM. Set scope to filter results to visitors or messages only.",
         "operationId": "unified_search_v1_search_get",
         "security": [
           {
@@ -12881,8 +12881,8 @@
           "Documentation",
           "Documentation"
         ],
-        "summary": "TGO API Documentation",
-        "description": "Swagger UI for the current TGO API service.",
+        "summary": "Pelatis API Documentation",
+        "description": "Swagger UI for the current Pelatis API service.",
         "operationId": "docs_api_v1_docs_api_get",
         "responses": {
           "200": {
@@ -15523,7 +15523,7 @@
           "api_key": {
             "type": "string",
             "title": "Api Key",
-            "description": "平台 API Key，用于验证请求来源",
+            "description": "Platform API key, used to verify the request source",
             "examples": [
               "pk_live_xxxxxxxxxxxx"
             ]
@@ -15531,15 +15531,15 @@
           "message": {
             "type": "string",
             "title": "Message",
-            "description": "用户发送的消息内容",
+            "description": "Message content sent by the user",
             "examples": [
-              "你好，请问有什么可以帮助您的？"
+              "Hello, how can I help you?"
             ]
           },
           "from_uid": {
             "type": "string",
             "title": "From Uid",
-            "description": "平台用户唯一标识，用于识别访客身份",
+            "description": "Unique platform user identifier, used to identify the visitor",
             "examples": [
               "user_12345",
               "wx_openid_xxx"
@@ -15556,7 +15556,7 @@
               }
             ],
             "title": "Extra",
-            "description": "额外数据，会随消息一起转发到 WuKongIM",
+            "description": "Extra data, forwarded to WuKongIM together with the message",
             "examples": [
               {
                 "page": "/product/123",
@@ -15567,7 +15567,7 @@
           "forward_user_message_to_wukongim": {
             "type": "boolean",
             "title": "Forward User Message To Wukongim",
-            "description": "是否将用户消息同时转发一份到 WuKongIM（默认开启）",
+            "description": "Whether to also forward the user message to WuKongIM (enabled by default)",
             "default": true,
             "examples": [true]
           },
@@ -15583,7 +15583,7 @@
               }
             ],
             "title": "Timeout Seconds",
-            "description": "SSE 流超时时间（秒），默认120秒，范围10-300",
+            "description": "SSE stream timeout in seconds, default 120, range 10-300",
             "default": 120
           },
           "channel_id": {
@@ -15596,7 +15596,7 @@
               }
             ],
             "title": "Channel Id",
-            "description": "自定义频道ID，不填则自动生成（格式: {visitor_id}-vtr 的编码形式）"
+            "description": "Custom channel ID; generated automatically if omitted (encoded form of {visitor_id}-vtr)"
           },
           "channel_type": {
             "anyOf": [
@@ -15608,7 +15608,7 @@
               }
             ],
             "title": "Channel Type",
-            "description": "频道类型，默认251（客服频道）"
+            "description": "Channel type, default 251 (customer service channel)"
           },
           "system_message": {
             "anyOf": [
@@ -15620,9 +15620,9 @@
               }
             ],
             "title": "System Message",
-            "description": "AI系统提示词，用于指导AI的回复风格和行为",
+            "description": "AI system prompt, used to guide the AI's reply style and behavior",
             "examples": [
-              "你是一个专业的客服助手，请用简洁友好的语气回复用户问题。"
+              "You are a professional customer-service assistant. Reply to users concisely and in a friendly tone."
             ]
           },
           "expected_output": {
@@ -15635,15 +15635,15 @@
               }
             ],
             "title": "Expected Output",
-            "description": "期望的输出格式描述，帮助AI生成符合要求的响应",
+            "description": "Description of the expected output format, to help the AI produce a conforming response",
             "examples": [
-              "请用JSON格式回复，包含answer和confidence字段"
+              "Reply in JSON format with answer and confidence fields"
             ]
           },
           "wukongim_only": {
             "type": "boolean",
             "title": "Wukongim Only",
-            "description": "是否仅发送到WuKongIM而不返回流响应给客户端。设为true时，接口会立即返回accepted事件，AI处理在后台进行",
+            "description": "Whether to send only to WuKongIM without returning a stream response to the client. When true, the endpoint returns an accepted event immediately and AI processing runs in the background",
             "default": false
           },
           "stream": {
@@ -15656,7 +15656,7 @@
               }
             ],
             "title": "Stream",
-            "description": "是否使用流式响应。true（默认）返回SSE流，false返回完整JSON响应",
+            "description": "Whether to use streaming responses. true (default) returns an SSE stream; false returns a complete JSON response",
             "default": true
           }
         },
@@ -15667,7 +15667,7 @@
           "from_uid"
         ],
         "title": "ChatCompletionRequest",
-        "description": "流式聊天请求参数。"
+        "description": "Streaming chat request parameters."
       },
       "ChatFileUploadResponse": {
         "properties": {
@@ -18681,7 +18681,7 @@
               }
             ],
             "title": "Title Zh",
-            "description": "Step title in Chinese (中文标题)"
+            "description": "Step title in Chinese"
           },
           "description": {
             "type": "string",
@@ -18691,7 +18691,7 @@
           "description_zh": {
             "type": "string",
             "title": "Description Zh",
-            "description": "Step description in Chinese (中文描述)"
+            "description": "Step description in Chinese"
           },
           "route": {
             "type": "string",
@@ -20211,7 +20211,7 @@
             "title": "Question",
             "description": "The question text",
             "examples": [
-              "如何重置密码？"
+              "How do I reset my password?"
             ]
           },
           "answer": {
@@ -20221,7 +20221,7 @@
             "title": "Answer",
             "description": "The answer text",
             "examples": [
-              "您可以通过以下步骤重置密码：1. 点击登录页面的'忘记密码'..."
+              "You can reset your password with these steps: 1. Click 'Forgot password' on the login page..."
             ]
           },
           "category": {
@@ -20237,7 +20237,7 @@
             "title": "Category",
             "description": "Category for organizing QA pairs",
             "examples": [
-              "账户管理"
+              "Account management"
             ]
           },
           "subcategory": {
@@ -20253,7 +20253,7 @@
             "title": "Subcategory",
             "description": "Subcategory for finer organization",
             "examples": [
-              "密码相关"
+              "Password"
             ]
           },
           "tags": {
@@ -20272,9 +20272,9 @@
             "description": "Tags for filtering and search",
             "examples": [
               [
-                "密码",
-                "重置",
-                "账户"
+                "password",
+                "reset",
+                "account"
               ]
             ]
           },

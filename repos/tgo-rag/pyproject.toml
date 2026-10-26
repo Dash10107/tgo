@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "tgo-rag-service"
 version = "0.1.0"
-description = "TGO-Tech RAG (Retrieval-Augmented Generation) Service"
-authors = ["TGO-Tech Team <tech@tgo-tech.com>"]
+description = "Pelatis RAG (Retrieval-Augmented Generation) Service"
+authors = ["Pelatis Team <tech@tgo-tech.com>"]
 readme = "README.md"
 packages = [{include = "rag_service", from = "src"}]
 
@@ -41,6 +41,7 @@ python-magic = "^0.4.27"
 # Document processing
 unstructured = {extras = ["docx"], version = "^0.18.13"}
 docx2txt = "^0.8"  # Fallback for Word document loading
+pdfminer-six = "^20240706"  # Required by PDFMinerParser for PDF loading
 # HTTP client
 httpx = {extras = ["socks"], version = "^0.28.1"}
 socksio = "^1.0.0"

@@ -21,7 +21,7 @@ interface ToolToastProviderProps {
 }
 
 /**
- * Toast提供者组件
+ * Toast provider component
  */
 export const ToolToastProvider: React.FC<ToolToastProviderProps> = ({ children }) => {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
@@ -69,7 +69,7 @@ export const ToolToastProvider: React.FC<ToolToastProviderProps> = ({ children }
 };
 
 /**
- * 使用Toast的Hook
+ * Hook for using Toast
  */
 export const useToast = (): ToastContextType => {
   const context = useContext(ToastContext);

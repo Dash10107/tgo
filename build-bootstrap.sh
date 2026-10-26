@@ -16,7 +16,7 @@ fi
 echo "[INFO] Generating bootstrap_cn.sh from bootstrap.sh..."
 
 # Use sed to make the necessary replacements
-sed -e 's|^# Bootstrap script for one-command TGO deployment$|# Bootstrap script for one-command TGO deployment (China Network Optimized)\n#\n# This is the China-optimized version of bootstrap.sh that uses Gitee mirrors\n# for faster Git repository cloning in mainland China.\n#\n# Differences from bootstrap.sh:\n# - Uses Gitee (https://gitee.com) instead of GitHub for repository cloning\n# - All other functionality remains identical\n#\n# Note: After deployment, use '\''./tgo.sh install --cn'\'' to pull Docker images\n# from Alibaba Cloud Container Registry for faster downloads in China.|' \
+sed -e 's|^# Bootstrap script for one-command Pelatis deployment$|# Bootstrap script for one-command Pelatis deployment (China Network Optimized)\n#\n# This is the China-optimized version of bootstrap.sh that uses Gitee mirrors\n# for faster Git repository cloning in mainland China.\n#\n# Differences from bootstrap.sh:\n# - Uses Gitee (https://gitee.com) instead of GitHub for repository cloning\n# - All other functionality remains identical\n#\n# Note: After deployment, use '\''./tgo.sh install --cn'\'' to pull Docker images\n# from Alibaba Cloud Container Registry for faster downloads in China.|' \
     -e 's|^# Usage (remote):  curl -fsSL https://your.host/bootstrap.sh \| bash$|# Usage (remote):  curl -fsSL https://your.host/bootstrap_cn.sh \| bash|' \
     -e 's|^# Usage (local):   bash bootstrap.sh$|# Usage (local):   bash bootstrap_cn.sh|' \
     -e 's|^REPO="${REPO:-https://github.com/tgoai/tgo.git}"$|REPO="${REPO:-https://gitee.com/tgoai/tgo.git}"|' \

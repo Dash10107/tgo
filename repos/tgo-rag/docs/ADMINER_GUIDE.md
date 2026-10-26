@@ -1,6 +1,6 @@
 # Adminer Database Administration Guide
 
-This guide explains how to use Adminer, the web-based database administration tool included with the TGO RAG Service development environment.
+This guide explains how to use Adminer, the web-based database administration tool included with the Pelatis RAG Service development environment.
 
 ## 🌐 Accessing Adminer
 

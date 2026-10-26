@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "TGO-Tech API Service",
+    "title": "Pelatis API Service",
     "description": "Core Business Logic Microservice",
     "version": "0.1.0"
   },
@@ -2533,7 +2533,7 @@
           "Platforms"
         ],
         "summary": "Wecom Callback Verify",
-        "description": "WeCom (企业微信) callback URL verification (GET).\n\nWeCom sends msg_signature, timestamp, nonce, and echostr for verification.\nWe verify the signature and decrypt echostr (if encryption enabled), then\nreturn the decrypted plain text as the response body.",
+        "description": "WeCom (Enterprise WeChat) callback URL verification (GET).\n\nWeCom sends msg_signature, timestamp, nonce, and echostr for verification.\nWe verify the signature and decrypt echostr (if encryption enabled), then\nreturn the decrypted plain text as the response body.",
         "operationId": "wecom_callback_verify_v1_platforms_callback__platform_api_key__get",
         "parameters": [
           {
@@ -2574,7 +2574,7 @@
           "Platforms"
         ],
         "summary": "Platform Callback Forward",
-        "description": "Forward third-party platform callbacks to the TGO Platform Service.\n\n- Validates the platform_api_key against platforms table (must be active and not soft-deleted)\n- Forwards body and query parameters to Platform Service\n- Returns Platform Service response verbatim (status, headers, body)",
+        "description": "Forward third-party platform callbacks to the Pelatis Platform Service.\n\n- Validates the platform_api_key against platforms table (must be active and not soft-deleted)\n- Forwards body and query parameters to Platform Service\n- Returns Platform Service response verbatim (status, headers, body)",
         "operationId": "platform_callback_forward_v1_platforms_callback__platform_api_key__post",
         "parameters": [
           {
