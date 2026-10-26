@@ -4,30 +4,47 @@
  */
 
 import React, { useState } from 'react';
-import { useWorkflowStore } from '@/stores/workflowStore';
 import NodeExecutionBadge from './NodeExecutionBadge';
 import ExecutionDataPopover from './ExecutionDataPopover';
+import { useNodeRunState } from './runState';
 
 interface NodeExecutionOverlayProps {
   nodeId: string;
   label: string;
 }
 
+const FRAME_CLASS: Record<string, string> = {
+  running: 'wf-run-frame wf-run-frame--running',
+  completed: 'wf-run-frame wf-run-frame--completed',
+  failed: 'wf-run-frame wf-run-frame--failed',
+};
+
 const NodeExecutionOverlay: React.FC<NodeExecutionOverlayProps> = ({ nodeId, label }) => {
   const [showPopover, setShowPopover] = useState(false);
-  const execution = useWorkflowStore(state => state.nodeExecutionMap[nodeId]);
+  const { state, execution } = useNodeRunState(nodeId);
 
-  if (!execution) return null;
+  if (state === 'idle') return null;
 
   return (
     <>
-      <NodeExecutionBadge 
-        execution={execution} 
-        onClick={() => setShowPopover(!showPopover)} 
-      />
-      
-      {showPopover && (
-        <ExecutionDataPopover 
+      {FRAME_CLASS[state] && <div className={FRAME_CLASS[state]} aria-hidden="true" />}
+
+      {(state === 'pending' || state === 'skipped') && (
+        <div
+          className={`wf-run-veil ${state === 'skipped' ? 'wf-run-veil--skipped' : ''}`}
+          aria-hidden="true"
+        />
+      )}
+
+      {execution && (
+        <NodeExecutionBadge
+          execution={execution}
+          onClick={() => setShowPopover(!showPopover)}
+        />
+      )}
+
+      {execution && showPopover && (
+        <ExecutionDataPopover
           execution={execution}
           nodeLabel={label}
           onClose={() => setShowPopover(false)}
@@ -38,4 +55,3 @@ const NodeExecutionOverlay: React.FC<NodeExecutionOverlayProps> = ({ nodeId, lab
 };
 
 export default NodeExecutionOverlay;
-

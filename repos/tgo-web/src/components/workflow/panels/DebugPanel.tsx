@@ -3,24 +3,234 @@
  * Right-side panel for workflow online running and debugging
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   X,
   Play,
-  StopCircle,
-  Clock,
+  Square,
   CheckCircle2,
   XCircle,
   Loader2,
-  ChevronRight,
   ChevronDown,
   Info,
-  Terminal,
-  History,
+  FlaskConical,
+  RotateCcw,
   Trash2,
+  Copy,
+  Check,
+  Braces,
+  Sparkles,
 } from 'lucide-react';
 import { useWorkflowStore } from '@/stores/workflowStore';
+import type { NodeExecution, WorkflowNode } from '@/types/workflow';
+import { formatDuration, useElapsed } from '../overlays/runState';
+
+type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+
+interface InputVariable {
+  name: string;
+  type: string;
+  description?: string;
+  nodeId: string;
+}
+
+// Accent color per node type, matching the node cards on the canvas
+const NODE_TYPE_ACCENT: Record<string, string> = {
+  input: 'bg-green-500',
+  timer: 'bg-green-500',
+  webhook: 'bg-green-500',
+  event: 'bg-green-500',
+  answer: 'bg-indigo-500',
+  agent: 'bg-blue-500',
+  tool: 'bg-orange-500',
+  condition: 'bg-purple-500',
+  llm: 'bg-cyan-500',
+  parallel: 'bg-indigo-500',
+  api: 'bg-sky-500',
+  classifier: 'bg-orange-500',
+};
+
+const CopyButton: React.FC<{ text: string; label: string }> = ({ text, label }) => {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        navigator.clipboard.writeText(text).then(() => {
+          setCopied(true);
+          window.setTimeout(() => setCopied(false), 1500);
+        }).catch(() => setCopied(false));
+      }}
+      className="p-1.5 rounded-lg text-gray-400 hover:text-blue-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+      title={label}
+      aria-label={label}
+    >
+      {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+    </button>
+  );
+};
+
+const JsonBlock: React.FC<{ value: unknown; tone: 'input' | 'output' }> = ({ value, tone }) => (
+  <pre className={`p-3 bg-gray-950 rounded-xl text-[11px] leading-relaxed overflow-x-auto font-mono max-h-56 custom-scrollbar ${tone === 'input' ? 'text-sky-300' : 'text-emerald-300'}`}>
+    {JSON.stringify(value, null, 2)}
+  </pre>
+);
+
+/** One row of the run timeline */
+const TimelineStep: React.FC<{
+  execution: NodeExecution;
+  node?: WorkflowNode;
+  index: number;
+  isLast: boolean;
+  expanded: boolean;
+  onToggle: () => void;
+}> = ({ execution, node, index, isLast, expanded, onToggle }) => {
+  const { t } = useTranslation();
+  const isRunning = execution.status === 'running' || execution.status === 'pending';
+  const isCompleted = execution.status === 'completed';
+  const elapsed = useElapsed(execution.started_at, isRunning);
+  const duration = isRunning ? elapsed : execution.duration;
+  const hasDetails = Boolean(execution.input || execution.output || execution.error);
+
+  return (
+    <li className="wf-fade-in relative pl-10" style={{ animationDelay: `${Math.min(index, 6) * 30}ms` }}>
+      {/* Connector to the next step */}
+      {!isLast && (
+        <span
+          className={`absolute left-[13px] top-8 -bottom-1 w-0.5 rounded-full transition-colors duration-500 ${isCompleted ? 'bg-emerald-300 dark:bg-emerald-700' : 'bg-gray-200 dark:bg-gray-700'}`}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Status marker */}
+      <span className="absolute left-0 top-1 flex items-center justify-center w-7 h-7">
+        {isRunning && <span className="absolute inset-0 rounded-full bg-blue-400/30 animate-ping" aria-hidden="true" />}
+        <span
+          className={`relative flex items-center justify-center w-7 h-7 rounded-full border-2 bg-white dark:bg-gray-900 ${
+            isRunning ? 'border-blue-500 text-blue-500' : isCompleted ? 'border-emerald-500 text-emerald-500' : 'border-red-500 text-red-500'
+          }`}
+        >
+          {isRunning ? (
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+          ) : isCompleted ? (
+            <Check className="w-3.5 h-3.5" strokeWidth={3} />
+          ) : (
+            <X className="w-3.5 h-3.5" strokeWidth={3} />
+          )}
+        </span>
+      </span>
+
+      <div className={`rounded-xl border transition-colors ${expanded ? 'border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-800/40' : 'border-transparent'}`}>
+        <button
+          type="button"
+          onClick={onToggle}
+          disabled={!hasDetails}
+          className="w-full flex items-center gap-3 px-3 py-2 text-left rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors disabled:cursor-default disabled:hover:bg-transparent"
+        >
+          <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${NODE_TYPE_ACCENT[execution.node_type] ?? 'bg-gray-400'}`} />
+          <span className="min-w-0 flex-1">
+            <span className={`block text-sm font-semibold truncate ${isRunning ? 'text-blue-600 dark:text-blue-400' : 'text-gray-800 dark:text-gray-100'}`}>
+              {node?.data.label || execution.node_type}
+            </span>
+            <span className="block text-[11px] text-gray-400 capitalize">
+              {isRunning ? t('workflow.debug.node_running', 'Running') : execution.node_type}
+            </span>
+          </span>
+          {duration !== undefined && duration !== null && (
+            <span className="text-[11px] font-mono tabular-nums text-gray-400">{formatDuration(duration)}</span>
+          )}
+          {hasDetails && (
+            <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
+          )}
+        </button>
+
+        {expanded && hasDetails && (
+          <div className="wf-fade-in px-3 pb-3 pt-1 space-y-3">
+            {execution.error && (
+              <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/40 rounded-xl text-xs text-red-600 dark:text-red-400 font-mono break-words">
+                {execution.error}
+              </div>
+            )}
+            {execution.input && (
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">{t('workflow.debug.input', 'Input')}</span>
+                  <CopyButton text={JSON.stringify(execution.input, null, 2)} label={t('workflow.debug.copy_json', 'Copy JSON')} />
+                </div>
+                <JsonBlock value={execution.input} tone="input" />
+              </div>
+            )}
+            {execution.output && (
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">{t('workflow.debug.output', 'Output')}</span>
+                  <CopyButton text={JSON.stringify(execution.output, null, 2)} label={t('workflow.debug.copy_json', 'Copy JSON')} />
+                </div>
+                <JsonBlock value={execution.output} tone="output" />
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </li>
+  );
+};
+
+/** Final workflow output, shown as readable fields with a raw JSON fallback */
+const FinalOutput: React.FC<{ output: Record<string, JsonValue> }> = ({ output }) => {
+  const { t } = useTranslation();
+  const [showRaw, setShowRaw] = useState(false);
+  const json = JSON.stringify(output, null, 2);
+  const entries = Object.entries(output);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // Bring the result into view as soon as the run finishes
+  useEffect(() => {
+    sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, []);
+
+  return (
+    <section ref={sectionRef} className="wf-fade-in space-y-3 scroll-mb-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-emerald-500" />
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{t('workflow.debug.final_output', 'Final Output')}</h4>
+        </div>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => setShowRaw(!showRaw)}
+            className={`p-1.5 rounded-lg transition-colors ${showRaw ? 'text-blue-500 bg-blue-50 dark:bg-blue-900/30' : 'text-gray-400 hover:text-blue-500 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+            title={t('workflow.debug.raw_json', 'Raw JSON')}
+            aria-label={t('workflow.debug.raw_json', 'Raw JSON')}
+            aria-pressed={showRaw}
+          >
+            <Braces className="w-3.5 h-3.5" />
+          </button>
+          <CopyButton text={json} label={t('workflow.debug.copy_json', 'Copy JSON')} />
+        </div>
+      </div>
+
+      {showRaw || entries.length === 0 ? (
+        <JsonBlock value={output} tone="output" />
+      ) : (
+        <div className="rounded-2xl border border-emerald-100 dark:border-emerald-900/40 bg-emerald-50/50 dark:bg-emerald-950/20 divide-y divide-emerald-100/80 dark:divide-emerald-900/40">
+          {entries.map(([key, value]) => (
+            <div key={key} className="px-4 py-3 space-y-1">
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-emerald-700/70 dark:text-emerald-400/70">{key}</div>
+              {typeof value === 'string' ? (
+                <p className="text-sm text-gray-800 dark:text-gray-100 leading-relaxed whitespace-pre-wrap break-words">{value}</p>
+              ) : (
+                <pre className="text-xs text-gray-700 dark:text-gray-200 font-mono whitespace-pre-wrap break-words">{JSON.stringify(value, null, 2)}</pre>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+};
 
 const DebugPanel: React.FC = () => {
   const { t } = useTranslation();
@@ -39,30 +249,23 @@ const DebugPanel: React.FC = () => {
   } = useWorkflowStore();
 
   const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({});
+  const runElapsed = useElapsed(currentExecution?.started_at, isExecuting);
 
-  const nodes = currentWorkflow?.definition?.nodes || [];
-  
-  // Find all input nodes and their variables
-  const inputNodes = useMemo(() => {
-    return nodes.filter(n => n.type === 'input');
-  }, [nodes]);
+  const nodes = useMemo(() => currentWorkflow?.definition?.nodes || [], [currentWorkflow]);
 
   const inputVariables = useMemo(() => {
-    const vars: { name: string; type: string; description?: string; nodeId: string }[] = [];
-    inputNodes.forEach(node => {
-      const data = node.data as any;
-      if (data.input_variables && Array.isArray(data.input_variables)) {
-        data.input_variables.forEach((v: any) => {
-          vars.push({ ...v, nodeId: node.id });
-        });
+    const vars: InputVariable[] = [];
+    nodes.filter(n => n.type === 'input').forEach(node => {
+      const variables = (node.data as { input_variables?: Omit<InputVariable, 'nodeId'>[] }).input_variables;
+      if (Array.isArray(variables)) {
+        variables.forEach(v => vars.push({ ...v, nodeId: node.id }));
       }
     });
     return vars;
-  }, [inputNodes]);
+  }, [nodes]);
 
-  // Handle input changes
   const handleInputChange = (name: string, value: string, type: string) => {
-    let typedValue: any = value;
+    let typedValue: string | number | boolean = value;
     if (type === 'number') {
       typedValue = value === '' ? '' : Number(value);
     } else if (type === 'boolean') {
@@ -72,276 +275,258 @@ const DebugPanel: React.FC = () => {
   };
 
   const handleRun = () => {
+    setExpandedNodes({});
     startExecution(debugInput);
   };
 
-  const handleCancel = () => {
-    cancelExecution();
-  };
-
-  const handleClear = () => {
-    clearExecution();
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'running':
-        return <Loader2 className="w-4 h-4 animate-spin text-blue-500" />;
-      case 'completed':
-        return <CheckCircle2 className="w-4 h-4 text-green-500" />;
-      case 'failed':
-        return <XCircle className="w-4 h-4 text-red-500" />;
-      default:
-        return <Clock className="w-4 h-4 text-gray-300" />;
+  const handleInputKeyDown = (e: React.KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && !isExecuting) {
+      e.preventDefault();
+      handleRun();
     }
   };
 
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'running': return t('workflow.debug.running', 'Running...');
-      case 'completed': return t('workflow.debug.success', 'Success');
-      case 'failed': return t('workflow.debug.failed', 'Failed');
-      case 'pending': return t('workflow.debug.pending', 'Pending');
-      default: return status;
-    }
-  };
-
-  // Sort nodes by execution time if available, or maintain a logical order
+  // Live updates come from the stream map; fall back to the stored executions for history
   const executedNodes = useMemo(() => {
-    // If we have a map of executions (live updates), use it
-    if (Object.keys(nodeExecutionMap).length > 0) {
-      return Object.values(nodeExecutionMap).sort((a, b) => 
-        new Date(a.started_at).getTime() - new Date(b.started_at).getTime()
-      );
-    }
-    // Fallback to static node_executions if available (historical or final state)
-    if (!currentExecution?.node_executions) return [];
-    return [...currentExecution.node_executions].sort((a, b) => 
-      new Date(a.started_at).getTime() - new Date(b.started_at).getTime()
-    );
+    const list = Object.keys(nodeExecutionMap).length > 0
+      ? Object.values(nodeExecutionMap)
+      : currentExecution?.node_executions ?? [];
+    return [...list].sort((a, b) => new Date(a.started_at).getTime() - new Date(b.started_at).getTime());
   }, [currentExecution, nodeExecutionMap]);
 
-  const toggleNodeExpand = (nodeId: string) => {
-    setExpandedNodes(prev => ({ ...prev, [nodeId]: !prev[nodeId] }));
+  const hasRun = Boolean(currentExecution || isExecuting || executionError);
+  const status = isExecuting ? 'running' : currentExecution?.status ?? (executionError ? 'failed' : 'pending');
+  const totalDuration = isExecuting ? runElapsed : currentExecution?.duration;
+
+  const statusChip: Record<string, { label: string; className: string; icon: React.ReactNode }> = {
+    running: {
+      label: t('workflow.debug.running', 'Running...'),
+      className: 'bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800',
+      icon: <Loader2 className="w-3.5 h-3.5 animate-spin" />,
+    },
+    completed: {
+      label: t('workflow.debug.success', 'Success'),
+      className: 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800',
+      icon: <CheckCircle2 className="w-3.5 h-3.5" />,
+    },
+    failed: {
+      label: t('workflow.debug.failed', 'Failed'),
+      className: 'bg-red-50 text-red-600 border-red-100 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800',
+      icon: <XCircle className="w-3.5 h-3.5" />,
+    },
+    cancelled: {
+      label: t('workflow.debug.cancelled', 'Cancelled'),
+      className: 'bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700',
+      icon: <XCircle className="w-3.5 h-3.5" />,
+    },
+    pending: {
+      label: t('workflow.debug.pending', 'Pending'),
+      className: 'bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700',
+      icon: <Loader2 className="w-3.5 h-3.5" />,
+    },
   };
+  const chip = statusChip[status] ?? statusChip.pending;
 
   return (
-    <div className="w-[22rem] bg-white dark:bg-gray-900 border-l border-gray-100 dark:border-gray-800 flex flex-col z-20 shadow-2xl transition-all animate-in slide-in-from-right duration-300">
+    <aside className="wf-slide-in-right w-[26rem] max-w-[90vw] flex-shrink-0 bg-white dark:bg-gray-900 border-l border-gray-200/70 dark:border-gray-800 flex flex-col z-20 shadow-xl">
       {/* Header */}
-      <div className="px-8 py-6 border-b border-gray-50 dark:border-gray-800 flex items-center justify-between bg-white/80 dark:bg-gray-900/80 backdrop-blur-md sticky top-0 z-10 shadow-sm">
-        <div className="flex items-center gap-4">
-          <div className="p-2.5 rounded-2xl bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 border border-orange-100 dark:border-orange-800/50 shadow-sm">
-            <Terminal className="w-6 h-6" />
+      <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-400 to-rose-500 text-white flex items-center justify-center shadow-sm shadow-orange-500/30">
+            <FlaskConical className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-bold text-gray-900 dark:text-gray-100 text-sm tracking-tight">{t('workflow.debug.title', 'Online Debug')}</h3>
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.15em]">{t('common.debug_mode', 'DEBUG MODE')}</p>
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-[15px] leading-tight">{t('workflow.debug.title', 'Online Debug')}</h3>
+            <p className="text-xs text-gray-400 mt-0.5">{t('workflow.debug.subtitle', 'Run the workflow with test input')}</p>
           </div>
         </div>
         <button
+          type="button"
           onClick={() => setDebugPanelOpen(false)}
-          className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all active:scale-90"
+          className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors"
+          aria-label={t('common.close', 'Close')}
         >
           <X className="w-5 h-5" />
         </button>
       </div>
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
-        <div className="p-8 space-y-10">
+        <div className="px-6 py-6 space-y-8">
           {/* Input Variables Section */}
-          <section className="space-y-6">
+          <section className="space-y-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Terminal className="w-4 h-4 text-gray-400" />
-                <h4 className="text-[11px] uppercase font-bold text-gray-400 tracking-[0.15em]">{t('workflow.debug.input_variables', 'Input Variables')}</h4>
-              </div>
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{t('workflow.debug.input_variables', 'Input Variables')}</h4>
               {inputVariables.length > 0 && (
-                <button 
+                <button
+                  type="button"
                   onClick={() => setDebugInput({})}
-                  className="text-[10px] font-bold text-gray-400 hover:text-blue-500 uppercase tracking-widest transition-colors"
+                  disabled={isExecuting}
+                  className="flex items-center gap-1 text-xs font-medium text-gray-400 hover:text-blue-500 transition-colors disabled:opacity-40"
                 >
-                  {t('workflow.debug.reset', 'Reset')}
+                  <RotateCcw className="w-3 h-3" />
+                  <span>{t('workflow.debug.reset', 'Reset')}</span>
                 </button>
               )}
             </div>
 
             {inputVariables.length > 0 ? (
               <div className="space-y-5">
-                {inputVariables.map((v) => (
-                  <div key={`${v.nodeId}-${v.name}`} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <label className="text-xs font-bold text-gray-700 dark:text-gray-300">
-                        {v.name}
-                      </label>
-                      <span className="text-[10px] text-blue-500 font-mono font-bold bg-blue-50 dark:bg-blue-900/20 px-1.5 py-0.5 rounded-md border border-blue-100 dark:border-blue-800/50">{v.type}</span>
+                {inputVariables.map((v) => {
+                  const fieldId = `debug-input-${v.nodeId}-${v.name}`;
+                  const fieldClass = 'w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white dark:focus:bg-gray-800 outline-none transition-all text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 disabled:opacity-60';
+                  return (
+                    <div key={`${v.nodeId}-${v.name}`} className="space-y-1.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <label htmlFor={fieldId} className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                          {v.name}
+                        </label>
+                        <span className="text-[10px] text-blue-600 dark:text-blue-300 font-mono bg-blue-50 dark:bg-blue-900/30 px-1.5 py-0.5 rounded-md">{v.type}</span>
+                      </div>
+                      {v.description && (
+                        <p className="text-xs text-gray-400 leading-relaxed">{v.description}</p>
+                      )}
+                      {v.type === 'boolean' ? (
+                        <select
+                          id={fieldId}
+                          value={String(debugInput[v.name] ?? 'false')}
+                          onChange={(e) => handleInputChange(v.name, e.target.value, v.type)}
+                          className={`${fieldClass} cursor-pointer`}
+                          disabled={isExecuting}
+                        >
+                          <option value="true">{t('common.true', 'True')}</option>
+                          <option value="false">{t('common.false', 'False')}</option>
+                        </select>
+                      ) : v.type === 'number' ? (
+                        <input
+                          id={fieldId}
+                          type="number"
+                          value={debugInput[v.name] ?? ''}
+                          onChange={(e) => handleInputChange(v.name, e.target.value, v.type)}
+                          onKeyDown={handleInputKeyDown}
+                          className={fieldClass}
+                          placeholder={`${t('common.please_input', 'Please input')} ${v.name}...`}
+                          disabled={isExecuting}
+                        />
+                      ) : (
+                        <textarea
+                          id={fieldId}
+                          rows={3}
+                          value={debugInput[v.name] ?? ''}
+                          onChange={(e) => handleInputChange(v.name, e.target.value, v.type)}
+                          onKeyDown={handleInputKeyDown}
+                          className={`${fieldClass} resize-y min-h-[80px] leading-relaxed`}
+                          placeholder={`${t('common.please_input', 'Please input')} ${v.name}...`}
+                          disabled={isExecuting}
+                        />
+                      )}
                     </div>
-                    {v.description && (
-                      <p className="text-[10px] text-gray-400 leading-relaxed font-medium">
-                        {v.description}
-                      </p>
-                    )}
-                    {v.type === 'boolean' ? (
-                      <select
-                        value={String(debugInput[v.name] ?? 'false')}
-                        onChange={(e) => handleInputChange(v.name, e.target.value, v.type)}
-                        className="w-full px-4 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-bold dark:text-gray-100 cursor-pointer shadow-sm focus:bg-white dark:focus:bg-gray-800"
-                        disabled={isExecuting}
-                      >
-                        <option value="true">{t('common.true', 'True')}</option>
-                        <option value="false">{t('common.false', 'False')}</option>
-                      </select>
-                    ) : (
-                      <input
-                        type={v.type === 'number' ? 'number' : 'text'}
-                        value={debugInput[v.name] ?? ''}
-                        onChange={(e) => handleInputChange(v.name, e.target.value, v.type)}
-                        className="w-full px-4 py-2.5 bg-gray-50/50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-bold dark:text-gray-100 shadow-sm focus:bg-white dark:focus:bg-gray-800"
-                        placeholder={t('common.please_input', 'Please input') + ` ${v.name}...`}
-                        disabled={isExecuting}
-                      />
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
-              <div className="p-8 bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center gap-3">
-                <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center text-gray-300 dark:text-gray-600">
-                  <Terminal className="w-6 h-6" />
-                </div>
-                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{t('workflow.debug.no_input_variables', 'No input variables')}</p>
+              <div className="py-6 px-4 bg-gray-50 dark:bg-gray-800/40 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 text-center">
+                <p className="text-sm text-gray-400">{t('workflow.debug.no_input_variables', 'No input variables')}</p>
               </div>
             )}
 
-            <div className="pt-2 flex gap-3">
-              {!isExecuting ? (
-                <button
-                  onClick={handleRun}
-                  className="flex-1 flex items-center justify-center gap-3 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-sm transition-all shadow-lg shadow-blue-500/30 active:scale-95"
-                >
-                  <Play className="w-4 h-4 fill-current" />
-                  {t('workflow.debug.run', 'Run Workflow')}
-                </button>
-              ) : (
-                <button
-                  onClick={handleCancel}
-                  className="flex-1 flex items-center justify-center gap-3 px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-2xl font-bold text-sm transition-all shadow-lg shadow-red-500/30 active:scale-95"
-                >
-                  <StopCircle className="w-4 h-4" />
-                  {t('workflow.debug.stop', 'Stop')}
-                </button>
-              )}
-            </div>
+            {/* Run / Stop are separate keyed buttons so React swaps them whole */}
+            {!isExecuting ? (
+              <button
+                key="run"
+                type="button"
+                onClick={handleRun}
+                className="w-full flex items-center justify-center gap-2.5 h-11 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold text-sm transition-colors shadow-md shadow-blue-500/25"
+              >
+                <Play className="w-4 h-4 fill-current" />
+                <span>{t('workflow.debug.run', 'Run Workflow')}</span>
+                <kbd className="ml-1 hidden sm:inline text-[10px] font-mono font-medium bg-white/15 rounded px-1.5 py-0.5">⌘/Ctrl ↵</kbd>
+              </button>
+            ) : (
+              <button
+                key="stop"
+                type="button"
+                onClick={() => cancelExecution()}
+                className="w-full flex items-center justify-center gap-2.5 h-11 bg-white dark:bg-gray-800 border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl font-semibold text-sm transition-colors"
+              >
+                <Square className="w-3.5 h-3.5 fill-current" />
+                <span>{t('workflow.debug.stop', 'Stop')}</span>
+              </button>
+            )}
           </section>
 
           {/* Execution Status Section */}
-          {(currentExecution || isExecuting || executionError) && (
-            <section className="space-y-6">
+          {hasRun && (
+            <section className="wf-fade-in space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <History className="w-4 h-4 text-gray-400" />
-                  <h4 className="text-[11px] uppercase font-bold text-gray-400 tracking-[0.15em]">{t('workflow.debug.execution_status', 'Execution Status')}</h4>
-                </div>
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{t('workflow.debug.execution_status', 'Execution Status')}</h4>
                 {!isExecuting && (
-                  <button 
-                    onClick={handleClear}
-                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all text-gray-400 hover:text-red-500"
+                  <button
+                    type="button"
+                    onClick={() => clearExecution()}
+                    className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-400 hover:text-red-500"
+                    title={t('workflow.debug.clear', 'Clear Result')}
+                    aria-label={t('workflow.debug.clear', 'Clear Result')}
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 )}
               </div>
 
-              <div className="bg-gray-50/50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden shadow-sm">
-                <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between bg-white/50 dark:bg-gray-900/50">
-                  <div className="flex items-center gap-2.5">
-                    {currentExecution ? getStatusIcon(currentExecution.status) : <Loader2 className="w-4 h-4 animate-spin text-blue-500" />}
-                    <span className="text-[11px] font-bold text-gray-700 dark:text-gray-200 uppercase tracking-widest">
-                      {currentExecution ? getStatusText(currentExecution.status) : t('workflow.debug.starting', 'Starting...')}
-                    </span>
-                  </div>
-                  {currentExecution?.duration && (
-                    <span className="text-[10px] text-gray-400 font-mono font-bold bg-white dark:bg-gray-800 px-1.5 py-0.5 rounded border border-gray-100 dark:border-gray-700">
-                      {(currentExecution.duration / 1000).toFixed(2)}s
+              <div className="rounded-2xl border border-gray-200/80 dark:border-gray-700/80 overflow-hidden">
+                <div className="relative px-4 py-3 flex items-center justify-between bg-gray-50/80 dark:bg-gray-800/40">
+                  <span className={`inline-flex items-center gap-1.5 h-7 px-2.5 rounded-full border text-xs font-semibold ${chip.className}`}>
+                    {chip.icon}
+                    <span>{chip.label}</span>
+                  </span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                    <span>{t('workflow.debug.steps_count', '{{count}} steps', { count: executedNodes.length })}</span>
+                    {totalDuration !== undefined && totalDuration !== null && (
+                      <span className="font-mono tabular-nums text-gray-700 dark:text-gray-200">{formatDuration(totalDuration)}</span>
+                    )}
+                  </span>
+                  {isExecuting && (
+                    <span className="absolute left-0 right-0 bottom-0 h-0.5 overflow-hidden" aria-hidden="true">
+                      <span className="wf-shimmer block h-full w-2/5 bg-gradient-to-r from-transparent via-blue-500 to-transparent" />
                     </span>
                   )}
                 </div>
 
                 {executionError && (
-                  <div className="p-4 bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 text-[11px] leading-relaxed">
-                    <p className="font-bold mb-1 flex items-center gap-1">
-                      <XCircle className="w-3 h-3" />
-                      {t('workflow.debug.error', 'Execution Error')}
+                  <div className="mx-4 mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/40 rounded-xl text-xs text-red-600 dark:text-red-400 leading-relaxed">
+                    <p className="font-semibold mb-1 flex items-center gap-1.5">
+                      <XCircle className="w-3.5 h-3.5" />
+                      <span>{t('workflow.debug.error', 'Execution Error')}</span>
                     </p>
-                    {executionError}
+                    <p className="break-words">{executionError}</p>
+                  </div>
+                )}
+
+                {currentExecution?.error && !executionError && (
+                  <div className="mx-4 mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/40 rounded-xl text-xs text-red-600 dark:text-red-400 leading-relaxed break-words">
+                    {currentExecution.error}
                   </div>
                 )}
 
                 {/* Timeline */}
-                <div className="p-4 space-y-4">
+                <div className="p-4">
                   {executedNodes.length > 0 ? (
-                    <div className="space-y-3 relative before:absolute before:left-[7px] before:top-2 before:bottom-2 before:w-[1px] before:bg-gray-200 dark:before:bg-gray-700">
-                      {executedNodes.map((ne) => (
-                        <div key={ne.id} className="relative pl-6">
-                          <div className="absolute left-0 top-1.5 w-3.5 h-3.5 rounded-full bg-white dark:bg-gray-900 flex items-center justify-center z-10">
-                            {getStatusIcon(ne.status)}
-                          </div>
-                          <div className="group">
-                            <div 
-                              className="flex items-center justify-between cursor-pointer"
-                              onClick={() => toggleNodeExpand(ne.node_id)}
-                            >
-                              <span className="text-xs font-medium text-gray-700 dark:text-gray-200 group-hover:text-blue-500 transition-colors">
-                                {nodes.find(n => n.id === ne.node_id)?.data.label || ne.node_type}
-                              </span>
-                              <div className="flex items-center gap-2">
-                                {ne.duration !== undefined && ne.duration !== null && (
-                                  <span className="text-[9px] text-gray-400 font-mono">
-                                    {ne.duration < 1000 ? `${ne.duration}ms` : `${(ne.duration / 1000).toFixed(1)}s`}
-                                  </span>
-                                )}
-                                {expandedNodes[ne.node_id] ? <ChevronDown className="w-3 h-3 text-gray-400" /> : <ChevronRight className="w-3 h-3 text-gray-400" />}
-                              </div>
-                            </div>
-                            
-                            {expandedNodes[ne.node_id] && (
-                              <div 
-                                className="mt-2 space-y-2 animate-in fade-in slide-in-from-top-1 duration-200"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                {ne.input && (
-                                  <div className="space-y-1">
-                                    <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">{t('workflow.debug.input', 'Input')}</span>
-                                    <pre className="p-2 bg-gray-900 dark:bg-black rounded-lg text-[10px] text-blue-400 overflow-x-auto font-mono">
-                                      {JSON.stringify(ne.input, null, 2)}
-                                    </pre>
-                                  </div>
-                                )}
-                                {ne.output && (
-                                  <div className="space-y-1">
-                                    <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">{t('workflow.debug.output', 'Output')}</span>
-                                    <pre className="p-2 bg-gray-900 dark:bg-black rounded-lg text-[10px] text-green-400 overflow-x-auto font-mono">
-                                      {JSON.stringify(ne.output, null, 2)}
-                                    </pre>
-                                  </div>
-                                )}
-                                {ne.error && (
-                                  <div className="space-y-1">
-                                    <span className="text-[9px] text-red-400 font-bold uppercase tracking-wider">{t('workflow.debug.error', 'Error')}</span>
-                                    <div className="p-2 bg-red-50 dark:bg-red-900/20 rounded-lg text-[10px] text-red-600 dark:text-red-400 font-mono">
-                                      {ne.error}
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        </div>
+                    <ol className="space-y-2">
+                      {executedNodes.map((ne, i) => (
+                        <TimelineStep
+                          key={ne.node_id}
+                          execution={ne}
+                          node={nodes.find(n => n.id === ne.node_id)}
+                          index={i}
+                          isLast={i === executedNodes.length - 1}
+                          expanded={Boolean(expandedNodes[ne.node_id])}
+                          onToggle={() => setExpandedNodes(prev => ({ ...prev, [ne.node_id]: !prev[ne.node_id] }))}
+                        />
                       ))}
-                    </div>
+                    </ol>
                   ) : (
-                    <div className="flex flex-col items-center justify-center py-8 opacity-50">
-                      <Terminal className="w-8 h-8 text-gray-300 mb-2" />
-                      <p className="text-[10px] text-gray-400 font-medium">{t('workflow.debug.waiting', 'Waiting for execution...')}</p>
+                    <div className="flex items-center justify-center gap-2 py-6 text-sm text-gray-400">
+                      {isExecuting && <Loader2 className="w-4 h-4 animate-spin" />}
+                      <span>{t('workflow.debug.waiting', 'Waiting for execution...')}</span>
                     </div>
                   )}
                 </div>
@@ -350,34 +535,21 @@ const DebugPanel: React.FC = () => {
           )}
 
           {/* Final Output Section */}
-          {currentExecution?.output && (
-            <section className="space-y-4">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-500" />
-                <h4 className="text-[11px] uppercase font-bold text-gray-400 tracking-wider">{t('workflow.debug.final_output', 'Final Output')}</h4>
-              </div>
-              <div className="p-4 bg-green-50/50 dark:bg-green-900/10 rounded-2xl border border-green-100 dark:border-green-900/30">
-                <pre className="text-xs text-green-700 dark:text-green-400 whitespace-pre-wrap font-mono leading-relaxed">
-                  {JSON.stringify(currentExecution.output, null, 2)}
-                </pre>
-              </div>
-            </section>
+          {currentExecution?.output && !isExecuting && (
+            <FinalOutput output={currentExecution.output as Record<string, JsonValue>} />
           )}
         </div>
       </div>
 
       {/* Persistence Note */}
-      <div className="p-4 bg-blue-50/30 dark:bg-blue-900/5 border-t border-gray-50 dark:border-gray-800">
-        <div className="flex items-start gap-2">
-          <Info className="w-3 h-3 text-blue-500 mt-0.5" />
-          <p className="text-[9px] text-gray-400 leading-relaxed">
-            {t('workflow.debug.persistence_note', 'Execution results in debug mode are for preview only and will not affect the online workflow version.')}
-          </p>
-        </div>
+      <div className="px-6 py-3 border-t border-gray-100 dark:border-gray-800 flex items-start gap-2">
+        <Info className="w-3.5 h-3.5 text-gray-400 mt-0.5 flex-shrink-0" />
+        <p className="text-[11px] text-gray-400 leading-relaxed">
+          {t('workflow.debug.persistence_note', 'Execution results in debug mode are for preview only and will not affect the online workflow version.')}
+        </p>
       </div>
-    </div>
+    </aside>
   );
 };
 
 export default DebugPanel;
-

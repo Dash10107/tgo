@@ -4,14 +4,14 @@
  */
 
 import React from 'react';
-import { 
-  CheckCircle2, 
-  XCircle, 
-  Loader2, 
-  Clock,
-  ExternalLink
+import { useTranslation } from 'react-i18next';
+import {
+  CheckCircle2,
+  XCircle,
+  Loader2,
 } from 'lucide-react';
 import type { NodeExecution } from '@/types/workflow';
+import { formatDuration, useElapsed } from './runState';
 
 interface NodeExecutionBadgeProps {
   execution?: NodeExecution;
@@ -19,77 +19,54 @@ interface NodeExecutionBadgeProps {
 }
 
 const NodeExecutionBadge: React.FC<NodeExecutionBadgeProps> = ({ execution, onClick }) => {
+  const { t } = useTranslation();
+  const isRunning = execution?.status === 'running' || execution?.status === 'pending';
+  const elapsed = useElapsed(execution?.started_at, isRunning);
+
   if (!execution) return null;
 
-  const getStatusConfig = (status: string) => {
-    switch (status) {
-      case 'running':
-        return {
-          icon: <Loader2 className="w-3 h-3 animate-spin" />,
-          bgColor: 'bg-blue-500',
-          textColor: 'text-white',
-          shadow: 'shadow-blue-500/40',
-          pulse: true
-        };
-      case 'completed':
-        return {
-          icon: <CheckCircle2 className="w-3 h-3" />,
-          bgColor: 'bg-green-500',
-          textColor: 'text-white',
-          shadow: 'shadow-green-500/40',
-          pulse: false
-        };
-      case 'failed':
-        return {
-          icon: <XCircle className="w-3 h-3" />,
-          bgColor: 'bg-red-500',
-          textColor: 'text-white',
-          shadow: 'shadow-red-500/40',
-          pulse: false
-        };
-      default:
-        return {
-          icon: <Clock className="w-3 h-3" />,
-          bgColor: 'bg-gray-400',
-          textColor: 'text-white',
-          shadow: 'shadow-gray-400/40',
-          pulse: false
-        };
-    }
-  };
+  const isCompleted = execution.status === 'completed';
+  const duration = isRunning ? elapsed : execution.duration;
 
-  const config = getStatusConfig(execution.status);
+  const tone = isRunning
+    ? 'bg-blue-600 text-white shadow-blue-500/40'
+    : isCompleted
+      ? 'bg-emerald-500 text-white shadow-emerald-500/40'
+      : 'bg-red-500 text-white shadow-red-500/40';
 
   return (
-    <div 
-      className={`
-        absolute -top-3 -right-3 z-[100] group flex items-center gap-1.5 
-        px-2 py-1 rounded-full shadow-lg transition-all duration-300
-        ${config.bgColor} ${config.textColor} ${config.shadow}
-        ${config.pulse ? 'animate-pulse' : 'animate-in zoom-in-50 duration-200'}
-        cursor-pointer hover:scale-110 active:scale-95
-      `}
+    <button
+      type="button"
+      className={`wf-run-badge nodrag absolute -top-3 right-4 z-[100] flex items-center gap-1.5 h-6 pl-1.5 pr-2.5 rounded-full shadow-lg cursor-pointer hover:brightness-110 transition-[filter] ${tone}`}
       onClick={(e) => {
         e.stopPropagation();
         onClick?.();
       }}
+      title={t('workflow.debug.view_details', 'View input & output')}
     >
-      {config.icon}
-      
-      {execution.duration && (
-        <span className="text-[10px] font-bold font-mono border-l border-white/20 pl-1.5">
-          {execution.duration < 1000 ? `${execution.duration}ms` : `${(execution.duration / 1000).toFixed(1)}s`}
+      <span className="flex items-center">
+        {isRunning ? (
+          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+        ) : isCompleted ? (
+          <CheckCircle2 className="w-3.5 h-3.5" />
+        ) : (
+          <XCircle className="w-3.5 h-3.5" />
+        )}
+      </span>
+      <span className="text-[10px] font-semibold tracking-wide">
+        {isRunning
+          ? t('workflow.debug.node_running', 'Running')
+          : isCompleted
+            ? t('workflow.debug.node_done', 'Done')
+            : t('workflow.debug.failed', 'Failed')}
+      </span>
+      {duration !== undefined && duration !== null && (
+        <span className="text-[10px] font-mono tabular-nums opacity-80 border-l border-white/30 pl-1.5">
+          {formatDuration(duration)}
         </span>
       )}
-
-      {execution.status === 'completed' && (
-        <div className="hidden group-hover:block border-l border-white/20 pl-1.5">
-          <ExternalLink className="w-2.5 h-2.5" />
-        </div>
-      )}
-    </div>
+    </button>
   );
 };
 
 export default NodeExecutionBadge;
-

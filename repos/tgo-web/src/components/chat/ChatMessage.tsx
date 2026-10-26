@@ -137,7 +137,9 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, onSuggestionClick, o
   // Stream loading: only show loading if stream type AND no content AND not ended (end !== 1)
   // Once end=1, the stream is complete regardless of end_reason
   const isStreamEnded = meta.stream_end === 1;
-  const isStreamLoading = isStreamType && !meta.has_stream_data && !message.content?.trim() && !hasError && !isStreamEnded;
+  // Content before the first chunk is the anchor placeholder ("AI is thinking..."), not a real reply
+  const hasStreamedContent = meta.stream_started === true && Boolean(message.content?.trim());
+  const isStreamLoading = isStreamType && !meta.has_stream_data && !hasStreamedContent && !hasError && !isStreamEnded;
   // Stream ended without any streamed content: show a friendly fallback instead of the anchor placeholder
   const isStreamEmpty = isStreamType && isStreamEnded && !meta.has_stream_data && !isJSONRender && !hasError;
   const emptyStreamText = t('chat.messages.noResponse', "Sorry, I couldn't put together an answer for that. Could you rephrase your question, or ask to talk with a human agent?");

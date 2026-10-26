@@ -908,7 +908,8 @@ export const useWorkflowStore = create<WorkflowState>()(
                     workflow_id: event.data.workflow_id,
                     status: 'running',
                     input: event.data.inputs,
-                    started_at: new Date(event.data.created_at * 1000).toISOString(),
+                    // Client clock: created_at only has second precision, which makes the live timer jump
+                    started_at: new Date().toISOString(),
                     node_executions: [],
                   } as WorkflowExecution,
                 }, false, 'startExecution:workflow_started');
@@ -974,6 +975,16 @@ export const useWorkflowStore = create<WorkflowState>()(
             },
             abortController.signal
           );
+
+          // The stream closed without a workflow_finished event: don't leave the run spinning forever
+          if (get().isExecuting && get().executionAbortController === abortController) {
+            set((state) => ({
+              isExecuting: false,
+              executionAbortController: null,
+              currentExecution: state.currentExecution ? { ...state.currentExecution, status: 'failed' } : null,
+              executionError: state.executionError ?? 'Execution stream ended unexpectedly',
+            }), false, 'startExecution:stream_closed');
+          }
         } catch (error: any) {
           if (error.name === 'AbortError') return;
           
@@ -991,6 +1002,19 @@ export const useWorkflowStore = create<WorkflowState>()(
         if (executionAbortController) {
           executionAbortController.abort();
         }
+
+        // Stop the running animations: nodes still in flight are shown as cancelled (failed)
+        set((state) => ({
+          isExecuting: false,
+          executionAbortController: null,
+          currentExecution: state.currentExecution ? { ...state.currentExecution, status: 'cancelled' } : null,
+          nodeExecutionMap: Object.fromEntries(
+            Object.entries(state.nodeExecutionMap).map(([nodeId, ne]) => [
+              nodeId,
+              ne.status === 'running' ? { ...ne, status: 'failed', error: ne.error ?? 'Cancelled' } : ne,
+            ])
+          ),
+        }), false, 'cancelExecution:local');
 
         if (!currentExecution) return;
 

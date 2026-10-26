@@ -21,7 +21,7 @@ const AgentNode: React.FC<NodeProps<AgentNodeData>> = ({ id, data, selected }) =
         px-6 py-5 rounded-[1.5rem] bg-white dark:bg-gray-800 shadow-sm border transition-all duration-300 relative
         min-w-[260px] group
         ${selected 
-          ? 'border-blue-500 ring-[6px] ring-blue-500/10 shadow-xl scale-[1.02]' 
+          ? 'border-blue-500 ring-[6px] ring-blue-500/10 shadow-xl' 
           : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-800 hover:shadow-lg'
         }
       `}

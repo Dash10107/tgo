@@ -259,3 +259,159 @@ body {
 .react-flow__node.selected {
   box-shadow: none !important;
 }
+
+/* ===== Workflow run visualization ===== */
+@property --wf-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes wf-angle-spin {
+  to { --wf-angle: 360deg; }
+}
+
+@keyframes wf-glow-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.35), 0 0 18px 2px rgba(99, 102, 241, 0.18); }
+  50% { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0), 0 0 28px 6px rgba(99, 102, 241, 0.28); }
+}
+
+@keyframes wf-ring-pop {
+  0% { opacity: 0; transform: scale(0.97); }
+  60% { opacity: 1; transform: scale(1.015); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes wf-shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-3px); }
+  40%, 80% { transform: translateX(3px); }
+}
+
+@keyframes wf-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes wf-slide-in-right {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes wf-shimmer {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(250%); }
+}
+
+@keyframes wf-dash-flow {
+  to { stroke-dashoffset: -24; }
+}
+
+@keyframes wf-badge-in {
+  from { opacity: 0; transform: translateY(4px) scale(0.85); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.wf-run-frame {
+  position: absolute;
+  inset: -5px;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Rotating gradient border around the node that is currently executing */
+.wf-run-frame--running {
+  padding: 2.5px;
+  background: conic-gradient(from var(--wf-angle), #3b82f6, #8b5cf6, #06b6d4, #22c55e, #3b82f6);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: wf-angle-spin 1.6s linear infinite;
+}
+
+/* Soft pulsing halo on the running node itself (the frame is masked, so it can't carry the glow) */
+.react-flow__node:has(.wf-run-frame--running) {
+  z-index: 10 !important;
+}
+
+.react-flow__node:has(.wf-run-frame--running) > div {
+  animation: wf-glow-pulse 1.6s ease-in-out infinite;
+}
+
+.wf-run-frame--completed {
+  border: 2px solid rgba(16, 185, 129, 0.85);
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12);
+  animation: wf-ring-pop 0.45s ease-out both;
+}
+
+.wf-run-frame--failed {
+  border: 2px solid rgba(239, 68, 68, 0.9);
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.14);
+  animation: wf-ring-pop 0.45s ease-out both;
+}
+
+.react-flow__node:has(.wf-run-frame--failed) > div {
+  animation: wf-shake 0.4s ease-in-out 1;
+}
+
+/* Nodes waiting to run, or not on the path taken by this run */
+.wf-run-veil {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 20;
+  background: rgba(248, 250, 252, 0.35);
+  transition: background-color 0.4s ease;
+}
+
+.wf-run-veil--skipped {
+  background: rgba(248, 250, 252, 0.68);
+  backdrop-filter: grayscale(0.85);
+}
+
+.dark .wf-run-veil {
+  background: rgba(3, 7, 18, 0.3);
+}
+
+.dark .wf-run-veil--skipped {
+  background: rgba(3, 7, 18, 0.62);
+}
+
+.wf-run-badge {
+  animation: wf-badge-in 0.25s ease-out both;
+}
+
+.wf-fade-in {
+  animation: wf-fade-in 0.3s ease-out both;
+}
+
+.wf-slide-in-right {
+  animation: wf-slide-in-right 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.wf-shimmer {
+  animation: wf-shimmer 1.4s ease-in-out infinite;
+}
+
+.wf-edge-flow {
+  stroke-dasharray: 8 4;
+  animation: wf-dash-flow 0.6s linear infinite;
+}
+
+/* Smoothly move nodes when the layout is tidied */
+.wf-animate-layout .react-flow__node {
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wf-run-frame--running,
+  .react-flow__node:has(.wf-run-frame--running) > div,
+  .react-flow__node:has(.wf-run-frame--failed) > div,
+  .wf-shimmer,
+  .wf-edge-flow {
+    animation: none;
+  }
+}

@@ -3,7 +3,7 @@
  * Main visual workflow editor using React Flow
  */
 
-import React, { useCallback, useRef, useMemo, useEffect } from 'react';
+import React, { useCallback, useRef, useMemo, useEffect, useState } from 'react';
 import ReactFlow, {
   Background,
   Controls,
@@ -13,15 +13,20 @@ import ReactFlow, {
   Connection,
   Panel,
   BackgroundVariant,
+  MarkerType,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { useTranslation } from 'react-i18next';
+import { Wand2 } from 'lucide-react';
 
 import { useWorkflowStore } from '@/stores/workflowStore';
 import { useToast } from '@/hooks/useToast';
 import { nodeTypes as importedNodeTypes } from './nodes';
 import { edgeTypes as importedEdgeTypes } from './edges';
 import type { WorkflowNodeType } from '@/types/workflow';
+import RunStatusBar from './overlays/RunStatusBar';
+import { getEdgeRunState, type EdgeRunState } from './overlays/runState';
+import { computeLayeredLayout } from './utils/autoLayout';
 
 // Define stable objects outside the component to prevent unnecessary re-renders
 // and React Flow warnings about unstable references.
@@ -32,6 +37,15 @@ const DEFAULT_EDGE_OPTIONS = {
   type: 'smoothstep',
   animated: false,
 };
+const FIT_VIEW_OPTIONS = { padding: 0.18, maxZoom: 1 };
+const LAYOUT_ANIMATION_MS = 550;
+
+const EDGE_MARKER_COLORS: Record<EdgeRunState, string> = {
+  idle: '#a5b4c8',
+  active: '#3b82f6',
+  traversed: '#10b981',
+  inactive: '#cbd5e1',
+};
 
 interface WorkflowEditorProps {
   readOnly?: boolean;
@@ -39,7 +53,8 @@ interface WorkflowEditorProps {
 
 const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ readOnly = false }) => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
-  const { screenToFlowPosition } = useReactFlow();
+  const { screenToFlowPosition, getNodes, getNode, getViewport, setCenter, fitView } = useReactFlow();
+  const [isArranging, setIsArranging] = useState(false);
   const { showToast } = useToast();
   const { t } = useTranslation();
 
@@ -69,31 +84,86 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ readOnly = false }
     saveWorkflow,
     isDirty,
     markDirty,
+    currentExecution,
   } = useWorkflowStore();
 
   const nodes = currentWorkflow?.definition?.nodes || [];
-  const rawEdges = currentWorkflow?.definition?.edges || [];
+  const rawEdges = useMemo(() => currentWorkflow?.definition?.edges || [], [currentWorkflow?.definition?.edges]);
 
-  // Compute edges with execution highlighting
+  const hasRun = isExecuting || currentExecution !== null || Object.keys(nodeExecutionMap).length > 0;
+
+  // Display-only edges: rendered by CustomEdge so the run can be animated along the path taken
   const edges = useMemo(() => {
     return rawEdges.map(edge => {
-      const targetExecution = nodeExecutionMap[edge.target];
-      const sourceExecution = nodeExecutionMap[edge.source];
-      
-      // An edge is active if its target is running/completed
-      // and its source is also completed (to show the path)
-      const isActive = targetExecution && (targetExecution.status === 'completed' || targetExecution.status === 'running');
-      
+      const runState = getEdgeRunState(nodeExecutionMap[edge.source], nodeExecutionMap[edge.target], isExecuting, hasRun);
       return {
         ...edge,
-        animated: sourceExecution?.status === 'completed' && (targetExecution?.status === 'running' || !targetExecution),
+        type: 'custom',
+        animated: false,
+        markerEnd: { type: MarkerType.ArrowClosed, width: 16, height: 16, color: EDGE_MARKER_COLORS[runState] },
         data: {
           ...edge.data,
-          isActive,
+          runState,
         }
       };
     });
-  }, [rawEdges, nodeExecutionMap]);
+  }, [rawEdges, nodeExecutionMap, isExecuting, hasRun]);
+
+  // Show the whole graph when a run starts (the debug panel narrows the canvas)
+  useEffect(() => {
+    if (!isExecuting) return undefined;
+    const timer = window.setTimeout(() => fitView({ ...FIT_VIEW_OPTIONS, duration: 400 }), 50);
+    return () => window.clearTimeout(timer);
+  }, [isExecuting, fitView]);
+
+  // Keep the node that is currently running in view
+  const runningNodeId = useMemo(
+    () => Object.values(nodeExecutionMap).find(ne => ne.status === 'running')?.node_id,
+    [nodeExecutionMap]
+  );
+  useEffect(() => {
+    if (!runningNodeId || !reactFlowWrapper.current) return;
+    const node = getNode(runningNodeId);
+    if (!node?.width || !node.height) return;
+    const { x, y, zoom } = getViewport();
+    const { width, height } = reactFlowWrapper.current.getBoundingClientRect();
+    const position = node.positionAbsolute ?? node.position;
+    const left = position.x * zoom + x;
+    const top = position.y * zoom + y;
+    const margin = 40;
+    const isVisible = left >= margin && top >= margin
+      && left + node.width * zoom <= width - margin
+      && top + node.height * zoom <= height - margin;
+    if (!isVisible) {
+      setCenter(position.x + node.width / 2, position.y + node.height / 2, { zoom, duration: 450 });
+    }
+  }, [runningNodeId, getNode, getViewport, setCenter]);
+
+  // Arrange nodes top-to-bottom without overlaps, animating them into place
+  const handleAutoArrange = useCallback(() => {
+    const measured = getNodes();
+    if (measured.length === 0) return;
+    const positions = computeLayeredLayout(
+      measured.map(n => ({
+        id: n.id,
+        width: n.width ?? 260,
+        height: n.height ?? 120,
+        x: n.position.x,
+        handleOrder: n.type === 'classifier'
+          ? ((n.data as { categories?: { id: string }[] }).categories ?? []).map(c => c.id)
+          : undefined,
+      })),
+      rawEdges,
+    );
+    setIsArranging(true);
+    onNodesChange(measured
+      .filter(n => positions[n.id])
+      .map(n => ({ type: 'position' as const, id: n.id, position: positions[n.id], dragging: false })));
+    pushHistory();
+    markDirty();
+    window.setTimeout(() => fitView({ ...FIT_VIEW_OPTIONS, duration: 500 }), 50);
+    window.setTimeout(() => setIsArranging(false), LAYOUT_ANIMATION_MS);
+  }, [getNodes, rawEdges, onNodesChange, pushHistory, markDirty, fitView]);
 
   // Handle node drag stop (push to history and mark dirty)
   const handleNodeDragStop = useCallback(() => {
@@ -268,7 +338,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ readOnly = false }
       {/* Main Editor Area */}
       <div className="flex-1 flex flex-col relative">
         {/* Canvas */}
-        <div ref={reactFlowWrapper} className="flex-1 w-full h-full relative">
+        <div ref={reactFlowWrapper} className={`flex-1 w-full h-full relative ${isArranging ? 'wf-animate-layout' : ''}`}>
           <ReactFlow
             nodes={nodes}
             edges={edges as any}
@@ -283,6 +353,8 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ readOnly = false }
             nodeTypes={NODE_TYPES}
             edgeTypes={EDGE_TYPES}
             defaultEdgeOptions={DEFAULT_EDGE_OPTIONS}
+            fitView
+            fitViewOptions={FIT_VIEW_OPTIONS}
             snapToGrid
             snapGrid={SNAP_GRID}
             nodesDraggable={!readOnly}
@@ -311,10 +383,30 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ readOnly = false }
               nodeColor={nodeColor}
               maskColor="rgba(0, 0, 0, 0.05)"
               className="!bg-white/80 dark:!bg-gray-900/80 !backdrop-blur-md !border-gray-100 dark:!border-gray-800 !rounded-2xl !shadow-2xl"
-              style={{ height: 120, width: 180 }}
+              style={{ height: 96, width: 144 }}
               zoomable
               pannable
             />
+
+            {/* Live run status */}
+            <Panel position="top-center">
+              <RunStatusBar />
+            </Panel>
+
+            {!readOnly && (
+              <Panel position="top-right">
+                <button
+                  type="button"
+                  onClick={handleAutoArrange}
+                  disabled={isExecuting}
+                  className="flex items-center gap-2 h-9 px-3.5 rounded-xl bg-white/95 dark:bg-gray-900/95 border border-gray-200 dark:border-gray-700 shadow-sm text-xs font-semibold text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed backdrop-blur"
+                  title={t('workflow.actions.auto_arrange_hint', 'Arrange nodes neatly from top to bottom')}
+                >
+                  <Wand2 className="w-4 h-4" />
+                  <span>{t('workflow.actions.auto_arrange', 'Auto-arrange')}</span>
+                </button>
+              </Panel>
+            )}
 
             {/* Validation Errors Panel */}
             <ValidationErrorsPanel />

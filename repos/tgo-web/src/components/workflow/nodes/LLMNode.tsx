@@ -26,9 +26,9 @@ const LLMNode: React.FC<NodeProps<LLMNodeData>> = ({ id, data, selected }) => {
     <div
       className={`
         px-6 py-5 rounded-[1.5rem] bg-white dark:bg-gray-800 shadow-sm border transition-all duration-300 relative
-        min-w-[280px] group
+        w-[288px] group
         ${selected 
-          ? 'border-cyan-500 ring-[6px] ring-cyan-500/10 shadow-xl scale-[1.02]' 
+          ? 'border-cyan-500 ring-[6px] ring-cyan-500/10 shadow-xl' 
           : 'border-gray-200 dark:border-gray-700 hover:border-cyan-300 dark:hover:border-cyan-800 hover:shadow-lg'
         }
       `}
@@ -53,7 +53,7 @@ const LLMNode: React.FC<NodeProps<LLMNodeData>> = ({ id, data, selected }) => {
             {data.label || defaultLabel}
           </div>
           {data.model_name ? (
-            <div className="text-[10px] text-cyan-600 dark:text-cyan-400 font-bold uppercase tracking-widest mt-0.5 bg-cyan-50 dark:bg-cyan-900/30 px-1.5 py-0.5 rounded-md inline-block border border-cyan-100/50 dark:border-cyan-800/30">
+            <div className="text-[10px] text-cyan-600 dark:text-cyan-400 font-bold uppercase tracking-wider mt-0.5 bg-cyan-50 dark:bg-cyan-900/30 px-1.5 py-0.5 rounded-md inline-block max-w-full truncate align-bottom border border-cyan-100/50 dark:border-cyan-800/30">
               {data.model_name}
             </div>
           ) : (

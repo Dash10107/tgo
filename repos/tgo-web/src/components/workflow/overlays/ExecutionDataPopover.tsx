@@ -64,7 +64,7 @@ const ExecutionDataPopover: React.FC<ExecutionDataPopoverProps> = ({
 
   return (
     <div 
-      className="absolute top-0 left-full ml-4 w-80 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 z-[110] flex flex-col overflow-hidden animate-in fade-in slide-in-from-left-2 duration-200"
+      className="nodrag nowheel cursor-default absolute top-0 left-full ml-4 w-80 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 z-[110] flex flex-col overflow-hidden wf-fade-in"
       onClick={(e) => e.stopPropagation()}
     >
       {/* Header */}
@@ -99,7 +99,7 @@ const ExecutionDataPopover: React.FC<ExecutionDataPopoverProps> = ({
         {renderJson(execution.input, t('workflow.debug.input', 'Input'), <Terminal className="w-3 h-3" />, 'input')}
         {renderJson(execution.output, t('workflow.debug.output', 'Output'), <Database className="w-3 h-3" />, 'output')}
 
-        {execution.duration && (
+        {execution.duration !== undefined && execution.duration !== null && (
           <div className="pt-2 border-t border-gray-50 dark:border-gray-800 flex items-center justify-between text-[10px]">
             <span className="text-gray-400 font-medium uppercase tracking-wider">{t('workflow.debug.duration', 'Execution Time')}</span>
             <span className="text-gray-600 dark:text-gray-300 font-mono font-bold">

@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
+import './utils/domTranslationGuard'; // Must run before React touches the DOM
 import './i18n'; // Initialize i18n
 import './utils/debugAuth'; // Initialize debug utilities
 import './utils/logoutTest'; // Initialize logout test utilities

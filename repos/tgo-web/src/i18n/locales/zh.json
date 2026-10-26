@@ -1647,7 +1647,9 @@
       "undo": "撤销",
       "redo": "重做",
       "validate": "验证",
-      "debug": "调试"
+      "debug": "调试",
+      "auto_arrange": "自动整理",
+      "auto_arrange_hint": "将节点从上到下整齐排列"
     },
     "debug": {
       "title": "在线调试",
@@ -1671,7 +1673,18 @@
       "input": "输入",
       "output": "输出",
       "copy_json": "复制 JSON",
-      "persistence_note": "调试模式下的执行结果仅供预览，不会影响线上运行的工作流版本。"
+      "persistence_note": "调试模式下的执行结果仅供预览，不会影响线上运行的工作流版本。",
+      "subtitle": "使用测试输入运行工作流",
+      "node_running": "运行中",
+      "node_done": "完成",
+      "running_node": "正在运行 {{name}}",
+      "step": "第 {{count}} 步",
+      "completed_steps": "已完成 {{count}} 个步骤",
+      "failed_at": "在 {{name}} 失败",
+      "cancelled": "已取消",
+      "steps_count": "{{count}} 个步骤",
+      "raw_json": "原始 JSON",
+      "view_details": "查看输入和输出"
     },
     "fields": {
       "name": "名称",
@@ -3350,19 +3363,12 @@
         "memoryCleared": "记忆已清除，AI 将重新开始对话"
       },
       "aiThinking": "AI 正在思考...",
-
       "thinking": {
-
         "working": "正在思考...",
-
         "searching": "正在查找答案...",
-
         "weaving": "正在整理信息...",
-
         "composing": "正在组织回复..."
-
       },
-
       "noResponse": "抱歉，我暂时无法回答这个问题。请换个方式提问，或请求转接人工客服。",
       "aiReply": "[AI 回复]"
     },

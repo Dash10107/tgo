@@ -256,7 +256,7 @@ services:
         # node_modules lives in a named volume, so reinstall whenever deps change
         DEPS_HASH=$$(cat package.json yarn.lock | sha256sum | cut -d' ' -f1)
         if [ ! -d node_modules/vite ] || [ "$$(cat node_modules/.deps-hash 2>/dev/null)" != "$$DEPS_HASH" ]; then
-          yarn install --frozen-lockfile --non-interactive --network-timeout 600000
+          yarn install --frozen-lockfile --non-interactive --network-timeout 600000 || exit 1
           echo "$$DEPS_HASH" > node_modules/.deps-hash
         fi
         yarn dev --host 0.0.0.0 --port 5173
@@ -291,7 +291,7 @@ services:
         # node_modules lives in a named volume, so reinstall whenever deps change
         DEPS_HASH=$$(cat package.json yarn.lock | sha256sum | cut -d' ' -f1)
         if [ ! -d node_modules/vite ] || [ "$$(cat node_modules/.deps-hash 2>/dev/null)" != "$$DEPS_HASH" ]; then
-          yarn install --frozen-lockfile --non-interactive --network-timeout 600000
+          yarn install --frozen-lockfile --non-interactive --network-timeout 600000 || exit 1
           echo "$$DEPS_HASH" > node_modules/.deps-hash
         fi
         yarn dev --host 0.0.0.0 --port 5174

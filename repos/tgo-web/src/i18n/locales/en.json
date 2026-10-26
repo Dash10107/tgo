@@ -1324,7 +1324,9 @@
       "undo": "Undo",
       "redo": "Redo",
       "validate": "Validate",
-      "debug": "Debug"
+      "debug": "Debug",
+      "auto_arrange": "Auto-arrange",
+      "auto_arrange_hint": "Arrange nodes neatly from top to bottom"
     },
     "debug": {
       "title": "Online Debug",
@@ -1348,7 +1350,18 @@
       "input": "Input",
       "output": "Output",
       "copy_json": "Copy JSON",
-      "persistence_note": "Execution results in debug mode are for preview only and will not affect the online workflow version."
+      "persistence_note": "Execution results in debug mode are for preview only and will not affect the online workflow version.",
+      "subtitle": "Run the workflow with test input",
+      "node_running": "Running",
+      "node_done": "Done",
+      "running_node": "Running {{name}}",
+      "step": "Step {{count}}",
+      "completed_steps": "Completed {{count}} steps",
+      "failed_at": "Failed at {{name}}",
+      "cancelled": "Cancelled",
+      "steps_count": "{{count}} steps",
+      "raw_json": "Raw JSON",
+      "view_details": "View input & output"
     },
     "fields": {
       "name": "Name",
@@ -2520,19 +2533,12 @@
         "memoryCleared": "Memory cleared, AI will restart the conversation"
       },
       "aiThinking": "AI is thinking...",
-
       "thinking": {
-
         "working": "Thinking...",
-
         "searching": "Searching for answers...",
-
         "weaving": "Connecting the dots...",
-
         "composing": "Composing a reply..."
-
       },
-
       "noResponse": "Sorry, I couldn’t put together an answer for that. Could you rephrase your question, or ask to talk with a human agent?",
       "aiReply": "[AI Reply]"
     },
