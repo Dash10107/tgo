@@ -1362,7 +1362,7 @@
       "event_hint": "e.g. user_registered",
       "variable_hint": "final_response",
       "template_hint": "Hello, the result is: {{api_1.body}}",
-      "expression_hint": "{{variable}} === 'value'",
+      "expression_hint": "'{{variable}}' == 'value'",
       "raw_hint": "Enter raw content...",
       "api_hint": "https://api.example.com",
       "input_name": "Name",
@@ -2480,6 +2480,20 @@
         "memoryCleared": "Memory cleared, AI will restart the conversation"
       },
       "aiThinking": "AI is thinking...",
+
+      "thinking": {
+
+        "working": "Thinking...",
+
+        "searching": "Searching for answers...",
+
+        "weaving": "Connecting the dots...",
+
+        "composing": "Composing a reply..."
+
+      },
+
+      "noResponse": "Sorry, I couldn’t put together an answer for that. Could you rephrase your question, or ask to talk with a human agent?",
       "aiReply": "[AI Reply]"
     },
     "input": {

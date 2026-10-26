@@ -57,22 +57,6 @@ export const Cursor = styled.span`
   @keyframes blink { 0%{opacity:1} 50%{opacity:0} 100%{opacity:1} }
 `
 
-// AI Loading indicator (three bouncing dots)
-export const AILoadingDots = styled.span`
-  display: inline-flex; align-items: center; gap: 4px; padding: 8px 0;
-  span {
-    display: inline-block; width: 6px; height: 6px; background: var(--text-muted, #9ca3af); border-radius: 50%;
-    animation: bounce 1.4s ease-in-out infinite both;
-  }
-  span:nth-of-type(1) { animation-delay: -0.32s; }
-  span:nth-of-type(2) { animation-delay: -0.16s; }
-  span:nth-of-type(3) { animation-delay: 0s; }
-  @keyframes bounce {
-    0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
-    40% { transform: scale(1); opacity: 1; }
-  }
-`
-
 export const ImgBox = styled.div`
   display:inline-block; background: var(--bg-tertiary, #f3f4f6); border-radius:12px; overflow:hidden; padding:4px; cursor:pointer;
 `;

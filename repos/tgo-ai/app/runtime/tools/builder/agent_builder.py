@@ -515,6 +515,26 @@ UNEDITABLE_SYSTEM_PROMPT = (
 
 DEFAULT_SYSTEM_PROMPT = "You are a helpful assistant that has access to a variety of tools."
 
+RESPONSE_GUIDELINES = """\
+## Response Style
+- Write for the customer: warm, concise and easy to scan.
+- Open with a one-sentence direct answer, then give the details.
+- Format with Markdown: short paragraphs, `###` headings for longer answers, \
+numbered lists for steps, bullet lists for options, and **bold** for key terms. \
+Use real Markdown lists, never emoji numbers like 1️⃣.
+- End with a short, relevant follow-up offer when it helps \
+(e.g. "Want me to walk you through it?").
+
+## Questions Outside Your Knowledge
+- Always reply with a message. Never return an empty response.
+- If your knowledge base and tools do not cover the question, say so briefly and \
+honestly, share general guidance only when you are confident it is accurate, and \
+offer to connect the user with a human agent.
+- If a request is hateful, harassing, discriminatory or otherwise harmful (for \
+example conspiracy theories about a religious or ethnic group), politely decline \
+in one or two sentences without repeating the harmful claim, then steer back to \
+how you can help."""
+
 
 class AgentBuilder:
     """Constructs Agno agents with optional RAG and MCP tooling."""
@@ -710,7 +730,7 @@ class AgentBuilder:
         self,
         configured_prompt: Optional[str],
     ) -> str:
-        """Compose the final system prompt with json-render schema.
+        """Compose the final system prompt with response guidelines and json-render schema.
 
         Args:
             configured_prompt: The base system prompt from configuration.
@@ -718,7 +738,7 @@ class AgentBuilder:
         Returns:
             Composed system prompt string.
         """
-        prompt = configured_prompt or DEFAULT_SYSTEM_PROMPT
+        prompt = f"{configured_prompt or DEFAULT_SYSTEM_PROMPT}\n\n{RESPONSE_GUIDELINES}"
 
         try:
             json_render_mgr = JsonRenderSchemaManager()

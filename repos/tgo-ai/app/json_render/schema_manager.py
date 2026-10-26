@@ -93,6 +93,11 @@ class JsonRenderSchemaManager:
 _JSON_RENDER_PROTOCOL_INSTRUCTIONS = f"""\
 ## json-render Response Protocol
 
+Only generate rich UI when structured UI genuinely helps the user: orders, invoices,
+forms, product or price cards, and choices the user can tap. For explanations,
+troubleshooting steps, how-to guides and general answers, reply with well-formatted
+Markdown only and DO NOT emit a spec fence.
+
 When generating rich UI you MUST follow these rules:
 
 1. First write conversational text.
@@ -129,6 +134,8 @@ When generating rich UI you MUST follow these rules:
    `Section`, `KV`, `PriceRow`, `Badge`, `OrderItem`,
    `Input`/`TextField`, `Checkbox`/`CheckBox`, `DateTimeInput`, `MultipleChoice`.
 11. If you cannot produce valid SpecStream patches, return plain text only and DO NOT emit a spec fence.
+    Spec prop strings are rendered as plain text: NEVER put Markdown (`**bold**`, `#`, list dashes)
+    or emoji numbers (1️⃣) inside props. For steps, use one `Text` element per step with a "1. " prefix.
 12. For form scenarios:
    - Define initial form values in `state`: `"state": {{ "form": {{ "name": "", "phone": "" }} }}`
    - Bind input values with `{{ "$bindState": "/form/fieldName" }}` on the `value` prop

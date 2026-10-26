@@ -1,5 +1,7 @@
 import { useBoundProp, type ComponentRegistry, type ComponentRenderProps } from '@json-render/react';
 
+import { renderInlineMarkdown, splitListMarker, stripInlineMarkdown } from './inlineMarkdown';
+
 type JsonRenderProps = Record<string, unknown>;
 
 function toStringValue(value: unknown, fallback = ''): string {
@@ -29,6 +31,11 @@ function pickFirstString(props: JsonRenderProps, keys: string[], fallback = ''):
     if (value) return value;
   }
   return fallback;
+}
+
+/** Like pickFirstString, but drops markdown markers for labels/titles that render as plain text. */
+function pickFirstLabel(props: JsonRenderProps, keys: string[], fallback = ''): string {
+  return stripInlineMarkdown(pickFirstString(props, keys, fallback));
 }
 
 function splitLabelValue(rawText: string): { label: string; value: string } | null {
@@ -62,19 +69,41 @@ function isMetaKey(label: string): boolean {
   return /(order (no|number|id)|sku|quantity|qty|phone|contact|address|tracking|ऑर्डर नंबर|मात्रा|फ़ोन|फोन|संपर्क|पता|पत्ता|ट्रैकिंग|प्रमाण|दूरध्वनी)/i.test(label);
 }
 
+const INLINE_CODE_CLASS = 'rounded bg-gray-100 px-1 py-0.5 font-mono text-[0.85em] dark:bg-gray-800';
+
 const Text = ({ element }: ComponentRenderProps<JsonRenderProps>) => {
   const props = element.props;
-  const text = pickFirstString(props, ['text', 'label', 'value', 'content']);
+  const rawText = pickFirstString(props, ['text', 'label', 'value', 'content']);
   const variant = toStringValue(props.variant).toLowerCase();
 
-  if (!text) return null;
+  if (!rawText) return null;
 
-  const pair = splitLabelValue(text);
+  const text = stripInlineMarkdown(rawText);
   const renderedAsSection = variant === 'section-title' || isSectionTitle(text);
   if (renderedAsSection) {
     return <div className="pt-2 text-sm font-semibold text-gray-900 dark:text-gray-100">{text}</div>;
   }
 
+  // Step / bullet lines ("1️⃣ ...", "1. ...", "- ...") render as a tidy list row
+  const listItem = variant === 'plain' ? null : splitListMarker(rawText);
+  if (listItem) {
+    return (
+      <div className="flex items-start gap-2.5">
+        {listItem.marker.kind === 'number' ? (
+          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-100 text-[11px] font-semibold text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
+            {listItem.marker.value}
+          </span>
+        ) : (
+          <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500 dark:bg-blue-400" />
+        )}
+        <div className="min-w-0 text-sm leading-6 text-gray-800 dark:text-gray-200">
+          {renderInlineMarkdown(listItem.rest, INLINE_CODE_CLASS)}
+        </div>
+      </div>
+    );
+  }
+
+  const pair = splitLabelValue(text);
   if (pair && variant !== 'plain') {
     const headline = variant === 'headline' || isHeadlineKey(pair.label);
     const discount = variant === 'discount' || isDiscountKey(pair.label);
@@ -99,19 +128,19 @@ const Text = ({ element }: ComponentRenderProps<JsonRenderProps>) => {
   }
 
   if (variant === 'caption' || variant === 'muted' || isSkuLine(text)) {
-    return <div className="text-xs text-gray-500 dark:text-gray-400">{text}</div>;
+    return <div className="text-xs text-gray-500 dark:text-gray-400">{renderInlineMarkdown(rawText, INLINE_CODE_CLASS)}</div>;
   }
 
   if (variant === 'title') {
     return <div className="text-base font-semibold text-gray-900 dark:text-gray-100">{text}</div>;
   }
 
-  return <div className="text-sm text-gray-900 dark:text-gray-100 leading-6">{text}</div>;
+  return <div className="text-sm text-gray-900 dark:text-gray-100 leading-6">{renderInlineMarkdown(rawText, INLINE_CODE_CLASS)}</div>;
 };
 
 const Button = ({ element, children, emit, loading }: ComponentRenderProps<JsonRenderProps>) => {
   const props = element.props;
-  const label = pickFirstString(props, ['label', 'text'], 'Submit');
+  const label = pickFirstLabel(props, ['label', 'text'], 'Submit');
   const variant = toStringValue(props.variant).toLowerCase();
   const primary = toBool(props.primary) || variant === 'primary';
   const danger = variant === 'danger';
@@ -198,7 +227,7 @@ const Divider = () => <hr className="border-gray-200 dark:border-gray-700 my-1" 
 const Badge = ({ element, children }: ComponentRenderProps<JsonRenderProps>) => {
   const props = element.props;
   const tone = toStringValue(props.tone).toLowerCase();
-  const label = children ?? pickFirstString(props, ['label', 'text', 'value'], '');
+  const label = children ?? pickFirstLabel(props, ['label', 'text', 'value'], '');
   if (!label) return null;
 
   const toneClass =
@@ -214,7 +243,7 @@ const Badge = ({ element, children }: ComponentRenderProps<JsonRenderProps>) => 
 };
 
 const Section = ({ element, children }: ComponentRenderProps<JsonRenderProps>) => {
-  const title = pickFirstString(element.props, ['title', 'label', 'text']);
+  const title = pickFirstLabel(element.props, ['title', 'label', 'text']);
   return (
     <section className="rounded-xl border border-gray-100 bg-gray-50/70 p-3 dark:border-gray-700/70 dark:bg-gray-800/50">
       {title ? <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">{title}</div> : null}
@@ -225,8 +254,8 @@ const Section = ({ element, children }: ComponentRenderProps<JsonRenderProps>) =
 
 const KV = ({ element }: ComponentRenderProps<JsonRenderProps>) => {
   const props = element.props;
-  const label = pickFirstString(props, ['label', 'key', 'name']);
-  const value = pickFirstString(props, ['value', 'text', 'amount']);
+  const label = pickFirstLabel(props, ['label', 'key', 'name']);
+  const value = pickFirstLabel(props, ['value', 'text', 'amount']);
   const highlight = toBool(props.highlight) || isHeadlineKey(label);
   if (!label && !value) return null;
   return (

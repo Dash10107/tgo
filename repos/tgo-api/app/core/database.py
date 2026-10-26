@@ -2,7 +2,9 @@
 
 from typing import AsyncGenerator, Generator
 
+from fastapi.exceptions import RequestValidationError
 from sqlalchemy import create_engine, event
+from starlette.exceptions import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
@@ -81,6 +83,10 @@ def get_db() -> Generator[Session, None, None]:
     try:
         logger.debug("Creating database session")
         yield db
+    except (HTTPException, RequestValidationError):
+        # Expected client errors raised by the endpoint, not DB failures
+        db.rollback()
+        raise
     except Exception as e:
         logger.error(f"Database session error: {e}")
         db.rollback()
@@ -101,6 +107,10 @@ async def get_async_db() -> AsyncGenerator[AsyncSession, None]:
         try:
             logger.debug("Creating async database session")
             yield session
+        except (HTTPException, RequestValidationError):
+            # Expected client errors raised by the endpoint, not DB failures
+            await session.rollback()
+            raise
         except Exception as e:
             logger.error(f"Async database session error: {e}")
             await session.rollback()

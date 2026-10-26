@@ -37,7 +37,7 @@ class ConditionNodeExecutor(BaseNodeExecutor):
             resolved_expr = context.resolve_template(expression)
             try:
                 # Use simple_eval instead of eval for safety
-                result = simple_eval(resolved_expr, names=context.data)
+                result = simple_eval(resolved_expr, names=context.get_eval_names())
             except Exception as e:
                 logger.error(f"Error evaluating expression '{resolved_expr}': {e}")
                 result = False

@@ -177,3 +177,146 @@ async def test_run_supervisor_agent_stream_omits_legacy_team_selectors(
     assert "team_id" not in payload
     assert "agent_ids" not in payload
     assert "config" not in payload
+
+
+def _stub_wukongim(monkeypatch) -> list[dict[str, object]]:
+    """Record every WuKongIM stream call (anchor message + stream events) in order."""
+
+    sent: list[dict[str, object]] = []
+    monkeypatch.setattr(
+        chat_service.wukongim_client,
+        "send_stream_message",
+        AsyncMock(side_effect=lambda **kwargs: sent.append({"event_type": "anchor", **kwargs})),
+    )
+    monkeypatch.setattr(
+        chat_service.wukongim_client,
+        "send_stream_event",
+        AsyncMock(side_effect=lambda **kwargs: sent.append(kwargs)),
+    )
+    return sent
+
+
+def _stub_ai_stream(monkeypatch, events: list[dict[str, object]]) -> None:
+    async def fake_stream(**_kwargs):
+        for event in events:
+            yield str(event["event_type"]), event
+
+    monkeypatch.setattr(chat_service.ai_client, "run_supervisor_agent_stream", fake_stream)
+
+
+async def _run_process() -> list[dict[str, object]]:
+    return [
+        event
+        async for event in chat_service.process_ai_stream_to_wukongim(
+            project_id="project-1",
+            user_id="user-1",
+            message="hello",
+            channel_id="channel-1",
+            channel_type=1,
+            client_msg_no="msg-1",
+            from_uid="agent-1-agent",
+        )
+    ]
+
+
+@pytest.mark.asyncio
+async def test_process_ai_stream_sends_fallback_when_run_has_no_content(monkeypatch) -> None:
+    """An empty AI run must still produce a reply instead of the thinking placeholder."""
+
+    sent = _stub_wukongim(monkeypatch)
+    _stub_ai_stream(
+        monkeypatch,
+        [
+            {"event_type": "agent_execution_started", "data": {}},
+            {"event_type": "agent_response_complete", "data": {"final_content": ""}},
+            {"event_type": "workflow_completed", "data": {}},
+        ],
+    )
+
+    events = await _run_process()
+
+    assert [event["event_type"] for event in sent] == [
+        "anchor",
+        "stream.delta",
+        "stream.close",
+        "stream.finish",
+    ]
+    assert sent[1]["payload"] == {"kind": "text", "delta": chat_service.AI_FALLBACK_REPLY}
+    chunk_events = [event for event in events if event["event_type"] == "agent_content_chunk"]
+    assert len(chunk_events) == 1
+
+
+@pytest.mark.asyncio
+async def test_process_ai_stream_replaces_failure_without_content_with_fallback(
+    monkeypatch,
+) -> None:
+    """A failed run with no content closes normally with the fallback reply."""
+
+    sent = _stub_wukongim(monkeypatch)
+    _stub_ai_stream(
+        monkeypatch,
+        [{"event_type": "workflow_failed", "data": {"error_message": "content filter"}}],
+    )
+
+    await _run_process()
+
+    # No anchor arrived from upstream, so the fallback creates one before streaming
+    assert [event["event_type"] for event in sent] == [
+        "anchor",
+        "stream.delta",
+        "stream.close",
+        "stream.finish",
+    ]
+
+
+@pytest.mark.asyncio
+async def test_process_ai_stream_keeps_real_content_and_closes_once(monkeypatch) -> None:
+    """Normal runs stream content untouched and close the stream a single time."""
+
+    sent = _stub_wukongim(monkeypatch)
+    _stub_ai_stream(
+        monkeypatch,
+        [
+            {"event_type": "agent_execution_started", "data": {}},
+            {"event_type": "agent_content_chunk", "data": {"content_chunk": "Hi there"}},
+            {"event_type": "agent_response_complete", "data": {}},
+            {"event_type": "workflow_completed", "data": {}},
+        ],
+    )
+
+    await _run_process()
+
+    assert [event["event_type"] for event in sent] == [
+        "anchor",
+        "stream.delta",
+        "stream.close",
+        "stream.finish",
+    ]
+    assert sent[1]["payload"] == {"kind": "text", "delta": "Hi there"}
+
+
+@pytest.mark.asyncio
+async def test_handle_ai_response_non_stream_returns_fallback_content(monkeypatch) -> None:
+    """Non-stream callers get the fallback reply as content for an empty run."""
+
+    _stub_wukongim(monkeypatch)
+    _stub_ai_stream(
+        monkeypatch,
+        [
+            {"event_type": "agent_execution_started", "data": {}},
+            {"event_type": "workflow_completed", "data": {}},
+        ],
+    )
+
+    result = await chat_service.handle_ai_response_non_stream(
+        project_id="project-1",
+        visitor_id="user-1",
+        message="hello",
+        channel_id="channel-1",
+        channel_type=1,
+        client_msg_no="msg-1",
+        from_uid="agent-1-agent",
+    )
+
+    assert result["success"] is True
+    assert result["content"] == chat_service.AI_FALLBACK_REPLY

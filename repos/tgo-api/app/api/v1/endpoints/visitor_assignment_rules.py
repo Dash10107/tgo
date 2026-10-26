@@ -20,6 +20,15 @@ logger = get_logger("endpoints.visitor_assignment_rules")
 router = APIRouter()
 
 
+def _default_weekdays() -> list[int]:
+    """Parse default weekdays from config (comma-separated string to list of ints)."""
+    return [
+        int(d.strip())
+        for d in settings.ASSIGNMENT_RULE_DEFAULT_WEEKDAYS.split(",")
+        if d.strip().isdigit()
+    ]
+
+
 @router.get("", response_model=VisitorAssignmentRuleResponse)
 async def get_visitor_assignment_rule(
     db: Session = Depends(get_db),
@@ -71,7 +80,7 @@ async def get_visitor_assignment_rule(
         effective_prompt=DEFAULT_ASSIGNMENT_PROMPT,
         llm_assignment_enabled=False,  # Default to disabled
         timezone=settings.ASSIGNMENT_RULE_DEFAULT_TIMEZONE,
-        service_weekdays=settings.ASSIGNMENT_RULE_DEFAULT_WEEKDAYS,
+        service_weekdays=_default_weekdays(),
         service_start_time=settings.ASSIGNMENT_RULE_DEFAULT_START_TIME,
         service_end_time=settings.ASSIGNMENT_RULE_DEFAULT_END_TIME,
         max_concurrent_chats=settings.ASSIGNMENT_RULE_DEFAULT_MAX_CONCURRENT_CHATS,
@@ -126,13 +135,8 @@ async def update_visitor_assignment_rule(
         rule.updated_at = datetime.utcnow()
         logger.info(f"Updated visitor assignment rule {rule.id}")
     else:
-        # Parse default weekdays from config if not provided
-        default_weekdays = [
-            int(d.strip()) 
-            for d in settings.ASSIGNMENT_RULE_DEFAULT_WEEKDAYS.split(",") 
-            if d.strip().isdigit()
-        ]
-        
+        default_weekdays = _default_weekdays()
+
         # Create new rule with config defaults
         rule = VisitorAssignmentRule(
             project_id=current_user.project_id,

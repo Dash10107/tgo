@@ -1685,7 +1685,7 @@
       "event_hint": "例如：user_registered",
       "variable_hint": "最终回复变量名",
       "template_hint": "您好，查询到的结果是：{{api_1.body}}",
-      "expression_hint": "{{variable}} === 'value'",
+      "expression_hint": "'{{variable}}' == 'value'",
       "raw_hint": "输入原生内容...",
       "api_hint": "https://api.example.com",
       "input_name": "名称",
@@ -3310,6 +3310,20 @@
         "memoryCleared": "记忆已清除，AI 将重新开始对话"
       },
       "aiThinking": "AI 正在思考...",
+
+      "thinking": {
+
+        "working": "正在思考...",
+
+        "searching": "正在查找答案...",
+
+        "weaving": "正在整理信息...",
+
+        "composing": "正在组织回复..."
+
+      },
+
+      "noResponse": "抱歉，我暂时无法回答这个问题。请换个方式提问，或请求转接人工客服。",
       "aiReply": "[AI 回复]"
     },
     "input": {

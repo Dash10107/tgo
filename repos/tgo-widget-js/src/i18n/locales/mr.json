@@ -22,6 +22,18 @@
     "typing": "टाइप करत आहे..."
   },
   "messageList": {
+
+    "thinking": {
+
+      "working": "विचार करत आहे...",
+
+      "searching": "उत्तरे शोधत आहे...",
+
+      "weaving": "माहिती जोडत आहे...",
+
+      "composing": "उत्तर लिहित आहे..."
+
+    },
     "loadingHistory": "लोड होत आहे...",
     "loadHistoryFailed": "संदेश इतिहास लोड करता आला नाही",
     "noMoreMessages": "आणखी संदेश नाहीत",

@@ -22,6 +22,18 @@
     "typing": "正在输入..."
   },
   "messageList": {
+
+    "thinking": {
+
+      "working": "正在思考...",
+
+      "searching": "正在查找答案...",
+
+      "weaving": "正在整理信息...",
+
+      "composing": "正在组织回复..."
+
+    },
     "loadingHistory": "加载中…",
     "loadHistoryFailed": "加载历史消息失败",
     "noMoreMessages": "没有更多消息",

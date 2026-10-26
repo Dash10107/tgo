@@ -101,7 +101,7 @@ async def stop_ai_provider_sync_task() -> None:
         _task.cancel()
         try:
             await _task
-        except Exception:
+        except (asyncio.CancelledError, Exception):
             pass
         _task = None
         logger.info("AIProvider periodic sync task stopped")

@@ -37,14 +37,17 @@ const MessageContent: React.FC<{
   streamError: boolean;
   streamErrorText: string;
   isStreamLoading: boolean;
+  isStreamEmpty: boolean;
+  emptyStreamText: string;
   isRichText: boolean;
   isImage: boolean;
   isFile: boolean;
   isJSONRender: boolean;
   onSendMessage?: (message: string) => void;
-}> = ({ message, isStaff, streamError, streamErrorText, isStreamLoading, isRichText, isImage, isFile, isJSONRender, onSendMessage }) => {
+}> = ({ message, isStaff, streamError, streamErrorText, isStreamLoading, isStreamEmpty, emptyStreamText, isRichText, isImage, isFile, isJSONRender, onSendMessage }) => {
   if (streamError) return <AIErrorMessage isStaff={isStaff} errorText={streamErrorText} />;
   if (isStreamLoading) return <LoadingMessage isStaff={isStaff} />;
+  if (isStreamEmpty) return <TextMessage message={{ ...message, content: emptyStreamText }} isStaff={isStaff} />;
   if (isJSONRender) return <JSONRenderMessage message={message} isStaff={isStaff} onSendMessage={onSendMessage} />;
   if (isRichText) return <RichTextMessage message={message} isStaff={isStaff} onSendMessage={onSendMessage} />;
   if (isImage) return <ImageMessage message={message} isStaff={isStaff} />;
@@ -135,6 +138,9 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, onSuggestionClick, o
   // Once end=1, the stream is complete regardless of end_reason
   const isStreamEnded = meta.stream_end === 1;
   const isStreamLoading = isStreamType && !meta.has_stream_data && !message.content?.trim() && !hasError && !isStreamEnded;
+  // Stream ended without any streamed content: show a friendly fallback instead of the anchor placeholder
+  const isStreamEmpty = isStreamType && isStreamEnded && !meta.has_stream_data && !isJSONRender && !hasError;
+  const emptyStreamText = t('chat.messages.noResponse', "Sorry, I couldn't put together an answer for that. Could you rephrase your question, or ask to talk with a human agent?");
 
   // Sender channel info - use fromUid as the sender's channel ID
   // This is different from message.channelId which is the conversation channel
@@ -219,6 +225,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, onSuggestionClick, o
             streamError={streamError}
             streamErrorText={getStreamErrorText()}
             isStreamLoading={isStreamLoading}
+            isStreamEmpty={isStreamEmpty}
+            emptyStreamText={emptyStreamText}
             isRichText={isRichText}
             isImage={isImage}
             isFile={isFile}
@@ -242,6 +250,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, onSuggestionClick, o
           streamError={streamError}
           streamErrorText={getStreamErrorText()}
           isStreamLoading={isStreamLoading}
+          isStreamEmpty={isStreamEmpty}
+          emptyStreamText={emptyStreamText}
           isRichText={isRichText}
           isImage={isImage}
           isFile={isFile}

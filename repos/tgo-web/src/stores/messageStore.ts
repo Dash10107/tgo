@@ -587,9 +587,13 @@ export const useMessageStore = create<MessageState>()(
             (s) => {
               const updatedMessages = s.messages.map((msg, idx) => {
                 if (idx === messageIndex) {
-                  const hasContent = Boolean(msg.content?.trim());
+                  // Content before the first chunk is the anchor placeholder ("AI is thinking..."),
+                  // so only streamed content counts as a real reply
+                  const streamStarted = msg.metadata?.stream_started === true;
+                  const hasContent = streamStarted && Boolean(msg.content?.trim());
                   return {
                     ...msg,
+                    content: streamStarted ? msg.content : '',
                     metadata: {
                       ...(msg.metadata ?? {}),
                       is_streaming: false,

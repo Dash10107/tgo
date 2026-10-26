@@ -102,7 +102,7 @@ async def stop_project_ai_config_sync_task() -> None:
         _task.cancel()
         try:
             await _task
-        except Exception:
+        except (asyncio.CancelledError, Exception):
             pass
         _task = None
         logger.info("ProjectAIConfig periodic sync task stopped")

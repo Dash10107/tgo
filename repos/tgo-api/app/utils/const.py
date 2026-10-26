@@ -9,6 +9,14 @@ SETUP_DEFAULT_AGENT_MODEL = "default"
 MEMBER_TYPE_STAFF = "staff"
 MEMBER_TYPE_VISITOR = "visitor"
 
+# Sent when the AI run ends without producing any reply (provider refusal,
+# content filter, runtime error), so the chat never stays on the thinking placeholder
+AI_FALLBACK_REPLY = (
+    "Sorry, I couldn't come up with an answer to that. I'm here to help with questions "
+    "about our products and services, so feel free to rephrase or ask something else, "
+    "or ask for a human agent if you need more help."
+)
+
 
 class MessageType(IntEnum):
     """WuKongIM message type constants."""

@@ -1362,7 +1362,7 @@
       "event_hint": "उदा. user_registered",
       "variable_hint": "final_response",
       "template_hint": "नमस्कार, निकाल आहे: {{api_1.body}}",
-      "expression_hint": "{{variable}} === 'value'",
+      "expression_hint": "'{{variable}}' == 'value'",
       "raw_hint": "कच्चा मजकूर प्रविष्ट करा...",
       "api_hint": "https://api.example.com",
       "input_name": "नाव",
@@ -2480,6 +2480,20 @@
         "memoryCleared": "मेमरी साफ केली, AI संभाषण पुन्हा सुरू करेल"
       },
       "aiThinking": "AI विचार करत आहे...",
+
+      "thinking": {
+
+        "working": "विचार करत आहे...",
+
+        "searching": "उत्तरे शोधत आहे...",
+
+        "weaving": "माहिती जोडत आहे...",
+
+        "composing": "उत्तर लिहित आहे..."
+
+      },
+
+      "noResponse": "क्षमस्व, मी याचे उत्तर तयार करू शकलो नाही. कृपया तुमचा प्रश्न वेगळ्या शब्दांत विचारा, किंवा मानवी एजंटशी बोलण्याची विनंती करा.",
       "aiReply": "[AI उत्तर]"
     },
     "input": {

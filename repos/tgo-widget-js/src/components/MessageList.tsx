@@ -6,9 +6,10 @@ import { formatMessageTime } from '../utils/time'
 import { useChatStore } from '../store'
 import { AlertCircle, RotateCw, Trash2 } from 'lucide-react'
 import { ReasonCode } from 'easyjssdk'
-import { Bubble, Cursor, AILoadingDots, TextMessage, ImageMessage, FileMessage, MixedMessage, MixedImages, SystemMessage } from './messages'
+import { Bubble, Cursor, TextMessage, ImageMessage, FileMessage, MixedMessage, MixedImages, SystemMessage } from './messages'
 import { useTranslation } from 'react-i18next'
 import JSONRenderMessage from './messages/JSONRenderMessage'
+import AIThinking from './messages/AIThinking'
 
 
 
@@ -221,7 +222,7 @@ export default function MessageList({ messages }: { messages: ChatMessage[] }){
               ) : payload.type === 100 ? (
                 /* AI Loading - show only when no streamData yet */
                 <Bubble self={false}>
-                  <AILoadingDots><span /><span /><span /></AILoadingDots>
+                  <AIThinking />
                 </Bubble>
               ) : (
                 <Bubble self={m.role==='user'}>

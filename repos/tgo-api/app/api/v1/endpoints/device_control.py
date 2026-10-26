@@ -260,20 +260,14 @@ async def list_connected_devices(
     commands from the AI agent.
     """
     try:
-        result = await device_control_client.list_connected_devices()
-        
-        # Filter devices by project_id
-        project_id = str(current_user.project_id)
-        devices = await device_control_client.list_devices(project_id=project_id)
-        device_ids = {d["id"] for d in devices.get("devices", [])}
-        
-        # Only return connected devices that belong to the user's project
+        result = await device_control_client.list_connected_devices(
+            project_id=str(current_user.project_id),
+        )
         connected = result.get("devices", [])
-        filtered = [d for d in connected if d.get("device_id") in device_ids]
-        
+
         return {
-            "devices": filtered,
-            "count": len(filtered),
+            "devices": connected,
+            "count": len(connected),
         }
     except Exception as e:
         _handle_service_error(e, "list_connected_devices")

@@ -22,6 +22,18 @@
     "typing": "is typing..."
   },
   "messageList": {
+
+    "thinking": {
+
+      "working": "Thinking...",
+
+      "searching": "Searching for answers...",
+
+      "weaving": "Connecting the dots...",
+
+      "composing": "Composing a reply..."
+
+    },
     "loadingHistory": "Loading...",
     "loadHistoryFailed": "Failed to load message history",
     "noMoreMessages": "No more messages",

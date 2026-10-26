@@ -39,8 +39,8 @@ class WuKongIMClientTests(unittest.IsolatedAsyncioTestCase):
                         "channel_type": 251,
                         "timestamp": 1777018628,
                         "payload": (
-                            "ImV5SjBlWEJsSWpveExDSmpiMjUwWlc1MElqb2k1"
-                            "TDJnNWFXOUluMD0i"
+                            "ImV5SjBlWEJsSWpveExDSmpiMjUwWlc1MElqb2lT"
+                            "R1ZzYkc4aWZRPT0i"
                         ),
                     }
                 ],

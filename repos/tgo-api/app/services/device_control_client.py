@@ -191,11 +191,11 @@ class DeviceControlClient:
         device_id: str,
     ) -> Optional[Dict[str, Any]]:
         """Get available tools from a connected device."""
-        return await self._request("GET", f"/v1/agent/devices/{device_id}/tools")
+        return await self._request("GET", f"/v1/mcp/tools/{device_id}")
 
-    async def list_connected_devices(self) -> Dict[str, Any]:
-        """List all connected devices available for agent control."""
-        return await self._request("GET", "/v1/agent/devices")
+    async def list_connected_devices(self, project_id: str) -> Dict[str, Any]:
+        """List the project's connected (online) devices available for agent control."""
+        return await self.list_devices(project_id=project_id, status="online", limit=100)
 
 
 # Global singleton instance

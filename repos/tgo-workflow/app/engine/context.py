@@ -26,6 +26,18 @@ class ExecutionContext:
         for key, value in outputs.items():
             self.set_variable(reference_key, key, value)
 
+    def get_eval_names(self) -> Dict[str, Any]:
+        """
+        Names for expression evaluation: flat keys plus per-node dicts,
+        so expressions can use `reference_key.var_name` or `reference_key['var_name']`
+        """
+        nodes: Dict[str, Dict[str, Any]] = {}
+        for path, value in self.data.items():
+            reference_key, sep, var_name = path.partition(".")
+            if sep:
+                nodes.setdefault(reference_key, {})[var_name] = value
+        return {**self.data, **nodes}
+
     def resolve_template(self, template: str) -> str:
         """
         Resolve {{reference_key.var_name}} in a string

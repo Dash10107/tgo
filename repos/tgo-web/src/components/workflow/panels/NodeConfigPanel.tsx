@@ -874,7 +874,7 @@ const ConditionNodeConfig: React.FC<{
             nodeId={nodeId}
             nodes={nodes}
             edges={edges}
-            placeholder="{{variable}} === 'value'"
+            placeholder="'{{variable}}' == 'value'"
             inputClassName="font-mono"
           />
         </div>

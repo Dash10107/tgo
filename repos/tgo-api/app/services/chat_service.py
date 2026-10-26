@@ -29,6 +29,7 @@ from app.services.wukongim_client import wukongim_client
 from app.services.ai_client import AIServiceClient
 from app.utils.encoding import build_project_staff_channel_id
 from app.utils.const import (
+    AI_FALLBACK_REPLY,
     CHANNEL_TYPE_PROJECT_STAFF,
     CHANNEL_TYPE_CUSTOMER_SERVICE,
     MessageType,
@@ -146,6 +147,21 @@ def authenticate_staff_or_platform(
 # AI Integration Logic
 # ============================================================================
 
+def extract_chunk_text(event_data: Dict[str, Any]) -> str:
+    """Extract the text of an ``agent_content_chunk`` event (tolerates nested payloads)."""
+    data = event_data.get("data") or {}
+    chunk_text = data.get("content_chunk") or data.get("content") or data.get("text")
+    if not chunk_text and isinstance(data, dict):
+        inner_data = data.get("data", {})
+        if isinstance(inner_data, dict):
+            chunk_text = (
+                inner_data.get("content_chunk")
+                or inner_data.get("content")
+                or inner_data.get("text")
+            )
+    return str(chunk_text) if chunk_text is not None else ""
+
+
 async def forward_ai_event_to_wukongim(
     event_type: str,
     event_data: Dict[str, Any],
@@ -177,21 +193,8 @@ async def forward_ai_event_to_wukongim(
             )
 
         elif event_type == "agent_content_chunk":
-            # Robust extraction of content from data
-            chunk_text = data.get("content_chunk") or data.get("content") or data.get("text")
-            if not chunk_text and isinstance(data, dict):
-                inner_data = data.get("data", {})
-                if isinstance(inner_data, dict):
-                    chunk_text = (
-                        inner_data.get("content_chunk")
-                        or inner_data.get("content")
-                        or inner_data.get("text")
-                    )
-
-            if chunk_text is not None:
-                chunk_str = str(chunk_text)
-                if not chunk_str:
-                    return None
+            chunk_str = extract_chunk_text(event_data)
+            if chunk_str:
                 await wukongim_client.send_stream_event(
                     channel_id=channel_id,
                     channel_type=channel_type,
@@ -243,6 +246,39 @@ async def forward_ai_event_to_wukongim(
     return None
 
 
+async def _send_fallback_reply(
+    channel_id: str,
+    channel_type: int,
+    client_msg_no: str,
+    from_uid: str,
+    anchor_sent: bool,
+) -> Dict[str, Any]:
+    """Stream the fallback reply into the message and return it as a content-chunk event."""
+    if not anchor_sent:
+        # The run failed before agent_execution_started, so there is no message to stream into yet
+        await forward_ai_event_to_wukongim(
+            event_type="agent_execution_started",
+            event_data={},
+            channel_id=channel_id,
+            channel_type=channel_type,
+            client_msg_no=client_msg_no,
+            from_uid=from_uid,
+        )
+    fallback_event: Dict[str, Any] = {
+        "event_type": "agent_content_chunk",
+        "data": {"content_chunk": AI_FALLBACK_REPLY},
+    }
+    await forward_ai_event_to_wukongim(
+        event_type="agent_content_chunk",
+        event_data=fallback_event,
+        channel_id=channel_id,
+        channel_type=channel_type,
+        client_msg_no=client_msg_no,
+        from_uid=from_uid,
+    )
+    return {"event_type": "agent_content_chunk", "data": fallback_event}
+
+
 async def process_ai_stream_to_wukongim(
     project_id: str,
     user_id: str,
@@ -256,10 +292,16 @@ async def process_ai_stream_to_wukongim(
     expected_output: Optional[str] = None,
     agent_id: Optional[str] = None,
 ):
-    """Process AI stream and forward events to WuKongIM, while yielding events for SSE."""
+    """Process AI stream and forward events to WuKongIM, while yielding events for SSE.
+
+    If the AI run finishes without producing any content (provider refusal,
+    content filter, agent error), a fallback reply is streamed so the message
+    never stays on the "AI is thinking..." placeholder.
+    """
     full_content = ""
     stream_terminated = False
-    
+    anchor_sent = False
+
     # 1) Notify acceptance immediately (caller may already have done this, but here for consistency)
     # yield {"event_type": "accepted", "visitor_id": visitor_id, "client_msg_no": client_msg_no}
 
@@ -278,6 +320,35 @@ async def process_ai_stream_to_wukongim(
             event_type = data.get("event_type") if isinstance(data, dict) else None
             if not event_type:
                 event_type = stream_event_type
+            if event_type == "agent_execution_started":
+                anchor_sent = True
+
+            if event_type in _TERMINAL_AI_EVENTS:
+                # agent_response_complete and workflow_completed both arrive; close only once
+                if stream_terminated:
+                    yield {"event_type": event_type, "data": data}
+                    continue
+                stream_terminated = True
+
+                if not full_content.strip():
+                    logger.warning(f"AI run ended ({event_type}) without content; sending fallback reply")
+                    yield await _send_fallback_reply(
+                        channel_id, channel_type, client_msg_no, from_uid, anchor_sent
+                    )
+                    full_content = AI_FALLBACK_REPLY
+                    if event_type == "workflow_failed":
+                        # The user already got a reply, so close the stream normally
+                        await forward_ai_event_to_wukongim(
+                            event_type="workflow_completed",
+                            event_data={},
+                            channel_id=channel_id,
+                            channel_type=channel_type,
+                            client_msg_no=client_msg_no,
+                            from_uid=from_uid,
+                        )
+                        yield {"event_type": event_type, "data": data}
+                        continue
+
             # Forward to WuKongIM
             content_chunk = await forward_ai_event_to_wukongim(
                 event_type=event_type,
@@ -289,8 +360,6 @@ async def process_ai_stream_to_wukongim(
             )
             if content_chunk:
                 full_content += content_chunk
-            if event_type in _TERMINAL_AI_EVENTS:
-                stream_terminated = True
 
             # Yield for SSE
             yield {"event_type": event_type, "data": data}
@@ -299,6 +368,10 @@ async def process_ai_stream_to_wukongim(
         # WuKongIM stream so clients flush buffered text instead of hanging.
         if not stream_terminated:
             logger.warning("AI stream ended without terminal event; closing stream")
+            if not full_content.strip():
+                yield await _send_fallback_reply(
+                    channel_id, channel_type, client_msg_no, from_uid, anchor_sent
+                )
             await forward_ai_event_to_wukongim(
                 event_type="workflow_completed",
                 event_data={},
@@ -311,16 +384,16 @@ async def process_ai_stream_to_wukongim(
     except Exception as e:
         logger.error(f"Error in AI stream processing: {e}")
         error_data = {"error_message": str(e)}
-        await forward_ai_event_to_wukongim(
-            event_type="workflow_failed",
-            event_data=error_data,
-            channel_id=channel_id,
-            channel_type=channel_type,
-            client_msg_no=client_msg_no,
-            from_uid=from_uid,
-        )
+        if not stream_terminated:
+            await forward_ai_event_to_wukongim(
+                event_type="workflow_failed",
+                event_data=error_data,
+                channel_id=channel_id,
+                channel_type=channel_type,
+                client_msg_no=client_msg_no,
+                from_uid=from_uid,
+            )
         yield {"event_type": "workflow_failed", "data": error_data}
-    
 
 
 async def handle_ai_response_non_stream(
@@ -338,47 +411,33 @@ async def handle_ai_response_non_stream(
 ) -> Dict[str, Any]:
     """Handle AI completion in a non-streaming way, while still forwarding to WuKongIM."""
     full_content = ""
-    last_data = {}
-    
-    try:
-        async for stream_event_type, data in ai_client.run_supervisor_agent_stream(
-            project_id=project_id,
-            agent_id=agent_id,
-            user_id=visitor_id,
-            message=message,
-            session_id=session_id,
-            enable_memory=True,
-            system_message=system_message,
-            expected_output=expected_output,
-        ):
-            event_type = data.get("event_type") if isinstance(data, dict) else None
-            if not event_type:
-                event_type = stream_event_type
-            content_chunk = await forward_ai_event_to_wukongim(
-                event_type=event_type,
-                event_data=data,
-                channel_id=channel_id,
-                channel_type=channel_type,
-                client_msg_no=client_msg_no,
-                from_uid=from_uid,
-            )
-            if content_chunk:
-                full_content += content_chunk
-            last_data = data
-            
-        return {"success": True, "content": full_content, "data": last_data}
-    except Exception as e:
-        logger.error(f"Error in non-stream AI processing: {e}")
-        error_data = {"error_message": str(e)}
-        await forward_ai_event_to_wukongim(
-            event_type="workflow_failed",
-            event_data=error_data,
-            channel_id=channel_id,
-            channel_type=channel_type,
-            client_msg_no=client_msg_no,
-            from_uid=from_uid,
-        )
-        return {"success": False, "error": str(e)}
+    last_data: Dict[str, Any] = {}
+    error: Optional[str] = None
+
+    async for event_payload in process_ai_stream_to_wukongim(
+        project_id=project_id,
+        user_id=visitor_id,
+        message=message,
+        channel_id=channel_id,
+        channel_type=channel_type,
+        client_msg_no=client_msg_no,
+        from_uid=from_uid,
+        session_id=session_id,
+        system_message=system_message,
+        expected_output=expected_output,
+        agent_id=agent_id,
+    ):
+        event_type = event_payload.get("event_type")
+        data = event_payload.get("data") or {}
+        if event_type == "agent_content_chunk":
+            full_content += extract_chunk_text(data)
+        elif event_type == "workflow_failed" and not full_content:
+            error = data.get("error_message") or "AI processing failed"
+        last_data = data
+
+    if error is not None:
+        return {"success": False, "error": error}
+    return {"success": True, "content": full_content, "data": last_data}
 
 
 async def run_background_ai_interaction(
