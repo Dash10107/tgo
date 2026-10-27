@@ -3399,7 +3399,9 @@
       },
       "noResponse": "抱歉，我暂时无法回答这个问题。请换个方式提问，或请求转接人工客服。",
       "aiReply": "[AI 回复]",
-      "aiBadge": "AI"
+      "aiBadge": "AI",
+      "copyCode": "复制",
+      "copiedCode": "已复制"
     },
     "input": {
       "placeholder": "输入消息...",

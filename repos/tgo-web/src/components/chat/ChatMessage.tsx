@@ -247,22 +247,27 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, groupPosition = 'sin
   // Visitor/AI message (left side)
   if (!isOwnMessage) {
     return (
-      <div className="tgo-msg tgo-msg-left flex w-full items-end gap-3" data-pos={groupPosition}>
+      <div
+        className="tgo-msg tgo-msg-left flex w-full items-start gap-3"
+        data-pos={groupPosition}
+        data-ai={isAISender ? 'true' : undefined}
+      >
         <div className="w-9 shrink-0">
-          {endsGroup && (
+          {startsGroup && (
             <ChatAvatar
               displayName={displayName}
               displayAvatar={displayAvatar}
               colorSeed={colorSeedChannelId}
               sizePx={36}
-              wrapperClassName="relative flex-shrink-0 rounded-full ring-4 ring-white dark:ring-gray-950"
+              wrapperClassName="tgo-msg-avatar relative flex-shrink-0 rounded-full"
             />
           )}
         </div>
-        <div className="flex min-w-0 max-w-[min(80%,680px)] flex-col items-start">
+        {/* AI replies get a wide reading column; visitor chatter stays bubble-sized */}
+        <div className={`flex min-w-0 flex-col items-start ${isAISender ? 'w-full max-w-[50rem]' : 'max-w-[min(85%,42rem)]'}`}>
           {startsGroup && (
-            <div className="mb-1.5 flex items-center gap-1.5 pl-1 text-xs">
-              <span className="font-semibold text-gray-800 dark:text-gray-200">{displayName}</span>
+            <div className="mb-1.5 flex h-9 min-w-0 items-center gap-1.5 pl-1 text-xs">
+              <span className="truncate font-semibold text-gray-900 dark:text-gray-100">{displayName}</span>
               {isAISender && (
                 <span className="tgo-ai-chip">
                   <Sparkles className="h-2.5 w-2.5" />
@@ -270,17 +275,17 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, groupPosition = 'sin
                 </span>
               )}
               {getPlatformIcon()}
+              {timeLabel && (
+                <span className="ml-1 shrink-0 text-[11px] tabular-nums text-gray-400 dark:text-gray-500">{timeLabel}</span>
+              )}
             </div>
           )}
           <div className="flex max-w-full items-end gap-2">
             {content}
-            {!endsGroup && timeLabel && (
+            {!startsGroup && timeLabel && (
               <span className="tgo-msg-time mb-1 shrink-0 text-[10px] tabular-nums text-gray-400 dark:text-gray-500">{timeLabel}</span>
             )}
           </div>
-          {endsGroup && timeLabel && (
-            <span className="mt-1.5 pl-1 text-[11px] tabular-nums text-gray-400 dark:text-gray-500">{timeLabel}</span>
-          )}
           <AIInfoCard aiInfo={message.aiInfo} />
           <ReplySuggestions suggestions={(message as any).suggestions} onSuggestionClick={onSuggestionClick} />
         </div>
@@ -291,7 +296,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, groupPosition = 'sin
   // Own message (right side)
   return (
     <div className="tgo-msg tgo-msg-right flex w-full justify-end" data-pos={groupPosition}>
-      <div className="flex min-w-0 max-w-[min(80%,680px)] flex-col items-end">
+      <div className="flex min-w-0 max-w-[min(78%,40rem)] flex-col items-end">
         <div className="flex max-w-full flex-row-reverse items-end gap-2">
           {content}
           {hasSendError && (

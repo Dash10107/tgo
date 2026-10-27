@@ -3,7 +3,7 @@
  * Handles WuKongIM conversation synchronization and messaging API endpoints
  */
 
-import { createMixedStreamParser } from '@json-render/core';
+import { createBlankLinePreservingParser } from '@/utils/mixedStreamParser';
 import { BaseApiService } from './base/BaseApiService';
 
 import { CHANNEL_TYPE, DEFAULT_CHANNEL_TYPE, MESSAGE_SENDER_TYPE, PlatformType, STAFF_UID_SUFFIX } from '@/constants';
@@ -543,7 +543,7 @@ export class WuKongIMUtils {
     if (hasStreamData && content) {
       try {
         const parts: Array<{ type: string; text?: string; data?: unknown }> = [];
-        const parser = createMixedStreamParser({
+        const parser = createBlankLinePreservingParser({
           onText: (text) => parts.push({ type: 'text', text: `${text}\n` }),
           onPatch: (patch) => parts.push({ type: 'data-spec', data: { type: 'patch', patch } }),
         });

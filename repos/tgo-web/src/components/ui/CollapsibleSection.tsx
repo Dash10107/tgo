@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, GripVertical } from 'lucide-react';
+import { ChevronDown, GripVertical } from 'lucide-react';
 
 interface CollapsibleSectionProps {
   title: string;
@@ -52,8 +52,8 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
   };
 
   return (
-    <div 
-      className={`space-y-2.5 ${className}`}
+    <div
+      className={`tgo-vcard ${className}`}
       draggable={draggable && isHandlePressed}
       onDragStart={onDragStart}
       onDragEnd={(e) => {
@@ -64,7 +64,7 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
       onDrop={onDrop}
     >
       <div
-        className={`flex items-center justify-between cursor-pointer group select-none py-1 ${headerClassName}`}
+        className={`flex items-center justify-between gap-2 cursor-pointer group select-none px-3.5 py-3 ${headerClassName}`}
         onClick={handleToggle}
         onMouseDown={(e) => {
           // Dragging is only allowed from the handle or the title area
@@ -75,28 +75,30 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
         }}
         onMouseUp={() => setIsHandlePressed(false)}
       >
-        <div className="flex items-center space-x-2 flex-1 min-w-0">
+        <div className="flex items-center gap-2.5 flex-1 min-w-0">
           {draggable && (
-            <div 
-              className="drag-handle text-gray-300 dark:text-gray-600 hover:text-gray-500 dark:hover:text-gray-400 cursor-grab active:cursor-grabbing p-0.5 -ml-1 flex-shrink-0 transition-colors"
+            <div
+              className="drag-handle -ml-2 -mr-1.5 flex-shrink-0 cursor-grab p-0.5 text-gray-300 opacity-0 transition-opacity group-hover:opacity-100 hover:text-gray-500 active:cursor-grabbing dark:text-gray-600 dark:hover:text-gray-400"
               onClick={(e) => e.stopPropagation()} // Prevent collapse when clicking handle
             >
               <GripVertical size={14} />
             </div>
           )}
-          {icon && <span className="text-gray-400 dark:text-gray-500 flex-shrink-0">{icon}</span>}
-          <h4 className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest truncate">
+          {icon && <span className="tgo-vcard-icon">{icon}</span>}
+          <h4 className="truncate text-[13px] font-semibold tracking-tight text-gray-900 dark:text-gray-100">
             {title}
           </h4>
-          <span className="text-gray-300 group-hover:text-gray-500 dark:text-gray-600 dark:group-hover:text-gray-400 transition-colors flex-shrink-0">
-            {isExpanded ? <ChevronUp size={12} strokeWidth={2.5} /> : <ChevronDown size={12} strokeWidth={2.5} />}
-          </span>
         </div>
         {rightContent}
+        <span
+          className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-gray-400 transition-all duration-300 group-hover:bg-gray-100 group-hover:text-gray-700 dark:text-gray-500 dark:group-hover:bg-gray-800 dark:group-hover:text-gray-200 ${isExpanded ? '' : '-rotate-90'}`}
+        >
+          <ChevronDown size={14} strokeWidth={2.25} />
+        </span>
       </div>
       {isExpanded && (
-        <div 
-          className="animate-in fade-in slide-in-from-top-1 duration-200"
+        <div
+          className="animate-in fade-in slide-in-from-top-1 px-3.5 pb-3.5"
           onMouseDown={() => setIsHandlePressed(false)} // Force-disable dragging when the mouse is pressed in the content area
         >
           {children}

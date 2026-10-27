@@ -44,6 +44,16 @@ const VisitorManagement: React.FC = () => {
     setSelectedVisitor(null);
   }, []);
 
+  // Esc closes the detail drawer
+  useEffect(() => {
+    if (!selectedVisitor) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSelectedVisitor(null);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [selectedVisitor]);
+
   // Callback when visitor data is updated in the panel
   const handleVisitorUpdated = useCallback(async (visitorId: string) => {
     // Refresh the list data
@@ -68,11 +78,11 @@ const VisitorManagement: React.FC = () => {
         /* Visitor Detail Drawer - Using shared VisitorDetailPanel */
         selectedVisitor && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-end bg-black/20 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-stretch justify-end bg-black/30 p-0 sm:p-3"
             onClick={handleCloseDetail}
           >
             <div
-              className="h-full w-full max-w-md shadow-2xl animate-in slide-in-from-right duration-300"
+              className="tgo-drawer h-full w-full max-w-[440px]"
               onClick={(e) => e.stopPropagation()}
             >
               <VisitorDetailPanel

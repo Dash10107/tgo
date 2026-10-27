@@ -54,7 +54,7 @@ const TextMessage: React.FC<MessageComponentProps> = ({ message, isStaff, onSend
 
   if (isStaff) {
     return (
-      <div className="inline-block tgo-bubble tgo-bubble-out overflow-hidden">
+      <div className="inline-block min-w-0 max-w-full tgo-bubble tgo-bubble-out overflow-hidden">
         {shouldRenderMarkdown ? (
           <>
             <MarkdownContent content={textContent} className="text-sm markdown-on-accent" onSendMessage={onSendMessage} />
@@ -78,7 +78,7 @@ const TextMessage: React.FC<MessageComponentProps> = ({ message, isStaff, onSend
   }
 
   return (
-    <div className="inline-block tgo-bubble tgo-bubble-in overflow-hidden">
+    <div className="inline-block min-w-0 max-w-full tgo-bubble tgo-bubble-in overflow-hidden">
       {shouldRenderMarkdown ? (
         <>
           <MarkdownContent content={textContent} className="text-sm dark:text-gray-200" onSendMessage={onSendMessage} />

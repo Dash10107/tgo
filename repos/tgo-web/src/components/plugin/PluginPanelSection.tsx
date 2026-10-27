@@ -90,6 +90,7 @@ const PluginPanelSection: React.FC<PluginPanelSectionProps> = ({
   return (
     <CollapsibleSection
       title={t('plugin.ui.title', 'Extensions')}
+      icon={<Puzzle size={14} />}
       defaultExpanded={true}
       expanded={expanded}
       onToggle={onToggle}

@@ -2593,7 +2593,9 @@
       },
       "noResponse": "Sorry, I couldn’t put together an answer for that. Could you rephrase your question, or ask to talk with a human agent?",
       "aiReply": "[AI Reply]",
-      "aiBadge": "AI"
+      "aiBadge": "AI",
+      "copyCode": "Copy",
+      "copiedCode": "Copied"
     },
     "input": {
       "placeholder": "Type a message...",
