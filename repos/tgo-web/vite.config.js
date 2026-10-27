@@ -41,6 +41,14 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
+          // Landing page: leave it (and three / R3F / GSAP / Lenis, which only
+          // it imports) to Rollup's dynamic-import splitting so none of it
+          // ends up in the shared app chunks below.
+          if (id.includes('/src/components/landing/') ||
+              id.includes('/src/pages/LandingPage')) {
+            return undefined;
+          }
+
           // React core libraries + react-i18next (must be together)
           if (id.includes('node_modules/react/') ||
               id.includes('node_modules/react-dom/') ||

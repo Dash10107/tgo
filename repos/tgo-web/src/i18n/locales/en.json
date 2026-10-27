@@ -4694,5 +4694,90 @@
       "light": "Switch to light mode",
       "dark": "Switch to dark mode"
     }
+  },
+  "landing": {
+    "meta": {
+      "title": "Pelatis — AI customer support, resolved"
+    },
+    "skip": "Skip to content",
+    "header": {
+      "navLabel": "Primary",
+      "home": "Pelatis — back to top"
+    },
+    "cta": {
+      "primary": "Get started",
+      "secondary": "Sign in"
+    },
+    "chapters": {
+      "intro": "Intro",
+      "workspace": "One workspace",
+      "resolution": "How it resolves",
+      "principle": "Principle",
+      "begin": "Begin"
+    },
+    "hero": {
+      "kicker": "Pelatis · AI customer support platform",
+      "titleLine1": "Complexity,",
+      "titleLine2": "resolved.",
+      "description": "Pelatis brings every customer conversation into one intelligent system — AI agents grounded in your knowledge, connected to your tools, with your team always in the loop.",
+      "scrollHint": "Scroll to explore"
+    },
+    "converge": {
+      "kicker": "One workspace",
+      "titleLine1": "Every conversation.",
+      "titleLine2": "One intelligence.",
+      "description": "Your website widget, WeChat and connected platforms meet in a single workspace, where AI agents and your team work side by side.",
+      "after": "Into open space"
+    },
+    "story": {
+      "kicker": "How it resolves",
+      "titleLine1": "From first message",
+      "titleLine2": "to resolution.",
+      "stages": {
+        "arrive": {
+          "label": "Arrive",
+          "title": "Conversations arrive.",
+          "body": "Messages from your website widget, WeChat and connected platforms land in one unified inbox."
+        },
+        "understand": {
+          "label": "Understand",
+          "title": "Intent, understood.",
+          "body": "Agents read the conversation and its history, then search your knowledge bases — documents, Q&A pairs and websites — for grounded answers."
+        },
+        "coordinate": {
+          "label": "Coordinate",
+          "title": "Agents coordinate.",
+          "body": "Specialized agents work together, calling MCP tools and plugins to look things up and take action."
+        },
+        "execute": {
+          "label": "Execute",
+          "title": "Workflows execute.",
+          "body": "Visual workflows turn multi-step processes into repeatable, dependable automation."
+        },
+        "resolve": {
+          "label": "Resolve",
+          "title": "Resolution, delivered.",
+          "body": "Replies stream back in real time. When a person is needed, the conversation passes to your team with its full context."
+        }
+      }
+    },
+    "quote": {
+      "kicker": "Principle",
+      "line1": "Customers should never see the machinery.",
+      "line2": "Only the answer."
+    },
+    "finale": {
+      "kicker": "Begin",
+      "titleLine1": "Support,",
+      "titleLine2": "without the chaos.",
+      "description": "Create your workspace, connect your channels and let your agents start resolving — with your team in the loop from day one.",
+      "primary": "Create your workspace"
+    },
+    "footer": {
+      "tagline": "AI customer support platform",
+      "navLabel": "Footer",
+      "createAccount": "Create account",
+      "copyright": "© {{year}} Pelatis. All rights reserved."
+    }
   }
 }

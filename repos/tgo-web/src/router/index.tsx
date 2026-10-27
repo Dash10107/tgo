@@ -53,6 +53,14 @@ import { saasRoutes, saasPublicRoutes } from 'saas-routes';
  * Router configuration for the application
  */
 export const router = createBrowserRouter([
+  // Public marketing landing page – outside RootLayout so it never waits on
+  // the backend setup check, and lazy-loaded so the 3D stack stays out of the
+  // main app bundle.
+  {
+    path: '/landing',
+    lazy: async () => ({ Component: (await import('../pages/LandingPage')).default }),
+    hydrateFallbackElement: <div style={{ minHeight: '100vh', background: '#050506' }} />
+  },
   {
     path: '/',
     element: <RootLayout />,
