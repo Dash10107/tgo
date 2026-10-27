@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
-import { User, AlertCircle, Loader2, X } from 'lucide-react';
+import { User, AlertCircle, Loader2, X, Tag as TagIcon } from 'lucide-react';
 import TagManager from '../ui/TagManager';
 import CollapsibleSection from '../ui/CollapsibleSection';
 import VisitorHeader from './VisitorHeader';
@@ -279,8 +279,8 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
   // Derive AI insights from channel extra
   const aiInsights = useMemo(() => {
     const extra = channelInfo?.extra as ChannelVisitorExtra | undefined;
-    return extra?.ai_insights ?? null;
-  }, [channelInfo]);
+    return extra?.ai_insights ?? visitorData?.ai_insights ?? null;
+  }, [channelInfo, visitorData]);
 
   // Channel mode: get data from channelStore
   useEffect(() => {
@@ -931,12 +931,12 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
   const widthClass = hasExternalWidth ? '' : 'w-72';
 
   const containerClasses = variant === 'drawer'
-    ? `w-full h-full bg-white dark:bg-gray-800 flex flex-col ${className}`
-    : `${widthClass} bg-white dark:bg-gray-900 flex flex-col shrink-0 font-sans antialiased ${className}`;
+    ? `tgo-vpanel w-full h-full flex flex-col overflow-hidden ${className}`
+    : `tgo-vpanel ${widthClass} flex flex-col shrink-0 overflow-hidden font-sans antialiased ${className}`;
 
   const emptyContainerClasses = variant === 'drawer'
-    ? `w-full h-full bg-white dark:bg-gray-800 flex items-center justify-center ${className}`
-    : `${widthClass} bg-white dark:bg-gray-900 flex items-center justify-center shrink-0 font-sans antialiased ${className}`;
+    ? `tgo-vpanel w-full h-full flex items-center justify-center ${className}`
+    : `tgo-vpanel ${widthClass} flex items-center justify-center shrink-0 font-sans antialiased ${className}`;
 
   // Render the empty or error state
   if (!visitor) {
@@ -945,7 +945,9 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
         <div className="text-center text-gray-500 dark:text-gray-400 px-4">
           {isLoading ? (
             <>
-              <Loader2 size={48} className="mx-auto mb-4 text-gray-300 dark:text-gray-600 animate-spin" />
+              <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-acid-100 text-acid-700 dark:bg-acid-400/10 dark:text-acid-300">
+                <Loader2 size={24} className="animate-spin" />
+              </span>
               <p className="text-sm leading-5">{t('visitor.ui.loading', 'Loading visitor information...')}</p>
             </>
           ) : loadError ? (
@@ -955,14 +957,16 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
               <p className="text-xs text-gray-400 dark:text-gray-500 mb-4">{loadError}</p>
               <button
                 onClick={() => window.location.reload()}
-                className="px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors"
+                className="tgo-pill !h-8 !px-4 !text-xs"
               >
                 {t('common.retry', 'Retry')}
               </button>
             </>
           ) : (
             <>
-              <User size={48} className="mx-auto mb-4 text-gray-300 dark:text-gray-600" />
+              <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500">
+                <User size={24} />
+              </span>
               <p className="text-sm leading-5">{t('visitor.ui.noInfo', 'No visitor information')}</p>
             </>
           )}
@@ -977,16 +981,16 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
   return (
     <div className={containerClasses} style={style}>
       {/* Panel Header */}
-      <div className="px-5 pt-5 pb-4 border-b border-gray-100 dark:border-gray-800 sticky top-0 bg-white/85 dark:bg-gray-900/85 backdrop-blur-lg z-10">
+      <div className="tgo-vhero relative z-10 shrink-0 px-5 pb-5 pt-7">
         {showCloseButton && onClose && (
-          <div className="flex justify-end mb-2">
-            <button
-              onClick={onClose}
-              className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
-            >
-              <X size={20} className="text-gray-500 dark:text-gray-400" />
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label={t('common.close', 'Close')}
+            className="absolute right-3.5 top-3.5 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/80 ring-1 ring-white/15 backdrop-blur transition-all duration-200 hover:rotate-90 hover:bg-acid-400 hover:text-ink-900 hover:ring-transparent"
+          >
+            <X size={16} />
+          </button>
         )}
         {/* Hidden file input for avatar upload */}
         <input
@@ -1007,6 +1011,9 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
             return fromExtra ?? toPlatformType(fallbackPlatform);
           })()}
           lastSeenText={formatOnlineDuration(visitor.basicInfo.lastOnlineDurationMinutes, visitor.status === 'online')}
+          email={visitor.basicInfo.email}
+          phone={visitor.basicInfo.phone}
+          location={channelExtra?.display_location || visitorData?.display_location || undefined}
           onAvatarClick={handleAvatarClick}
           isUploading={isUploadingAvatar}
           visitorId={channelId || visitor.id}
@@ -1015,7 +1022,7 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
 
       {/* Panel Content */}
       <div 
-        className="relative flex-grow overflow-y-auto p-4 space-y-4" 
+        className="tgo-vpanel-body relative flex-grow overflow-y-auto px-3 pb-4 pt-3 space-y-3" 
         style={{ height: 0 }}
         onDragOver={handleContainerDragOver}
         onDrop={handleContainerDrop}
@@ -1028,14 +1035,14 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
       >
         {/* Loading/Error State */}
         {isUpdating && (
-          <div className="pointer-events-none absolute top-2 left-1/2 -translate-x-1/2 z-20 flex items-center text-xs text-blue-700 dark:text-blue-400 bg-white/80 dark:bg-gray-800/80 backdrop-blur px-2 py-1 rounded border border-blue-100 dark:border-blue-800 shadow-sm">
+          <div className="pointer-events-none sticky top-0 z-20 mx-auto flex w-fit items-center rounded-full bg-ink-900 px-3 py-1 text-[11px] font-medium text-acid-300 shadow-lg dark:bg-acid-400 dark:text-ink-900">
             <Loader2 className="w-3 h-3 mr-1 animate-spin" />
             {t('common.updating', 'Updating...')}
           </div>
         )}
 
         {(updateError || loadError) && (
-          <div className="flex items-center py-2 px-3 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800/50 rounded-md">
+          <div className="flex items-center rounded-2xl bg-red-50 px-3.5 py-2.5 text-[12.5px] text-red-600 ring-1 ring-red-100 dark:bg-red-950/40 dark:text-red-400 dark:ring-red-900/50">
             <AlertCircle className="w-4 h-4 mr-2 flex-shrink-0" />
             <span className="flex-1">{updateError || loadError}</span>
           </div>
@@ -1057,13 +1064,13 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
           // Inner component style: handles drag visual feedback and the settle-in animation
           const sectionClassName = `
             transition-all duration-500 ease-[cubic-bezier(0.2,1,0.3,1)]
-            ${isDragging ? 'opacity-20 scale-[0.95] blur-[2px] shadow-inner' : 'opacity-100 scale-100 shadow-none'}
-            ${isRecentlyMoved ? 'ring-2 ring-blue-500/30 ring-offset-2 dark:ring-offset-gray-800 rounded-lg bg-blue-50/5 dark:bg-blue-900/5' : ''}
+            ${isDragging ? 'opacity-20 scale-[0.95] blur-[2px]' : 'opacity-100 scale-100'}
+            ${isRecentlyMoved ? 'ring-2 ring-acid-400/70' : ''}
           `;
 
           // Insertion position indicator
           const dropIndicator = isDragOver && (
-            <div className="absolute top-0 left-0 right-0 h-1 bg-blue-500 rounded-full transition-all duration-300 shadow-[0_0_8px_rgba(59,130,246,0.5)] z-10 pointer-events-none" />
+            <div className="pointer-events-none absolute left-2 right-2 top-3 z-10 h-1 rounded-full bg-acid-400 shadow-[0_0_12px_rgba(205,238,85,0.8)] transition-all duration-300" />
           );
 
           const wrapWithIndicator = (content: React.ReactNode) => (
@@ -1113,6 +1120,7 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
               return wrapWithIndicator(
                 <CollapsibleSection
                   title={t('visitor.tags.title', 'Tags')}
+                  icon={<TagIcon size={14} />}
                   draggable
                   className={sectionClassName}
                   expanded={expandedSections.tags}

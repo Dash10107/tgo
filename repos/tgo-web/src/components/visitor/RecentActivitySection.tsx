@@ -74,6 +74,7 @@ const RecentActivitySection: React.FC<RecentActivitySectionProps> = ({
   return (
     <CollapsibleSection
       title={t('visitor.sections.recentActivity', 'Recent Activity')}
+      icon={<ActivityIcon size={14} />}
       className={className}
       defaultExpanded={false}
       expanded={expanded}
@@ -90,7 +91,7 @@ const RecentActivitySection: React.FC<RecentActivitySectionProps> = ({
           const pageUrl = act.context?.page_url;
           return (
             <div key={act.id} className="relative flex items-start gap-4 group/item">
-              <div className="z-10 bg-white dark:bg-gray-900 ring-4 ring-white dark:ring-gray-800">
+              <div className="z-10 rounded-full bg-white ring-4 ring-white dark:bg-gray-900 dark:ring-gray-900">
                 {getActivityIconAndColor(act.activity_type)}
               </div>
               <div className="flex-1 min-w-0 pt-0.5 pb-2 border-b border-gray-50 dark:border-gray-800/50 group-last/item:border-0">

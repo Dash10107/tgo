@@ -1,4 +1,5 @@
 import React from 'react';
+import { UserRound } from 'lucide-react';
 import EditableField from '../ui/EditableField';
 import CustomAttributeManager from '../ui/CustomAttributeManager';
 import CollapsibleSection from '../ui/CollapsibleSection';
@@ -58,6 +59,7 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
   return (
     <CollapsibleSection
       title={t('visitor.sections.basicInfo', 'Basic Info')}
+      icon={<UserRound size={14} />}
       className={className}
       defaultExpanded={true}
       expanded={expanded}

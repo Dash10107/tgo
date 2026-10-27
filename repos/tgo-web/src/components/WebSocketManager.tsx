@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { createMixedStreamParser, type MixedStreamParser } from '@json-render/core';
+import type { MixedStreamParser } from '@json-render/core';
+import { createBlankLinePreservingParser } from '@/utils/mixedStreamParser';
 import { useAuthStore } from '../stores/authStore';
 import { useChatStore } from '../stores/chatStore';
 import { useChannelStore } from '../stores/channelStore';
@@ -153,7 +154,7 @@ export const WebSocketManager: React.FC = () => {
     try {
       let parser = parsersRef.current.get(clientMsgNo);
       if (!parser) {
-        parser = createMixedStreamParser({
+        parser = createBlankLinePreservingParser({
           onText: (text) => {
             // Append '\n' that was stripped by the line-based parser so
             // merged text parts retain their original line breaks.

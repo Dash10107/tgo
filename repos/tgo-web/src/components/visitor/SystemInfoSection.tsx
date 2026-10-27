@@ -1,4 +1,5 @@
 import React from 'react';
+import { Clock, Compass, Globe2, Languages, Link2, MapPin, MonitorSmartphone, Network, Cpu, CalendarClock } from 'lucide-react';
 import type { SystemInfo as ChannelSystemInfo } from '@/types';
 import { useTranslation } from 'react-i18next';
 import { formatLocalDateTime } from '@/utils/dateUtils';
@@ -166,6 +167,7 @@ const SystemInfoSection: React.FC<SystemInfoSectionProps> = ({
   return (
     <CollapsibleSection
       title={t('visitor.sections.systemInfo', 'System Information')}
+      icon={<MonitorSmartphone size={14} />}
       className={className}
       defaultExpanded={false}
       expanded={expanded}
@@ -177,35 +179,55 @@ const SystemInfoSection: React.FC<SystemInfoSectionProps> = ({
       onDrop={onDrop}
     >
       {hasAnyInfo ? (
-        <div className="space-y-1 px-0.5">
-          {[
-            { label: t('visitor.system.fields.platform', 'Platform'), value: platform },
-            { 
-              label: t('visitor.system.fields.sourcePage', 'Source Page'), 
-              value: sourceDetailUrl ? (
-                <a href={sourceDetailUrl} target="_blank" rel="noreferrer" className="text-blue-500 hover:underline break-all" title={sourceDetailUrl}>
-                  {sourceDetailUrl}
+        <div className="space-y-2">
+          {/* Source page gets a full-width row so long URLs stay readable */}
+          <div className="tgo-vtile flex items-start gap-2.5">
+            <span className="tgo-vtile-icon"><Link2 size={13} /></span>
+            <div className="min-w-0 flex-1">
+              <div className="tgo-vtile-label">{t('visitor.system.fields.sourcePage', 'Source Page')}</div>
+              {sourceDetailUrl ? (
+                <a
+                  href={sourceDetailUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="tgo-vtile-value block truncate text-acid-800 underline decoration-acid-400 decoration-2 underline-offset-2 hover:text-ink-900 dark:text-acid-300 dark:hover:text-acid-200"
+                  title={sourceDetailUrl}
+                >
+                  {sourceDetailUrl.replace(/^https?:\/\//i, '')}
                 </a>
-              ) : sourceDetail 
-            },
-            { label: t('visitor.system.fields.browser', 'Browser'), value: browser },
-            { label: t('visitor.system.fields.os', 'Operating System'), value: os },
-            { label: t('visitor.system.fields.language', 'Language'), value: language },
-            { label: t('visitor.system.fields.timezone', 'Timezone'), value: timezone },
-            { label: t('visitor.system.fields.ipAddress', 'IP Address'), value: ipAddress },
-            { label: t('visitor.system.fields.location', 'Location'), value: displayLocation },
-            { label: t('visitor.system.fields.firstSeen', 'First Seen'), value: firstSeen },
-          ].map((item, idx) => (
-            <div key={idx} className="flex justify-between items-start py-0.5 group">
-              <span className="text-gray-400 dark:text-gray-500 text-[12px] flex-shrink-0 pt-0.5">{item.label}</span>
-              <span className="text-gray-700 dark:text-gray-200 font-medium text-[12px] leading-5 flex-1 min-w-0 ml-4 text-right line-clamp-2 break-all">
-                {item.value}
-              </span>
+              ) : (
+                <div className="tgo-vtile-value truncate" title={sourceDetail}>{sourceDetail}</div>
+              )}
             </div>
-          ))}
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { key: 'platform', icon: <Compass size={13} />, label: t('visitor.system.fields.platform', 'Platform'), value: platform },
+              { key: 'browser', icon: <Globe2 size={13} />, label: t('visitor.system.fields.browser', 'Browser'), value: browser },
+              { key: 'os', icon: <Cpu size={13} />, label: t('visitor.system.fields.os', 'Operating System'), value: os },
+              { key: 'language', icon: <Languages size={13} />, label: t('visitor.system.fields.language', 'Language'), value: language },
+              { key: 'timezone', icon: <Clock size={13} />, label: t('visitor.system.fields.timezone', 'Timezone'), value: timezone },
+              { key: 'location', icon: <MapPin size={13} />, label: t('visitor.system.fields.location', 'Location'), value: displayLocation },
+              { key: 'ip', icon: <Network size={13} />, label: t('visitor.system.fields.ipAddress', 'IP Address'), value: ipAddress },
+              { key: 'firstSeen', icon: <CalendarClock size={13} />, label: t('visitor.system.fields.firstSeen', 'First Seen'), value: firstSeen },
+            ].map((item) => (
+              <div key={item.key} className="tgo-vtile min-w-0">
+                <div className="mb-1 flex items-center gap-1.5 text-gray-400 dark:text-gray-500">
+                  {item.icon}
+                  <span className="tgo-vtile-label truncate">{item.label}</span>
+                </div>
+                <div className="tgo-vtile-value truncate" title={typeof item.value === 'string' ? item.value : undefined}>
+                  {item.value}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       ) : (
-        <div className="text-[12px] text-gray-400 dark:text-gray-500 py-4 text-center italic">{t('visitor.system.empty', 'No system information')}</div>
+        <div className="rounded-2xl border border-dashed border-gray-200 py-6 text-center text-[12px] text-gray-400 dark:border-gray-800 dark:text-gray-500">
+          <MonitorSmartphone className="mx-auto mb-2 h-5 w-5 text-gray-300 dark:text-gray-600" />
+          {t('visitor.system.empty', 'No system information')}
+        </div>
       )}
     </CollapsibleSection>
   );

@@ -222,7 +222,7 @@ const RichTextMessage: React.FC<MessageComponentProps> = ({ message, isStaff, on
   const shouldRenderMarkdown = hasStreamData;
 
   const textBubble = isStaff ? (
-    <div ref={rtTextRef} className="inline-block tgo-bubble tgo-bubble-out">
+    <div ref={rtTextRef} className="inline-block min-w-0 max-w-full tgo-bubble tgo-bubble-out">
       {shouldRenderMarkdown ? (
         <MarkdownContent content={richContent} className="text-sm markdown-on-accent" onSendMessage={onSendMessage} />
       ) : (
@@ -230,7 +230,7 @@ const RichTextMessage: React.FC<MessageComponentProps> = ({ message, isStaff, on
       )}
     </div>
   ) : (
-    <div ref={rtTextRef} className="inline-block tgo-bubble tgo-bubble-in">
+    <div ref={rtTextRef} className="inline-block min-w-0 max-w-full tgo-bubble tgo-bubble-in">
       {shouldRenderMarkdown ? (
         <MarkdownContent content={richContent} className="text-sm dark:text-gray-200" onSendMessage={onSendMessage} />
       ) : (

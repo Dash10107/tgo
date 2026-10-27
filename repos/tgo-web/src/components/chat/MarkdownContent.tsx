@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Marked, RendererObject, RendererThis, Tokens } from 'marked';
 import { markedHighlight } from "marked-highlight";
 import hljs from 'highlight.js/lib/core';
@@ -24,6 +24,7 @@ import css from 'highlight.js/lib/languages/css';
 import scss from 'highlight.js/lib/languages/scss';
 import plaintext from 'highlight.js/lib/languages/plaintext';
 import DOMPurify from 'dompurify';
+import i18n from '@/i18n';
 
 // Register languages
 hljs.registerLanguage('javascript', javascript);
@@ -60,15 +61,6 @@ interface MarkdownContentProps {
   onSendMessage?: (message: string) => void;
 }
 
-const headingClassMap: Record<number, string> = {
-  1: 'text-2xl font-bold mb-4 mt-6 text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-600 pb-2',
-  2: 'text-xl font-bold mb-3 mt-5 text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-600 pb-2',
-  3: 'text-lg font-bold mb-2 mt-4 text-gray-900 dark:text-gray-100',
-  4: 'text-base font-bold mb-2 mt-3 text-gray-900 dark:text-gray-100',
-  5: 'text-sm font-bold mb-2 mt-3 text-gray-900 dark:text-gray-100',
-  6: 'text-xs font-bold mb-2 mt-3 text-gray-700 dark:text-gray-300'
-};
-
 const escapeHtml = (value: string): string =>
   value
     .replace(/&/g, '&amp;')
@@ -99,21 +91,25 @@ const sanitizeHref = (href?: string | null): string => {
   return '#';
 };
 
+/** Inline-align style for a table cell */
+const alignStyle = (align: Tokens.Table['align'][number]): string =>
+  align ? ` style="text-align:${align}"` : '';
+
+/*
+ * The renderer emits semantic `md-*` classes; all visual styling lives in
+ * styles/markdown.css so chat bubbles, modals and the accent bubble can theme
+ * the same markup differently.
+ */
 const renderer: RendererObject = {
   heading(this: RendererThis, { tokens, depth }: Tokens.Heading) {
     const html = this.parser.parseInline(tokens);
-    const clz = headingClassMap[depth] || 'font-bold mt-4 mb-2 text-gray-900 dark:text-gray-100';
-    return `<h${depth} class="${clz}">${html}</h${depth}>`;
+    return `<h${depth} class="md-h md-h${depth}">${html}</h${depth}>`;
   },
-  // paragraph(this: RendererThis, { tokens }: Tokens.Paragraph) {
-  //   const html = this.parser.parseInline(tokens);
-  //   return `<p class="mb-3 leading-relaxed text-gray-800 dark:text-gray-200">${html}</p>`;
-  // },
   link(this: RendererThis, { href, title, tokens }: Tokens.Link) {
     const html = this.parser.parseInline(tokens);
     const safeHref = sanitizeHref(href);
     const titleAttr = title ? ` title="${escapeHtml(title)}"` : '';
-    return `<a href="${escapeHtml(safeHref)}"${titleAttr} target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline break-words">${html}</a>`;
+    return `<a href="${escapeHtml(safeHref)}"${titleAttr} target="_blank" rel="noopener noreferrer" class="md-link">${html}</a>`;
   },
   list(this: RendererThis, token: Tokens.List) {
     const itemsHtml = token.items
@@ -123,79 +119,67 @@ const renderer: RendererObject = {
         const singleParagraphMatch = trimmed.match(/^<p>([\s\S]*)<\/p>$/);
         const content = singleParagraphMatch ? singleParagraphMatch[1].trim() : trimmed;
 
-        const checkbox = item.task
-          ? `<input type="checkbox" class="mr-2 h-3.5 w-3.5 align-middle rounded border border-gray-300 dark:border-gray-600 text-blue-500 dark:text-blue-400" disabled ${item.checked ? 'checked' : ''} />`
-          : '';
-
-        return `<li class="text-gray-800 dark:text-gray-200 leading-relaxed">${checkbox}${content}</li>`;
+        if (item.task) {
+          return `<li class="md-task" data-checked="${item.checked ? 'true' : 'false'}"><span class="md-task-box" aria-hidden="true"></span><div class="md-item-body">${content}</div></li>`;
+        }
+        const itemClass = token.ordered ? 'md-step' : 'md-bullet';
+        return `<li class="${itemClass}"><div class="md-item-body">${content}</div></li>`;
       })
       .join('');
-    const startAttr = token.ordered && token.start && token.start !== 1 ? ` start="${token.start}"` : '';
+
     if (token.ordered) {
-      return `<ol${startAttr} class="list-decimal mb-3 space-y-1 ml-6">${itemsHtml}</ol>`;
+      // Ordered lists render as a numbered step timeline driven by a CSS counter
+      const start = typeof token.start === 'number' ? token.start : 1;
+      const counterStyle = start !== 1 ? ` style="counter-reset: md-step ${start - 1}"` : '';
+      return `<ol class="md-steps"${counterStyle}>${itemsHtml}</ol>`;
     }
-    return `<ul class="list-disc mb-3 space-y-1 ml-6">${itemsHtml}</ul>`;
+    return `<ul class="md-list">${itemsHtml}</ul>`;
   },
   blockquote(this: RendererThis, { tokens }: Tokens.Blockquote) {
     const html = this.parser.parse(tokens);
-    return `<blockquote class="border-l-4 border-gray-300 dark:border-gray-600 pl-4 py-2 my-3 italic text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800">${html}</blockquote>`;
+    return `<blockquote class="md-callout">${html}</blockquote>`;
   },
   hr() {
-    return '<hr class="my-4 border-t border-gray-300 dark:border-gray-600" />';
+    return '<hr class="md-hr" />';
+  },
+  code({ text, lang, escaped }: Tokens.Code) {
+    const language = (lang || '').trim().split(/\s+/)[0] || '';
+    const body = escaped ? text : escapeHtml(text);
+    const copyLabel = escapeHtml(i18n.t('chat.messages.copyCode', 'Copy'));
+    const copiedLabel = escapeHtml(i18n.t('chat.messages.copiedCode', 'Copied'));
+    const langClass = language ? ` language-${escapeHtml(language)}` : '';
+    return `<div class="md-code"><div class="md-code-head"><span class="md-code-lang">${escapeHtml(language || 'code')}</span><button type="button" class="md-code-copy" data-md-copy="true" data-copy-label="${copyLabel}" data-copied-label="${copiedLabel}">${copyLabel}</button></div><pre><code class="hljs${langClass}">${body}</code></pre></div>`;
   },
   table(this: RendererThis, token: Tokens.Table) {
     const headerRow = token.header
-      .map((cell, index) => {
-        const align = token.align[index];
-        const alignAttr = align ? ` style="text-align:${align}"` : '';
-        const content = this.parser.parseInline(cell.tokens);
-        return `<th class="px-4 py-2 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600"${alignAttr}>${content}</th>`;
-      })
+      .map((cell, index) => `<th${alignStyle(token.align[index])}>${this.parser.parseInline(cell.tokens)}</th>`)
       .join('');
-
-    const headerSection = headerRow
-      ? `<thead class="bg-gray-100 dark:bg-gray-800"><tr class="border-b border-gray-300 dark:border-gray-600">${headerRow}</tr></thead>`
-      : '';
 
     const bodyRows = token.rows
       .map(row => {
         const cells = row
-          .map((cell, index) => {
-            const align = token.align[index];
-            const alignAttr = align ? ` style="text-align:${align}"` : '';
-            const content = this.parser.parseInline(cell.tokens);
-            return `<td class="px-4 py-2 text-sm text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600"${alignAttr}>${content}</td>`;
-          })
+          .map((cell, index) => `<td${alignStyle(token.align[index])}>${this.parser.parseInline(cell.tokens)}</td>`)
           .join('');
-        return `<tr class="border-b border-gray-300 dark:border-gray-600">${cells}</tr>`;
+        return `<tr>${cells}</tr>`;
       })
       .join('');
 
-    return `
-      <div class="my-3 overflow-x-auto">
-        <table class="min-w-full border-collapse border border-gray-300 dark:border-gray-600">
-          ${headerSection}
-          <tbody>${bodyRows}</tbody>
-        </table>
-      </div>
-    `;
+    const headerSection = headerRow ? `<thead><tr>${headerRow}</tr></thead>` : '';
+    return `<div class="md-table-wrap"><table class="md-table">${headerSection}<tbody>${bodyRows}</tbody></table></div>`;
   },
   strong(this: RendererThis, { tokens }: Tokens.Strong) {
-    const html = this.parser.parseInline(tokens);
-    return `<strong class="font-bold text-gray-900 dark:text-gray-100">${html}</strong>`;
+    return `<strong class="md-strong">${this.parser.parseInline(tokens)}</strong>`;
   },
   em(this: RendererThis, { tokens }: Tokens.Em) {
-    const html = this.parser.parseInline(tokens);
-    return `<em class="italic text-gray-800 dark:text-gray-200">${html}</em>`;
+    return `<em>${this.parser.parseInline(tokens)}</em>`;
   },
   del(this: RendererThis, { tokens }: Tokens.Del) {
-    const html = this.parser.parseInline(tokens);
-    return `<del class="line-through text-gray-600 dark:text-gray-400">${html}</del>`;
+    return `<del class="md-del">${this.parser.parseInline(tokens)}</del>`;
   },
   image(this: RendererThis, { href, title, text }: Tokens.Image) {
     const safeSrc = sanitizeHref(href);
     const titleAttr = title ? ` title="${escapeHtml(title)}"` : '';
-    return `<img src="${escapeHtml(safeSrc)}" alt="${escapeHtml(text || '')}"${titleAttr} class="max-w-full h-auto rounded-lg my-3" loading="lazy" />`;
+    return `<img src="${escapeHtml(safeSrc)}" alt="${escapeHtml(text || '')}"${titleAttr} class="md-img" loading="lazy" />`;
   }
 };
 
@@ -295,6 +279,20 @@ const renderMarkdownToHtml = (markdown: string): string => {
   return sanitized;
 };
 
+/** Copy the code block that owns a clicked `md-code-copy` button */
+const handleCodeCopy = (button: HTMLElement): void => {
+  const code = button.closest('.md-code')?.querySelector('pre code');
+  if (!code || !navigator.clipboard) return;
+  void navigator.clipboard.writeText(code.textContent ?? '').then(() => {
+    button.textContent = button.dataset.copiedLabel ?? '';
+    button.dataset.copied = 'true';
+    window.setTimeout(() => {
+      button.textContent = button.dataset.copyLabel ?? '';
+      delete button.dataset.copied;
+    }, 1600);
+  }).catch((err: unknown) => console.warn('Copy code failed', err));
+};
+
 /**
  * Markdown Content Renderer Component
  * Renders markdown content using Marked with caching and sanitization for performance & safety
@@ -304,6 +302,12 @@ const MarkdownContent: React.FC<MarkdownContentProps> = ({ content, className = 
     return renderMarkdownToHtml(content || '');
   }, [content]);
 
+  // Delegated handler: code-block copy buttons live inside the sanitized HTML
+  const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const button = (e.target as HTMLElement).closest<HTMLElement>('[data-md-copy]');
+    if (button) handleCodeCopy(button);
+  }, []);
+
   const combinedClassName = className
     ? `markdown-content ${className}`.trim()
     : 'markdown-content';
@@ -311,6 +315,7 @@ const MarkdownContent: React.FC<MarkdownContentProps> = ({ content, className = 
   return (
     <div
       className={combinedClassName}
+      onClick={handleClick}
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );
