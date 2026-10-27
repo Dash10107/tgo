@@ -229,6 +229,294 @@
     mask: radial-gradient(circle var(--notch-r) at calc(100% - var(--notch-x)) var(--notch-x), transparent calc(var(--notch-r) - 0.5px), #000 var(--notch-r));
   }
 
+  /* ---------- Forms ---------- */
+
+  .tgo-label {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--color-gray-700);
+  }
+
+  .dark .tgo-label {
+    color: var(--color-gray-300);
+  }
+
+  .tgo-label > .tgo-req {
+    color: var(--color-red-500);
+  }
+
+  .tgo-label > .tgo-opt {
+    font-weight: 400;
+    color: var(--color-gray-400);
+  }
+
+  /* Soft filled input; lifts to white with an acid ring on focus */
+  .tgo-input {
+    display: block;
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.625rem 1rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--color-gray-900);
+    background-color: var(--color-gray-50);
+    box-shadow: inset 0 0 0 1px var(--color-gray-200);
+    outline: none;
+    transition: background-color 0.2s ease, box-shadow 0.2s var(--ease-out);
+  }
+
+  .tgo-input::placeholder {
+    color: var(--color-gray-400);
+  }
+
+  .tgo-input:hover:not(:disabled):not(:focus):not(:focus-within) {
+    box-shadow: inset 0 0 0 1px var(--color-gray-300);
+  }
+
+  .tgo-input:is(:focus, :focus-within) {
+    background-color: #fff;
+    box-shadow: inset 0 0 0 1.5px var(--color-acid-500), 0 0 0 4px rgb(205 238 85 / 0.28);
+  }
+
+  .tgo-input[aria-invalid="true"] {
+    background-color: rgb(254 242 242 / 0.6);
+    box-shadow: inset 0 0 0 1px var(--color-red-300);
+  }
+
+  .tgo-input[aria-invalid="true"]:focus {
+    box-shadow: inset 0 0 0 1.5px var(--color-red-400), 0 0 0 4px rgb(248 113 113 / 0.15);
+  }
+
+  .tgo-input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  textarea.tgo-input {
+    min-height: 5.5rem;
+    resize: vertical;
+  }
+
+  select.tgo-input {
+    appearance: none;
+    cursor: pointer;
+    padding-right: 2.5rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2372727a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.875rem center;
+  }
+
+  .dark .tgo-input {
+    color: var(--color-gray-100);
+    background-color: var(--color-gray-800);
+    box-shadow: inset 0 0 0 1px var(--color-gray-700);
+  }
+
+  .dark .tgo-input:hover:not(:disabled):not(:focus):not(:focus-within) {
+    box-shadow: inset 0 0 0 1px var(--color-gray-600);
+  }
+
+  .dark .tgo-input:is(:focus, :focus-within) {
+    background-color: var(--color-gray-900);
+    box-shadow: inset 0 0 0 1.5px var(--color-acid-400), 0 0 0 4px rgb(205 238 85 / 0.12);
+  }
+
+  .dark .tgo-input[aria-invalid="true"] {
+    background-color: rgb(127 29 29 / 0.15);
+    box-shadow: inset 0 0 0 1px rgb(248 113 113 / 0.5);
+  }
+
+  .dark select.tgo-input {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23a1a1a9' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  }
+
+  .tgo-hint {
+    margin-top: 0.375rem;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: var(--color-gray-400);
+  }
+
+  .tgo-field-error {
+    margin-top: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-red-600);
+  }
+
+  .dark .tgo-field-error {
+    color: var(--color-red-400);
+  }
+
+  /* Native checkbox / radio tinted to the palette */
+  .tgo-check {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    cursor: pointer;
+    accent-color: var(--color-ink-900);
+  }
+
+  .dark .tgo-check {
+    accent-color: var(--color-acid-400);
+  }
+
+  /* Selectable option tile (radio cards, type pickers) */
+  .tgo-option {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    border-radius: 1.25rem;
+    text-align: left;
+    background-color: #fff;
+    box-shadow: inset 0 0 0 1px var(--color-gray-200);
+    cursor: pointer;
+    transition: box-shadow 0.2s var(--ease-out), background-color 0.2s ease, transform 0.2s var(--ease-out);
+  }
+
+  .tgo-option:hover:not([aria-disabled="true"]):not(:disabled) {
+    box-shadow: inset 0 0 0 1px var(--color-gray-300), 0 6px 16px -10px rgb(15 16 18 / 0.25);
+  }
+
+  .tgo-option:active:not([aria-disabled="true"]):not(:disabled) {
+    transform: scale(0.99);
+  }
+
+  .tgo-option[data-active="true"] {
+    background-color: var(--color-acid-50);
+    box-shadow: inset 0 0 0 1.5px var(--color-ink-900), 0 8px 20px -14px rgb(15 16 18 / 0.4);
+  }
+
+  .tgo-option:is([aria-disabled="true"], :disabled) {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  .dark .tgo-option {
+    background-color: var(--color-gray-800);
+    box-shadow: inset 0 0 0 1px var(--color-gray-700);
+  }
+
+  .dark .tgo-option:hover:not([aria-disabled="true"]):not(:disabled) {
+    box-shadow: inset 0 0 0 1px var(--color-gray-600);
+  }
+
+  .dark .tgo-option[data-active="true"] {
+    background-color: rgb(205 238 85 / 0.08);
+    box-shadow: inset 0 0 0 1.5px var(--color-acid-400);
+  }
+
+  /* ---------- Segmented tabs ---------- */
+
+  .tgo-tabs {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border-radius: 9999px;
+    background-color: #fff;
+    box-shadow: inset 0 0 0 1px var(--color-gray-200);
+  }
+
+  .dark .tgo-tabs {
+    background-color: var(--color-gray-900);
+    box-shadow: inset 0 0 0 1px var(--color-gray-800);
+  }
+
+  .tgo-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 2.25rem;
+    padding: 0 1rem;
+    border-radius: 9999px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    white-space: nowrap;
+    color: var(--color-gray-500);
+    transition: color 0.2s ease, background-color 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
+  }
+
+  .tgo-tab:hover {
+    color: var(--color-gray-900);
+  }
+
+  .tgo-tab[data-active="true"] {
+    color: #fff;
+    background-color: var(--color-ink-900);
+    box-shadow: 0 6px 14px -8px rgb(15 16 18 / 0.6);
+  }
+
+  .dark .tgo-tab {
+    color: var(--color-gray-400);
+  }
+
+  .dark .tgo-tab:hover {
+    color: #fff;
+  }
+
+  .dark .tgo-tab[data-active="true"] {
+    color: var(--color-ink-900);
+    background-color: var(--color-acid-400);
+  }
+
+  /* ---------- Modal ---------- */
+
+  .tgo-modal {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-height: calc(100vh - 2rem);
+    overflow: hidden;
+    border-radius: 2rem;
+    background-color: #fff;
+    box-shadow: 0 0 0 1px rgb(15 16 18 / 0.05), 0 2px 6px rgb(15 16 18 / 0.04), 0 48px 96px -32px rgb(15 16 18 / 0.5);
+  }
+
+  .dark .tgo-modal {
+    background-color: var(--color-gray-900);
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.07), 0 48px 96px -32px rgb(0 0 0 / 0.9);
+  }
+
+  /* Soft inset panel for grouping fields inside cards and modals */
+  .tgo-well {
+    border-radius: 1.5rem;
+    background-color: var(--color-gray-50);
+    box-shadow: inset 0 0 0 1px rgb(15 16 18 / 0.04);
+  }
+
+  .dark .tgo-well {
+    background-color: rgb(255 255 255 / 0.03);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.05);
+  }
+
+  /* Small rounded status / meta chip */
+  .tgo-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    height: 1.5rem;
+    padding: 0 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    color: var(--color-gray-600);
+    background-color: var(--color-gray-100);
+  }
+
+  .dark .tgo-chip {
+    color: var(--color-gray-300);
+    background-color: var(--color-gray-800);
+  }
+
   /* ---------- Chat ---------- */
 
   /* Conversation backdrop: soft neutral with a lime glow, like the workflow canvas */
@@ -757,4 +1045,14 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Thin, quiet scrollbars for scrolling panels and dialogs */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-gray-300) transparent;
+}
+
+.dark .custom-scrollbar {
+  scrollbar-color: var(--color-gray-700) transparent;
 }

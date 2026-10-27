@@ -1,8 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Settings as SettingsIcon, Puzzle } from 'lucide-react';
-import { FiSettings, FiCpu, FiInfo, FiLogOut, FiUsers, FiUser, FiBell } from 'react-icons/fi';
+import { Settings as SettingsIcon, Puzzle, User, SlidersHorizontal, Bell, Users, Cpu, Info, LogOut, type LucideIcon } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import OnboardingSidebarPanel from '@/components/onboarding/OnboardingSidebarPanel';
 
@@ -10,75 +9,85 @@ interface SettingsSidebarProps {
   className?: string;
 }
 
-const SettingsSidebar: React.FC<SettingsSidebarProps> = ({ className = '' }) => {
-  const { t } = useTranslation();
-  const { logout, isAuthenticated, user } = useAuthStore();
-  const isAdmin = user?.role === 'admin';
+export interface SettingsNavItem {
+  id: string;
+  label: string;
+  icon: LucideIcon;
+  adminOnly?: boolean;
+}
 
-  const allItems: Array<{ id: string; label: string }> = [
-    { id: 'profile', label: t('settings.menu.profile', 'Profile') },
-    { id: 'general', label: t('settings.menu.general', 'General') },
-    { id: 'notifications', label: t('settings.menu.notifications', 'Notifications') },
-    { id: 'staff', label: t('settings.menu.staff', 'Human Agents') },
-    { id: 'providers', label: t('settings.menu.providers', 'Model Providers') },
-    { id: 'plugins', label: t('settings.menu.plugins', 'Plugins') },
+/** Settings sections, shared by the desktop sidebar and the mobile pill bar */
+export const useSettingsNavItems = (): SettingsNavItem[] => {
+  const { t } = useTranslation();
+  const isAdmin = useAuthStore(state => state.user?.role === 'admin');
+
+  const items: SettingsNavItem[] = [
+    { id: 'profile', label: t('settings.menu.profile', 'Profile'), icon: User },
+    { id: 'general', label: t('settings.menu.general', 'General'), icon: SlidersHorizontal },
+    { id: 'notifications', label: t('settings.menu.notifications', 'Notifications'), icon: Bell },
+    // Non-admin users cannot see Human Agents, Model Providers and Plugin Management
+    { id: 'staff', label: t('settings.menu.staff', 'Human Agents'), icon: Users, adminOnly: true },
+    { id: 'providers', label: t('settings.menu.providers', 'Model Providers'), icon: Cpu, adminOnly: true },
+    { id: 'plugins', label: t('settings.menu.plugins', 'Plugins'), icon: Puzzle, adminOnly: true },
   ];
 
-  // Filter settings items based on user role
-  // Non-admin users cannot see 'staff' (Human Agents), 'providers' (Model Providers) and 'plugins' (Plugin Management)
-  const items = allItems.filter(item => {
-    if (!isAdmin && (item.id === 'staff' || item.id === 'providers' || item.id === 'plugins')) {
-      return false;
-    }
-    return true;
-  });
+  return items.filter(item => isAdmin || !item.adminOnly);
+};
 
-  const iconMap: Record<string, React.ReactNode> = {
-    profile: <FiUser className="w-4 h-4" />,
-    general: <FiSettings className="w-4 h-4" />,
-    notifications: <FiBell className="w-4 h-4" />,
-    staff: <FiUsers className="w-4 h-4" />,
-    providers: <FiCpu className="w-4 h-4" />,
-    plugins: <Puzzle className="w-4 h-4" />,
-  };
+const navClass = ({ isActive }: { isActive: boolean }) =>
+  `group flex items-center gap-3 rounded-full py-1.5 pl-1.5 pr-4 text-sm transition-all duration-300 ${
+    isActive
+      ? 'bg-ink-900 font-medium text-white shadow-[0_12px_26px_-14px_rgba(15,16,18,0.75)] dark:bg-acid-400 dark:text-ink-900'
+      : 'text-gray-600 hover:bg-white hover:text-gray-900 hover:shadow-sm dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100'
+  }`;
+
+const NavIcon: React.FC<{ icon: LucideIcon; isActive: boolean }> = ({ icon: Icon, isActive }) => (
+  <span
+    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors duration-300 ${
+      isActive
+        ? 'bg-acid-400 text-ink-900 dark:bg-ink-900 dark:text-acid-400'
+        : 'bg-gray-100 text-gray-500 group-hover:bg-acid-300 group-hover:text-ink-900 dark:bg-gray-800 dark:text-gray-400 dark:group-hover:bg-acid-400'
+    }`}
+  >
+    <Icon className="h-4 w-4" />
+  </span>
+);
+
+const SettingsSidebar: React.FC<SettingsSidebarProps> = ({ className = '' }) => {
+  const { t } = useTranslation();
+  const { logout, isAuthenticated } = useAuthStore();
+  const items = useSettingsNavItems();
 
   return (
-    <aside className={`hidden md:flex w-64 flex-col bg-gray-50 dark:bg-gray-900 border-r border-gray-200/60 dark:border-gray-800 shrink-0 ${className}`}>
-      <div className="px-6 pt-7 pb-5">
-        <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-ink-900 text-acid-400 dark:bg-acid-400 dark:text-ink-900">
-          <SettingsIcon className="w-4 h-4" />
+    <aside className={`hidden w-64 shrink-0 flex-col border-r border-gray-200/60 bg-gray-50 md:flex dark:border-gray-800 dark:bg-gray-950 ${className}`}>
+      <div className="px-6 pb-6 pt-8">
+        <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-ink-900 text-acid-400 shadow-[0_10px_24px_-12px_rgb(15_16_18/0.7)] dark:bg-acid-400 dark:text-ink-900">
+          <SettingsIcon className="h-4 w-4" />
         </div>
-        <h2 className="tgo-display text-[30px] text-gray-900 dark:text-white">{t('settings.title', 'Settings')}</h2>
+        <h2 className="tgo-display text-[32px] text-gray-900 dark:text-white">{t('settings.title', 'Settings')}</h2>
       </div>
-      <nav className="flex-1 overflow-y-auto px-3 space-y-1">
-        {items.map((item) => (
-          <NavLink
-            key={item.id}
-            to={`/settings/${item.id}`}
-            className={({ isActive }) => `
-              block px-4 py-2.5 rounded-full text-sm transition-all duration-300
-              ${isActive ? 'bg-ink-900 text-white font-medium shadow-[0_12px_26px_-14px_rgba(15,16,18,0.75)] dark:bg-acid-400 dark:text-ink-900' : 'text-gray-600 dark:text-gray-400 hover:bg-white hover:text-gray-900 hover:shadow-sm dark:hover:bg-gray-800 dark:hover:text-gray-100'}
-            `}
-          >
-            <span className="inline-flex items-center gap-2">
-              {iconMap[item.id]}
-              <span>{item.label}</span>
-            </span>
+
+      <nav className="flex-1 space-y-1 overflow-y-auto px-3">
+        {items.map(item => (
+          <NavLink key={item.id} to={`/settings/${item.id}`} className={navClass}>
+            {({ isActive }) => (
+              <>
+                <NavIcon icon={item.icon} isActive={isActive} />
+                <span className="truncate">{item.label}</span>
+              </>
+            )}
           </NavLink>
         ))}
       </nav>
-      <div className="px-3 pt-2 pb-1 mt-2 border-t border-gray-200/60 dark:border-gray-800 space-y-1">
-        <NavLink
-          to="/settings/about"
-          className={({ isActive }) => `
-            block px-4 py-2.5 rounded-full text-sm transition-all duration-300
-            ${isActive ? 'bg-ink-900 text-white font-medium shadow-[0_12px_26px_-14px_rgba(15,16,18,0.75)] dark:bg-acid-400 dark:text-ink-900' : 'text-gray-600 dark:text-gray-400 hover:bg-white hover:text-gray-900 hover:shadow-sm dark:hover:bg-gray-800 dark:hover:text-gray-100'}
-          `}
-        >
-          <span className="inline-flex items-center gap-2">
-            <FiInfo className="w-4 h-4" />
-            <span>{t('settings.menu.about', 'About')}</span>
-          </span>
+
+      <div className="mt-2 space-y-1 border-t border-gray-200/60 px-3 pb-2 pt-3 dark:border-gray-800">
+        <NavLink to="/settings/about" className={navClass}>
+          {({ isActive }) => (
+            <>
+              <NavIcon icon={Info} isActive={isActive} />
+              <span>{t('settings.menu.about', 'About')}</span>
+            </>
+          )}
         </NavLink>
         {isAuthenticated && (
           <button
@@ -89,15 +98,16 @@ const SettingsSidebar: React.FC<SettingsSidebarProps> = ({ className = '' }) => 
                 console.error('Logout failed:', error);
               }
             }}
-            className="w-full flex items-center gap-2 px-4 py-2.5 rounded-full text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
+            className="group flex w-full items-center gap-3 rounded-full py-1.5 pl-1.5 pr-4 text-sm text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
           >
-            <FiLogOut className="w-4 h-4" />
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-red-50 transition-colors group-hover:bg-red-100 dark:bg-red-900/20 dark:group-hover:bg-red-900/40">
+              <LogOut className="h-4 w-4" />
+            </span>
             <span>{t('settings.menu.logout', 'Logout')}</span>
           </button>
         )}
       </div>
 
-      {/* Onboarding Panel */}
       <OnboardingSidebarPanel />
     </aside>
   );

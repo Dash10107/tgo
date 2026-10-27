@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Info, Server, Code, GitBranch, Clock, AlertCircle, Github, Globe, ExternalLink } from 'lucide-react';
+import { Server, Code, GitBranch, Clock, Github, Globe, ArrowUpRight, Layers, Cpu } from 'lucide-react';
 import { systemApiService, type SystemInfoResponse } from '@/services/systemApi';
+import { ErrorPanel } from '@/components/ui/PageKit';
+import { SettingsPage, SettingsCard, SettingsLoader, InfoLine } from './SettingsKit';
+
+const ENV_STYLES: Record<string, string> = {
+  production: 'bg-acid-300 text-ink-900',
+  development: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300',
+};
 
 const AboutSettings: React.FC = () => {
   const { t } = useTranslation();
@@ -27,148 +34,98 @@ const AboutSettings: React.FC = () => {
     fetchSystemInfo();
   }, [t]);
 
+  const links = [
+    { href: 'https://github.com/tgoai/tgo', icon: Github, label: t('about.github', 'GitHub Repository'), sub: 'github.com/tgoai/tgo' },
+    { href: 'https://tgo.ai', icon: Globe, label: t('about.website', 'Official Website'), sub: 'tgo.ai' },
+  ];
+
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-2">
-        <Info className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-        <h2 className="text-lg font-medium text-gray-800 dark:text-gray-100">{t('common.about', 'About')}</h2>
-      </div>
+    <SettingsPage
+      title={t('common.about', 'About')}
+      subtitle={t('about.subtitle', 'Build, version and runtime details for this workspace.')}
+    >
+      {loading && <SettingsLoader label={t('about.loading', 'Loading...')} />}
 
-      {/* Loading State */}
-      {loading && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-8 flex items-center justify-center">
-          <div className="flex items-center gap-3 text-gray-500 dark:text-gray-400">
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 dark:border-blue-400"></div>
-            <span className="text-sm">{t('about.loading', 'Loading...')}</span>
-          </div>
-        </div>
-      )}
+      {error && !loading && <ErrorPanel message={error} />}
 
-      {/* Error State */}
-      {error && !loading && (
-        <div className="bg-red-50 dark:bg-red-900/30 rounded-lg border border-red-200 dark:border-red-800 p-4 flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-          <div className="flex-1">
-            <p className="text-sm text-red-800 dark:text-red-300">{error}</p>
-          </div>
-        </div>
-      )}
-
-      {/* System Information */}
       {!loading && !error && systemInfo && (
-        <div className="space-y-4">
-          {/* Main System Info Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
-              <div className="flex items-center gap-2">
-                <Server className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                <h3 className="text-sm font-medium text-gray-800 dark:text-gray-200">{t('about.systemInfo', 'System Information')}</h3>
+        <>
+          {/* Version hero */}
+          <section className="relative overflow-hidden rounded-[28px] bg-acid-300 p-7 text-ink-900 md:p-8 dark:bg-acid-400">
+            <span aria-hidden="true" className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-white/25" />
+            <span aria-hidden="true" className="absolute -bottom-24 right-24 h-48 w-48 rounded-full bg-white/15" />
+            <div className="relative flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+              <div className="flex items-center gap-5">
+                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-ink-900 text-acid-400 shadow-lg">
+                  <Layers className="h-6 w-6" />
+                </span>
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-900/60">{t('about.version', 'Version')}</p>
+                  <p className="tgo-display mt-1 text-[44px]">{systemInfo.version || 'N/A'}</p>
+                </div>
               </div>
+              <span className="inline-flex h-8 items-center gap-2 self-start rounded-full bg-ink-900 px-3 text-xs font-semibold text-acid-400 sm:self-auto">
+                <span className="h-1.5 w-1.5 rounded-full bg-current" />
+                {systemInfo.environment || 'unknown'}
+              </span>
             </div>
-            <div className="p-4 space-y-3">
-              <div className="flex items-center justify-between py-2">
-                <span className="text-sm text-gray-600 dark:text-gray-400">{t('about.version', 'Version')}</span>
-                <span className="text-sm font-mono font-medium text-gray-900 dark:text-gray-100">{systemInfo.version || 'N/A'}</span>
+          </section>
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <SettingsCard icon={Server} title={t('about.systemInfo', 'System Information')}>
+              <div className="divide-y divide-gray-100 dark:divide-gray-800">
+                <InfoLine label={t('about.version', 'Version')}><span className="font-mono">{systemInfo.version || 'N/A'}</span></InfoLine>
+                <InfoLine label={t('about.environment', 'Environment')}>
+                  <span className={`tgo-chip ${ENV_STYLES[systemInfo.environment ?? ''] ?? ''}`}>{systemInfo.environment || 'unknown'}</span>
+                </InfoLine>
+                <InfoLine icon={Cpu} label={t('about.apiVersion', 'API Version')}><span className="font-mono">{systemInfo.api_version || 'N/A'}</span></InfoLine>
               </div>
-              <div className="flex items-center justify-between py-2 border-t border-gray-100 dark:border-gray-700">
-                <span className="text-sm text-gray-600 dark:text-gray-400">{t('about.environment', 'Environment')}</span>
-                <span className="text-sm font-mono text-gray-900 dark:text-gray-100">
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                    systemInfo.environment === 'production'
-                      ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
-                      : systemInfo.environment === 'development'
-                      ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
-                  }`}>
-                    {systemInfo.environment || 'unknown'}
+            </SettingsCard>
+
+            <SettingsCard icon={Code} title={t('about.technicalDetails', 'Technical Details')}>
+              <div className="divide-y divide-gray-100 dark:divide-gray-800">
+                <InfoLine label={t('about.pythonVersion', 'Python Version')}><span className="font-mono">{systemInfo.python_version || 'N/A'}</span></InfoLine>
+                <InfoLine icon={Clock} label={t('about.buildTime', 'Build Time')}><span className="font-mono text-[13px]">{systemInfo.build_time || 'N/A'}</span></InfoLine>
+                <InfoLine icon={GitBranch} label={t('about.gitCommit', 'Git Commit')}>
+                  <span className="tgo-chip font-mono">{systemInfo.git_commit ? systemInfo.git_commit.substring(0, 8) : 'N/A'}</span>
+                </InfoLine>
+              </div>
+            </SettingsCard>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {links.map(link => {
+              const Icon = link.icon;
+              return (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="tgo-surface group flex items-center gap-4 p-5 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1"
+                >
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-200">
+                    <Icon className="h-5 w-5" />
                   </span>
-                </span>
-              </div>
-            </div>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-medium text-gray-900 dark:text-gray-100">{link.label}</span>
+                    <span className="block truncate text-xs text-gray-500 dark:text-gray-400">{link.sub}</span>
+                  </span>
+                  <span className="tgo-icon-btn h-9 w-9 group-hover:rotate-45 group-hover:bg-acid-300 group-hover:text-ink-900">
+                    <ArrowUpRight className="h-4 w-4" />
+                  </span>
+                </a>
+              );
+            })}
           </div>
 
-          {/* Technical Details Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
-              <div className="flex items-center gap-2">
-                <Code className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                <h3 className="text-sm font-medium text-gray-800 dark:text-gray-200">{t('about.technicalDetails', 'Technical Details')}</h3>
-              </div>
-            </div>
-            <div className="p-4 space-y-3">
-              <div className="flex items-center justify-between py-2">
-                <span className="text-sm text-gray-600 dark:text-gray-400">{t('about.apiVersion', 'API Version')}</span>
-                <span className="text-sm font-mono text-gray-900 dark:text-gray-100">{systemInfo.api_version || 'N/A'}</span>
-              </div>
-              <div className="flex items-center justify-between py-2 border-t border-gray-100 dark:border-gray-700">
-                <span className="text-sm text-gray-600 dark:text-gray-400">{t('about.pythonVersion', 'Python Version')}</span>
-                <span className="text-sm font-mono text-gray-900 dark:text-gray-100">{systemInfo.python_version || 'N/A'}</span>
-              </div>
-              <div className="flex items-start justify-between py-2 border-t border-gray-100 dark:border-gray-700">
-                <span className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5" />
-                  {t('about.buildTime', 'Build Time')}
-                </span>
-                <span className="text-sm font-mono text-gray-900 dark:text-gray-100 text-right">{systemInfo.build_time || 'N/A'}</span>
-              </div>
-              <div className="flex items-start justify-between py-2 border-t border-gray-100 dark:border-gray-700">
-                <span className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-1.5">
-                  <GitBranch className="w-3.5 h-3.5" />
-                  {t('about.gitCommit', 'Git Commit')}
-                </span>
-                <span className="text-xs font-mono text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700 px-2 py-1 rounded border border-gray-200 dark:border-gray-600">
-                  {systemInfo.git_commit ? systemInfo.git_commit.substring(0, 8) : 'N/A'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Links Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
-              <div className="flex items-center gap-2">
-                <ExternalLink className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                <h3 className="text-sm font-medium text-gray-800 dark:text-gray-200">{t('about.links', 'Links')}</h3>
-              </div>
-            </div>
-            <div className="p-4 space-y-3">
-              <a
-                href="https://github.com/tgoai/tgo"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-between py-2 px-3 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
-              >
-                <span className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                  <Github className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                  {t('about.github', 'GitHub Repository')}
-                </span>
-                <ExternalLink className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
-              </a>
-              <a
-                href="https://tgo.ai"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-between py-2 px-3 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group border-t border-gray-100 dark:border-gray-700"
-              >
-                <span className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                  <Globe className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                  {t('about.website', 'Official Website')}
-                </span>
-                <ExternalLink className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
-              </a>
-            </div>
-          </div>
-
-          {/* Copyright */}
-          <div className="text-center text-xs text-gray-500 dark:text-gray-400 pt-2">
+          <p className="pt-2 text-center text-xs text-gray-400">
             © {new Date().getFullYear()} Pelatis Web. {t('about.copyright', 'All rights reserved.')}
-          </div>
-        </div>
+          </p>
+        </>
       )}
-    </div>
+    </SettingsPage>
   );
 };
 
 export default AboutSettings;
-

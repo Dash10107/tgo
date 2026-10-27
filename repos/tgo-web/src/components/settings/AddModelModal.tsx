@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FiX, FiPlus, FiLoader, FiCheck, FiCpu } from 'react-icons/fi';
-import Button from '@/components/ui/Button';
-import Select from '@/components/ui/Select';
+import { X, Plus, Loader2, Check, Cpu, MessageSquareText, Binary, Sparkles } from 'lucide-react';
 import { useProvidersStore, type ModelProviderConfig } from '@/stores/providersStore';
 import { ToastContext } from '@/components/ui/ToastContainer';
 import AIProvidersApiService from '@/services/aiProvidersApi';
 import storeApi from '@/services/storeApi';
+import { Modal, Field, PrimaryButton, SecondaryButton } from '@/components/ui/ModalKit';
 
 interface AddModelModalProps {
   isOpen: boolean;
@@ -14,78 +13,101 @@ interface AddModelModalProps {
   provider: ModelProviderConfig | null;
 }
 
+type ModelType = 'chat' | 'embedding';
+
+/** Normalised entry for both store models and remote provider models */
+interface AvailableModel {
+  id: string;
+  name: string;
+  title?: string;
+  model_type?: string | null;
+  is_installed?: boolean;
+}
+
+interface StoreModelItem {
+  id: string;
+  name: string;
+  title_zh?: string;
+  model_type?: string;
+}
+
+const errorMessage = (err: unknown): string | undefined => (err instanceof Error ? err.message : undefined);
+
 const AddModelModal: React.FC<AddModelModalProps> = ({ isOpen, onClose, provider }) => {
   const { t } = useTranslation();
   const toast = useContext(ToastContext);
   const { addModelToProvider, loadProviders } = useProvidersStore();
 
   const [loading, setLoading] = useState(false);
-  const [remoteModels, setRemoteModels] = useState<any[]>([]);
+  const [remoteModels, setRemoteModels] = useState<AvailableModel[]>([]);
   const [modelId, setModelId] = useState('');
-  const [modelType, setModelType] = useState<'chat' | 'embedding'>('chat');
-  const [selectedModels, setSelectedModels] = useState<Array<{ id: string; type: 'chat' | 'embedding' }>>([]);
+  const [modelType, setModelType] = useState<ModelType>('chat');
+  const [selectedModels, setSelectedModels] = useState<Array<{ id: string; type: ModelType }>>([]);
   const [saving, setSaving] = useState(false);
+  const [installingId, setInstallingId] = useState<string | null>(null);
 
-  const isStore = provider?.isFromStore;
+  const isStore = Boolean(provider?.isFromStore);
+
+  const fetchAvailableModels = useCallback(async (target: ModelProviderConfig) => {
+    setLoading(true);
+    try {
+      if (target.isFromStore && target.storeResourceId) {
+        const items = (await storeApi.getModelsByProvider(target.storeResourceId)) as StoreModelItem[];
+        const currentModels = target.models || [];
+        setRemoteModels(items.map(m => ({
+          id: m.id,
+          name: m.name,
+          title: m.title_zh || m.name,
+          model_type: m.model_type,
+          is_installed: currentModels.includes(m.name),
+        })));
+      } else {
+        // Manual mode: ask the provider for its list using the stored credentials
+        const service = new AIProvidersApiService();
+        const res = await service.getRemoteModels(target.id);
+        setRemoteModels((res.models || []).map(m => ({ id: m.id, name: m.name || m.id, model_type: m.model_type })));
+      }
+    } catch (e) {
+      console.error('Failed to fetch models', e);
+      // Manual mode may fail with an empty key; only surface store failures
+      if (target.isFromStore) {
+        toast?.showToast('error', t('settings.providers.fetchModels.failed'), errorMessage(e));
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [toast, t]);
 
   useEffect(() => {
     if (isOpen && provider) {
-      fetchAvailableModels();
+      fetchAvailableModels(provider);
     } else {
       setRemoteModels([]);
       setModelId('');
       setModelType('chat');
       setSelectedModels([]);
     }
-  }, [isOpen, provider]);
+  }, [isOpen, provider, fetchAvailableModels]);
 
-  const fetchAvailableModels = async () => {
-    if (!provider) return;
-    setLoading(true);
-    try {
-      if (isStore && provider.storeResourceId) {
-        // Store Mode
-        const models = await storeApi.getModelsByProvider(provider.storeResourceId);
-        // Mark installed status
-        const currentModels = provider.models || [];
-        setRemoteModels(models.map((m: any) => ({
-          ...m,
-          is_installed: currentModels.includes(m.name)
-        })));
-      } else {
-        // Manual Mode - Try fetching list from provider using stored credentials
-        const service = new AIProvidersApiService();
-        const res = await service.getRemoteModels(provider.id);
-        setRemoteModels(res.models || []);
-      }
-    } catch (e: any) {
-      console.error('Failed to fetch models', e);
-      // Don't show toast for manual mode as it might fail due to empty key
-      if (isStore) {
-        toast?.showToast('error', t('settings.providers.fetchModels.failed'), e?.message);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleInstallFromStore = async (model: any) => {
+  const handleInstallFromStore = async (model: AvailableModel) => {
     setSaving(true);
+    setInstallingId(model.id);
     try {
       await storeApi.installModel(model.id);
       toast?.showToast('success', t('tools.store.model.installSuccess'));
       await loadProviders();
       onClose();
-    } catch (e: any) {
-      toast?.showToast('error', t('common.saveFailed'), e?.message);
+    } catch (e) {
+      toast?.showToast('error', t('common.saveFailed'), errorMessage(e));
     } finally {
       setSaving(false);
+      setInstallingId(null);
     }
   };
 
   const handleManualAdd = async () => {
     if (!provider || (selectedModels.length === 0 && !modelId.trim())) return;
-    
+
     setSaving(true);
     try {
       const modelsToSubmit = [...selectedModels];
@@ -93,187 +115,185 @@ const AddModelModal: React.FC<AddModelModalProps> = ({ isOpen, onClose, provider
         modelsToSubmit.push({ id: modelId.trim(), type: modelType });
       }
 
-      await addModelToProvider(provider.id, modelsToSubmit.map(m => ({
-        model_id: m.id,
-        model_type: m.type
-      })));
+      await addModelToProvider(provider.id, modelsToSubmit.map(m => ({ model_id: m.id, model_type: m.type })));
       toast?.showToast('success', t('settings.providers.toast.modelAdded'));
       onClose();
-    } catch (e: any) {
-      toast?.showToast('error', t('common.saveFailed'), e?.message);
+    } catch (e) {
+      toast?.showToast('error', t('common.saveFailed'), errorMessage(e));
     } finally {
       setSaving(false);
     }
   };
 
-  const toggleModel = (id: string, type: 'chat' | 'embedding') => {
-    setSelectedModels(prev => {
-      const exists = prev.find(m => m.id === id);
-      if (exists) {
-        return prev.filter(m => m.id !== id);
-      } else {
-        return [...prev, { id, type }];
-      }
-    });
+  const toggleModel = (id: string, type: ModelType) => {
+    setSelectedModels(prev => (prev.some(m => m.id === id) ? prev.filter(m => m.id !== id) : [...prev, { id, type }]));
   };
 
-  if (!isOpen || !provider) return null;
+  if (!provider) return null;
+
+  const typedModels = remoteModels.filter(m => !m.model_type || m.model_type === modelType);
+  const suggestions = typedModels.filter(m => !modelId.trim() || m.id.toLowerCase().includes(modelId.toLowerCase()));
+  const canAdd = selectedModels.length > 0 || Boolean(modelId.trim());
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6">
-      <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300" onClick={onClose} />
-      
-      <div className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-[2rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[80vh]">
-        <header className="px-8 py-6 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
-          <h2 className="text-xl font-black text-gray-900 dark:text-gray-100">
-            {t('settings.providers.addModelTo')} {provider.name}
-          </h2>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors">
-            <FiX className="w-5 h-5 text-gray-400" />
-          </button>
-        </header>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      preventClose={saving}
+      zIndex="z-[60]"
+      icon={Cpu}
+      title={`${t('settings.providers.addModelTo')} ${provider.name}`}
+      subtitle={isStore ? t('settings.providers.storeModel') : t(`settings.providers.provider.${provider.kind}`)}
+      footer={
+        isStore ? (
+          <SecondaryButton onClick={onClose}>{t('common.close', 'Close')}</SecondaryButton>
+        ) : (
+          <>
+            <SecondaryButton onClick={onClose} disabled={saving}>{t('common.cancel')}</SecondaryButton>
+            <PrimaryButton onClick={handleManualAdd} loading={saving} disabled={!canAdd} icon={<Plus className="h-4 w-4" />}>
+              {selectedModels.length > 0 ? `${t('common.add')} (${selectedModels.length})` : t('common.add')}
+            </PrimaryButton>
+          </>
+        )
+      }
+    >
+      <Field label={t('settings.providers.fields.modelType')}>
+        <div className="tgo-tabs w-full" role="radiogroup">
+          {([
+            { value: 'chat' as const, icon: MessageSquareText, label: t('settings.providers.modelTypes.chat') },
+            { value: 'embedding' as const, icon: Binary, label: t('settings.providers.modelTypes.embedding') },
+          ]).map(option => {
+            const Icon = option.icon;
+            return (
+              <button
+                key={option.value}
+                type="button"
+                role="radio"
+                aria-checked={modelType === option.value}
+                data-active={modelType === option.value}
+                onClick={() => setModelType(option.value)}
+                className="tgo-tab flex-1 justify-center"
+              >
+                <Icon className="h-4 w-4" />
+                {option.label}
+              </button>
+            );
+          })}
+        </div>
+      </Field>
 
-        <div className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar">
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-gray-700 dark:text-gray-300">{t('settings.providers.fields.modelType')}</label>
-            <Select
-              value={modelType}
-              onChange={(val) => setModelType(val as 'chat' | 'embedding')}
-              options={[
-                { value: 'chat', label: t('settings.providers.modelTypes.chat') },
-                { value: 'embedding', label: t('settings.providers.modelTypes.embedding') },
-              ]}
-            />
+      {isStore ? (
+        loading ? (
+          <div className="flex flex-col items-center justify-center gap-3 py-10 text-gray-500">
+            <Loader2 className="h-6 w-6 animate-spin" />
+            <p className="text-sm">{t('common.loading')}</p>
           </div>
-
-          {isStore ? (
-            // Store Mode UI
-            <div className="space-y-4">
-              {loading ? (
-                <div className="flex flex-col items-center justify-center py-10 gap-3 text-gray-500">
-                  <FiLoader className="w-8 h-8 animate-spin" />
-                  <p className="text-sm font-bold">{t('common.loading')}</p>
+        ) : typedModels.length === 0 ? (
+          <div className="tgo-well flex flex-col items-center py-10 text-center">
+            <span className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-white text-gray-400 shadow-sm dark:bg-gray-800">
+              <Cpu className="h-5 w-5" />
+            </span>
+            <p className="text-sm text-gray-500">{t('settings.providers.noStoreModels')}</p>
+          </div>
+        ) : (
+          <ul className="space-y-2">
+            {typedModels.map(m => (
+              <li key={m.id} className="tgo-well flex items-center justify-between gap-4 px-4 py-3">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-gray-900 dark:text-gray-100">{m.title || m.name}</p>
+                  <p className="truncate font-mono text-[11px] text-gray-400">{m.name}</p>
                 </div>
-              ) : remoteModels.filter(m => m.model_type === modelType).length === 0 ? (
-                <div className="text-center py-10 text-gray-400">
-                  <FiCpu className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                  <p className="text-sm font-bold">{t('settings.providers.noStoreModels')}</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {remoteModels
-                    .filter(m => m.model_type === modelType)
-                    .map(m => (
-                      <div 
-                        key={m.id} 
-                        className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-transparent hover:border-blue-200 dark:hover:border-blue-900 transition-all"
-                      >
-                        <div className="flex-1 min-w-0 mr-4">
-                          <div className="font-black text-gray-900 dark:text-gray-100 truncate">{m.title_zh || m.name}</div>
-                          <div className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">{m.name}</div>
-                        </div>
-                        {m.is_installed ? (
-                          <div className="flex items-center gap-1 text-green-500 text-xs font-black uppercase">
-                            <FiCheck />
-                            {t('common.installed')}
-                          </div>
-                        ) : (
-                          <Button 
-                            size="sm" 
-                            variant="primary" 
-                            onClick={() => handleInstallFromStore(m)}
-                            disabled={saving}
-                            className="rounded-xl px-4 py-1.5 h-auto text-xs font-black"
-                          >
-                            {saving ? <FiLoader className="animate-spin mr-1" /> : <FiPlus className="mr-1" />}
-                            {t('common.install')}
-                          </Button>
-                        )}
-                      </div>
-                    ))}
-                </div>
-              )}
-            </div>
-          ) : (
-            // Manual Mode UI
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-gray-700 dark:text-gray-300">{t('settings.providers.fields.modelId')} *</label>
-                <div className="relative">
-                  <div className="flex gap-2 mb-2 flex-wrap">
-                    {selectedModels.map(m => (
-                      <span key={m.id} className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg text-xs font-bold border border-blue-100 dark:border-blue-800">
-                        {m.id}
-                        <button onClick={() => toggleModel(m.id, m.type)} className="hover:text-red-500">
-                          <FiX className="w-3 h-3" />
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                  <input
-                    className="w-full bg-gray-50 dark:bg-gray-800 border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 transition-all"
-                    value={modelId}
-                    onChange={(e) => setModelId(e.target.value)}
-                    placeholder={t('settings.providers.placeholders.manualModelId')}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && modelId.trim()) {
-                        toggleModel(modelId.trim(), modelType);
-                        setModelId('');
-                        e.preventDefault();
-                      }
-                    }}
-                  />
-                  
-                  {loading ? (
-                    <div className="mt-4 flex justify-center">
-                      <FiLoader className="w-6 h-6 animate-spin text-blue-600" />
-                    </div>
-                  ) : remoteModels.length > 0 && (
-                    <div className="mt-4 space-y-2">
-                      <p className="px-1 text-[10px] font-black text-gray-400 uppercase tracking-widest">{t('settings.providers.suggestedModels')}</p>
-                      <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
-                        {remoteModels
-                          .filter(m => m.model_type === modelType)
-                          .filter(m => !modelId.trim() || m.id.toLowerCase().includes(modelId.toLowerCase()))
-                          .map(m => {
-                            const isSelected = selectedModels.some(sm => sm.id === m.id);
-                            return (
-                              <button
-                                key={m.id}
-                                onClick={() => toggleModel(m.id, m.model_type || modelType)}
-                                className={`w-full text-left px-4 py-3 rounded-2xl text-sm font-bold transition-all flex justify-between items-center ${
-                                  isSelected 
-                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-100 dark:shadow-none' 
-                                    : 'bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700'
-                                }`}
-                              >
-                                <span>{m.id}</span>
-                                {isSelected && <FiCheck className="w-4 h-4" />}
-                              </button>
-                            );
-                          })}
-                      </div>
-                    </div>
-                  )}
-                </div>
+                {m.is_installed ? (
+                  <span className="tgo-chip bg-acid-100 text-acid-800 dark:bg-acid-400/15 dark:text-acid-300">
+                    <Check className="h-3 w-3" />
+                    {t('common.installed')}
+                  </span>
+                ) : (
+                  <PrimaryButton
+                    onClick={() => handleInstallFromStore(m)}
+                    disabled={saving}
+                    loading={installingId === m.id}
+                    icon={<Plus className="h-3.5 w-3.5" />}
+                    className="!h-9 !px-4 text-xs"
+                  >
+                    {t('common.install')}
+                  </PrimaryButton>
+                )}
+              </li>
+            ))}
+          </ul>
+        )
+      ) : (
+        <>
+          <Field label={t('settings.providers.fields.modelId')} htmlFor="manual-model-id" required hint={t('tagInput.hint', 'Press Enter to add')}>
+            {selectedModels.length > 0 && (
+              <div className="mb-2 flex flex-wrap gap-1.5">
+                {selectedModels.map(m => (
+                  <span key={m.id} className="inline-flex h-7 items-center gap-1 rounded-full bg-ink-900 pl-3 pr-1.5 text-xs font-medium text-white dark:bg-acid-400 dark:text-ink-900">
+                    {m.id}
+                    <button
+                      type="button"
+                      onClick={() => toggleModel(m.id, m.type)}
+                      className="flex h-4 w-4 items-center justify-center rounded-full hover:bg-white/20 dark:hover:bg-black/15"
+                      aria-label={`${t('common.delete')} ${m.id}`}
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
               </div>
+            )}
+            <input
+              id="manual-model-id"
+              className="tgo-input font-mono text-[13px]"
+              value={modelId}
+              onChange={(e) => setModelId(e.target.value)}
+              placeholder={t('settings.providers.placeholders.manualModelId')}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && modelId.trim()) {
+                  toggleModel(modelId.trim(), modelType);
+                  setModelId('');
+                  e.preventDefault();
+                }
+              }}
+            />
+          </Field>
 
-              <div className="pt-4">
-                <Button 
-                  variant="primary" 
-                  className="w-full py-4 rounded-2xl font-black shadow-xl shadow-blue-200 dark:shadow-none"
-                  onClick={handleManualAdd}
-                  disabled={saving || (selectedModels.length === 0 && !modelId.trim())}
-                >
-                  {saving ? <FiLoader className="animate-spin mr-2" /> : <FiPlus className="mr-2" />}
-                  {selectedModels.length > 0 ? `${t('common.add')} (${selectedModels.length})` : t('common.add')}
-                </Button>
+          {loading ? (
+            <div className="flex justify-center py-4">
+              <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+            </div>
+          ) : suggestions.length > 0 && (
+            <div>
+              <p className="tgo-eyebrow mb-2 flex items-center gap-1.5">
+                <Sparkles className="h-3 w-3" />
+                {t('settings.providers.suggestedModels')}
+              </p>
+              <div className="custom-scrollbar grid max-h-56 grid-cols-1 gap-1.5 overflow-y-auto pr-1">
+                {suggestions.map(m => {
+                  const isSelected = selectedModels.some(sm => sm.id === m.id);
+                  const type: ModelType = m.model_type === 'embedding' ? 'embedding' : m.model_type === 'chat' ? 'chat' : modelType;
+                  return (
+                    <button
+                      key={m.id}
+                      type="button"
+                      data-active={isSelected}
+                      onClick={() => toggleModel(m.id, type)}
+                      className="tgo-option !py-2.5 font-mono text-[13px] text-gray-800 dark:text-gray-200"
+                    >
+                      <span className="min-w-0 flex-1 truncate">{m.id}</span>
+                      <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-all ${isSelected ? 'bg-ink-900 text-acid-400 dark:bg-acid-400 dark:text-ink-900' : 'bg-gray-100 text-transparent dark:bg-gray-700'}`}>
+                        <Check className="h-3 w-3" strokeWidth={3} />
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
-        </div>
-      </div>
-    </div>
+        </>
+      )}
+    </Modal>
   );
 };
 

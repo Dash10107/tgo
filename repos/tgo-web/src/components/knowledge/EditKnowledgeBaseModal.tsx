@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { X, FileText, Globe, MessageSquare, Loader2, FolderOpen } from 'lucide-react';
+import { FileText, Globe, MessageSquare, PencilLine, Lock } from 'lucide-react';
+import { Modal, Field, PrimaryButton, SecondaryButton } from '@/components/ui/ModalKit';
+
 import { TagInput } from '@/components/ui/TagInput';
 import type { KnowledgeBaseItem, KnowledgeBaseType } from '@/types';
 import { useTranslation } from 'react-i18next';
@@ -120,30 +122,12 @@ export const EditKnowledgeBaseModal: React.FC<EditKnowledgeBaseModalProps> = ({
     setFormData(prev => ({ ...prev, tags }));
   };
 
-  // Get the icon component based on type
-  const getTypeIcon = () => {
-    switch (knowledgeBase?.type) {
-      case 'website':
-        return <Globe className="w-5 h-5 text-green-600 dark:text-green-400" />;
-      case 'qa':
-        return <MessageSquare className="w-5 h-5 text-purple-600 dark:text-purple-400" />;
-      case 'file':
-      default:
-        return <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />;
-    }
-  };
-
-  const getTypeLabel = () => {
-    switch (knowledgeBase?.type) {
-      case 'website':
-        return t('knowledge.typeWebsite', 'Website');
-      case 'qa':
-        return t('knowledge.typeQA', 'QA Pairs');
-      case 'file':
-      default:
-        return t('knowledge.typeFile', 'File');
-    }
-  };
+  const typeMeta = {
+    website: { icon: Globe, label: t('knowledge.typeWebsite', 'Website') },
+    qa: { icon: MessageSquare, label: t('knowledge.typeQA', 'QA Pairs') },
+    file: { icon: FileText, label: t('knowledge.typeFile', 'File') },
+  }[knowledgeBase?.type ?? 'file'];
+  const TypeIcon = typeMeta.icon;
 
   const handleClose = () => {
     if (!isLoading) {
@@ -151,177 +135,109 @@ export const EditKnowledgeBaseModal: React.FC<EditKnowledgeBaseModalProps> = ({
     }
   };
 
-  if (!isOpen || !knowledgeBase) return null;
+  if (!knowledgeBase) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
-        {/* Header with gradient background */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-800 p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-white dark:bg-gray-700 rounded-xl shadow-sm">
-                <FolderOpen className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
-                  {t('knowledge.edit', 'Edit Knowledge Base')}
-                </h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                  {t('knowledge.editDesc', 'Modify knowledge base basic information')}
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={handleClose}
-              disabled={isLoading}
-              className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 disabled:opacity-50"
-            >
-              <X className="w-5 h-5" />
-            </button>
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      preventClose={isLoading}
+      size="md"
+      icon={PencilLine}
+      title={t('knowledge.edit', 'Edit Knowledge Base')}
+      subtitle={t('knowledge.editDesc', 'Modify knowledge base basic information')}
+      onSubmit={handleSubmit}
+      footer={
+        <>
+          <SecondaryButton onClick={handleClose} disabled={isLoading}>
+            {t('common.cancel', 'Cancel')}
+          </SecondaryButton>
+          <PrimaryButton type="submit" loading={isLoading} loadingText={t('common.updating', 'Updating...')}>
+            {t('knowledge.update', 'Update Knowledge Base')}
+          </PrimaryButton>
+        </>
+      }
+    >
+      {/* Type (read-only) */}
+      <div className="tgo-well flex items-center gap-3 p-4">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink-900 text-acid-400 dark:bg-acid-400 dark:text-ink-900">
+          <TypeIcon className="h-[18px] w-[18px]" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{typeMeta.label}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            {t('knowledge.typeReadonly', 'Knowledge base type cannot be changed after creation')}
+          </p>
+        </div>
+        <Lock className="h-4 w-4 shrink-0 text-gray-300 dark:text-gray-600" />
+      </div>
+
+      {/* Website crawl info (read-only) */}
+      {knowledgeBase.type === 'website' && knowledgeBase.crawlConfig && (
+        <div className="tgo-well space-y-3 p-4">
+          <p className="tgo-eyebrow flex items-center gap-1.5">
+            <Globe className="h-3.5 w-3.5" />
+            {t('knowledge.crawl.info', 'Crawl Configuration')}
+          </p>
+          <p className="truncate font-mono text-[13px] text-gray-700 dark:text-gray-200" title={knowledgeBase.crawlConfig.start_url}>
+            {knowledgeBase.crawlConfig.start_url}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <span className="tgo-chip bg-white dark:bg-gray-800">{t('knowledge.crawl.maxPages', 'Max Pages')} · <b className="text-gray-900 dark:text-white">{knowledgeBase.crawlConfig.max_pages || 100}</b></span>
+            <span className="tgo-chip bg-white dark:bg-gray-800">{t('knowledge.crawl.maxDepth', 'Max Depth')} · <b className="text-gray-900 dark:text-white">{knowledgeBase.crawlConfig.max_depth || 3}</b></span>
           </div>
         </div>
+      )}
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
-          <div className="p-6 overflow-y-auto flex-1 space-y-5">
-            {/* Type Display (Read-only) */}
-            <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-700">
-              <div className="p-2 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
-                {getTypeIcon()}
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-800 dark:text-gray-100">
-                  {getTypeLabel()}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {t('knowledge.typeReadonly', 'Knowledge base type cannot be changed after creation')}
-                </p>
-              </div>
-            </div>
+      <Field
+        label={t('knowledge.name', 'Name')}
+        htmlFor="edit-kb-name"
+        required
+        error={errors.name}
+        aside={`${formData.name.length}/50`}
+      >
+        <input
+          id="edit-kb-name"
+          type="text"
+          value={formData.name}
+          onChange={(e) => handleInputChange('name', e.target.value)}
+          placeholder={t('knowledge.namePlaceholder', 'Enter knowledge base name')}
+          disabled={isLoading}
+          aria-invalid={Boolean(errors.name)}
+          className="tgo-input"
+          maxLength={50}
+        />
+      </Field>
 
-            {/* Website Crawl Info (Read-only, only for website type) */}
-            {knowledgeBase.type === 'website' && knowledgeBase.crawlConfig && (
-              <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl">
-                <div className="flex items-center gap-2 mb-3">
-                  <Globe className="w-4 h-4 text-green-600 dark:text-green-400" />
-                  <span className="text-sm font-medium text-green-700 dark:text-green-300">
-                    {t('knowledge.crawl.info', 'Crawl Configuration')}
-                  </span>
-                </div>
-                <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                  <p className="flex items-center gap-2">
-                    <span className="font-medium text-gray-700 dark:text-gray-300">{t('knowledge.crawl.startUrl', 'Website URL')}:</span>
-                    <span className="truncate">{knowledgeBase.crawlConfig.start_url}</span>
-                  </p>
-                  <div className="flex gap-6">
-                    <p><span className="font-medium text-gray-700 dark:text-gray-300">{t('knowledge.crawl.maxPages', 'Max Pages')}:</span> {knowledgeBase.crawlConfig.max_pages || 100}</p>
-                    <p><span className="font-medium text-gray-700 dark:text-gray-300">{t('knowledge.crawl.maxDepth', 'Max Depth')}:</span> {knowledgeBase.crawlConfig.max_depth || 3}</p>
-                  </div>
-                </div>
-              </div>
-            )}
+      <Field
+        label={t('knowledge.description', 'Description')}
+        htmlFor="edit-kb-description"
+        required
+        error={errors.description}
+        hint={t('knowledge.descriptionHelper', 'The more accurate the description, the easier it is for AI to use this knowledge base correctly')}
+      >
+        <textarea
+          id="edit-kb-description"
+          value={formData.description}
+          onChange={(e) => handleInputChange('description', e.target.value)}
+          placeholder={t('knowledge.descriptionPlaceholder', 'Describe the content and purpose of the knowledge base')}
+          disabled={isLoading}
+          rows={3}
+          aria-invalid={Boolean(errors.description)}
+          className="tgo-input"
+        />
+      </Field>
 
-            {/* Basic Info Section */}
-            <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-5 space-y-4 border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-3 pb-3 border-b border-gray-200 dark:border-gray-700">
-                <FileText className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                <h3 className="font-medium text-gray-800 dark:text-gray-100">{t('knowledge.basicInfo', 'Basic Information')}</h3>
-              </div>
-
-              {/* Name Field */}
-              <div>
-                <label htmlFor="edit-kb-name" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                  {t('knowledge.name', 'Name')} <span className="text-red-500 dark:text-red-400">*</span>
-                </label>
-                <input
-                  id="edit-kb-name"
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  placeholder={t('knowledge.namePlaceholder', 'Enter knowledge base name')}
-                  disabled={isLoading}
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white dark:bg-gray-700 dark:text-gray-100 ${
-                    errors.name ? 'border-red-300 bg-red-50 dark:border-red-600 dark:bg-red-950' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
-                  } ${isLoading ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''}`}
-                  maxLength={50}
-                />
-                {errors.name && (
-                  <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">{errors.name}</p>
-                )}
-                <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                  {formData.name.length}/50 {t('common.characters', 'characters')}
-                </p>
-              </div>
-
-              {/* Description Field */}
-              <div>
-                <label htmlFor="edit-kb-description" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                  {t('knowledge.description', 'Description')} <span className="text-red-500 dark:text-red-400">*</span>
-                </label>
-                <textarea
-                  id="edit-kb-description"
-                  value={formData.description}
-                  onChange={(e) => handleInputChange('description', e.target.value)}
-                  placeholder={t('knowledge.descriptionPlaceholder', 'Describe the content and purpose of the knowledge base')}
-                  disabled={isLoading}
-                  rows={3}
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-vertical bg-white dark:bg-gray-700 dark:text-gray-100 ${
-                    errors.description ? 'border-red-300 bg-red-50 dark:border-red-600 dark:bg-red-950' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
-                  } ${isLoading ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''}`}
-                />
-                {errors.description && (
-                  <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">{errors.description}</p>
-                )}
-                <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                  {t('knowledge.descriptionHelper', 'The more accurate the description, the easier it is for AI to use this knowledge base correctly')}
-                </p>
-              </div>
-
-              {/* Tags Field */}
-              <div>
-                <label htmlFor="edit-kb-tags" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                  {t('knowledge.tags', 'Tags')} <span className="text-gray-400 dark:text-gray-500 font-normal">({t('common.optional', 'Optional')})</span>
-                </label>
-                <TagInput
-                  tags={formData.tags}
-                  onTagsChange={handleTagsChange}
-                  placeholder={t('knowledge.tagsPlaceholder', 'Enter tags and press Enter to add')}
-                  maxTags={10}
-                  maxTagLength={20}
-                  disabled={isLoading}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Footer */}
-          <div className="flex justify-end space-x-3 p-6 border-t border-gray-200 dark:border-gray-700 flex-shrink-0 bg-gray-50 dark:bg-gray-800/50">
-            <button
-              type="button"
-              onClick={handleClose}
-              disabled={isLoading}
-              className="px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {t('common.cancel', 'Cancel')}
-            </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 dark:bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center shadow-sm"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
-                  {t('common.updating', 'Updating...')}
-                </>
-              ) : (
-                t('knowledge.update', 'Update Knowledge Base')
-              )}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+      <Field label={t('knowledge.tags', 'Tags')} optional>
+        <TagInput
+          tags={formData.tags}
+          onTagsChange={handleTagsChange}
+          placeholder={t('knowledge.tagsPlaceholder', 'Enter tags and press Enter to add')}
+          maxTags={10}
+          maxTagLength={20}
+          disabled={isLoading}
+        />
+      </Field>
+    </Modal>
   );
 };

@@ -1,24 +1,76 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import yaml from 'js-yaml';
-import { 
-  Puzzle, RefreshCcw, Info, 
-  XCircle, Plus, Trash2, Play, Square, RotateCw, Terminal, 
-  Github, Download, Key, Copy, Check, ExternalLink, Cpu, Box,
-  Code, Settings, ArrowUpCircle
+import {
+  Puzzle, Info, XCircle, Plus, Trash2, Play, Square, RotateCw, Terminal,
+  Github, Download, Key, Copy, Check, Cpu, Box, Code, Settings, ArrowUpCircle,
+  Loader2, Link2, FileCode2, ArrowLeft, Eye, AlertTriangle, Clock, Hash, Sparkles,
 } from 'lucide-react';
 import { usePluginStore } from '@/stores/pluginStore';
 import { useAuthStore } from '@/stores/authStore';
 import { formatRelativeTime } from '@/utils/dateUtils';
 import { useToast } from '@/hooks/useToast';
 import type { InstalledPluginInfo } from '@/types/plugin';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
+import { Modal, Field, PrimaryButton, SecondaryButton } from '@/components/ui/ModalKit';
+import { InkButton, GhostButton, SectionHeader, RefreshButton, EmptyPanel, SkeletonGrid } from '@/components/ui/PageKit';
+import { SettingsPage, SettingsNote } from './SettingsKit';
+
+/** Plugin manifest returned by the "fetch info" endpoint */
+interface FetchedPluginInfo {
+  id: string;
+  name: string;
+  version: string;
+  author?: string;
+  description?: string;
+  source_url?: string;
+  install_type?: string;
+}
+
+interface UpgradeTarget {
+  plugin: InstalledPluginInfo;
+  latest_config: { version: string };
+}
+
+interface StreamProgress {
+  stage: string;
+  message: string;
+}
+
+interface ApiLikeError {
+  getUserMessage?: () => string;
+  message?: string;
+  response?: { data?: { error?: { message?: string }; detail?: string } };
+}
+
+const apiErrorMessage = (err: unknown): string | undefined => {
+  const e = err as ApiLikeError | null;
+  return e?.getUserMessage?.() || e?.response?.data?.error?.message || e?.response?.data?.detail || e?.message;
+};
+
+const hostnameOf = (url?: string): string => {
+  if (!url) return '-';
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return url;
+  }
+};
+
+const STATUS_STYLES: Record<InstalledPluginInfo['status'], { chip: string; dot: string }> = {
+  running: { chip: 'bg-acid-100 text-acid-800 dark:bg-acid-400/15 dark:text-acid-300', dot: 'bg-acid-500' },
+  error: { chip: 'bg-red-50 text-red-600 dark:bg-red-900/25 dark:text-red-400', dot: 'bg-red-500' },
+  installing: { chip: 'bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300', dot: 'bg-sky-400 animate-pulse' },
+  pending: { chip: 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300', dot: 'bg-amber-400' },
+  stopped: { chip: '', dot: 'bg-gray-400' },
+};
 
 const PluginsSettings: React.FC = () => {
   const { t } = useTranslation();
   const { showSuccess, showError, showInfo } = useToast();
   const { user } = useAuthStore();
-  const { 
-    installedPlugins, 
+  const {
+    installedPlugins,
     isLoadingInstalled,
     fetchInstalledPlugins,
     uninstallPlugin,
@@ -36,11 +88,11 @@ const PluginsSettings: React.FC = () => {
   const [showInstallModal, setShowInstallModal] = useState(false);
   const [installStep, setInstallStep] = useState<1 | 2>(1);
   const [pluginUrl, setPluginUrl] = useState('');
-  const [fetchedPluginInfo, setFetchedPluginInfo] = useState<any>(null);
+  const [fetchedPluginInfo, setFetchedPluginInfo] = useState<FetchedPluginInfo | null>(null);
   const [isFetchingInfo, setIsFetchingInfo] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
-  const [installProgress, setInstallProgress] = useState<{stage: string, message: string} | null>(null);
-  
+  const [installProgress, setInstallProgress] = useState<StreamProgress | null>(null);
+
   const [showTokenModal, setShowTokenModal] = useState(false);
   const [yamlConfig, setYamlConfig] = useState('');
   const [isInstalling, setIsInstalling] = useState(false);
@@ -52,23 +104,27 @@ const PluginsSettings: React.FC = () => {
   const [isGeneratingToken, setIsGeneratingToken] = useState(false);
   const [copied, setCopied] = useState(false);
   const [processingPlugins, setProcessingPlugins] = useState<Record<string, string | null>>({});
-  
+  const [uninstallTarget, setUninstallTarget] = useState<InstalledPluginInfo | null>(null);
+
   const [isCheckingUpdate, setIsCheckingUpdate] = useState<Record<string, boolean>>({});
-  const [showUpgradeModal, setShowUpgradeModal] = useState<any>(null); // { plugin, latest_config }
+  const [showUpgradeModal, setShowUpgradeModal] = useState<UpgradeTarget | null>(null);
   const [isUpgrading, setIsUpgrading] = useState(false);
-  const [upgradeProgress, setUpgradeProgress] = useState<{stage: string, message: string} | null>(null);
+  const [upgradeProgress, setUpgradeProgress] = useState<StreamProgress | null>(null);
 
   useEffect(() => {
     fetchInstalledPlugins();
   }, [fetchInstalledPlugins]);
 
+  // Keep the logs view live while it is open
+  useEffect(() => {
+    if (!showLogsPluginId) return undefined;
+    const timer = window.setInterval(() => {
+      getPluginLogs(showLogsPluginId).then(setLogs).catch(() => {});
+    }, 5000);
+    return () => window.clearInterval(timer);
+  }, [showLogsPluginId, getPluginLogs]);
+
   const handlePluginAction = async (pluginId: string, action: 'start' | 'stop' | 'restart' | 'uninstall') => {
-    if (action === 'uninstall') {
-      if (!confirm(t('settings.plugins.actions.uninstallConfirm', 'Are you sure you want to uninstall this plugin? This action cannot be undone.'))) {
-        return;
-      }
-    }
-    
     setProcessingPlugins(prev => ({ ...prev, [pluginId]: action }));
     try {
       switch (action) {
@@ -79,6 +135,7 @@ const PluginsSettings: React.FC = () => {
       }
     } catch (error) {
       console.error(`Action ${action} failed for plugin ${pluginId}:`, error);
+      showError(t('common.error', 'Error'), apiErrorMessage(error));
     } finally {
       setProcessingPlugins(prev => ({ ...prev, [pluginId]: null }));
     }
@@ -87,36 +144,53 @@ const PluginsSettings: React.FC = () => {
   const handleCheckUpdate = async (pluginId: string) => {
     setIsCheckingUpdate(prev => ({ ...prev, [pluginId]: true }));
     try {
-      const info = await checkPluginUpdate(pluginId);
-      
+      const info = await checkPluginUpdate(pluginId) as { has_update?: boolean; message?: string };
+
       if (info.message) {
         showInfo(
-          info.has_update ? t('settings.plugins.updateAvailable', 'Update Available') : t('common.notice', 'Notice'), 
+          info.has_update ? t('settings.plugins.updateAvailable', 'Update Available') : t('common.notice', 'Notice'),
           info.message
         );
       } else if (!info.has_update) {
         showSuccess(t('settings.plugins.checkUpdate', 'Check Update'), t('settings.plugins.noUpdate', 'Already the latest version'));
       }
-      
+
       // Refresh list to show the badge persisted in DB
       await fetchInstalledPlugins();
-    } catch (error: any) {
+    } catch (error) {
       console.error(`Failed to check update for ${pluginId}:`, error);
-      showError(
-        t('settings.plugins.checkUpdateError', 'Failed to check for updates'), 
-        error.response?.data?.error?.message || error.message
-      );
+      showError(t('settings.plugins.checkUpdateError', 'Failed to check for updates'), apiErrorMessage(error));
     } finally {
       setIsCheckingUpdate(prev => ({ ...prev, [pluginId]: false }));
+    }
+  };
+
+  const handleOpenUpgrade = async (plugin: InstalledPluginInfo) => {
+    setIsCheckingUpdate(prev => ({ ...prev, [plugin.plugin_id]: true }));
+    try {
+      const info = await checkPluginUpdate(plugin.plugin_id) as { latest_config?: UpgradeTarget['latest_config'] };
+      if (info.latest_config) {
+        setShowUpgradeModal({ plugin, latest_config: info.latest_config });
+      }
+    } catch (e) {
+      console.error(e);
+      showError(t('settings.plugins.checkUpdateError', 'Failed to check for updates'), apiErrorMessage(e));
+    } finally {
+      setIsCheckingUpdate(prev => ({ ...prev, [plugin.plugin_id]: false }));
     }
   };
 
   const handleUpgrade = async () => {
     if (!showUpgradeModal) return;
     const { plugin, latest_config } = showUpgradeModal;
-    
+
     setIsUpgrading(true);
     setUpgradeProgress({ stage: 'preparing', message: t('settings.plugins.upgrade.preparing', 'Preparing upgrade...') });
+
+    const fail = (error: unknown) => {
+      setUpgradeProgress({ stage: 'error', message: apiErrorMessage(error) || t('settings.plugins.upgrade.error', 'Upgrade failed') });
+      setIsUpgrading(false);
+    };
 
     try {
       await upgradePluginStream(
@@ -135,16 +209,10 @@ const PluginsSettings: React.FC = () => {
             setIsUpgrading(false);
           }
         },
-        (error) => {
-          const message = error.getUserMessage?.() || error.message || t('settings.plugins.upgrade.error', 'Upgrade failed');
-          setUpgradeProgress({ stage: 'error', message });
-          setIsUpgrading(false);
-        }
+        fail
       );
-    } catch (error: any) {
-      const message = error.getUserMessage?.() || error.message || t('settings.plugins.upgrade.error', 'Upgrade failed');
-      setUpgradeProgress({ stage: 'error', message });
-      setIsUpgrading(false);
+    } catch (error) {
+      fail(error);
     }
   };
 
@@ -153,36 +221,40 @@ const PluginsSettings: React.FC = () => {
     setIsFetchingInfo(true);
     setFetchError(null);
     try {
-      const info = await fetchPluginInfo(pluginUrl);
+      const info = await fetchPluginInfo(pluginUrl) as FetchedPluginInfo;
       setFetchedPluginInfo(info);
       setInstallStep(2);
-    } catch (error: any) {
-      // Handle structured API error
-      const message = error.getUserMessage?.() || 
-                      error.response?.data?.error?.message || 
-                      error.response?.data?.detail || 
-                      error.message || 
-                      t('settings.plugins.fetch.error', 'Unable to fetch plugin information. Please check that the URL is correct.');
-      setFetchError(message);
+    } catch (error) {
+      setFetchError(apiErrorMessage(error) || t('settings.plugins.fetch.error', 'Unable to fetch plugin information. Please check that the URL is correct.'));
     } finally {
       setIsFetchingInfo(false);
     }
   };
 
   const handleInstall = async () => {
+    let config: unknown;
+    if (showManualMode) {
+      if (!yamlConfig.trim()) return;
+      try {
+        config = yaml.load(yamlConfig);
+      } catch (error) {
+        setFetchError(error instanceof Error ? error.message : t('settings.plugins.install.error', 'Installation failed'));
+        return;
+      }
+    } else {
+      if (!fetchedPluginInfo) return;
+      config = fetchedPluginInfo;
+    }
+
     setIsInstalling(true);
     setInstallProgress({ stage: 'preparing', message: t('settings.plugins.install.preparing', 'Preparing installation...') });
-    
-    try {
-      let config: any;
-      if (showManualMode) {
-        if (!yamlConfig.trim()) return;
-        config = yaml.load(yamlConfig);
-      } else {
-        if (!fetchedPluginInfo) return;
-        config = fetchedPluginInfo;
-      }
 
+    const fail = (error: unknown) => {
+      setInstallProgress({ stage: 'error', message: apiErrorMessage(error) || t('settings.plugins.install.error', 'Installation failed') });
+      setIsInstalling(false);
+    };
+
+    try {
       await installPluginStream(
         config,
         (data) => {
@@ -194,16 +266,10 @@ const PluginsSettings: React.FC = () => {
             setIsInstalling(false);
           }
         },
-        (error) => {
-          const message = error.getUserMessage?.() || error.message || t('settings.plugins.install.error', 'Installation failed');
-          setInstallProgress({ stage: 'error', message });
-          setIsInstalling(false);
-        }
+        fail
       );
-    } catch (error: any) {
-      const message = error.getUserMessage?.() || error.message || t('settings.plugins.install.error', 'Installation failed');
-      setInstallProgress({ stage: 'error', message });
-      setIsInstalling(false);
+    } catch (error) {
+      fail(error);
     }
   };
 
@@ -215,18 +281,18 @@ const PluginsSettings: React.FC = () => {
       setDevToken(token);
       setShowTokenModal(true);
     } catch (error) {
-      alert(t('settings.plugins.token.error', 'Failed to generate token'));
+      showError(t('settings.plugins.token.error', 'Failed to generate token'), apiErrorMessage(error));
     } finally {
       setIsGeneratingToken(false);
     }
   };
 
   const handleCopyToken = () => {
-    if (devToken) {
-      navigator.clipboard.writeText(devToken);
+    if (!devToken) return;
+    navigator.clipboard.writeText(devToken).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    }
+    }).catch(() => showError(t('common.copyFailed', 'Copy failed')));
   };
 
   const resetInstallState = () => {
@@ -235,1007 +301,725 @@ const PluginsSettings: React.FC = () => {
     setYamlConfig('');
     setPluginUrl('');
     setFetchedPluginInfo(null);
+    setFetchError(null);
+    setShowManualMode(false);
     setInstallStep(1);
     setIsInstalling(false);
   };
 
   const handleShowLogs = async (pluginId: string) => {
     setShowLogsPluginId(pluginId);
-    const pluginLogs = await getPluginLogs(pluginId);
-    setLogs(pluginLogs);
+    try {
+      setLogs(await getPluginLogs(pluginId));
+    } catch {
+      setLogs([]);
+    }
   };
 
-  return (
-    <div className="p-6 max-w-5xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Puzzle className="w-6 h-6 text-blue-600" />
+  const runningCount = installedPlugins.filter(p => p.status === 'running').length;
+  const devCount = installedPlugins.filter(p => p.is_dev_mode).length;
+
+  /* ---------- Install modal content ---------- */
+
+  const renderInstallProgress = (progress: StreamProgress) => {
+    const isGithub = !fetchedPluginInfo || fetchedPluginInfo.install_type === 'github';
+    const stageOrder = ['preparing', 'cloning', 'downloading', 'copying', 'building', 'starting', 'complete'];
+    const currentIdx = stageOrder.indexOf(progress.stage);
+    const steps = [
+      { id: 'preparing', label: t('settings.plugins.install.stage.preparing', 'Prepare environment'), icon: Settings },
+      { id: 'cloning', label: t('settings.plugins.install.stage.cloning', 'Clone code'), type: 'github', icon: Github },
+      { id: 'downloading', label: t('settings.plugins.install.stage.downloading', 'Download artifact'), type: 'binary', icon: Download },
+      { id: 'copying', label: t('settings.plugins.install.stage.copying', 'Deploy files'), icon: Box },
+      { id: 'building', label: t('settings.plugins.install.stage.building', 'Compile and build'), type: 'github', icon: Code },
+      { id: 'starting', label: t('settings.plugins.install.stage.starting', 'Start service'), icon: Play },
+    ].filter(s => !(s.type === 'github' && !isGithub) && !(s.type === 'binary' && isGithub));
+    const isComplete = progress.stage === 'complete';
+    const isError = progress.stage === 'error';
+
+    return (
+      <div className="tgo-fade-in space-y-6 py-2">
+        <div className="flex flex-col items-center text-center">
+          <span className={`relative flex h-20 w-20 items-center justify-center rounded-full ${
+            isComplete ? 'bg-acid-300 text-ink-900' : isError ? 'bg-red-50 text-red-600 dark:bg-red-900/25 dark:text-red-400' : 'tgo-pulse-ring bg-ink-900 text-acid-400 dark:bg-acid-400 dark:text-ink-900'
+          }`}>
+            {isComplete ? <Check className="h-8 w-8" strokeWidth={3} /> : isError ? <XCircle className="h-8 w-8" /> : <Loader2 className="h-8 w-8 animate-spin" />}
+          </span>
+          <h3 className="mt-5 text-2xl font-light tracking-tight text-gray-900 dark:text-white">
+            {isComplete ? t('settings.plugins.install.success', 'Installation successful')
+              : isError ? t('settings.plugins.install.error', 'Installation failed')
+              : t('settings.plugins.install.processing', 'Installing plugin...')}
+          </h3>
+          <p className="mt-1.5 max-w-sm text-sm leading-relaxed text-gray-500 dark:text-gray-400">{progress.message}</p>
+        </div>
+
+        <ol className="tgo-well space-y-1 p-3">
+          {steps.map(step => {
+            const stepIdx = stageOrder.indexOf(step.id);
+            const isDone = isComplete || (currentIdx >= 0 && stepIdx < currentIdx);
+            const isCurrent = progress.stage === step.id;
+            const Icon = step.icon;
+            return (
+              <li key={step.id} className={`flex items-center gap-3 rounded-2xl px-3 py-2.5 transition-colors ${isCurrent ? 'bg-white shadow-sm dark:bg-gray-800' : ''}`}>
+                <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors duration-500 ${
+                  isDone ? 'bg-acid-300 text-ink-900' : isCurrent ? 'bg-ink-900 text-acid-400 dark:bg-acid-400 dark:text-ink-900' : 'bg-gray-100 text-gray-400 dark:bg-gray-800'
+                }`}>
+                  {isDone ? <Check className="h-4 w-4" strokeWidth={3} /> : <Icon className="h-4 w-4" />}
+                </span>
+                <span className={`text-sm ${isCurrent ? 'font-medium text-gray-900 dark:text-white' : isDone ? 'text-gray-600 dark:text-gray-300' : 'text-gray-400'}`}>
+                  {step.label}
+                </span>
+                {isCurrent && <Loader2 className="ml-auto h-4 w-4 animate-spin text-gray-400" />}
+              </li>
+            );
+          })}
+        </ol>
+
+        {isComplete && (
+          <p className="text-center text-sm font-medium text-acid-700 dark:text-acid-400">
+            {t('settings.plugins.install.enjoy', 'Everything is ready, start exploring!')}
+          </p>
+        )}
+      </div>
+    );
+  };
+
+  const renderInstallForm = () => (
+    <>
+      {fetchError && (
+        <div className="tgo-fade-in flex items-start gap-3 rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-300">
+          <XCircle className="mt-0.5 h-4 w-4 shrink-0" />
           <div>
-            <h1 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">
-              {t('settings.plugins.title', 'Plugins')}
-            </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              {t('settings.plugins.subtitle', 'View and manage plugins connected to Pelatis')}
-            </p>
+            <p className="font-medium">{t('common.error', 'Error')}</p>
+            <p className="mt-0.5 break-words">{fetchError}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+      )}
+
+      {showManualMode ? (
+        <div className="tgo-fade-in space-y-4">
+          <SettingsNote icon={Info} tone="warning">
+            <p className="font-medium">{t('settings.plugins.install.manual.title', 'Manual Install Mode')}</p>
+            <p className="mt-0.5">{t('settings.plugins.install.manual.description', 'Paste the plugin description YAML file to install. Recommended only for advanced users or development and debugging.')}</p>
+          </SettingsNote>
+          <Field label={t('settings.plugins.install.modal.yamlLabel', 'Plugin Config (YAML)')} htmlFor="plugin-yaml">
+            <textarea
+              id="plugin-yaml"
+              value={yamlConfig}
+              onChange={(e) => setYamlConfig(e.target.value)}
+              placeholder="id: com.example.plugin..."
+              className="tgo-input h-64 resize-none font-mono text-[13px]"
+            />
+          </Field>
           <button
-            onClick={handleGenerateToken}
-            disabled={isGeneratingToken}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800/50 transition-colors"
+            type="button"
+            onClick={() => { setShowManualMode(false); setFetchError(null); }}
+            className="tgo-pill h-8 px-3 text-xs"
           >
-            {isGeneratingToken ? <RefreshCcw className="w-4 h-4 animate-spin" /> : <Key className="w-4 h-4" />}
-            {t('settings.plugins.token.generate', 'Debug Token')}
-          </button>
-          <button
-            onClick={() => setShowInstallModal(true)}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            {t('settings.plugins.install.button', 'Install Plugin')}
-          </button>
-          <button
-            onClick={() => {
-              fetchInstalledPlugins();
-            }}
-            disabled={isLoadingInstalled}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors"
-          >
-            <RefreshCcw className={`w-4 h-4 ${isLoadingInstalled ? 'animate-spin' : ''}`} />
-            {t('common.refresh', 'Refresh')}
+            <ArrowLeft className="h-3.5 w-3.5" />
+            {t('settings.plugins.install.backToUrl', 'Back to URL mode')}
           </button>
         </div>
+      ) : installStep === 1 ? (
+        <div className="tgo-fade-in space-y-5">
+          <Field
+            label={t('settings.plugins.install.url.label', 'Plugin URL')}
+            htmlFor="plugin-url"
+            hint={t('settings.plugins.install.url.description', 'Enter the remote URL of the plugin, the system will automatically fetch configuration and prepare for installation.')}
+          >
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Link2 className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <input
+                  id="plugin-url"
+                  type="text"
+                  value={pluginUrl}
+                  onChange={(e) => {
+                    setPluginUrl(e.target.value);
+                    if (fetchError) setFetchError(null);
+                  }}
+                  onKeyDown={(e) => e.key === 'Enter' && handleFetchInfo()}
+                  placeholder="https://github.com/user/repo"
+                  className="tgo-input pl-11 font-mono text-[13px]"
+                  autoFocus
+                />
+              </div>
+              <PrimaryButton onClick={handleFetchInfo} loading={isFetchingInfo} disabled={!pluginUrl.trim()} icon={<Download className="h-4 w-4" />}>
+                {t('settings.plugins.install.fetch', 'Fetch Info')}
+              </PrimaryButton>
+            </div>
+          </Field>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            {[
+              { icon: Github, name: 'GitHub', desc: t('settings.plugins.install.url.github.desc', 'Supports repo URL and branch path') },
+              { icon: Puzzle, name: 'Gitee', desc: t('settings.plugins.install.url.gitee.desc', 'Domestic acceleration, supports Gitee') },
+              { icon: FileCode2, name: t('settings.plugins.install.url.customName', 'Custom'), desc: t('settings.plugins.install.url.custom.desc', 'Supports direct YAML or directory URL') },
+            ].map(source => {
+              const Icon = source.icon;
+              return (
+                <div key={source.name} className="tgo-well p-4">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-700 shadow-sm dark:bg-gray-800 dark:text-gray-200">
+                    <Icon className="h-4 w-4" />
+                  </span>
+                  <p className="mt-3 text-sm font-medium text-gray-900 dark:text-gray-100">{source.name}</p>
+                  <p className="mt-0.5 text-xs leading-relaxed text-gray-500 dark:text-gray-400">{source.desc}</p>
+                </div>
+              );
+            })}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => { setShowManualMode(true); setFetchError(null); }}
+            className="text-xs font-medium text-gray-500 underline-offset-4 hover:text-gray-900 hover:underline dark:hover:text-white"
+          >
+            {t('settings.plugins.install.useManual', 'Use manual YAML paste mode')}
+          </button>
+        </div>
+      ) : fetchedPluginInfo && (
+        <div className="tgo-fade-in space-y-4">
+          <div className="flex items-center gap-2 text-sm font-medium text-acid-700 dark:text-acid-400">
+            <Check className="h-4 w-4" />
+            {t('settings.plugins.install.preview.success', 'Plugin configuration parsed successfully')}
+          </div>
+
+          <div className="relative overflow-hidden rounded-[24px] bg-ink-900 p-6 text-white dark:bg-gray-800">
+            <span aria-hidden="true" className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-acid-400/20 blur-xl" />
+            <div className="relative flex items-center gap-4">
+              <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-acid-400 text-ink-900">
+                <Puzzle className="h-6 w-6" />
+              </span>
+              <div className="min-w-0">
+                <h3 className="truncate text-xl font-medium tracking-tight">{fetchedPluginInfo.name}</h3>
+                <div className="mt-1 flex flex-wrap items-center gap-2">
+                  <span className="truncate font-mono text-xs text-white/60">{fetchedPluginInfo.id}</span>
+                  <span className="rounded-full bg-white/10 px-2 py-0.5 text-[11px] font-semibold">v{fetchedPluginInfo.version}</span>
+                </div>
+              </div>
+            </div>
+            {fetchedPluginInfo.description && (
+              <p className="relative mt-4 line-clamp-3 text-sm leading-relaxed text-white/70">{fetchedPluginInfo.description}</p>
+            )}
+            <div className="relative mt-5 grid grid-cols-2 gap-3 text-sm">
+              <div className="rounded-2xl bg-white/5 px-4 py-3">
+                <p className="text-[11px] uppercase tracking-wider text-white/40">{t('settings.plugins.author', 'Author')}</p>
+                <p className="mt-0.5 truncate">{fetchedPluginInfo.author || '-'}</p>
+              </div>
+              <div className="rounded-2xl bg-white/5 px-4 py-3">
+                <p className="text-[11px] uppercase tracking-wider text-white/40">{t('settings.plugins.install.source', 'Source')}</p>
+                <p className="mt-0.5 truncate" title={fetchedPluginInfo.source_url}>{hostnameOf(fetchedPluginInfo.source_url)}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+
+  const installFooter = installProgress ? (
+    installProgress.stage === 'error' ? (
+      <>
+        <SecondaryButton onClick={resetInstallState}>{t('common.close', 'Close')}</SecondaryButton>
+        <PrimaryButton onClick={() => setInstallProgress(null)} icon={<ArrowLeft className="h-4 w-4" />}>{t('common.back', 'Back')}</PrimaryButton>
+      </>
+    ) : installProgress.stage === 'complete' ? (
+      <PrimaryButton onClick={resetInstallState} icon={<Check className="h-4 w-4" />}>{t('common.complete', 'Complete')}</PrimaryButton>
+    ) : null
+  ) : showManualMode ? (
+    <>
+      <SecondaryButton onClick={() => setShowManualMode(false)}>{t('common.cancel', 'Cancel')}</SecondaryButton>
+      <PrimaryButton onClick={handleInstall} loading={isInstalling} disabled={!yamlConfig.trim()} icon={<Plus className="h-4 w-4" />}>
+        {isInstalling ? t('common.installing', 'Installing...') : t('common.install', 'Install')}
+      </PrimaryButton>
+    </>
+  ) : installStep === 1 ? (
+    <SecondaryButton onClick={resetInstallState}>{t('common.close', 'Close')}</SecondaryButton>
+  ) : (
+    <>
+      <SecondaryButton onClick={() => { setInstallStep(1); setFetchError(null); }} disabled={isInstalling}>
+        {t('settings.plugins.install.back', 'Back')}
+      </SecondaryButton>
+      <PrimaryButton onClick={handleInstall} loading={isInstalling} icon={<Check className="h-4 w-4" />}>
+        {isInstalling ? t('common.installing', 'Installing...') : t('settings.plugins.install.confirm', 'Confirm and Install')}
+      </PrimaryButton>
+    </>
+  );
+
+  /* ---------- Page ---------- */
+
+  return (
+    <SettingsPage
+      wide
+      title={t('settings.plugins.title', 'Plugins')}
+      subtitle={t('settings.plugins.subtitle', 'View and manage plugins connected to Pelatis')}
+      actions={
+        <>
+          <GhostButton onClick={handleGenerateToken} disabled={isGeneratingToken}>
+            {isGeneratingToken ? <Loader2 className="h-4 w-4 animate-spin" /> : <Key className="h-4 w-4" />}
+            {t('settings.plugins.token.generate', 'Debug Token')}
+          </GhostButton>
+          <InkButton onClick={() => setShowInstallModal(true)} icon={<Plus className="h-4 w-4" />}>
+            {t('settings.plugins.install.button', 'Install Plugin')}
+          </InkButton>
+        </>
+      }
+    >
+      {/* Figures */}
+      <div className="flex flex-wrap items-end gap-8 md:gap-12">
+        {[
+          { key: 'installed', value: installedPlugins.length, label: t('settings.plugins.statInstalled', 'installed'), badge: 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200', badgeText: t('common.all', 'All') },
+          { key: 'running', value: runningCount, label: t('settings.plugins.status.running', 'running').toLowerCase(), badge: 'bg-acid-300 text-ink-900' },
+          { key: 'debug', value: devCount, label: t('settings.plugins.debug.badge', 'debug').toLowerCase(), badge: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' },
+        ].map(stat => (
+          <div key={stat.key} className="flex items-end gap-2">
+            <span key={stat.value} className="tgo-pop tgo-display text-[44px] tabular-nums text-gray-900 dark:text-white">{stat.value}</span>
+            <span className="mb-1 flex flex-col items-start gap-1">
+              <span className={`rounded-full px-1.5 text-[10px] font-semibold leading-4 ${stat.badge}`}>
+                {stat.badgeText ?? `${installedPlugins.length > 0 ? Math.round((stat.value / installedPlugins.length) * 100) : 0}%`}
+              </span>
+              <span className="text-sm text-gray-400 dark:text-gray-500">{stat.label}</span>
+            </span>
+          </div>
+        ))}
       </div>
 
-      {/* Content */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <section className="space-y-5">
+        <SectionHeader title={t('settings.plugins.listTitle', 'Installed plugins')} count={installedPlugins.length} countLabel={t('settings.plugins.countLabel', 'plugins')}>
+          <RefreshButton onClick={() => fetchInstalledPlugins()} spinning={isLoadingInstalled} disabled={isLoadingInstalled} />
+        </SectionHeader>
+
         {isLoadingInstalled && installedPlugins.length === 0 ? (
-            <div className="p-12 flex flex-col items-center justify-center text-gray-500">
-              <RefreshCcw className="w-8 h-8 animate-spin mb-4" />
-              <p>{t('common.loading', 'Loading...')}</p>
-            </div>
-          ) : installedPlugins.length === 0 ? (
-            <div className="p-12 flex flex-col items-center justify-center text-gray-500 text-center">
-              <Plus className="w-12 h-12 mb-4 opacity-20" />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">
-              {t('settings.plugins.installed.empty.title', 'No plugins yet')}
-              </h3>
-              <p className="max-w-xs text-sm">
-              {t('settings.plugins.installed.empty.description', 'You can install from GitHub source, via binary files, or connect local plugins using debug tokens.')}
-              </p>
-              <button
-                onClick={() => setShowInstallModal(true)}
-                className="mt-4 text-blue-600 hover:underline text-sm font-medium"
-              >
+          <SkeletonGrid count={2} className="grid grid-cols-1 gap-5 xl:grid-cols-2" itemClassName="h-56" />
+        ) : installedPlugins.length === 0 ? (
+          <EmptyPanel
+            icon={Puzzle}
+            title={t('settings.plugins.installed.empty.title', 'No plugins yet')}
+            description={t('settings.plugins.installed.empty.description', 'You can install from GitHub source, via binary files, or connect local plugins using debug tokens.')}
+            action={
+              <InkButton onClick={() => setShowInstallModal(true)} icon={<Plus className="h-4 w-4" />}>
                 {t('settings.plugins.install.now', 'Install Now')}
-              </button>
-            </div>
-          ) : (
-            <div className="divide-y divide-gray-200 dark:divide-gray-700">
-              {installedPlugins.map((plugin) => (
-              <div key={plugin.plugin_id} className="p-6 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                      plugin.is_dev_mode ? 'bg-amber-50 text-amber-600 dark:bg-amber-900/20' :
-                      plugin.install_type === 'github' ? 'bg-purple-50 text-purple-600 dark:bg-purple-900/20' : 
-                      'bg-green-50 text-green-600 dark:bg-green-900/20'
-                      }`}>
-                      {plugin.is_dev_mode ? <Terminal className="w-6 h-6" /> :
-                       plugin.install_type === 'github' ? <Github className="w-6 h-6" /> : 
-                       <Download className="w-6 h-6" />}
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                          {plugin.name}
-                          <span className="px-2 py-0.5 text-xs font-normal bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded">
-                            v{plugin.version}
-                          </span>
-                          {plugin.latest_version && plugin.latest_version !== plugin.version && (
-                            <button
-                              onClick={async () => {
-                                setIsCheckingUpdate(prev => ({ ...prev, [plugin.plugin_id]: true }));
-                                try {
-                                  const info = await checkPluginUpdate(plugin.plugin_id);
-                                  if (info.latest_config) {
-                                    setShowUpgradeModal({ plugin, latest_config: info.latest_config });
-                                  }
-                                } catch (e) {
-                                  console.error(e);
-                                } finally {
-                                  setIsCheckingUpdate(prev => ({ ...prev, [plugin.plugin_id]: false }));
-                                }
-                              }}
-                              className="px-2 py-0.5 text-[10px] font-bold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 rounded hover:bg-green-200 transition-colors animate-pulse flex items-center gap-1"
-                            >
-                              {isCheckingUpdate[plugin.plugin_id] ? (
-                                <RefreshCcw className="w-2 h-2 animate-spin" />
-                              ) : (
-                                <ArrowUpCircle className="w-2 h-2" />
-                              )}
-                              {t('settings.plugins.updateAvailable', 'Update Available')} v{plugin.latest_version}
-                            </button>
-                          )}
+              </InkButton>
+            }
+          />
+        ) : (
+          <div className="tgo-stagger grid grid-cols-1 gap-5 xl:grid-cols-2">
+            {installedPlugins.map(plugin => {
+              const processing = processingPlugins[plugin.plugin_id];
+              const status = STATUS_STYLES[plugin.status] ?? STATUS_STYLES.stopped;
+              const SourceIcon = plugin.is_dev_mode ? Terminal : plugin.install_type === 'github' ? Github : Download;
+              const hasUpdate = Boolean(plugin.latest_version && plugin.latest_version !== plugin.version);
+              const busy = !!processing;
+
+              return (
+                <article key={plugin.plugin_id} className="tgo-surface flex flex-col p-6">
+                  <div className="flex items-start gap-4">
+                    <span className={`relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${plugin.is_dev_mode ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : 'bg-ink-900 text-acid-400 dark:bg-acid-400 dark:text-ink-900'}`}>
+                      <SourceIcon className="h-5 w-5" />
+                      <span className={`absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-white dark:border-gray-900 ${status.dot}`} />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="truncate text-xl font-medium tracking-tight text-gray-900 dark:text-gray-100">{plugin.name}</h3>
+                        <span className="tgo-chip h-5 px-2 font-mono text-[10px]">v{plugin.version}</span>
                         {plugin.is_dev_mode && (
-                          <span className="px-2 py-0.5 text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 rounded uppercase tracking-wider">
+                          <span className="tgo-chip h-5 bg-amber-100 px-2 text-[10px] font-semibold uppercase tracking-wider text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
                             {t('settings.plugins.debug.badge', 'Debug')}
                           </span>
                         )}
-                        </h3>
-                        <div className="flex items-center gap-3 mt-0.5">
-                          <p className="text-xs text-mono font-mono text-gray-500 dark:text-gray-400">
-                            {plugin.plugin_id}
-                          </p>
-                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                            plugin.status === 'running' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
-                            plugin.status === 'error' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' :
-                            plugin.status === 'installing' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' :
-                            'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
-                          }`}>
-                          {plugin.status === 'running' && plugin.is_dev_mode ? t('settings.plugins.status.connected', 'Connected') : 
-                           t(`settings.plugins.status.${plugin.status}`, plugin.status)}
-                          </span>
-                        </div>
                       </div>
+                      <p className="mt-0.5 truncate font-mono text-xs text-gray-400">{plugin.plugin_id}</p>
                     </div>
-                    
-                    <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => setShowDetailPlugin(plugin)}
-                      className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md"
-                      title={t('settings.plugins.actions.detail', 'View Details')}
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                    </button>
-
-                    {!plugin.is_dev_mode && (
-                      <>
-                      <button
-                        onClick={() => handleCheckUpdate(plugin.plugin_id)}
-                        disabled={isCheckingUpdate[plugin.plugin_id]}
-                        className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md disabled:opacity-50"
-                        title={t('settings.plugins.actions.checkUpdate', 'Check for updates')}
-                      >
-                        <ArrowUpCircle className={`w-4 h-4 ${isCheckingUpdate[plugin.plugin_id] ? 'animate-bounce' : ''}`} />
-                      </button>
-
-                      <button
-                        onClick={() => handleShowLogs(plugin.plugin_id)}
-                        className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
-                        title={t('settings.plugins.actions.logs', 'View logs')}
-                      >
-                        <Terminal className="w-4 h-4" />
-                      </button>
-                      
-                      {plugin.status === 'running' ? (
-                        <button
-                            onClick={() => handlePluginAction(plugin.plugin_id, 'stop')}
-                            disabled={!!processingPlugins[plugin.plugin_id]}
-                            className="p-2 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-md disabled:opacity-50"
-                          title={t('settings.plugins.actions.stop', 'Stop')}
-                        >
-                            {processingPlugins[plugin.plugin_id] === 'stop' ? (
-                              <RefreshCcw className="w-4 h-4 animate-spin" />
-                            ) : (
-                          <Square className="w-4 h-4 fill-current" />
-                            )}
-                        </button>
-                      ) : (
-                        <button
-                            onClick={() => handlePluginAction(plugin.plugin_id, 'start')}
-                            disabled={plugin.status === 'installing' || !!processingPlugins[plugin.plugin_id]}
-                          className="p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-md disabled:opacity-50"
-                          title={t('settings.plugins.actions.start', 'Start')}
-                        >
-                            {processingPlugins[plugin.plugin_id] === 'start' ? (
-                              <RefreshCcw className="w-4 h-4 animate-spin" />
-                            ) : (
-                          <Play className="w-4 h-4 fill-current" />
-                            )}
-                        </button>
-                      )}
-                      
-                      <button
-                          onClick={() => handlePluginAction(plugin.plugin_id, 'restart')}
-                          disabled={plugin.status === 'installing' || !!processingPlugins[plugin.plugin_id]}
-                        className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md disabled:opacity-50"
-                        title={t('settings.plugins.actions.restart', 'Restart')}
-                      >
-                          <RotateCw className={`w-4 h-4 ${processingPlugins[plugin.plugin_id] === 'restart' ? 'animate-spin' : ''}`} />
-                      </button>
-                      
-                      <button
-                          onClick={() => handlePluginAction(plugin.plugin_id, 'uninstall')}
-                          disabled={!!processingPlugins[plugin.plugin_id]}
-                          className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md disabled:opacity-50"
-                        title={t('settings.plugins.actions.uninstall', 'Uninstall')}
-                      >
-                          {processingPlugins[plugin.plugin_id] === 'uninstall' ? (
-                            <RefreshCcw className="w-4 h-4 animate-spin" />
-                          ) : (
-                        <Trash2 className="w-4 h-4" />
-                          )}
-                      </button>
-                      </>
-                    )}
-                    {plugin.is_dev_mode && (
-                      <span className="text-xs text-gray-400 px-2 italic">
-                        {t('settings.plugins.debug.autoManaged', 'Debug Mode - Auto Managed')}
-                      </span>
-                    )}
-                    </div>
+                    <span className={`tgo-chip shrink-0 ${status.chip}`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${status.dot}`} />
+                      {plugin.status === 'running' && plugin.is_dev_mode
+                        ? t('settings.plugins.status.connected', 'Connected')
+                        : t(`settings.plugins.status.${plugin.status}`, plugin.status)}
+                    </span>
                   </div>
 
+                  {plugin.description && (
+                    <p className="mt-4 line-clamp-2 text-sm leading-relaxed text-gray-500 dark:text-gray-400">{plugin.description}</p>
+                  )}
+
+                  {hasUpdate && (
+                    <button
+                      onClick={() => handleOpenUpgrade(plugin)}
+                      className="mt-4 flex items-center gap-3 rounded-2xl bg-acid-50 px-4 py-3 text-left text-sm shadow-[inset_0_0_0_1px_rgb(182_219_52/0.45)] transition-colors hover:bg-acid-100 dark:bg-acid-400/10 dark:shadow-[inset_0_0_0_1px_rgb(205_238_85/0.2)]"
+                    >
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-acid-300 text-ink-900">
+                        {isCheckingUpdate[plugin.plugin_id] ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                      </span>
+                      <span className="flex-1 font-medium text-gray-900 dark:text-gray-100">
+                        {t('settings.plugins.updateAvailable', 'Update Available')} · v{plugin.latest_version}
+                      </span>
+                      <ArrowUpCircle className="h-4 w-4 text-acid-700 dark:text-acid-400" />
+                    </button>
+                  )}
+
                   {plugin.last_error && plugin.status === 'error' && (
-                    <div className="mt-3 ml-16 p-2 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20 rounded text-xs text-red-700 dark:text-red-400 font-mono overflow-auto max-h-24">
-                      {plugin.last_error}
+                    <div className="mt-4 flex items-start gap-2 rounded-2xl bg-red-50 px-4 py-3 dark:bg-red-900/15">
+                      <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-red-500" />
+                      <pre className="custom-scrollbar max-h-24 flex-1 overflow-auto whitespace-pre-wrap break-all font-mono text-xs text-red-700 dark:text-red-300">{plugin.last_error}</pre>
                     </div>
                   )}
 
-                  <div className="mt-4 ml-16 flex items-center gap-6 text-xs text-gray-500">
-                    <div className="flex items-center gap-1">
-                    <span>{plugin.is_dev_mode ? t('settings.plugins.connectedAt', 'Connected At') : t('settings.plugins.installedAt', 'Installed At')}:</span>
-                      <span className="text-gray-700 dark:text-gray-300 font-medium">
-                      {formatRelativeTime(plugin.installed_at)}
+                  <div className="mt-4 flex flex-wrap items-center gap-1.5">
+                    <span className="tgo-chip">
+                      <Clock className="h-3 w-3" />
+                      {plugin.is_dev_mode ? t('settings.plugins.connectedAt', 'Connected At') : t('settings.plugins.installedAt', 'Installed At')} · {formatRelativeTime(plugin.installed_at)}
+                    </span>
+                    {plugin.pid && <span className="tgo-chip font-mono"><Hash className="h-3 w-3" />PID {plugin.pid}</span>}
+                  </div>
+
+                  <div className="mt-auto flex flex-wrap items-center gap-2 pt-5">
+                    <button onClick={() => setShowDetailPlugin(plugin)} className="tgo-pill h-10">
+                      <Eye className="h-4 w-4" />
+                      {t('settings.plugins.actions.detail', 'View Details')}
+                    </button>
+
+                    {plugin.is_dev_mode ? (
+                      <span className="ml-auto text-xs italic text-gray-400">
+                        {t('settings.plugins.debug.autoManaged', 'Debug Mode - Auto Managed')}
                       </span>
-                    </div>
-                    {plugin.pid && (
-                      <div className="flex items-center gap-1">
-                        <span>PID:</span>
-                        <span className="text-gray-700 dark:text-gray-300 font-medium">{plugin.pid}</span>
+                    ) : (
+                      <div className="ml-auto flex items-center gap-1.5">
+                        <button
+                          onClick={() => handleCheckUpdate(plugin.plugin_id)}
+                          disabled={isCheckingUpdate[plugin.plugin_id]}
+                          className="tgo-icon-btn h-10 w-10"
+                          title={t('settings.plugins.actions.checkUpdate', 'Check for updates')}
+                          aria-label={t('settings.plugins.actions.checkUpdate', 'Check for updates')}
+                        >
+                          {isCheckingUpdate[plugin.plugin_id] ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUpCircle className="h-4 w-4" />}
+                        </button>
+                        <button
+                          onClick={() => handleShowLogs(plugin.plugin_id)}
+                          className="tgo-icon-btn h-10 w-10"
+                          title={t('settings.plugins.actions.logs', 'View logs')}
+                          aria-label={t('settings.plugins.actions.logs', 'View logs')}
+                        >
+                          <Terminal className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handlePluginAction(plugin.plugin_id, 'restart')}
+                          disabled={plugin.status === 'installing' || busy}
+                          className="tgo-icon-btn h-10 w-10"
+                          title={t('settings.plugins.actions.restart', 'Restart')}
+                          aria-label={t('settings.plugins.actions.restart', 'Restart')}
+                        >
+                          <RotateCw className={`h-4 w-4 ${processing === 'restart' ? 'animate-spin' : ''}`} />
+                        </button>
+                        <button
+                          onClick={() => setUninstallTarget(plugin)}
+                          disabled={busy}
+                          className="tgo-icon-btn h-10 w-10 hover:!bg-red-50 hover:!text-red-600 dark:hover:!bg-red-900/30 dark:hover:!text-red-400"
+                          title={t('settings.plugins.actions.uninstall', 'Uninstall')}
+                          aria-label={t('settings.plugins.actions.uninstall', 'Uninstall')}
+                        >
+                          {processing === 'uninstall' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                        </button>
+                        {plugin.status === 'running' ? (
+                          <button
+                            onClick={() => handlePluginAction(plugin.plugin_id, 'stop')}
+                            disabled={busy}
+                            className="flex h-10 items-center gap-2 rounded-full bg-ink-900 px-4 text-sm font-medium text-white transition-transform duration-200 hover:scale-[1.03] active:scale-95 disabled:opacity-60 dark:bg-acid-400 dark:text-ink-900"
+                          >
+                            {processing === 'stop' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Square className="h-3.5 w-3.5 fill-current" />}
+                            {t('settings.plugins.actions.stop', 'Stop')}
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handlePluginAction(plugin.plugin_id, 'start')}
+                            disabled={plugin.status === 'installing' || busy}
+                            className="flex h-10 items-center gap-2 rounded-full bg-acid-300 px-4 text-sm font-medium text-ink-900 transition-transform duration-200 hover:scale-[1.03] active:scale-95 disabled:opacity-60 dark:bg-acid-400"
+                          >
+                            {processing === 'start' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-3.5 w-3.5 fill-current" />}
+                            {t('settings.plugins.actions.start', 'Start')}
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      <SettingsNote icon={Terminal}>
+        <p className="font-medium text-gray-900 dark:text-gray-100">{t('settings.plugins.debug.title', 'Debug Hint')}</p>
+        <p className="mt-0.5">{t('settings.plugins.debug.description', 'In development mode, you can connect local plugins via port 8005 (TCP) or /var/run/tgo/tgo.sock (Unix Socket).')}</p>
+      </SettingsNote>
+
+      {/* Install */}
+      <Modal
+        isOpen={showInstallModal}
+        onClose={resetInstallState}
+        preventClose={isInstalling}
+        size="lg"
+        icon={Puzzle}
+        title={t('settings.plugins.install.modal.title', 'Install New Plugin')}
+        subtitle={installProgress ? undefined : t('settings.plugins.install.url.title', 'Install via URL')}
+        footer={installFooter}
+      >
+        {installProgress ? renderInstallProgress(installProgress) : renderInstallForm()}
+      </Modal>
+
+      {/* Debug token */}
+      <Modal
+        isOpen={showTokenModal}
+        onClose={() => setShowTokenModal(false)}
+        size="lg"
+        icon={Key}
+        title={t('settings.plugins.token.modal.title', 'Project Debug Token')}
+        footer={<PrimaryButton onClick={() => setShowTokenModal(false)}>{t('common.close', 'Close')}</PrimaryButton>}
+      >
+        <SettingsNote icon={Info} tone="warning">
+          {t('settings.plugins.token.modal.warning', 'Token is valid for 24 hours. Local debug plugins will be automatically associated with the current project after connecting with this token.')}
+        </SettingsNote>
+
+        <Field label={t('settings.plugins.token.modal.tokenLabel', 'Your Debug Token')}>
+          <div className="flex items-stretch gap-2">
+            <div className="tgo-input flex-1 break-all font-mono text-xs text-gray-600 dark:text-gray-300">{devToken}</div>
+            <button
+              onClick={handleCopyToken}
+              className={`flex w-12 shrink-0 items-center justify-center rounded-2xl transition-colors ${copied ? 'bg-acid-300 text-ink-900' : 'bg-ink-900 text-white hover:bg-ink-700 dark:bg-acid-400 dark:text-ink-900'}`}
+              title={t('common.copy', 'Copy')}
+              aria-label={t('common.copy', 'Copy')}
+            >
+              {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+            </button>
+          </div>
+        </Field>
+
+        <div className="space-y-3">
+          <p className="tgo-eyebrow">{t('settings.plugins.token.modal.usage', 'Usage')}</p>
+          {[
+            { label: t('settings.plugins.token.modal.goSDK', 'Go SDK:'), code: `tgo.Run(&MyPlugin{},\n    tgo.WithTCPAddr("localhost:8005"),\n    tgo.WithDevToken("${devToken?.substring(0, 8)}..."))` },
+            { label: t('settings.plugins.token.modal.pythonSDK', 'Python SDK:'), code: `plugin = MyPlugin(\n    tcp_addr="localhost:8005",\n    dev_token="${devToken?.substring(0, 8)}...")\nplugin.run()` },
+          ].map(snippet => (
+            <div key={snippet.label} className="overflow-hidden rounded-2xl bg-ink-900">
+              <p className="border-b border-white/10 px-4 py-2 text-[11px] font-medium text-gray-400">{snippet.label}</p>
+              <pre className="overflow-auto px-4 py-3 font-mono text-xs leading-relaxed text-acid-300">{snippet.code}</pre>
+            </div>
+          ))}
+        </div>
+      </Modal>
+
+      {/* Logs */}
+      <Modal
+        isOpen={!!showLogsPluginId}
+        onClose={() => setShowLogsPluginId(null)}
+        size="xl"
+        icon={Terminal}
+        title={t('settings.plugins.logs.title', 'Plugin Logs')}
+        subtitle={<span className="font-mono text-xs">{showLogsPluginId}</span>}
+        footer={
+          <>
+            <span className="text-xs text-gray-400 sm:mr-auto">
+              {t('settings.plugins.logs.lines', '{{count}} lines', { count: logs.length })} · {t('settings.plugins.logs.autoReload', 'Auto-refreshes every 5s')}
+            </span>
+            <SecondaryButton onClick={() => showLogsPluginId && handleShowLogs(showLogsPluginId)}>
+              <RotateCw className="h-4 w-4" />
+              {t('common.refresh', 'Refresh')}
+            </SecondaryButton>
+          </>
+        }
+      >
+        <div className="custom-scrollbar h-[50vh] overflow-auto rounded-2xl bg-ink-950 p-4 font-mono text-xs text-gray-300">
+          {logs.length > 0 ? (
+            <div className="space-y-0.5">
+              {logs.map((log, i) => (
+                <div key={i} className="flex gap-3 rounded px-2 py-0.5 transition-colors hover:bg-white/5">
+                  <span className="w-8 shrink-0 select-none text-right text-gray-600">{i + 1}</span>
+                  <span className="whitespace-pre-wrap break-all">{log}</span>
                 </div>
               ))}
             </div>
-        )}
-      </div>
-
-      {/* Install Plugin Modal */}
-      {showInstallModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                <Plus className="w-5 h-5 text-blue-600" />
-                {t('settings.plugins.install.modal.title', 'Install New Plugin')}
-              </h2>
-              <button 
-                onClick={resetInstallState}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-              >
-                <XCircle className="w-6 h-6" />
-              </button>
+          ) : (
+            <div className="flex h-full items-center justify-center italic text-gray-600">
+              {t('settings.plugins.logs.empty', 'No logs output yet')}
             </div>
-            
-            <div className="relative p-0 overflow-y-auto max-h-[calc(95vh-140px)]">
-              {/* Progress Overlay */}
-              {installProgress ? (
-                <div className="bg-white dark:bg-gray-950 flex items-center justify-center p-8 min-h-[500px] animate-in fade-in duration-500">
-                  {/* Decorative Background Elements */}
-                  <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                    <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-blue-500/5 rounded-full blur-[120px] animate-pulse"></div>
-                    <div className="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-purple-500/5 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }}></div>
+          )}
+        </div>
+      </Modal>
+
+      {/* Details */}
+      <Modal
+        isOpen={!!showDetailPlugin}
+        onClose={() => setShowDetailPlugin(null)}
+        size="xl"
+        icon={showDetailPlugin?.is_dev_mode ? Terminal : Puzzle}
+        title={
+          <span className="flex items-center gap-2">
+            {showDetailPlugin?.name}
+            <span className="tgo-chip font-mono">v{showDetailPlugin?.version}</span>
+          </span>
+        }
+        subtitle={<span className="font-mono text-xs">{showDetailPlugin?.plugin_id}</span>}
+        bodyClassName="space-y-6"
+        footer={<SecondaryButton onClick={() => setShowDetailPlugin(null)}>{t('common.close', 'Close')}</SecondaryButton>}
+      >
+        {showDetailPlugin && (
+          <>
+            <section className="space-y-3">
+              <h3 className="tgo-eyebrow flex items-center gap-1.5"><Info className="h-3.5 w-3.5" />{t('settings.plugins.detail.basicInfo', 'Basic Information')}</h3>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {[
+                  { label: t('settings.plugins.author', 'Author'), value: showDetailPlugin.author || '-' },
+                  { label: t('settings.plugins.status.label', 'Current Status'), value: t(`settings.plugins.status.${showDetailPlugin.status}`, showDetailPlugin.status) },
+                  { label: t('settings.plugins.installType', 'Install Type'), value: showDetailPlugin.install_type },
+                  { label: t('settings.plugins.installedAt', 'Installed At'), value: formatRelativeTime(showDetailPlugin.installed_at) },
+                ].map(item => (
+                  <div key={item.label} className="tgo-well px-4 py-3">
+                    <p className="text-[11px] text-gray-400">{item.label}</p>
+                    <p className="mt-0.5 truncate text-sm font-medium capitalize text-gray-900 dark:text-gray-100">{item.value}</p>
                   </div>
+                ))}
+              </div>
+              {showDetailPlugin.description && (
+                <p className="rounded-2xl bg-acid-50 px-4 py-3 text-sm leading-relaxed text-gray-700 dark:bg-acid-400/5 dark:text-gray-300">
+                  {showDetailPlugin.description}
+                </p>
+              )}
+            </section>
 
-                  <div className="w-full max-w-md space-y-10 relative z-20 py-4">
-                    <div className="flex flex-col items-center text-center space-y-6">
-                      <div className="relative">
-                        {/* Outer Glow Ring */}
-                        <div className={`absolute -inset-6 rounded-full blur-3xl transition-all duration-1000 ${
-                          installProgress.stage === 'complete' ? 'bg-green-500/30 opacity-100 scale-110' : 
-                          installProgress.stage === 'error' ? 'bg-red-500/30 opacity-100 scale-110' : 
-                          'bg-blue-500/20 opacity-60 scale-100'
-                        }`}></div>
-
-                        <div className="relative w-28 h-28">
-                          {/* Animated Rings */}
-                          <div className="absolute inset-0 border-[4px] border-gray-100 dark:border-gray-800/50 rounded-full"></div>
-                          {installProgress.stage !== 'complete' && installProgress.stage !== 'error' && (
-                            <>
-                              <div className="absolute inset-0 border-[4px] border-blue-600 rounded-full border-t-transparent animate-[spin_1.2s_cubic_bezier(0.4,0,0.2,1)_infinite]"></div>
-                              <div className="absolute inset-3 border-[2px] border-blue-400/40 rounded-full border-b-transparent animate-[spin_1.8s_linear_infinite_reverse]"></div>
-                            </>
-                          )}
-                          
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            {installProgress.stage === 'complete' ? (
-                              <div className="bg-green-500 rounded-full p-5 shadow-2xl shadow-green-500/40 animate-[success-pop_0.6s_cubic_bezier(0.175,0.885,0.32,1.275)_fill]">
-                                <Check className="w-12 h-12 text-white stroke-[4]" />
-                              </div>
-                            ) : installProgress.stage === 'error' ? (
-                              <div className="bg-red-500 rounded-full p-5 shadow-2xl shadow-red-500/40 animate-in zoom-in duration-500">
-                                <XCircle className="w-12 h-12 text-white stroke-[4]" />
-                              </div>
-                            ) : (
-                              <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 dark:from-blue-400/20 dark:to-indigo-400/20 p-5 rounded-[2.5rem] animate-pulse">
-                                <Puzzle className="w-12 h-12 text-blue-600 dark:text-blue-400" />
-                              </div>
-                            )}
-                          </div>
+            <section className="space-y-3">
+              <h3 className="tgo-eyebrow flex items-center gap-1.5"><Cpu className="h-3.5 w-3.5" />{t('settings.plugins.capabilities', 'Capabilities')}</h3>
+              {showDetailPlugin.capabilities && showDetailPlugin.capabilities.length > 0 ? (
+                <div className="space-y-3">
+                  {showDetailPlugin.capabilities.map((cap, idx) => (
+                    <div key={idx} className="rounded-3xl bg-white p-5 shadow-[inset_0_0_0_1px_var(--color-gray-200)] dark:bg-gray-800/60 dark:shadow-[inset_0_0_0_1px_var(--color-gray-700)]">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div className="flex items-center gap-2.5">
+                          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                            <Box className="h-4 w-4" />
+                          </span>
+                          <span className="font-medium text-gray-900 dark:text-gray-100">{cap.title}</span>
+                          <span className="tgo-chip h-5 bg-acid-200 px-2 text-[10px] font-semibold uppercase text-ink-900 dark:bg-acid-400/20 dark:text-acid-300">{cap.type}</span>
                         </div>
+                        <span className="text-xs text-gray-400">{t('settings.plugins.detail.priority', 'Priority')}: {cap.priority}</span>
                       </div>
-                      
-                      <div className="space-y-2">
-                        <h3 className="text-2xl font-black text-gray-900 dark:text-gray-100 tracking-tight">
-                          {installProgress.stage === 'complete' ? t('settings.plugins.install.success', 'Installation successful') : 
-                           installProgress.stage === 'error' ? t('settings.plugins.install.error', 'Installation failed') : 
-                           t('settings.plugins.install.processing', 'Installing plugin...')}
-                        </h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium max-w-[280px] mx-auto leading-relaxed">
-                          {installProgress.message}
-                        </p>
-                      </div>
-                    </div>
 
-                    {/* Progress Stages Visualizer */}
-                    <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 space-y-4 border border-gray-100 dark:border-gray-700 shadow-xl shadow-gray-200/50 dark:shadow-none">
-                      {[
-                        { id: 'preparing', label: t('settings.plugins.install.stage.preparing', 'Prepare environment'), icon: Settings },
-                        { id: 'cloning', label: t('settings.plugins.install.stage.cloning', 'Clone code'), type: 'github', icon: Github },
-                        { id: 'downloading', label: t('settings.plugins.install.stage.downloading', 'Download artifact'), type: 'binary', icon: Download },
-                        { id: 'copying', label: t('settings.plugins.install.stage.copying', 'Deploy files'), icon: Box },
-                        { id: 'building', label: t('settings.plugins.install.stage.building', 'Compile and build'), type: 'github', icon: Code },
-                        { id: 'starting', label: t('settings.plugins.install.stage.starting', 'Start service'), icon: Play }
-                      ].map((s, idx) => {
-                        const stages = ['preparing', 'cloning', 'downloading', 'copying', 'building', 'starting', 'complete'];
-                        const currentIdx = stages.indexOf(installProgress.stage);
-                        const stageIdx = stages.indexOf(s.id);
-                        
-                        // Skip irrelevant stages
-                        const isGithub = !fetchedPluginInfo || fetchedPluginInfo.install_type === 'github';
-                        if (s.type === 'github' && !isGithub) return null;
-                        if (s.type === 'binary' && isGithub) return null;
-
-                        const isDone = stageIdx < currentIdx || installProgress.stage === 'complete';
-                        const isCurrent = installProgress.stage === s.id;
-                        const Icon = s.icon;
-
-                        return (
-                          <div key={s.id} className="flex items-center gap-4 group">
-                            <div className={`relative w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold transition-all duration-500 ${
-                              isDone ? 'bg-green-500 text-white scale-90' : 
-                              isCurrent ? 'bg-blue-600 text-white ring-4 ring-blue-100 dark:ring-blue-900/30' : 
-                              'bg-gray-50 dark:bg-gray-900 text-gray-400'
-                            }`}>
-                              {isDone ? <Check className="w-4 h-4 stroke-[3]" /> : <Icon className="w-4 h-4" />}
-                              
-                              {/* Connector Line */}
-                              {idx < 5 && (
-                                <div className={`absolute top-full left-1/2 -translate-x-1/2 w-[2px] h-4 ${
-                                  isDone ? 'bg-green-500' : 'bg-gray-100 dark:bg-gray-800'
-                                }`}></div>
+                      {cap.type === 'tools' && cap.tools && (
+                        <div className="mt-4 space-y-4 border-l-2 border-gray-100 pl-4 dark:border-gray-700">
+                          <p className="tgo-eyebrow">{t('settings.plugins.detail.tools', 'Tools')} ({cap.tools.length})</p>
+                          {cap.tools.map((tool, tidx) => (
+                            <div key={tidx} className="space-y-2">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="font-mono text-sm font-semibold text-gray-800 dark:text-gray-100">{tool.name}</span>
+                                <span className="text-xs text-gray-500">{tool.title}</span>
+                              </div>
+                              {tool.description && <p className="text-xs leading-relaxed text-gray-500 dark:text-gray-400">{tool.description}</p>}
+                              {tool.parameters && tool.parameters.length > 0 && (
+                                <div className="overflow-x-auto rounded-2xl shadow-[inset_0_0_0_1px_var(--color-gray-100)] dark:shadow-[inset_0_0_0_1px_var(--color-gray-700)]">
+                                  <table className="w-full text-left text-xs">
+                                    <thead className="text-gray-400">
+                                      <tr>
+                                        <th className="px-3 py-2 font-medium">{t('settings.plugins.detail.parameter', 'Parameter')}</th>
+                                        <th className="px-3 py-2 font-medium">{t('settings.plugins.detail.type', 'Type')}</th>
+                                        <th className="px-3 py-2 font-medium">{t('settings.plugins.detail.required', 'Required')}</th>
+                                        <th className="px-3 py-2 font-medium">{t('settings.plugins.details.description', 'Description')}</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                                      {tool.parameters.map((param, pidx) => (
+                                        <tr key={pidx}>
+                                          <td className="px-3 py-2 font-mono text-gray-900 dark:text-acid-300">{param.name}</td>
+                                          <td className="px-3 py-2 font-mono text-gray-500">{param.type}</td>
+                                          <td className="px-3 py-2">
+                                            {param.required
+                                              ? <span className="tgo-chip h-5 bg-ink-900 px-2 text-[10px] text-white dark:bg-acid-400 dark:text-ink-900">{t('common.yes', 'Yes')}</span>
+                                              : <span className="text-gray-400">{t('common.no', 'No')}</span>}
+                                          </td>
+                                          <td className="px-3 py-2 text-gray-500">{param.description || '-'}</td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
                               )}
                             </div>
-                            <span className={`text-sm tracking-wide transition-all duration-300 ${
-                              isCurrent ? 'font-black text-gray-900 dark:text-gray-100' : 
-                              isDone ? 'font-medium text-gray-600 dark:text-gray-400' : 'text-gray-400'
-                            }`}>
-                              {s.label}
-                            </span>
-                            {isCurrent && (
-                              <div className="ml-auto flex items-center gap-1.5 px-2 py-1 bg-blue-50 dark:bg-blue-900/20 rounded-full">
-                                <span className="w-1 h-1 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                                <span className="w-1 h-1 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '200ms' }}></span>
-                                <span className="w-1 h-1 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '400ms' }}></span>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    {installProgress.stage === 'error' ? (
-                      <button
-                        onClick={() => setInstallProgress(null)}
-                        className="w-full py-4 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-2xl hover:opacity-90 transition-all font-black text-sm uppercase tracking-widest shadow-xl shadow-gray-200 dark:shadow-none"
-                      >
-                        {t('common.back', 'Back')}
-                      </button>
-                    ) : installProgress.stage === 'complete' ? (
-                      <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                        <div className="text-center">
-                          <p className="text-xs text-green-600 dark:text-green-500 font-bold uppercase tracking-widest bg-green-50 dark:bg-green-900/20 py-2 px-4 rounded-full inline-block mb-4">
-                            🎉 {t('settings.plugins.install.enjoy', 'Everything is ready, start exploring!')}
-                          </p>
+                          ))}
                         </div>
-                        <button
-                          onClick={resetInstallState}
-                          className="w-full py-4 bg-green-600 text-white rounded-2xl hover:bg-green-700 transition-all font-black text-sm uppercase tracking-widest shadow-xl shadow-green-200 dark:shadow-none"
-                        >
-                          {t('common.complete', 'Complete')}
-                        </button>
-                      </div>
-                    ) : null}
-                  </div>
-                </div>
-              ) : (
-                <div className="p-6 space-y-4">
-                  {fetchError && (
-                    <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 rounded-lg flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-200">
-                      <XCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-                      <div className="text-sm text-red-700 dark:text-red-400">
-                        <p className="font-bold mb-0.5">{t('common.error', 'Error')}</p>
-                        <p>{fetchError}</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {showManualMode ? (
-                    /* Manual YAML Mode */
-                    <div className="space-y-4">
-                      <div className="flex items-start gap-3 p-3 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/20 rounded-lg text-sm text-amber-800 dark:text-amber-300">
-                        <Info className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                        <div>
-                          <p className="font-medium mb-1">{t('settings.plugins.install.manual.title', 'Manual Install Mode')}</p>
-                          <p>{t('settings.plugins.install.manual.description', 'Paste the plugin description YAML file to install. Recommended only for advanced users or development and debugging.')}</p>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          {t('settings.plugins.install.modal.yamlLabel', 'Plugin Config (YAML)')}
-                        </label>
-                        <textarea
-                          value={yamlConfig}
-                          onChange={(e) => setYamlConfig(e.target.value)}
-                          placeholder="id: com.example.plugin..."
-                          className="w-full h-64 p-4 font-mono text-sm bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none"
-                        />
-                      </div>
-                      <button 
-                        onClick={() => {
-                          setShowManualMode(false);
-                          setFetchError(null);
-                        }}
-                        className="text-sm text-blue-600 hover:underline"
-                      >
-                        {t('settings.plugins.install.backToUrl', 'Back to URL mode')}
-                      </button>
-                    </div>
-                  ) : installStep === 1 ? (
-                    /* Step 1: URL Input */
-                    <div className="space-y-6">
-                      <div className="flex items-start gap-3 p-3 bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/20 rounded-lg text-sm text-blue-800 dark:text-blue-300">
-                        <Info className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                        <div>
-                          <p className="font-medium mb-1">{t('settings.plugins.install.url.title', 'Install via URL')}</p>
-                          <p>{t('settings.plugins.install.url.description', 'Enter the remote URL of the plugin, the system will automatically fetch configuration and prepare for installation.')}</p>
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          {t('settings.plugins.install.url.label', 'Plugin URL')}
-                        </label>
-                        <div className="flex gap-2">
-                          <input
-                            type="text"
-                            value={pluginUrl}
-                            onChange={(e) => {
-                              setPluginUrl(e.target.value);
-                              if (fetchError) setFetchError(null);
-                            }}
-                            onKeyDown={(e) => e.key === 'Enter' && handleFetchInfo()}
-                            placeholder="https://github.com/user/repo"
-                            className="flex-1 px-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                          />
-                          <button
-                            onClick={handleFetchInfo}
-                            disabled={isFetchingInfo || !pluginUrl.trim()}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2"
-                          >
-                            {isFetchingInfo ? <RefreshCcw className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                            {t('settings.plugins.install.fetch', 'Fetch Info')}
-                          </button>
-                        </div>
-                        <div className="mt-4 grid grid-cols-3 gap-3">
-                          <div className="p-3 border border-gray-100 dark:border-gray-700 rounded-lg bg-gray-50/50 dark:bg-gray-900/30">
-                            <div className="flex items-center gap-2 mb-1 text-gray-900 dark:text-gray-100">
-                              <Github className="w-3.5 h-3.5" />
-                              <span className="text-xs font-bold">GitHub</span>
-                            </div>
-                            <p className="text-[10px] text-gray-500">{t('settings.plugins.install.url.github.desc', 'Supports repo URL and branch path')}</p>
-                          </div>
-                          <div className="p-3 border border-gray-100 dark:border-gray-700 rounded-lg bg-gray-50/50 dark:bg-gray-900/30">
-                            <div className="flex items-center gap-2 mb-1 text-gray-900 dark:text-gray-100">
-                              <Puzzle className="w-3.5 h-3.5 text-red-500" />
-                              <span className="text-xs font-bold">Gitee</span>
-                            </div>
-                            <p className="text-[10px] text-gray-500">{t('settings.plugins.install.url.gitee.desc', 'Domestic acceleration, supports Gitee')}</p>
-                          </div>
-                          <div className="p-3 border border-gray-100 dark:border-gray-700 rounded-lg bg-gray-50/50 dark:bg-gray-900/30">
-                            <div className="flex items-center gap-2 mb-1 text-gray-900 dark:text-gray-100">
-                              <ExternalLink className="w-3.5 h-3.5 text-blue-500" />
-                              <span className="text-xs font-bold">Custom</span>
-                            </div>
-                            <p className="text-[10px] text-gray-500">{t('settings.plugins.install.url.custom.desc', 'Supports direct YAML or directory URL')}</p>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="pt-2">
-                        <button 
-                          onClick={() => {
-                            setShowManualMode(true);
-                            setFetchError(null);
-                          }}
-                          className="text-xs text-gray-400 hover:text-blue-500 transition-colors"
-                        >
-                          {t('settings.plugins.install.useManual', 'Use manual YAML paste mode')}
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    /* Step 2: Preview & Confirm */
-                    <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-                      <div className="p-4 bg-green-50 dark:bg-green-900/10 border border-green-100 dark:border-green-900/20 rounded-lg flex items-center gap-3 text-green-800 dark:text-green-300 text-sm">
-                        <Check className="w-5 h-5" />
-                        {t('settings.plugins.install.preview.success', 'Plugin configuration parsed successfully')}
-                      </div>
-
-                      <div className="bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-6">
-                        <div className="flex items-center gap-4">
-                          <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center">
-                            <Puzzle className="w-8 h-8" />
-                          </div>
-                          <div>
-                            <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">{fetchedPluginInfo.name}</h3>
-                            <div className="flex items-center gap-2 mt-1">
-                              <span className="text-sm font-mono text-gray-500">{fetchedPluginInfo.id}</span>
-                              <span className="px-1.5 py-0.5 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-[10px] rounded font-bold">v{fetchedPluginInfo.version}</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div>
-                            <p className="text-gray-400 text-xs uppercase font-bold tracking-wider mb-1">{t('settings.plugins.author', 'Author')}</p>
-                            <p className="text-gray-700 dark:text-gray-300">{fetchedPluginInfo.author || '-'}</p>
-                          </div>
-                          <div>
-                            <p className="text-gray-400 text-xs uppercase font-bold tracking-wider mb-1">{t('settings.plugins.install.source', 'Source')}</p>
-                            <p className="text-gray-700 dark:text-gray-300 truncate" title={fetchedPluginInfo.source_url}>
-                              {new URL(fetchedPluginInfo.source_url).hostname}
-                            </p>
-                          </div>
-                        </div>
-
-                        {fetchedPluginInfo.description && (
-                          <div>
-                            <p className="text-gray-400 text-xs uppercase font-bold tracking-wider mb-1">{t('settings.plugins.details.description', 'Description')}</p>
-                            <p className="text-gray-600 dark:text-gray-400 line-clamp-2">{fetchedPluginInfo.description}</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-            
-            {!installProgress && (
-              <div className="p-6 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
-                {showManualMode ? (
-                  /* Manual Mode Footer */
-                  <>
-                    <button
-                      onClick={() => setShowManualMode(false)}
-                      className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
-                    >
-                      {t('common.cancel', 'Cancel')}
-                    </button>
-                    <button
-                      onClick={handleInstall}
-                      disabled={isInstalling || !yamlConfig.trim()}
-                      className="flex items-center gap-2 px-6 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md disabled:opacity-50 transition-colors"
-                    >
-                      {isInstalling ? <RefreshCcw className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-                      {isInstalling ? t('common.installing', 'Installing...') : t('common.install', 'Install')}
-                    </button>
-                  </>
-                ) : installStep === 1 ? (
-                  /* Step 1 Footer */
-                  <button
-                    onClick={resetInstallState}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
-                  >
-                    {t('common.close', 'Close')}
-                  </button>
-                ) : (
-                  /* Step 2 Footer */
-                  <>
-                    <button
-                      onClick={() => {
-                        setInstallStep(1);
-                        setFetchError(null);
-                      }}
-                      disabled={isInstalling}
-                      className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
-                    >
-                      {t('settings.plugins.install.back', 'Back')}
-                    </button>
-                    <button
-                      onClick={handleInstall}
-                      disabled={isInstalling}
-                      className="flex items-center gap-2 px-6 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md disabled:opacity-50 transition-colors shadow-sm"
-                    >
-                      {isInstalling ? <RefreshCcw className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                      {isInstalling ? t('common.installing', 'Installing...') : t('settings.plugins.install.confirm', 'Confirm and Install')}
-                    </button>
-                  </>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Dev Token Modal */}
-      {showTokenModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-xl overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                <Key className="w-5 h-5 text-blue-600" />
-                {t('settings.plugins.token.modal.title', 'Project Debug Token')}
-              </h2>
-              <button 
-                onClick={() => setShowTokenModal(false)}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-              >
-                <XCircle className="w-6 h-6" />
-              </button>
-            </div>
-            
-            <div className="p-6 space-y-6">
-              <div className="p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/20 rounded-lg text-sm text-amber-800 dark:text-amber-300 flex items-start gap-3">
-                <Info className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                <p>{t('settings.plugins.token.modal.warning', 'Token is valid for 24 hours. Local debug plugins will be automatically associated with the current project after connecting with this token.')}</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {t('settings.plugins.token.modal.tokenLabel', 'Your Debug Token')}
-                </label>
-                <div className="flex gap-2">
-                  <div className="flex-1 p-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg font-mono text-xs break-all text-gray-600 dark:text-gray-400">
-                    {devToken}
-                  </div>
-                  <button
-                    onClick={handleCopyToken}
-                    className="flex-shrink-0 p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-                    title={t('common.copy', 'Copy')}
-                  >
-                    {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
-                  </button>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">{t('settings.plugins.token.modal.usage', 'Usage')}</h4>
-                
-                <div className="space-y-2">
-                  <p className="text-xs text-gray-500 font-medium">{t('settings.plugins.token.modal.goSDK', 'Go SDK:')}</p>
-                  <pre className="p-3 bg-gray-900 text-gray-300 rounded-lg text-[10px] overflow-auto">
-{`tgo.Run(&MyPlugin{}, 
-    tgo.WithTCPAddr("localhost:8005"), 
-    tgo.WithDevToken("${devToken?.substring(0, 8)}..."))`}
-                  </pre>
-                </div>
-
-                <div className="space-y-2">
-                  <p className="text-xs text-gray-500 font-medium">{t('settings.plugins.token.modal.pythonSDK', 'Python SDK:')}</p>
-                  <pre className="p-3 bg-gray-900 text-gray-300 rounded-lg text-[10px] overflow-auto">
-{`plugin = MyPlugin(
-    tcp_addr="localhost:8005", 
-    dev_token="${devToken?.substring(0, 8)}...")
-plugin.run()`}
-                  </pre>
-                </div>
-              </div>
-            </div>
-            
-            <div className="p-6 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 flex justify-end">
-              <button
-                onClick={() => setShowTokenModal(false)}
-                className="px-6 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors"
-              >
-                {t('common.close', 'Close')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Logs Modal */}
-      {showLogsPluginId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-gray-900 rounded-xl shadow-2xl w-full max-w-4xl max-h-[80vh] flex flex-col overflow-hidden border border-gray-700">
-            <div className="p-4 border-b border-gray-800 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Terminal className="w-5 h-5 text-green-500" />
-                <h2 className="text-lg font-semibold text-gray-100">
-                  {t('settings.plugins.logs.title', 'Plugin Logs')}: {showLogsPluginId}
-                </h2>
-              </div>
-              <div className="flex items-center gap-2">
-                <button 
-                  onClick={() => handleShowLogs(showLogsPluginId)}
-                  className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded transition-colors"
-                >
-                  <RotateCw className="w-4 h-4" />
-                </button>
-                <button 
-                  onClick={() => setShowLogsPluginId(null)}
-                  className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded transition-colors"
-                >
-                  <XCircle className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-            
-            <div className="flex-1 p-4 font-mono text-xs text-gray-300 overflow-auto bg-black/50">
-              {logs.length > 0 ? (
-                <div className="space-y-1">
-                  {logs.map((log, i) => (
-                    <div key={i} className="whitespace-pre-wrap break-all border-l-2 border-transparent hover:border-gray-700 hover:bg-gray-800/30 px-2 py-0.5 transition-colors">
-                      {log}
+                      )}
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="h-full flex items-center justify-center text-gray-600 italic">
-                  {t('settings.plugins.logs.empty', 'No logs output yet')}
+                <div className="tgo-well p-8 text-center text-sm text-gray-400">
+                  {t('settings.plugins.detail.noCapabilities', 'This plugin does not declare any special capabilities')}
                 </div>
               )}
-            </div>
-            
-            <div className="p-3 bg-gray-800/50 border-t border-gray-800 flex justify-between text-[10px] text-gray-500 uppercase font-bold tracking-wider">
-              <span>{logs.length} LINES</span>
-              <span>AUTO-RELOAD EVERY 5S</span>
-            </div>
-          </div>
-        </div>
-      )}
+            </section>
+          </>
+        )}
+      </Modal>
 
-      {/* Detail Modal */}
-      {showDetailPlugin && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                  showDetailPlugin.is_dev_mode ? 'bg-amber-50 text-amber-600' : 'bg-blue-50 text-blue-600'
-                }`}>
-                  {showDetailPlugin.is_dev_mode ? <Terminal className="w-5 h-5" /> : <Puzzle className="w-5 h-5" />}
-                </div>
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    {showDetailPlugin.name}
-                    <span className="px-2 py-0.5 text-xs font-normal bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded">
-                      v{showDetailPlugin.version}
-                    </span>
-                  </h2>
-                  <p className="text-xs text-mono font-mono text-gray-500 dark:text-gray-400">
-                    {showDetailPlugin.plugin_id}
-                  </p>
-                </div>
+      {/* Upgrade */}
+      <Modal
+        isOpen={!!showUpgradeModal}
+        onClose={() => setShowUpgradeModal(null)}
+        preventClose={isUpgrading}
+        size="sm"
+        icon={ArrowUpCircle}
+        tone="acid"
+        title={t('settings.plugins.upgrade.title', 'Plugin Upgrade')}
+        subtitle={showUpgradeModal?.plugin.name}
+        footer={
+          !isUpgrading && (
+            <>
+              <SecondaryButton onClick={() => setShowUpgradeModal(null)}>{t('common.cancel', 'Cancel')}</SecondaryButton>
+              <PrimaryButton onClick={handleUpgrade} icon={<ArrowUpCircle className="h-4 w-4" />}>{t('settings.plugins.upgrade.confirm', 'Upgrade Now')}</PrimaryButton>
+            </>
+          )
+        }
+      >
+        {showUpgradeModal && (
+          <>
+            <div className="flex items-center justify-center gap-4 py-2">
+              <div className="text-center">
+                <p className="text-[11px] text-gray-400">{t('settings.plugins.upgrade.currentVersion', 'Current Version')}</p>
+                <p className="tgo-display mt-1 text-[28px] text-gray-500">v{showUpgradeModal.plugin.version}</p>
               </div>
-              <button 
-                onClick={() => setShowDetailPlugin(null)}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-              >
-                <XCircle className="w-6 h-6" />
-              </button>
-            </div>
-            
-            <div className="flex-1 overflow-auto p-6 space-y-8">
-              {/* Basic Info Section */}
-              <section className="space-y-4">
-                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                  <Info className="w-4 h-4" />
-                  {t('settings.plugins.detail.basicInfo', 'Basic Information')}
-                </h3>
-                <div className="grid grid-cols-2 gap-6 bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg border border-gray-100 dark:border-gray-700">
-                  <div className="space-y-1">
-                    <p className="text-xs text-gray-500">{t('settings.plugins.author', 'Author')}</p>
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{showDetailPlugin.author || '-'}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-xs text-gray-500">{t('settings.plugins.status.label', 'Current Status')}</p>
-                    <div className="flex items-center gap-2">
-                      <span className={`w-2 h-2 rounded-full ${showDetailPlugin.status === 'running' ? 'bg-green-500' : 'bg-gray-400'}`} />
-                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100 capitalize">{showDetailPlugin.status}</p>
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-xs text-gray-500">{t('settings.plugins.installType', 'Install Type')}</p>
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100 capitalize">{showDetailPlugin.install_type}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-xs text-gray-500">{t('settings.plugins.installedAt', 'Installed At')}</p>
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{formatRelativeTime(showDetailPlugin.installed_at)}</p>
-                  </div>
-                </div>
-                {showDetailPlugin.description && (
-                  <div className="p-4 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg text-sm text-gray-700 dark:text-gray-300 italic">
-                    {showDetailPlugin.description}
-                  </div>
-                )}
-              </section>
-
-              {/* Capabilities Section */}
-              <section className="space-y-4">
-                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                  <Cpu className="w-4 h-4" />
-                  {t('settings.plugins.capabilities', 'Capabilities')}
-                </h3>
-                {showDetailPlugin.capabilities && showDetailPlugin.capabilities.length > 0 ? (
-                  <div className="space-y-3">
-                    {showDetailPlugin.capabilities.map((cap, idx) => (
-                      <div key={idx} className="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <span className="p-1.5 bg-gray-100 dark:bg-gray-700 rounded text-gray-600 dark:text-gray-300">
-                              <Box className="w-4 h-4" />
-                            </span>
-                            <span className="font-semibold text-gray-900 dark:text-gray-100">{cap.title}</span>
-                            <span className="text-[10px] px-1.5 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full font-bold uppercase">
-                              {cap.type}
-                            </span>
-                          </div>
-                          <div className="text-xs text-gray-400">Priority: {cap.priority}</div>
-                        </div>
-                        
-                        {cap.type === 'tools' && cap.tools && (
-                          <div className="mt-4 pl-4 border-l-2 border-gray-100 dark:border-gray-700 space-y-4">
-                            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Tools ({cap.tools.length})</p>
-                            {cap.tools.map((tool, tidx) => (
-                              <div key={tidx} className="space-y-2">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-sm font-mono font-bold text-gray-700 dark:text-gray-200">{tool.name}</span>
-                                  <span className="text-xs text-gray-500">— {tool.title}</span>
-                                </div>
-                                {tool.description && <p className="text-xs text-gray-500 dark:text-gray-400 italic">{tool.description}</p>}
-                                {tool.parameters && tool.parameters.length > 0 && (
-                                  <div className="overflow-hidden border border-gray-100 dark:border-gray-700 rounded">
-                                    <table className="w-full text-xs text-left">
-                                      <thead className="bg-gray-50 dark:bg-gray-900/50 text-gray-500">
-                                        <tr>
-                                          <th className="px-3 py-2 font-medium">Parameter</th>
-                                          <th className="px-3 py-2 font-medium">Type</th>
-                                          <th className="px-3 py-2 font-medium">Required</th>
-                                          <th className="px-3 py-2 font-medium">Description</th>
-                                        </tr>
-                                      </thead>
-                                      <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                                        {tool.parameters.map((param, pidx) => (
-                                          <tr key={pidx}>
-                                            <td className="px-3 py-2 font-mono text-blue-600 dark:text-blue-400">{param.name}</td>
-                                            <td className="px-3 py-2">{param.type}</td>
-                                            <td className="px-3 py-2">{param.required ? 'Yes' : 'No'}</td>
-                                            <td className="px-3 py-2 text-gray-500">{param.description || '-'}</td>
-                                          </tr>
-                                        ))}
-                                      </tbody>
-                                    </table>
-                                  </div>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="p-8 text-center bg-gray-50 dark:bg-gray-900/30 border border-dashed border-gray-200 dark:border-gray-700 rounded-lg text-gray-400 text-sm">
-                    {t('settings.plugins.detail.noCapabilities', 'This plugin does not declare any special capabilities')}
-                  </div>
-                )}
-              </section>
-            </div>
-            
-            <div className="p-6 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 flex justify-end">
-              <button
-                onClick={() => setShowDetailPlugin(null)}
-                className="px-6 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-              >
-                {t('common.close', 'Close')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Development Notice */}
-      <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/20 rounded-lg p-4">
-        <div className="flex items-start gap-3">
-          <Info className="w-5 h-5 text-blue-600 mt-0.5" />
-          <div className="text-sm text-blue-800 dark:text-blue-300">
-            <p className="font-semibold mb-1">{t('settings.plugins.debug.title', 'Debug Hint')}</p>
-            <p>{t('settings.plugins.debug.description', 'In development mode, you can connect local plugins via port 8005 (TCP) or /var/run/tgo/tgo.sock (Unix Socket).')}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Upgrade Modal */}
-      {showUpgradeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <RefreshCcw className="w-5 h-5 text-green-600" />
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                  {t('settings.plugins.upgrade.title', 'Plugin Upgrade')}
-                </h2>
+              <ArrowLeft className="h-5 w-5 rotate-180 text-gray-300" />
+              <div className="text-center">
+                <p className="text-[11px] text-gray-400">{t('settings.plugins.upgrade.latestVersion', 'Latest Version')}</p>
+                <p className="tgo-display mt-1 text-[28px] text-gray-900 dark:text-white">v{showUpgradeModal.latest_config.version}</p>
               </div>
-              <button 
-                onClick={() => !isUpgrading && setShowUpgradeModal(null)}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 disabled:opacity-30"
-                disabled={isUpgrading}
-              >
-                <XCircle className="w-6 h-6" />
-              </button>
             </div>
-            
-            <div className="p-6 space-y-4">
-              <div className="p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-100 dark:border-gray-700 space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">{t('settings.plugins.upgrade.pluginName', 'Plugin Name')}</span>
-                  <span className="text-sm font-medium">{showUpgradeModal.plugin.name}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">{t('settings.plugins.upgrade.currentVersion', 'Current Version')}</span>
-                  <span className="text-sm font-medium text-gray-600">v{showUpgradeModal.plugin.version}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">{t('settings.plugins.upgrade.latestVersion', 'Latest Version')}</span>
-                  <span className="text-sm font-bold text-green-600">v{showUpgradeModal.latest_config.version}</span>
-                </div>
+
+            {upgradeProgress && (
+              <div className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm ${
+                upgradeProgress.stage === 'error' ? 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300'
+                  : upgradeProgress.stage === 'complete' ? 'bg-acid-50 text-acid-800 dark:bg-acid-400/10 dark:text-acid-300'
+                  : 'tgo-well text-gray-700 dark:text-gray-200'
+              }`}>
+                {upgradeProgress.stage === 'error' ? <XCircle className="h-4 w-4 shrink-0" />
+                  : upgradeProgress.stage === 'complete' ? <Check className="h-4 w-4 shrink-0" />
+                  : <Loader2 className="h-4 w-4 shrink-0 animate-spin" />}
+                <span className="font-medium">{upgradeProgress.message}</span>
               </div>
+            )}
+          </>
+        )}
+      </Modal>
 
-              {isUpgrading && upgradeProgress && (
-                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800 space-y-3">
-                  <div className="flex items-center gap-3">
-                    {upgradeProgress.stage === 'error' ? (
-                      <XCircle className="w-5 h-5 text-red-500" />
-                    ) : upgradeProgress.stage === 'complete' ? (
-                      <Check className="w-5 h-5 text-green-500" />
-                    ) : (
-                      <RefreshCcw className="w-5 h-5 text-blue-500 animate-spin" />
-                    )}
-                    <span className="text-sm font-medium text-blue-800 dark:text-blue-300">
-                      {upgradeProgress.message}
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {!isUpgrading && (
-                <div className="flex gap-3 mt-6">
-                  <button
-                    onClick={() => setShowUpgradeModal(null)}
-                    className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                  >
-                    {t('common.cancel', 'Cancel')}
-                  </button>
-                  <button
-                    onClick={handleUpgrade}
-                    className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 transition-colors shadow-sm"
-                  >
-                    {t('settings.plugins.upgrade.confirm', 'Upgrade Now')}
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+      <ConfirmDialog
+        isOpen={!!uninstallTarget}
+        title={t('settings.plugins.actions.uninstall', 'Uninstall')}
+        message={t('settings.plugins.actions.uninstallConfirm', 'Are you sure you want to uninstall this plugin? This action cannot be undone.')}
+        confirmText={t('settings.plugins.actions.uninstall', 'Uninstall')}
+        cancelText={t('common.cancel', 'Cancel')}
+        confirmVariant="danger"
+        onConfirm={() => {
+          if (uninstallTarget) handlePluginAction(uninstallTarget.plugin_id, 'uninstall');
+          setUninstallTarget(null);
+        }}
+        onCancel={() => setUninstallTarget(null)}
+      />
+    </SettingsPage>
   );
 };
 

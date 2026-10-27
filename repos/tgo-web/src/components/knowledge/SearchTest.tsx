@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Loader, FileText, Info, Search, HelpCircle, Zap, Type, Layers } from 'lucide-react';
+import { Loader2, FileText, Search, HelpCircle, Zap, Type, Layers, Timer, Hash, ArrowRight, type LucideIcon } from 'lucide-react';
 import { KnowledgeBaseApiService, type SearchResultDoc } from '@/services/knowledgeBaseApi';
 import { useToast } from '@/hooks/useToast';
 import { useAuthStore } from '@/stores/authStore';
-import Button from '@/components/ui/Button';
-import Badge from '@/components/ui/Badge';
-
 
 interface SearchTestProps {
     collectionId: string;
@@ -16,44 +13,23 @@ type SearchMode = 'hybrid' | 'embedding' | 'fulltext';
 
 type ContentType = 'qa_pair' | 'paragraph' | 'heading' | 'table' | 'list' | 'code';
 
-const CONTENT_TYPES: {
-    value: ContentType;
-    name: string;
-    description: string;
-}[] = [
-        { value: 'qa_pair', name: 'Q&A Pairs', description: 'Question-and-answer data from Q&A knowledge bases' },
-        { value: 'paragraph', name: 'Paragraph', description: 'Body paragraphs in documents' },
-        { value: 'heading', name: 'Heading', description: 'Section headings in documents' },
-        { value: 'table', name: 'Table', description: 'Table content in documents' },
-        { value: 'list', name: 'List', description: 'List items in documents' },
-        { value: 'code', name: 'Code Block', description: 'Code snippets in documents' },
-    ];
+const CONTENT_TYPES: { value: ContentType; name: string }[] = [
+    { value: 'qa_pair', name: 'Q&A Pairs' },
+    { value: 'paragraph', name: 'Paragraph' },
+    { value: 'heading', name: 'Heading' },
+    { value: 'table', name: 'Table' },
+    { value: 'list', name: 'List' },
+    { value: 'code', name: 'Code Block' },
+];
 
-const SEARCH_MODES: {
-    value: SearchMode;
-    name: string;
-    description: string;
-    icon: React.ReactNode;
-}[] = [
-        {
-            value: 'hybrid',
-            name: 'Hybrid Search',
-            description: 'Combines semantic understanding with keyword matching (recommended)',
-            icon: <Layers className="w-4 h-4" />
-        },
-        {
-            value: 'embedding',
-            name: 'Semantic Search',
-            description: 'Based on vector similarity; understands semantic meaning',
-            icon: <Zap className="w-4 h-4" />
-        },
-        {
-            value: 'fulltext',
-            name: 'Full-text Search',
-            description: 'Based on keyword matching for exact lookup',
-            icon: <Type className="w-4 h-4" />
-        },
-    ];
+const SEARCH_MODES: { value: SearchMode; name: string; description: string; icon: LucideIcon }[] = [
+    { value: 'hybrid', name: 'Hybrid Search', description: 'Combines semantic understanding with keyword matching (recommended)', icon: Layers },
+    { value: 'embedding', name: 'Semantic Search', description: 'Based on vector similarity; understands semantic meaning', icon: Zap },
+    { value: 'fulltext', name: 'Full-text Search', description: 'Based on keyword matching for exact lookup', icon: Type },
+];
+
+const metaString = (value: unknown): string | undefined =>
+    typeof value === 'string' && value ? value : undefined;
 
 export const SearchTest: React.FC<SearchTestProps> = ({ collectionId }) => {
     const { t } = useTranslation();
@@ -64,34 +40,28 @@ export const SearchTest: React.FC<SearchTestProps> = ({ collectionId }) => {
     const [query, setQuery] = useState('');
     const [limit, setLimit] = useState(10);
     const [searchMode, setSearchMode] = useState<SearchMode>('hybrid');
-    const [contentTypes, setContentTypes] = useState<ContentType[]>(
-        CONTENT_TYPES.map(t => t.value)
-    );
+    const [contentTypes, setContentTypes] = useState<ContentType[]>(CONTENT_TYPES.map(ct => ct.value));
 
     // States
     const [isLoading, setIsLoading] = useState(false);
+    const [hasSearched, setHasSearched] = useState(false);
     const [results, setResults] = useState<SearchResultDoc[]>([]);
-    const [searchInfo, setSearchInfo] = useState<{
-        time: number;
-        total: number;
-        mode: string;
-    } | null>(null);
+    const [searchInfo, setSearchInfo] = useState<{ time: number; total: number; mode: string } | null>(null);
 
-    const handleSearch = async (e?: React.FormEvent) => {
-        if (e) e.preventDefault();
+    const allSelected = contentTypes.length === CONTENT_TYPES.length;
+
+    const handleSearch = async () => {
         if (!query.trim() || !projectId) return;
 
         setIsLoading(true);
         try {
-            const isAllSelected = contentTypes.length === CONTENT_TYPES.length;
-
             const response = await KnowledgeBaseApiService.searchDocuments(
                 collectionId,
                 {
                     query: query.trim(),
                     limit,
                     search_mode: searchMode,
-                    filters: isAllSelected ? undefined : { content_type: contentTypes }
+                    filters: allSelected ? undefined : { content_type: contentTypes }
                 },
                 projectId
             );
@@ -102,7 +72,7 @@ export const SearchTest: React.FC<SearchTestProps> = ({ collectionId }) => {
                 total: response.search_metadata.total_results,
                 mode: response.search_metadata.search_type,
             });
-
+            setHasSearched(true);
         } catch (error) {
             console.error('Search failed:', error);
             showToast('error', t('knowledge.search.failed', 'Search failed'), error instanceof Error ? error.message : String(error));
@@ -111,306 +81,254 @@ export const SearchTest: React.FC<SearchTestProps> = ({ collectionId }) => {
         }
     };
 
-    const getScoreColor = (score: number) => {
-        if (score >= 0.8) return 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20';
-        if (score >= 0.5) return 'text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20';
-        return 'text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800';
+    const toggleContentType = (value: ContentType) => {
+        if (!contentTypes.includes(value)) {
+            setContentTypes([...contentTypes, value]);
+        } else if (contentTypes.length > 1) {
+            setContentTypes(contentTypes.filter(ct => ct !== value));
+        } else {
+            showToast('warning', t('knowledge.searchTest.selectAtLeastOne', 'Please select at least one content type'));
+        }
+    };
+
+    const scoreTone = (score: number) => {
+        if (score >= 0.8) return { bar: 'bg-acid-500', text: 'text-acid-700 dark:text-acid-300' };
+        if (score >= 0.5) return { bar: 'bg-amber-400', text: 'text-amber-700 dark:text-amber-300' };
+        return { bar: 'bg-gray-300 dark:bg-gray-600', text: 'text-gray-500 dark:text-gray-400' };
     };
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 p-6">
-            {/* Left Column: Config */}
-            <div className="lg:col-span-4 space-y-6">
-                {/* Search Input Card */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
-                    <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-800">
-                        <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                            <Search className="w-4 h-4 text-blue-500" />
-                            {t('knowledge.search.title', 'Search Test')}
-                        </h3>
-                        <p className="text-xs text-gray-500 mt-1">{t('knowledge.searchTest.subtitle', 'Test knowledge base retrieval and simulate the search behavior used when the AI replies')}</p>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+            {/* Left column: query + configuration */}
+            <div className="space-y-5 lg:col-span-4">
+                <div className="tgo-surface p-6">
+                    <div className="flex items-center gap-3">
+                        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-ink-900 text-acid-400 dark:bg-acid-400 dark:text-ink-900">
+                            <Search className="h-4 w-4" />
+                        </span>
+                        <div>
+                            <h3 className="text-lg font-medium tracking-tight text-gray-900 dark:text-white">{t('knowledge.search.title', 'Search Test')}</h3>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">{t('knowledge.searchTest.subtitle', 'Test knowledge base retrieval and simulate the search behavior used when the AI replies')}</p>
+                        </div>
                     </div>
 
-                    <div className="p-4 space-y-4">
-                        {/* Query Input */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                {t('knowledge.search.query', 'Test text')}
-                            </label>
-                            <textarea
-                                value={query}
-                                onChange={(e) => setQuery(e.target.value)}
-                                placeholder={t('knowledge.search.placeholder', 'Enter a question to test...')}
-                                className="w-full h-28 p-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none resize-none transition-all placeholder:text-gray-400"
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' && !e.shiftKey) {
-                                        e.preventDefault();
-                                        handleSearch();
-                                    }
-                                }}
-                            />
-                        </div>
+                    <label htmlFor="kb-search-query" className="tgo-label mt-6">{t('knowledge.search.query', 'Test text')}</label>
+                    <textarea
+                        id="kb-search-query"
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        placeholder={t('knowledge.search.placeholder', 'Enter a question to test...')}
+                        className="tgo-input h-32 resize-none"
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                handleSearch();
+                            }
+                        }}
+                    />
 
-                        {/* Search Button */}
-                        <Button
+                    <div className="mt-4 flex items-center gap-3">
+                        <button
                             onClick={() => handleSearch()}
                             disabled={isLoading || !query.trim()}
-                            variant="primary"
-                            size="lg"
-                            className="w-full h-11 text-base font-medium"
+                            className="tgo-btn-ink flex-1 justify-center"
+                            data-icon-motion="nudge"
                         >
-                            {isLoading ? (
-                                <>
-                                    <Loader className="w-4 h-4 animate-spin mr-2" />
-                                    {t('knowledge.searchTest.searching', 'Searching...')}
-                                </>
-                            ) : (
-                                <>
-                                    <Search className="w-4 h-4 mr-2" />
-                                    {t('knowledge.searchTest.startSearch', 'Start search')}
-                                </>
-                            )}
-                        </Button>
-
-                        {/* Limit */}
-                        <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700">
-                            <span className="text-sm text-gray-600 dark:text-gray-400">{t('knowledge.searchTest.resultCount', 'Result count')}</span>
+                            <span className="tgo-btn-icon">
+                                {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
+                            </span>
+                            {isLoading ? t('knowledge.searchTest.searching', 'Searching...') : t('knowledge.searchTest.startSearch', 'Start search')}
+                        </button>
+                        <label className="flex h-11 items-center gap-2 rounded-full bg-gray-50 pl-4 pr-1.5 text-xs text-gray-500 shadow-[inset_0_0_0_1px_var(--color-gray-200)] dark:bg-gray-800 dark:shadow-[inset_0_0_0_1px_var(--color-gray-700)]" title={t('knowledge.searchTest.resultCount', 'Result count')}>
+                            <Hash className="h-3.5 w-3.5" />
                             <input
                                 type="number"
                                 value={limit}
-                                onChange={(e) => setLimit(parseInt(e.target.value) || 10)}
+                                onChange={(e) => setLimit(Math.min(50, Math.max(1, parseInt(e.target.value, 10) || 10)))}
                                 min={1}
                                 max={50}
-                                className="w-20 px-3 py-1.5 text-center bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                                aria-label={t('knowledge.searchTest.resultCount', 'Result count')}
+                                className="h-8 w-14 rounded-full bg-white text-center text-sm font-medium text-gray-900 outline-none dark:bg-gray-900 dark:text-gray-100"
                             />
-                        </div>
+                        </label>
                     </div>
                 </div>
 
-                {/* Search Mode Card */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
-                    <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                        <h3 className="font-semibold text-gray-900 dark:text-white text-sm">
-                            {t('knowledge.search.mode', 'Search mode')}
-                        </h3>
-                    </div>
-
-                    <div className="p-2">
-                        {SEARCH_MODES.map((mode) => (
-                            <label
-                                key={mode.value}
-                                className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-all ${searchMode === mode.value
-                                    ? 'bg-blue-50 dark:bg-blue-900/20 ring-1 ring-blue-200 dark:ring-blue-800'
-                                    : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
-                                    }`}
-                            >
-                                <input
-                                    type="radio"
-                                    name="searchMode"
-                                    value={mode.value}
-                                    checked={searchMode === mode.value}
-                                    onChange={(e) => setSearchMode(e.target.value as SearchMode)}
-                                    className="mt-1 w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
-                                />
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2">
-                                        <span className={`${searchMode === mode.value ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400'}`}>
-                                            {mode.icon}
-                                        </span>
-                                        <span className={`font-medium text-sm ${searchMode === mode.value
-                                            ? 'text-blue-700 dark:text-blue-300'
-                                            : 'text-gray-900 dark:text-gray-100'
-                                            }`}>
+                <div className="tgo-surface p-6">
+                    <h3 className="tgo-eyebrow mb-3">{t('knowledge.search.mode', 'Search mode')}</h3>
+                    <div className="space-y-2" role="radiogroup">
+                        {SEARCH_MODES.map(mode => {
+                            const active = searchMode === mode.value;
+                            const Icon = mode.icon;
+                            return (
+                                <button
+                                    key={mode.value}
+                                    type="button"
+                                    role="radio"
+                                    aria-checked={active}
+                                    data-active={active}
+                                    onClick={() => setSearchMode(mode.value)}
+                                    className="tgo-option w-full !items-start"
+                                >
+                                    <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors ${active ? 'bg-ink-900 text-acid-400 dark:bg-acid-400 dark:text-ink-900' : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-300'}`}>
+                                        <Icon className="h-4 w-4" />
+                                    </span>
+                                    <span className="min-w-0 flex-1">
+                                        <span className="flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-gray-100">
                                             {t(`knowledge.searchTest.modes.${mode.value}.name`, mode.name)}
+                                            {mode.value === 'hybrid' && (
+                                                <span className="rounded-full bg-acid-300 px-1.5 text-[10px] font-semibold leading-4 text-ink-900">
+                                                    {t('knowledge.searchTest.recommended', 'Recommended')}
+                                                </span>
+                                            )}
                                         </span>
-                                        {mode.value === 'hybrid' && (
-                                            <Badge variant="info" className="text-[10px] py-0 px-1.5 h-4">
-                                                {t('knowledge.searchTest.recommended', 'Recommended')}
-                                            </Badge>
-                                        )}
-                                    </div>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                                        {t(`knowledge.searchTest.modes.${mode.value}.description`, mode.description)}
-                                    </p>
-                                </div>
-                            </label>
-                        ))}
+                                        <span className="mt-0.5 block text-xs leading-relaxed text-gray-500 dark:text-gray-400">
+                                            {t(`knowledge.searchTest.modes.${mode.value}.description`, mode.description)}
+                                        </span>
+                                    </span>
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
 
-                {/* Content Type Card */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
-                    <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                        <h3 className="font-semibold text-gray-900 dark:text-white text-sm">
-                            {t('knowledge.searchTest.contentTypes', 'Content types')}
-                        </h3>
+                <div className="tgo-surface p-6">
+                    <div className="mb-3 flex items-center justify-between">
+                        <h3 className="tgo-eyebrow">{t('knowledge.searchTest.contentTypes', 'Content types')}</h3>
                         <button
-                            onClick={() => {
-                                if (contentTypes.length === CONTENT_TYPES.length) {
-                                    setContentTypes(['qa_pair']); // Keep at least one
-                                } else {
-                                    setContentTypes(CONTENT_TYPES.map(t => t.value));
-                                }
-                            }}
-                            className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                            onClick={() => setContentTypes(allSelected ? ['qa_pair'] : CONTENT_TYPES.map(ct => ct.value))}
+                            className="text-xs font-medium text-gray-500 underline-offset-4 hover:text-gray-900 hover:underline dark:hover:text-white"
                         >
-                            {contentTypes.length === CONTENT_TYPES.length ? t('knowledge.searchTest.deselectAll', 'Deselect all') : t('knowledge.searchTest.selectAll', 'Select all')}
+                            {allSelected ? t('knowledge.searchTest.deselectAll', 'Deselect all') : t('knowledge.searchTest.selectAll', 'Select all')}
                         </button>
                     </div>
-
-                    <div className="p-3 grid grid-cols-2 gap-2">
-                        {CONTENT_TYPES.map((type) => (
-                            <label
+                    <div className="flex flex-wrap gap-2">
+                        {CONTENT_TYPES.map(type => (
+                            <button
                                 key={type.value}
-                                className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-all border ${contentTypes.includes(type.value)
-                                    ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300'
-                                    : 'hover:bg-gray-50 dark:hover:bg-gray-700/50 border-transparent text-gray-600 dark:text-gray-400'
-                                    }`}
+                                type="button"
+                                data-active={contentTypes.includes(type.value)}
+                                aria-pressed={contentTypes.includes(type.value)}
+                                onClick={() => toggleContentType(type.value)}
+                                className="tgo-pill h-8 px-3 text-xs"
                             >
-                                <input
-                                    type="checkbox"
-                                    checked={contentTypes.includes(type.value)}
-                                    onChange={(e) => {
-                                        if (e.target.checked) {
-                                            setContentTypes([...contentTypes, type.value]);
-                                        } else {
-                                            if (contentTypes.length > 1) {
-                                                setContentTypes(contentTypes.filter(t => t !== type.value));
-                                            } else {
-                                                showToast('warning', t('knowledge.searchTest.selectAtLeastOne', 'Please select at least one content type'));
-                                            }
-                                        }
-                                    }}
-                                    className="w-3.5 h-3.5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
-                                />
-                                <span className="text-xs font-medium truncate">
-                                    {t(`knowledge.searchTest.types.${type.value}`, type.name)}
-                                </span>
-                            </label>
+                                {t(`knowledge.searchTest.types.${type.value}`, type.name)}
+                            </button>
                         ))}
                     </div>
                 </div>
             </div>
 
-            {/* Right Column: Results */}
-            <div className="lg:col-span-8 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col shadow-sm overflow-hidden">
-                <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 flex justify-between items-center">
-                    <div className="flex items-center gap-3">
-                        <h3 className="font-semibold text-gray-900 dark:text-white">
+            {/* Right column: results */}
+            <div className="tgo-surface flex min-h-[520px] flex-col overflow-hidden lg:col-span-8">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-6 py-5 dark:border-gray-800">
+                    <div className="flex items-center gap-2">
+                        <h3 className="text-xl font-light tracking-tight text-gray-900 dark:text-white">
                             {t('knowledge.search.results', 'Search Results')}
                         </h3>
-                        {/* Score Tips */}
                         <div className="group relative">
-                            <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
-                            <div className="absolute left-0 top-6 z-50 w-72 p-3 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                                <div className="font-semibold mb-2">{t('knowledge.searchTest.aboutScore', 'About the Score')}</div>
+                            <HelpCircle className="h-4 w-4 cursor-help text-gray-400" />
+                            <div className="invisible absolute left-0 top-6 z-50 w-72 rounded-2xl bg-ink-900 p-4 text-xs text-white opacity-0 shadow-xl transition-all group-hover:visible group-hover:opacity-100">
+                                <div className="mb-2 font-semibold">{t('knowledge.searchTest.aboutScore', 'About the Score')}</div>
                                 <ul className="space-y-1.5 text-gray-300">
-                                    <li><span className="text-green-400">1.0</span>: {t('knowledge.searchTest.scoreHigh', 'most relevant, ranked first')}</li>
-                                    <li><span className="text-yellow-400">0.5-1.0</span>: {t('knowledge.searchTest.scoreMid', 'highly relevant')}</li>
+                                    <li><span className="text-acid-400">1.0</span>: {t('knowledge.searchTest.scoreHigh', 'most relevant, ranked first')}</li>
+                                    <li><span className="text-amber-300">0.5-1.0</span>: {t('knowledge.searchTest.scoreMid', 'highly relevant')}</li>
                                     <li><span className="text-gray-400">&lt;0.5</span>: {t('knowledge.searchTest.scoreLow', 'moderately relevant')}</li>
                                 </ul>
-                                <div className="mt-2 pt-2 border-t border-gray-700 text-gray-400">
+                                <div className="mt-2 border-t border-white/10 pt-2 text-gray-400">
                                     {t('knowledge.searchTest.scoreNote', 'Scores are normalized to the 0-1 range. Hybrid search combines semantic similarity and keyword matching, fused and ranked with the RRF algorithm.')}
                                 </div>
                             </div>
                         </div>
                     </div>
                     {searchInfo && (
-                        <div className="flex items-center gap-3 text-xs text-gray-500">
-                            <span>{t('knowledge.searchTest.elapsed', 'Elapsed')} <b className="text-gray-900 dark:text-white">{searchInfo.time}ms</b></span>
-                            <span className="w-px h-3 bg-gray-200 dark:bg-gray-700" />
-                            <span>{t('knowledge.searchTest.total', 'Total')} <b className="text-gray-900 dark:text-white">{searchInfo.total}</b> {t('knowledge.searchTest.items', 'items')}</span>
-                            <span className="w-px h-3 bg-gray-200 dark:bg-gray-700" />
-                            <Badge variant="secondary" className="text-[10px]">{searchInfo.mode}</Badge>
+                        <div className="flex flex-wrap items-center gap-2">
+                            <span className="tgo-chip"><Timer className="h-3 w-3" />{searchInfo.time}ms</span>
+                            <span className="tgo-chip">{t('knowledge.searchTest.total', 'Total')} <b className="text-gray-900 dark:text-white">{searchInfo.total}</b> {t('knowledge.searchTest.items', 'items')}</span>
+                            <span className="tgo-chip bg-acid-200 text-ink-900 dark:bg-acid-400/20 dark:text-acid-300">{searchInfo.mode}</span>
                         </div>
                     )}
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-4 bg-gray-50/30 dark:bg-gray-900/30">
-                    {results.length === 0 && !isLoading ? (
-                        <div className="h-full min-h-[400px] flex flex-col items-center justify-center text-gray-400">
-                            <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
-                                <Info className="w-8 h-8 opacity-40" />
+                <div className="custom-scrollbar flex-1 overflow-y-auto p-4">
+                    {isLoading ? (
+                        <div className="space-y-3">
+                            {[0, 1, 2].map(i => (
+                                <div key={i} className="tgo-skeleton h-32 rounded-3xl" style={{ opacity: 1 - i * 0.2 }} />
+                            ))}
+                        </div>
+                    ) : results.length === 0 ? (
+                        <div className="flex h-full min-h-[400px] flex-col items-center justify-center text-center">
+                            <div className="relative mb-6 flex h-24 w-24 items-center justify-center">
+                                <span className="absolute inset-0 rounded-full bg-acid-200/60 dark:bg-acid-400/10" />
+                                <span className="absolute inset-4 rounded-full bg-acid-300/70 dark:bg-acid-400/20" />
+                                <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-ink-900 text-acid-400 shadow-lg">
+                                    <Search className="h-5 w-5" />
+                                </span>
                             </div>
-                            <h4 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-1">
-                                {query ? t('knowledge.searchTest.noMatches', 'No matching results found') : t('knowledge.searchTest.ready', 'Ready')}
+                            <h4 className="mb-1.5 text-lg font-medium tracking-tight text-gray-900 dark:text-gray-100">
+                                {hasSearched ? t('knowledge.searchTest.noMatches', 'No matching results found') : t('knowledge.searchTest.ready', 'Ready')}
                             </h4>
-                            <p className="text-sm text-gray-500 text-center max-w-sm">
-                                {query ? t('knowledge.searchTest.tryOtherKeywords', 'Try different keywords or adjust the search mode') : t('knowledge.searchTest.startHint', 'Enter a question on the left to start testing')}
+                            <p className="max-w-sm text-sm text-gray-500 dark:text-gray-400">
+                                {hasSearched ? t('knowledge.searchTest.tryOtherKeywords', 'Try different keywords or adjust the search mode') : t('knowledge.searchTest.startHint', 'Enter a question on the left to start testing')}
                             </p>
                         </div>
                     ) : (
-                        <div className="space-y-3">
+                        <ol className="tgo-stagger space-y-3">
                             {results.map((result, idx) => {
-                                const score = result.relevance_score !== undefined ? result.relevance_score : result.score;
+                                const score = result.relevance_score ?? result.score;
                                 const scoreNum = typeof score === 'number' ? score : 0;
+                                const tone = scoreTone(scoreNum);
+                                const isQA = result.content_type === 'qa_pair';
+                                const source = metaString(result.metadata?.filename) || metaString(result.metadata?.source);
+                                const semanticRank = result.metadata?.semantic_rank as number | undefined;
+                                const keywordRank = result.metadata?.keyword_rank as number | undefined;
+                                const rrfScore = result.metadata?.rrf_score as number | string | undefined;
                                 return (
-                                    <div key={idx} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:shadow-md transition-shadow">
-                                        <div className="flex justify-between items-start mb-3">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-xs">
+                                    <li key={result.id || idx} className="rounded-3xl bg-white p-5 shadow-[inset_0_0_0_1px_var(--color-gray-100)] transition-shadow hover:shadow-[inset_0_0_0_1px_var(--color-gray-200),0_12px_28px_-18px_rgb(15_16_18/0.3)] dark:bg-gray-800/60 dark:shadow-[inset_0_0_0_1px_var(--color-gray-800)]">
+                                        <div className="mb-3 flex items-start justify-between gap-4">
+                                            <div className="flex min-w-0 items-center gap-3">
+                                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink-900 text-xs font-semibold text-acid-400 dark:bg-acid-400 dark:text-ink-900">
                                                     {idx + 1}
-                                                </div>
-                                                <div>
+                                                </span>
+                                                <div className="min-w-0">
                                                     <div className="flex items-center gap-2">
-                                                        {result.content_type === 'qa_pair' ? (
-                                                            <Badge variant="info" className="text-[10px] py-0 px-1.5 h-4">
-                                                                QA
-                                                            </Badge>
-                                                        ) : (
-                                                            <Badge variant="secondary" className="text-[10px] py-0 px-1.5 h-4">
-                                                                {t('knowledge.searchTest.document', 'Document')}
-                                                            </Badge>
-                                                        )}
-                                                        <span className="text-xs text-gray-400">
-                                                            {result.metadata?.filename || result.metadata?.source || t('knowledge.searchTest.unknownSource', 'Unknown source')}
+                                                        <span className={`tgo-chip h-5 px-2 text-[10px] ${isQA ? 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300' : ''}`}>
+                                                            {isQA ? 'QA' : t('knowledge.searchTest.document', 'Document')}
+                                                        </span>
+                                                        <span className="truncate text-xs text-gray-400">
+                                                            {source || t('knowledge.searchTest.unknownSource', 'Unknown source')}
                                                         </span>
                                                     </div>
-                                                    <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mt-0.5 flex items-center gap-1.5">
-                                                        <FileText className="w-3.5 h-3.5 text-gray-400" />
-                                                        {result.document_title || result.metadata?.filename || t('knowledge.searchTest.untitled', 'Untitled')}
+                                                    <h4 className="mt-1 flex items-center gap-1.5 truncate text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                        <FileText className="h-3.5 w-3.5 shrink-0 text-gray-400" />
+                                                        {result.document_title || source || t('knowledge.searchTest.untitled', 'Untitled')}
                                                     </h4>
                                                 </div>
                                             </div>
-                                            <div className={`px-2.5 py-1 rounded-md font-mono text-xs font-medium ${getScoreColor(scoreNum)}`}>
-                                                {scoreNum.toFixed(4)}
+                                            <div className="w-24 shrink-0 text-right">
+                                                <span className={`font-mono text-sm font-semibold tabular-nums ${tone.text}`}>{scoreNum.toFixed(4)}</span>
+                                                <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700">
+                                                    <div className={`h-full rounded-full ${tone.bar}`} style={{ width: `${Math.min(100, Math.max(4, scoreNum * 100))}%` }} />
+                                                </div>
                                             </div>
                                         </div>
 
-                                        <div className={`text-sm leading-relaxed p-3 rounded-lg ${result.content_type === 'qa_pair'
-                                            ? 'bg-indigo-50/50 dark:bg-indigo-900/10 text-indigo-900 dark:text-indigo-100'
-                                            : 'bg-gray-50 dark:bg-gray-900/50 text-gray-600 dark:text-gray-300'
-                                            }`}>
-                                            <div className="whitespace-pre-wrap line-clamp-4">
-                                                {result.content_preview || result.content}
-                                            </div>
+                                        <div className={`rounded-2xl p-4 text-sm leading-relaxed ${isQA ? 'bg-violet-50/60 text-gray-700 dark:bg-violet-900/10 dark:text-gray-200' : 'bg-gray-50 text-gray-600 dark:bg-gray-900/60 dark:text-gray-300'}`}>
+                                            <div className="line-clamp-4 whitespace-pre-wrap">{result.content_preview || result.content}</div>
                                         </div>
 
-                                        {/* RRF Metadata */}
-                                        {result.metadata && (result.metadata.semantic_rank || result.metadata.keyword_rank) && (
-                                            <div className="mt-2 flex items-center gap-3 text-[10px] text-gray-400">
-                                                {result.metadata.semantic_rank && (
-                                                    <span>{t('knowledge.searchTest.semanticRank', 'Semantic rank')}: #{result.metadata.semantic_rank}</span>
-                                                )}
-                                                {result.metadata.keyword_rank && (
-                                                    <span>{t('knowledge.searchTest.keywordRank', 'Keyword rank')}: #{result.metadata.keyword_rank}</span>
-                                                )}
-                                                {result.metadata.rrf_score && (
-                                                    <span>RRF: {result.metadata.rrf_score}</span>
-                                                )}
+                                        {(semanticRank || keywordRank) && (
+                                            <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] text-gray-400">
+                                                {semanticRank && <span>{t('knowledge.searchTest.semanticRank', 'Semantic rank')} #{semanticRank}</span>}
+                                                {keywordRank && <span>· {t('knowledge.searchTest.keywordRank', 'Keyword rank')} #{keywordRank}</span>}
+                                                {rrfScore && <span>· RRF {rrfScore}</span>}
                                             </div>
                                         )}
-                                    </div>
+                                    </li>
                                 );
                             })}
-                            {isLoading && (
-                                <div className="space-y-3 animate-pulse">
-                                    {[1, 2, 3].map(id => (
-                                        <div key={id} className="h-32 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700" />
-                                    ))}
-                                </div>
-                            )}
-                        </div>
+                        </ol>
                     )}
                 </div>
             </div>

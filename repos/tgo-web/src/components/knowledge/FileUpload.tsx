@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { UploadCloud, X, CheckCircle, AlertCircle, Loader } from 'lucide-react';
+import { UploadCloud, X, CheckCircle2, AlertCircle, Loader2, FileText, Lock } from 'lucide-react';
+import { useToast } from '@/hooks/useToast';
 
 interface FileUploadProgress {
   fileId: string;
@@ -20,16 +21,20 @@ interface FileUploadProps {
   isCheckingEmbedding?: boolean;
 }
 
-interface UploadFile extends File {
+interface UploadRow {
   id: string;
+  name: string;
   progress: number;
   status: 'uploading' | 'success' | 'error';
   error?: string;
 }
 
+const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.txt', '.xlsx', '.xls', '.ppt', '.pptx', '.md', '.markdown', '.html', '.htm'];
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+const FORMAT_CHIPS = ['PDF', 'DOCX', 'XLSX', 'PPTX', 'TXT', 'MD', 'HTML'];
+
 /**
  * File Upload Component with Drag & Drop
- * Based on the HTML reference design
  */
 export const FileUpload: React.FC<FileUploadProps> = ({
   onUpload,
@@ -40,56 +45,45 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   isCheckingEmbedding = false
 }) => {
   const { t } = useTranslation();
+  const { showToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [isDragOver, setIsDragOver] = useState(false);
 
-  // Determine if upload should be disabled
   const isUploadDisabled = isCheckingEmbedding || !hasEmbeddingModel;
 
   // Convert service progress to display format
-  const displayUploadFiles = React.useMemo(() => {
+  const uploadRows = React.useMemo<UploadRow[]>(() => {
     if (!uploadProgress) return [];
-
-    const files = Array.from(uploadProgress.values()).map(progress => ({
+    return Array.from(uploadProgress.values()).map(progress => ({
       id: progress.fileId,
       name: progress.fileName,
-      size: 0, // Size not tracked during upload, will be available after completion
       progress: progress.progress,
-      status: progress.status === 'completed' ? 'success' :
-        progress.status === 'error' ? 'error' : 'uploading',
+      status: progress.status === 'completed' ? 'success' : progress.status === 'error' ? 'error' : 'uploading',
       error: progress.error,
-    } as UploadFile));
-
-    // Debug logging
-    if (files.length > 0) {
-      console.log('FileUpload: Displaying progress for files:', files.map(f => ({
-        name: f.name,
-        progress: f.progress,
-        status: f.status
-      })));
-    }
-
-    return files;
+    }));
   }, [uploadProgress]);
 
-  // Auto-hide completed uploads after a delay
-  React.useEffect(() => {
-    const completedFiles = displayUploadFiles.filter(file => file.status === 'success');
+  // Validate and hand files to the parent; the service tracks progress
+  const handleFiles = useCallback((files: File[]) => {
+    if (isUploadDisabled) return;
 
-    if (completedFiles.length > 0) {
-      const timer = setTimeout(() => {
-        // This will be handled by the service's cleanup logic
-        console.log('Completed uploads should be cleaned up by the service');
-      }, 2000);
+    const validFiles = files.filter(file => {
+      if (file.size > MAX_FILE_SIZE) {
+        showToast('error', file.name, t('knowledge.upload.maxFileSize'));
+        return false;
+      }
+      const fileExtension = `.${file.name.split('.').pop()?.toLowerCase() ?? ''}`;
+      if (!ALLOWED_EXTENSIONS.includes(fileExtension)) {
+        showToast('error', file.name, t('knowledge.upload.unsupportedFormat'));
+        return false;
+      }
+      return true;
+    });
 
-      return () => clearTimeout(timer);
-    }
+    if (validFiles.length > 0) onUpload(validFiles);
+  }, [isUploadDisabled, onUpload, showToast, t]);
 
-    return undefined;
-  }, [displayUploadFiles]);
-
-  // Handle drag events
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -106,81 +100,12 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     e.preventDefault();
     e.stopPropagation();
     setIsDragOver(false);
+    handleFiles(Array.from(e.dataTransfer.files));
+  }, [handleFiles]);
 
-    const files = Array.from(e.dataTransfer.files);
-    handleFiles(files);
-  }, []);
-
-  // Handle file selection
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    handleFiles(files);
-    // Reset input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
-  // Process selected files
-  const handleFiles = (files: File[]) => {
-    // Block upload if embedding model is not configured
-    if (isUploadDisabled) {
-      return;
-    }
-
-    const validFiles = files.filter(file => {
-      // Check file size (10MB limit)
-      if (file.size > 10 * 1024 * 1024) {
-        alert(`${file.name}: ${t('knowledge.upload.maxFileSize')}`);
-        return false;
-      }
-
-      // Check file type
-      const allowedTypes = ['.pdf', '.doc', '.docx', '.txt', '.xlsx', '.xls', '.ppt', '.pptx', '.md', '.markdown', '.html', '.htm'];
-      const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
-      if (!allowedTypes.includes(fileExtension)) {
-        alert(`${file.name}: ${t('knowledge.upload.unsupportedFormat')}`);
-        return false;
-      }
-
-      return true;
-    });
-
-    if (validFiles.length > 0) {
-      // Call parent upload handler - the service will handle progress tracking
-      onUpload(validFiles);
-    }
-  };
-
-  // Remove upload file from progress (this will be handled by the service)
-  const removeUploadFile = (fileId: string) => {
-    onRemoveUploadProgress?.(fileId);
-  };
-
-  // Get file type icon
-  const getFileIcon = (fileName: string | undefined) => {
-    if (!fileName) return '📄';
-    const extension = fileName.split('.').pop()?.toLowerCase();
-    switch (extension) {
-      case 'pdf': return '📄';
-      case 'doc':
-      case 'docx': return '📝';
-      case 'txt': return '📃';
-      case 'xlsx':
-      case 'xls': return '📊';
-      case 'ppt':
-      case 'pptx': return '📊';
-      default: return '📄';
-    }
-  };
-
-  // Format file size
-  const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return '0 B';
-    const k = 1024;
-    const sizes = ['B', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    handleFiles(Array.from(e.target.files || []));
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   if (!isVisible && (uploadProgress ? uploadProgress.size === 0 : true)) {
@@ -188,128 +113,117 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   }
 
   return (
-    <div className="mx-6 mt-4 p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-lg shadow-sm border border-gray-200/60 dark:border-gray-700/60">
-      {/* Upload Area */}
-      <div
-        className={`upload-area rounded-lg p-8 text-center border-2 border-dashed transition-all duration-300 ${isUploadDisabled
-          ? 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 cursor-not-allowed opacity-60'
-          : isDragOver
-            ? 'border-blue-500 dark:border-blue-400 bg-blue-50/50 dark:bg-blue-900/30'
-            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+    <div className="tgo-surface tgo-fade-up space-y-4 p-3">
+      {isVisible && (
+        <div
+          role="button"
+          tabIndex={isUploadDisabled ? -1 : 0}
+          aria-disabled={isUploadDisabled}
+          onClick={() => !isUploadDisabled && fileInputRef.current?.click()}
+          onKeyDown={(e) => {
+            if ((e.key === 'Enter' || e.key === ' ') && !isUploadDisabled) {
+              e.preventDefault();
+              fileInputRef.current?.click();
+            }
+          }}
+          onDragOver={isUploadDisabled ? undefined : handleDragOver}
+          onDragLeave={isUploadDisabled ? undefined : handleDragLeave}
+          onDrop={isUploadDisabled ? undefined : handleDrop}
+          className={`relative overflow-hidden rounded-[22px] border-2 border-dashed px-6 py-12 text-center outline-none transition-all duration-300 ${
+            isUploadDisabled
+              ? 'cursor-not-allowed border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900/50'
+              : isDragOver
+                ? 'scale-[0.995] cursor-copy border-acid-500 bg-acid-50 dark:border-acid-400 dark:bg-acid-400/10'
+                : 'cursor-pointer border-gray-200 bg-gray-50/60 hover:border-acid-500 hover:bg-acid-50/50 focus-visible:border-acid-500 dark:border-gray-700 dark:bg-white/[0.02] dark:hover:border-acid-400/70 dark:hover:bg-acid-400/5'
           }`}
-        onDragOver={isUploadDisabled ? undefined : handleDragOver}
-        onDragLeave={isUploadDisabled ? undefined : handleDragLeave}
-        onDrop={isUploadDisabled ? undefined : handleDrop}
-      >
-        {isCheckingEmbedding ? (
-          <>
-            <Loader className="w-12 h-12 mx-auto text-gray-400 dark:text-gray-500 mb-4 animate-spin" />
-            <h3 className="text-lg font-medium text-gray-600 dark:text-gray-300 mb-2">
-              {t('knowledge.upload.checkingEmbedding', 'Checking embedding model configuration...')}
-            </h3>
-          </>
-        ) : (
-          <>
-            <UploadCloud className={`w-12 h-12 mx-auto mb-4 ${isUploadDisabled ? 'text-gray-300 dark:text-gray-600' : 'text-gray-400 dark:text-gray-500'}`} />
-            <h3 className={`text-lg font-medium mb-2 ${isUploadDisabled ? 'text-gray-500 dark:text-gray-500' : 'text-gray-800 dark:text-gray-100'}`}>
-              {t('knowledge.upload.title', 'Drag files here or click to upload')}
-            </h3>
-            <p className={`text-sm mb-4 ${isUploadDisabled ? 'text-gray-400 dark:text-gray-600' : 'text-gray-500 dark:text-gray-400'}`}>
-              {t('knowledge.upload.supportedFormats', 'Supports PDF, Word, Excel, PowerPoint, Text files, Markdown, HTML')}
-            </p>
+        >
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            accept={ALLOWED_EXTENSIONS.join(',')}
+            onChange={handleFileSelect}
+            className="hidden"
+            disabled={isUploadDisabled}
+          />
 
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              accept=".pdf,.doc,.docx,.txt,.xlsx,.xls,.ppt,.pptx,.md,.markdown,.html,.htm"
-              onChange={handleFileSelect}
-              className="hidden"
-              disabled={isUploadDisabled}
-            />
-
-            <div className="flex flex-col items-center gap-4">
-              <button
-                onClick={() => !isUploadDisabled && fileInputRef.current?.click()}
-                disabled={isUploadDisabled}
-                className={`px-4 py-2 rounded-md transition-colors duration-200 ${isUploadDisabled
-                  ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                  : 'bg-blue-500 dark:bg-blue-600 text-white hover:bg-blue-600 dark:hover:bg-blue-700'
-                  }`}
-              >
-                {t('knowledge.upload.selectFiles', 'Select Files')}
-              </button>
+          {isCheckingEmbedding ? (
+            <div className="flex flex-col items-center">
+              <Loader2 className="mb-4 h-8 w-8 animate-spin text-gray-400" />
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                {t('knowledge.upload.checkingEmbedding', 'Checking embedding model configuration...')}
+              </p>
             </div>
-          </>
-        )}
-      </div>
-
-      {/* Upload Progress */}
-      {displayUploadFiles.length > 0 && (
-        <div className="mt-4">
-          <div className="space-y-2">
-            {displayUploadFiles.map(file => (
-              <div
-                key={file.id}
-                className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
-              >
-                <div className="flex items-center flex-1 min-w-0">
-                  <span className="text-xl mr-3">{getFileIcon(file.name)}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                      {file.name || 'Unknown file'}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {file.size > 0 ? formatFileSize(file.size) : t('knowledge.fileUpload.uploading', 'Uploading...')}
-                    </p>
-
-                    {/* Progress bar */}
-                    {file.status === 'uploading' && (
-                      <div className="mt-2">
-                        <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-300 mb-1">
-                          <span>{t('knowledge.upload.uploadProgress', 'Upload Progress')}</span>
-                          <span>{Math.round(file.progress)}%</span>
-                        </div>
-                        <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-1.5">
-                          <div
-                            className="bg-blue-500 dark:bg-blue-400 h-1.5 rounded-full progress-bar"
-                            style={{ width: `${file.progress}%` }}
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Error message */}
-                    {file.status === 'error' && file.error && (
-                      <p className="text-xs text-red-500 dark:text-red-400 mt-1">{file.error}</p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex items-center ml-4">
-                  {/* Status icon */}
-                  {file.status === 'uploading' && (
-                    <Loader className="w-4 h-4 text-blue-500 dark:text-blue-400 animate-spin mr-2" />
-                  )}
-                  {file.status === 'success' && (
-                    <CheckCircle className="w-4 h-4 text-green-500 dark:text-green-400 mr-2" />
-                  )}
-                  {file.status === 'error' && (
-                    <AlertCircle className="w-4 h-4 text-red-500 dark:text-red-400 mr-2" />
-                  )}
-
-                  {/* Remove button */}
-                  <button
-                    onClick={() => removeUploadFile(file.id)}
-                    className="p-1 text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
+          ) : (
+            <div className="flex flex-col items-center">
+              <div className="relative mb-5 flex h-20 w-20 items-center justify-center">
+                <span className={`absolute inset-0 rounded-full transition-colors ${isUploadDisabled ? 'bg-gray-200/70 dark:bg-gray-800' : 'bg-acid-200/60 dark:bg-acid-400/10'}`} />
+                <span className={`relative flex h-12 w-12 items-center justify-center rounded-full shadow-lg transition-transform duration-500 ${
+                  isUploadDisabled ? 'bg-gray-400 text-white dark:bg-gray-700' : 'bg-ink-900 text-acid-400'
+                } ${isDragOver ? '-translate-y-1 scale-110' : ''}`}>
+                  {isUploadDisabled ? <Lock className="h-5 w-5" /> : <UploadCloud className="h-5 w-5" />}
+                </span>
               </div>
-            ))}
-          </div>
+              <h3 className={`text-lg font-medium tracking-tight ${isUploadDisabled ? 'text-gray-400' : 'text-gray-900 dark:text-gray-100'}`}>
+                {t('knowledge.upload.title', 'Drag files here or click to upload')}
+              </h3>
+              <p className="mt-1.5 max-w-md text-sm text-gray-500 dark:text-gray-400">
+                {!hasEmbeddingModel
+                  ? t('knowledge.embedding.requiredTitle', 'Embedding Model Required')
+                  : t('knowledge.upload.supportedFormats', 'Supports PDF, Word, Excel, PowerPoint, Text files, Markdown, HTML')}
+              </p>
+              <div className="mt-5 flex flex-wrap justify-center gap-1.5">
+                {FORMAT_CHIPS.map(fmt => (
+                  <span key={fmt} className="tgo-chip bg-white text-[10px] font-semibold tracking-wider shadow-[inset_0_0_0_1px_var(--color-gray-200)] dark:bg-gray-900 dark:shadow-[inset_0_0_0_1px_var(--color-gray-800)]">
+                    {fmt}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
+      )}
+
+      {uploadRows.length > 0 && (
+        <ul className="space-y-2">
+          {uploadRows.map(file => (
+            <li key={file.id} className="tgo-well flex items-center gap-3 px-4 py-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-gray-500 shadow-sm dark:bg-gray-800 dark:text-gray-300">
+                <FileText className="h-4 w-4" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {file.name || t('knowledge.fileUpload.unknownFile', 'Unknown file')}
+                  </p>
+                  <span className="shrink-0 text-xs tabular-nums text-gray-500">
+                    {file.status === 'uploading' ? `${Math.round(file.progress)}%` : null}
+                  </span>
+                </div>
+                {file.status === 'uploading' && (
+                  <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+                    <div className="h-full rounded-full bg-acid-500 transition-[width] duration-300" style={{ width: `${file.progress}%` }} />
+                  </div>
+                )}
+                {file.status === 'error' && file.error && (
+                  <p className="mt-1 text-xs text-red-500 dark:text-red-400">{file.error}</p>
+                )}
+              </div>
+
+              {file.status === 'uploading' && <Loader2 className="h-4 w-4 shrink-0 animate-spin text-gray-400" />}
+              {file.status === 'success' && <CheckCircle2 className="h-4 w-4 shrink-0 text-acid-600 dark:text-acid-400" />}
+              {file.status === 'error' && <AlertCircle className="h-4 w-4 shrink-0 text-red-500" />}
+
+              <button
+                onClick={() => onRemoveUploadProgress?.(file.id)}
+                className="tgo-icon-btn h-8 w-8"
+                aria-label={t('common.remove', 'Remove')}
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );

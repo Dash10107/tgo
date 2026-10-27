@@ -1,5 +1,7 @@
 import React, { useState, useCallback } from 'react';
-import { X, FileText, Globe, ChevronDown, ChevronUp, Info, Loader2, RefreshCw, MessageSquare, FolderOpen, Store, ShoppingBag } from 'lucide-react';
+import { FileText, Globe, ChevronDown, Info, Loader2, RefreshCw, MessageSquare, FolderPlus, Store, ShoppingBag, Check, CheckCircle2, Settings2, type LucideIcon } from 'lucide-react';
+import { Modal, Field, FieldGroup, CheckRow, PrimaryButton, SecondaryButton } from '@/components/ui/ModalKit';
+
 import { TagInput } from '@/components/ui/TagInput';
 import type { KnowledgeBaseType, WebsiteCrawlConfig, CrawlOptions } from '@/types';
 import KnowledgeBaseApiService from '@/services/knowledgeBaseApi';
@@ -279,573 +281,336 @@ export const CreateKnowledgeBaseModal: React.FC<CreateKnowledgeBaseModalProps> =
     }));
   };
 
-  // Get current type icon component
-  const TypeIcon = formData.type === 'file' ? FileText : formData.type === 'website' ? Globe : MessageSquare;
+  const typeOptions: { type: KnowledgeBaseType; icon: LucideIcon; label: string; description: string }[] = [
+    { type: 'file', icon: FileText, label: t('knowledge.typeFile', 'File'), description: t('knowledge.typeFileDesc', 'Upload document files to build knowledge base') },
+    { type: 'website', icon: Globe, label: t('knowledge.typeWebsite', 'Website'), description: t('knowledge.typeWebsiteDesc', 'Crawl website content to build knowledge base') },
+    { type: 'qa', icon: MessageSquare, label: t('knowledge.typeQA', 'QA Pairs'), description: t('knowledge.typeQADesc', 'Create QA pairs to build knowledge base') },
+  ];
 
-  if (!isOpen) return null;
+  const comingSoon: { key: string; icon: React.ComponentType<{ className?: string }>; label: string }[] = [
+    { key: 'tmall', icon: Store, label: t('knowledge.typeTmall', 'Tmall') },
+    { key: 'taobao', icon: SiTaobao, label: t('knowledge.typeTaobao', 'Taobao') },
+    { key: 'jd', icon: ShoppingBag, label: t('knowledge.typeJD', 'JD.com') },
+  ];
+
+  const busy = isLoading || isLoadingMetadata;
+
+  const basicFields = (idSuffix: string, descriptionRows: number) => (
+    <>
+      <Field
+        label={t('knowledge.name', 'Name')}
+        htmlFor={`kb-name${idSuffix}`}
+        required
+        error={errors.name}
+        aside={`${formData.name.length}/50`}
+      >
+        <input
+          id={`kb-name${idSuffix}`}
+          type="text"
+          value={formData.name}
+          onChange={(e) => handleInputChange('name', e.target.value)}
+          placeholder={t('knowledge.namePlaceholder', 'Enter knowledge base name')}
+          disabled={isLoading}
+          aria-invalid={Boolean(errors.name)}
+          className="tgo-input"
+          maxLength={50}
+        />
+      </Field>
+
+      <Field
+        label={t('knowledge.description', 'Description')}
+        htmlFor={`kb-description${idSuffix}`}
+        required
+        error={errors.description}
+        hint={t('knowledge.descriptionHelper', 'The more accurate the description, the easier it is for AI to use this knowledge base correctly')}
+      >
+        <textarea
+          id={`kb-description${idSuffix}`}
+          value={formData.description}
+          onChange={(e) => handleInputChange('description', e.target.value)}
+          placeholder={t('knowledge.descriptionPlaceholder', 'Describe the content and purpose of the knowledge base')}
+          disabled={isLoading}
+          rows={descriptionRows}
+          aria-invalid={Boolean(errors.description)}
+          className="tgo-input"
+        />
+      </Field>
+
+      <Field label={t('knowledge.tags', 'Tags')} optional>
+        <TagInput
+          tags={formData.tags}
+          onTagsChange={handleTagsChange}
+          placeholder={t('knowledge.tagsPlaceholder', 'Enter tags and press Enter to add')}
+          maxTags={10}
+          maxTagLength={20}
+          disabled={isLoading}
+        />
+      </Field>
+    </>
+  );
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
-        {/* Header with gradient background */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-          <div className="flex items-center justify-between p-6">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-blue-100 dark:bg-blue-900/50 rounded-xl">
-                <FolderOpen className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">{t('knowledge.create', 'Create Knowledge Base')}</h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{t('knowledge.createDesc', 'Select knowledge base type and fill in basic information')}</p>
-              </div>
-            </div>
-            <button
-              onClick={onClose}
-              disabled={isLoading}
-              className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
-          <div className="flex-1 overflow-y-auto p-6 space-y-6 dark:bg-gray-900">
-            {/* Type Selection Section - Compact Layout */}
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
-                {t('knowledge.type', 'Type')} <span className="text-red-500 dark:text-red-400">*</span>
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {/* File Type */}
-                <button
-                  type="button"
-                  onClick={() => handleTypeChange('file')}
-                  disabled={isLoading}
-                  className={`flex items-center gap-2 px-3 py-2 border rounded-lg transition-all duration-200 ${
-                    formData.type === 'file'
-                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-                      : 'border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200'
-                  } ${isLoading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
-                >
-                  <FileText className={`w-4 h-4 ${formData.type === 'file' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`} />
-                  <span className="text-sm font-medium">{t('knowledge.typeFile', 'File')}</span>
-                  {formData.type === 'file' && (
-                    <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  )}
-                </button>
-
-                {/* Website Type */}
-                <button
-                  type="button"
-                  onClick={() => handleTypeChange('website')}
-                  disabled={isLoading}
-                  className={`flex items-center gap-2 px-3 py-2 border rounded-lg transition-all duration-200 ${
-                    formData.type === 'website'
-                      ? 'border-green-500 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300'
-                      : 'border-gray-200 dark:border-gray-600 hover:border-green-300 dark:hover:border-green-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200'
-                  } ${isLoading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
-                >
-                  <Globe className={`w-4 h-4 ${formData.type === 'website' ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`} />
-                  <span className="text-sm font-medium">{t('knowledge.typeWebsite', 'Website')}</span>
-                  {formData.type === 'website' && (
-                    <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  )}
-                </button>
-
-                {/* QA Type */}
-                <button
-                  type="button"
-                  onClick={() => handleTypeChange('qa')}
-                  disabled={isLoading}
-                  className={`flex items-center gap-2 px-3 py-2 border rounded-lg transition-all duration-200 ${
-                    formData.type === 'qa'
-                      ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
-                      : 'border-gray-200 dark:border-gray-600 hover:border-purple-300 dark:hover:border-purple-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200'
-                  } ${isLoading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
-                >
-                  <MessageSquare className={`w-4 h-4 ${formData.type === 'qa' ? 'text-purple-600 dark:text-purple-400' : 'text-gray-500 dark:text-gray-400'}`} />
-                  <span className="text-sm font-medium">{t('knowledge.typeQA', 'QA Pairs')}</span>
-                  {formData.type === 'qa' && (
-                    <svg className="w-4 h-4 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  )}
-                </button>
-
-                {/* Separator */}
-                <div className="w-px h-8 bg-gray-200 dark:bg-gray-700 self-center mx-1" />
-
-                {/* Tmall - Coming Soon */}
-                <div
-                  className="flex items-center gap-2 px-3 py-2 border border-dashed border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50/50 dark:bg-gray-800/30 opacity-50 cursor-not-allowed"
-                  title={t('knowledge.comingSoon', 'Coming Soon')}
-                >
-                  <Store className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-                  <span className="text-sm text-gray-400 dark:text-gray-500">{t('knowledge.typeTmall', 'Tmall')}</span>
-                  <span className="text-xs px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 rounded">
-                    {t('knowledge.comingSoonBadge', 'Coming Soon')}
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      preventClose={busy}
+      size="lg"
+      icon={FolderPlus}
+      title={t('knowledge.create', 'Create Knowledge Base')}
+      subtitle={t('knowledge.createDesc', 'Select knowledge base type and fill in basic information')}
+      onSubmit={handleSubmit}
+      bodyClassName="space-y-6"
+      footer={
+        <>
+          <SecondaryButton onClick={onClose} disabled={busy}>
+            {t('common.cancel', 'Cancel')}
+          </SecondaryButton>
+          <PrimaryButton
+            type="submit"
+            disabled={busy}
+            loading={busy}
+            loadingText={isLoading ? t('common.creating', 'Creating...') : t('knowledge.metadata.fetching', 'Fetching info...')}
+          >
+            {t('knowledge.create', 'Create Knowledge Base')}
+          </PrimaryButton>
+        </>
+      }
+    >
+      {/* Type selection */}
+      <div>
+        <p className="tgo-label">{t('knowledge.selectType', 'Select Type')} <span className="tgo-req">*</span></p>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3" role="radiogroup">
+          {typeOptions.map(option => {
+            const active = formData.type === option.type;
+            const Icon = option.icon;
+            return (
+              <button
+                key={option.type}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                data-active={active}
+                onClick={() => handleTypeChange(option.type)}
+                disabled={isLoading}
+                className="tgo-option !flex-col !items-start !gap-3 !p-4"
+              >
+                <span className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors duration-300 ${active ? 'bg-ink-900 text-acid-400 dark:bg-acid-400 dark:text-ink-900' : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-300'}`}>
+                  <Icon className="h-[18px] w-[18px]" />
+                </span>
+                <span>
+                  <span className="block text-sm font-medium text-gray-900 dark:text-gray-100">{option.label}</span>
+                  <span className="mt-0.5 block text-xs leading-relaxed text-gray-500 dark:text-gray-400">{option.description}</span>
+                </span>
+                {active && (
+                  <span className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-ink-900 text-acid-400 dark:bg-acid-400 dark:text-ink-900">
+                    <Check className="h-3 w-3" strokeWidth={3} />
                   </span>
-                </div>
-
-                {/* Taobao - Coming Soon */}
-                <div
-                  className="flex items-center gap-2 px-3 py-2 border border-dashed border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50/50 dark:bg-gray-800/30 opacity-50 cursor-not-allowed"
-                  title={t('knowledge.comingSoon', 'Coming Soon')}
-                >
-                  <SiTaobao className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-                  <span className="text-sm text-gray-400 dark:text-gray-500">{t('knowledge.typeTaobao', 'Taobao')}</span>
-                  <span className="text-xs px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 rounded">
-                    {t('knowledge.comingSoonBadge', 'Coming Soon')}
-                  </span>
-                </div>
-
-                {/* JD - Coming Soon */}
-                <div
-                  className="flex items-center gap-2 px-3 py-2 border border-dashed border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50/50 dark:bg-gray-800/30 opacity-50 cursor-not-allowed"
-                  title={t('knowledge.comingSoon', 'Coming Soon')}
-                >
-                  <ShoppingBag className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-                  <span className="text-sm text-gray-400 dark:text-gray-500">{t('knowledge.typeJD', 'JD.com')}</span>
-                  <span className="text-xs px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 rounded">
-                    {t('knowledge.comingSoonBadge', 'Coming Soon')}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Basic Info Section for file/qa types */}
-            {(formData.type === 'file' || formData.type === 'qa') && (
-              <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-5 space-y-5 border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center gap-3 pb-3 border-b border-gray-200 dark:border-gray-700">
-                  <TypeIcon className={`w-5 h-5 ${formData.type === 'file' ? 'text-blue-600' : 'text-purple-600'}`} />
-                  <h3 className="font-medium text-gray-800 dark:text-gray-100">{t('knowledge.basicInfo', 'Basic Information')}</h3>
-                </div>
-
-                {/* Name Field */}
-                <div>
-                  <label htmlFor="kb-name" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                    {t('knowledge.name', 'Name')} <span className="text-red-500 dark:text-red-400">*</span>
-                  </label>
-                  <input
-                    id="kb-name"
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => handleInputChange('name', e.target.value)}
-                    placeholder={t('knowledge.namePlaceholder', 'Enter knowledge base name')}
-                    disabled={isLoading}
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white dark:bg-gray-700 dark:text-gray-100 ${
-                      errors.name ? 'border-red-300 bg-red-50 dark:border-red-600 dark:bg-red-950' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
-                    } ${isLoading ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''}`}
-                    maxLength={50}
-                  />
-                  {errors.name && (
-                    <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">{errors.name}</p>
-                  )}
-                  <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                    {formData.name.length}/50 {t('common.characters', 'characters')}
-                  </p>
-                </div>
-
-                {/* Description Field */}
-                <div>
-                  <label htmlFor="kb-description" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                    {t('knowledge.description', 'Description')} <span className="text-red-500 dark:text-red-400">*</span>
-                  </label>
-                  <textarea
-                    id="kb-description"
-                    value={formData.description}
-                    onChange={(e) => handleInputChange('description', e.target.value)}
-                    placeholder={t('knowledge.descriptionPlaceholder', 'Describe the content and purpose of the knowledge base')}
-                    disabled={isLoading}
-                    rows={3}
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-vertical bg-white dark:bg-gray-700 dark:text-gray-100 ${
-                      errors.description ? 'border-red-300 bg-red-50 dark:border-red-600 dark:bg-red-950' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
-                    } ${isLoading ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''}`}
-                  />
-                  {errors.description && (
-                    <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">{errors.description}</p>
-                  )}
-                  <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                    {t('knowledge.descriptionHelper', 'The more accurate the description, the easier it is for AI to use this knowledge base correctly')}
-                  </p>
-                </div>
-
-                {/* Tags Field */}
-                <div>
-                  <label htmlFor="kb-tags" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                    {t('knowledge.tags', 'Tags')} <span className="text-gray-400 dark:text-gray-500 font-normal">({t('common.optional', 'Optional')})</span>
-                  </label>
-                  <TagInput
-                    tags={formData.tags}
-                    onTagsChange={handleTagsChange}
-                    placeholder={t('knowledge.tagsPlaceholder', 'Enter tags and press Enter to add')}
-                    maxTags={10}
-                    maxTagLength={20}
-                    disabled={isLoading}
-                  />
-                  <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                    {t('knowledge.tagsHelper', 'Adding tags helps you organize and find knowledge bases')}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Website Type: URL input section with enhanced styling */}
-            {formData.type === 'website' && (
-              <div className="space-y-5">
-                {/* URL Input Section */}
-                <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-5 space-y-4 border border-green-100 dark:border-green-800">
-                  <div className="flex items-center gap-3 pb-3 border-b border-green-200 dark:border-green-800">
-                    <Globe className="w-5 h-5 text-green-600 dark:text-green-400" />
-                    <h3 className="font-medium text-gray-800 dark:text-gray-100">{t('knowledge.crawl.urlSection', 'Website URL')}</h3>
-                  </div>
-
-                  {/* Start URL - Main input */}
-                  <div>
-                    <label htmlFor="crawl-url" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                      {t('knowledge.crawl.startUrl', 'Website URL')} <span className="text-red-500 dark:text-red-400">*</span>
-                    </label>
-                    <div className="flex gap-2">
-                      <input
-                        id="crawl-url"
-                        type="url"
-                        value={formData.crawlConfig.start_url}
-                        onChange={(e) => {
-                          handleCrawlConfigChange('start_url', e.target.value);
-                          setMetadataFetched(false);
-                          setMetadataError(null);
-                        }}
-                        onBlur={(e) => {
-                          if (e.target.value && !metadataFetched) {
-                            fetchWebsiteMetadata(e.target.value);
-                          }
-                        }}
-                        placeholder={t('knowledge.crawl.startUrlPlaceholder', 'https://example.com')}
-                        disabled={isLoading || isLoadingMetadata}
-                        className={`flex-1 px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-white dark:bg-gray-700 dark:text-gray-100 ${
-                          errors.startUrl ? 'border-red-300 bg-red-50 dark:border-red-600 dark:bg-red-950' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
-                        } ${isLoading || isLoadingMetadata ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''}`}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => fetchWebsiteMetadata(formData.crawlConfig.start_url)}
-                        disabled={isLoading || isLoadingMetadata || !formData.crawlConfig.start_url}
-                        className="px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
-                        title={t('knowledge.metadata.fetch', 'Fetch Info')}
-                      >
-                        {isLoadingMetadata ? (
-                          <Loader2 className="w-5 h-5 animate-spin text-green-600" />
-                        ) : (
-                          <RefreshCw className="w-5 h-5 text-gray-500" />
-                        )}
-                      </button>
-                    </div>
-                    {errors.startUrl && (
-                      <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">{errors.startUrl}</p>
-                    )}
-                    {isLoadingMetadata && (
-                      <p className="mt-1.5 text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
-                        <Loader2 className="w-3 h-3 animate-spin" />
-                        {t('knowledge.metadata.fetching', 'Fetching info...')}
-                      </p>
-                    )}
-                    {metadataError && (
-                      <p className="mt-1.5 text-xs text-amber-600 dark:text-amber-400">
-                        {metadataError}
-                      </p>
-                    )}
-                    {metadataFetched && !isLoadingMetadata && (
-                      <p className="mt-1.5 text-xs text-green-600 dark:text-green-400">
-                        ✓ {t('knowledge.metadata.fetchSuccess', 'Website info fetched')}
-                      </p>
-                    )}
-                    {!isLoadingMetadata && !metadataFetched && !metadataError && (
-                      <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                        {t('knowledge.metadata.hint', 'Website title and description will be fetched automatically after entering URL')}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Advanced Settings Toggle */}
-                <button
-                  type="button"
-                  onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
-                  className="flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
-                >
-                  {showAdvancedOptions ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                  {t('knowledge.advancedSettings', 'Advanced Settings')}
-                </button>
-
-                {/* Advanced Settings Panel */}
-                {showAdvancedOptions && (
-                  <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-5 space-y-5 border border-gray-100 dark:border-gray-700">
-                    {/* Basic Info Subsection */}
-                    <div className="space-y-4">
-                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-200 flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-gray-500" />
-                        {t('knowledge.basicInfo', 'Basic Information')}
-                      </h4>
-
-                      {/* Name Field */}
-                      <div>
-                        <label htmlFor="kb-name-website" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                          {t('knowledge.name', 'Name')} <span className="text-red-500 dark:text-red-400">*</span>
-                        </label>
-                        <input
-                          id="kb-name-website"
-                          type="text"
-                          value={formData.name}
-                          onChange={(e) => handleInputChange('name', e.target.value)}
-                          placeholder={t('knowledge.namePlaceholder', 'Enter knowledge base name')}
-                          disabled={isLoading}
-                          className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white dark:bg-gray-700 dark:text-gray-100 ${
-                            errors.name ? 'border-red-300 bg-red-50 dark:border-red-600 dark:bg-red-950' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
-                          } ${isLoading ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''}`}
-                          maxLength={50}
-                        />
-                        {errors.name && (
-                          <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">{errors.name}</p>
-                        )}
-                        <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                          {formData.name.length}/50 {t('common.characters', 'characters')}
-                        </p>
-                      </div>
-
-                      {/* Description Field */}
-                      <div>
-                        <label htmlFor="kb-description-website" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                          {t('knowledge.description', 'Description')} <span className="text-red-500 dark:text-red-400">*</span>
-                        </label>
-                        <textarea
-                          id="kb-description-website"
-                          value={formData.description}
-                          onChange={(e) => handleInputChange('description', e.target.value)}
-                          placeholder={t('knowledge.descriptionPlaceholder', 'Describe the content and purpose of the knowledge base')}
-                          disabled={isLoading}
-                          rows={2}
-                          className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-vertical bg-white dark:bg-gray-700 dark:text-gray-100 ${
-                            errors.description ? 'border-red-300 bg-red-50 dark:border-red-600 dark:bg-red-950' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
-                          } ${isLoading ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''}`}
-                        />
-                        {errors.description && (
-                          <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">{errors.description}</p>
-                        )}
-                        <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                          {t('knowledge.descriptionHelper', 'The more accurate the description, the easier it is for AI to use this knowledge base correctly')}
-                        </p>
-                      </div>
-
-                      {/* Tags Field */}
-                      <div>
-                        <label htmlFor="kb-tags-website" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                          {t('knowledge.tags', 'Tags')} <span className="text-gray-400 dark:text-gray-500 font-normal">({t('common.optional', 'Optional')})</span>
-                        </label>
-                        <TagInput
-                          tags={formData.tags}
-                          onTagsChange={handleTagsChange}
-                          placeholder={t('knowledge.tagsPlaceholder', 'Enter tags and press Enter to add')}
-                          maxTags={10}
-                          maxTagLength={20}
-                          disabled={isLoading}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Crawl Configuration Subsection */}
-                    <div className="pt-5 border-t border-gray-200 dark:border-gray-700 space-y-4">
-                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-200 flex items-center gap-2">
-                        <Globe className="w-4 h-4 text-gray-500" />
-                        {t('knowledge.crawl.title', 'Crawl Configuration')}
-                      </h4>
-
-                      {/* Max Pages & Max Depth */}
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label htmlFor="crawl-max-pages" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                            {t('knowledge.crawl.maxPages', 'Max Pages')}
-                          </label>
-                          <input
-                            id="crawl-max-pages"
-                            type="number"
-                            min={1}
-                            max={10000}
-                            value={formData.crawlConfig.max_pages}
-                            onChange={(e) => handleCrawlConfigChange('max_pages', Math.min(10000, Math.max(1, parseInt(e.target.value) || 100)))}
-                            disabled={isLoading}
-                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white dark:bg-gray-700 dark:text-gray-100 hover:border-gray-400 dark:hover:border-gray-500"
-                          />
-                          <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                            {t('knowledge.crawl.maxPagesHint', '1-10000, default 100')}
-                          </p>
-                        </div>
-                        <div>
-                          <label htmlFor="crawl-max-depth" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                            {t('knowledge.crawl.maxDepth', 'Max Depth')}
-                          </label>
-                          <input
-                            id="crawl-max-depth"
-                            type="number"
-                            min={1}
-                            max={10}
-                            value={formData.crawlConfig.max_depth}
-                            onChange={(e) => handleCrawlConfigChange('max_depth', Math.min(10, Math.max(1, parseInt(e.target.value) || 3)))}
-                            disabled={isLoading}
-                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white dark:bg-gray-700 dark:text-gray-100 hover:border-gray-400 dark:hover:border-gray-500"
-                          />
-                          <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                            {t('knowledge.crawl.maxDepthHint', '1-10, default 3')}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Include Patterns */}
-                      <div>
-                        <label htmlFor="crawl-include" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                          {t('knowledge.crawl.includePatterns', 'Include Patterns')}
-                        </label>
-                        <input
-                          id="crawl-include"
-                          type="text"
-                          value={formData.crawlConfig.include_patterns?.join(', ') || ''}
-                          onChange={(e) => handleCrawlConfigChange('include_patterns', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
-                          placeholder={t('knowledge.crawl.includePatternsPlaceholder', '/docs/*, /blog/*')}
-                          disabled={isLoading}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white dark:bg-gray-700 dark:text-gray-100 hover:border-gray-400 dark:hover:border-gray-500"
-                        />
-                        <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                          {t('knowledge.crawl.includePatternsHint', 'Comma-separated URL patterns, only crawl matching pages')}
-                        </p>
-                      </div>
-
-                      {/* Exclude Patterns */}
-                      <div>
-                        <label htmlFor="crawl-exclude" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                          {t('knowledge.crawl.excludePatterns', 'Exclude Patterns')}
-                        </label>
-                        <input
-                          id="crawl-exclude"
-                          type="text"
-                          value={formData.crawlConfig.exclude_patterns?.join(', ') || ''}
-                          onChange={(e) => handleCrawlConfigChange('exclude_patterns', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
-                          placeholder={t('knowledge.crawl.excludePatternsPlaceholder', '/admin/*, /login/*')}
-                          disabled={isLoading}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white dark:bg-gray-700 dark:text-gray-100 hover:border-gray-400 dark:hover:border-gray-500"
-                        />
-                        <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                          {t('knowledge.crawl.excludePatternsHint', 'Comma-separated URL patterns, skip matching pages')}
-                        </p>
-                      </div>
-
-                      {/* Crawl Options */}
-                      <div className="space-y-3">
-                        <label className="flex items-center gap-3 cursor-pointer p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 transition-colors">
-                          <input
-                            type="checkbox"
-                            checked={formData.crawlConfig.options?.render_js || false}
-                            onChange={(e) => handleCrawlOptionsChange('render_js', e.target.checked)}
-                            disabled={isLoading}
-                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                          />
-                          <span className="text-sm text-gray-700 dark:text-gray-200 flex-1">
-                            {t('knowledge.crawl.renderJs', 'Render JavaScript')}
-                          </span>
-                          <span title={t('knowledge.crawl.renderJsHint', 'Enable to execute page JavaScript, suitable for dynamic content websites')}>
-                            <Info className="w-4 h-4 text-gray-400" />
-                          </span>
-                        </label>
-
-                        <label className="flex items-center gap-3 cursor-pointer p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 transition-colors">
-                          <input
-                            type="checkbox"
-                            checked={formData.crawlConfig.options?.follow_external_links || false}
-                            onChange={(e) => handleCrawlOptionsChange('follow_external_links', e.target.checked)}
-                            disabled={isLoading}
-                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                          />
-                          <span className="text-sm text-gray-700 dark:text-gray-200 flex-1">
-                            {t('knowledge.crawl.followExternal', 'Follow External Links')}
-                          </span>
-                        </label>
-
-                        <label className="flex items-center gap-3 cursor-pointer p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 transition-colors">
-                          <input
-                            type="checkbox"
-                            checked={formData.crawlConfig.options?.respect_robots_txt !== false}
-                            onChange={(e) => handleCrawlOptionsChange('respect_robots_txt', e.target.checked)}
-                            disabled={isLoading}
-                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                          />
-                          <span className="text-sm text-gray-700 dark:text-gray-200 flex-1">
-                            {t('knowledge.crawl.respectRobots', 'Respect robots.txt')}
-                          </span>
-                        </label>
-                      </div>
-
-                      {/* Wait Time */}
-                      <div>
-                        <label htmlFor="crawl-wait-time" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                          {t('knowledge.crawl.waitTime', 'Wait Time (seconds)')}
-                        </label>
-                        <input
-                          id="crawl-wait-time"
-                          type="number"
-                          min={0}
-                          max={30}
-                          value={formData.crawlConfig.options?.wait_time || 0}
-                          onChange={(e) => handleCrawlOptionsChange('wait_time', Math.min(30, Math.max(0, parseInt(e.target.value) || 0)))}
-                          disabled={isLoading}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white dark:bg-gray-700 dark:text-gray-100 hover:border-gray-400 dark:hover:border-gray-500"
-                        />
-                        <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                          {t('knowledge.crawl.waitTimeHint', 'Time to wait after page load, for dynamic content')}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
                 )}
+              </button>
+            );
+          })}
+        </div>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <span className="text-[11px] text-gray-400">{t('knowledge.comingSoon', 'Coming Soon')}:</span>
+          {comingSoon.map(item => {
+            const Icon = item.icon;
+            return (
+              <span key={item.key} className="tgo-chip border border-dashed border-gray-200 bg-transparent text-gray-400 dark:border-gray-700 dark:bg-transparent" title={t('knowledge.comingSoon', 'Coming Soon')}>
+                <Icon className="h-3 w-3" />
+                {item.label}
+              </span>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* File / QA: basic information */}
+      {(formData.type === 'file' || formData.type === 'qa') && (
+        <FieldGroup key={formData.type} title={t('knowledge.basicInfo', 'Basic Information')} className="tgo-fade-in">
+          {basicFields('', 3)}
+        </FieldGroup>
+      )}
+
+      {/* Website: URL first, details behind "advanced" */}
+      {formData.type === 'website' && (
+        <div key="website" className="tgo-fade-in space-y-4">
+          <FieldGroup title={t('knowledge.crawl.urlSection', 'Website URL')} icon={Globe}>
+            <Field
+              label={t('knowledge.crawl.startUrl', 'Website URL')}
+              htmlFor="crawl-url"
+              required
+              error={errors.startUrl}
+            >
+              <div className="flex gap-2">
+                <input
+                  id="crawl-url"
+                  type="url"
+                  value={formData.crawlConfig.start_url}
+                  onChange={(e) => {
+                    handleCrawlConfigChange('start_url', e.target.value);
+                    setMetadataFetched(false);
+                    setMetadataError(null);
+                  }}
+                  onBlur={(e) => {
+                    if (e.target.value && !metadataFetched) {
+                      fetchWebsiteMetadata(e.target.value);
+                    }
+                  }}
+                  placeholder={t('knowledge.crawl.startUrlPlaceholder', 'https://example.com')}
+                  disabled={busy}
+                  aria-invalid={Boolean(errors.startUrl)}
+                  className="tgo-input flex-1"
+                />
+                <button
+                  type="button"
+                  onClick={() => fetchWebsiteMetadata(formData.crawlConfig.start_url)}
+                  disabled={busy || !formData.crawlConfig.start_url}
+                  className="tgo-icon-btn h-11 w-11"
+                  title={t('knowledge.metadata.fetch', 'Fetch Info')}
+                  aria-label={t('knowledge.metadata.fetch', 'Fetch Info')}
+                >
+                  {isLoadingMetadata ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                </button>
+              </div>
+            </Field>
+            {!errors.startUrl && (
+              <p className="-mt-3 flex items-center gap-1.5 text-xs">
+                {isLoadingMetadata ? (
+                  <span className="flex items-center gap-1.5 text-gray-500"><Loader2 className="h-3 w-3 animate-spin" />{t('knowledge.metadata.fetching', 'Fetching info...')}</span>
+                ) : metadataError ? (
+                  <span className="text-amber-600 dark:text-amber-400">{metadataError}</span>
+                ) : metadataFetched ? (
+                  <span className="flex items-center gap-1.5 font-medium text-acid-700 dark:text-acid-400"><CheckCircle2 className="h-3.5 w-3.5" />{t('knowledge.metadata.fetchSuccess', 'Website info fetched')}</span>
+                ) : (
+                  <span className="text-gray-400">{t('knowledge.metadata.hint', 'Website title and description will be fetched automatically after entering URL')}</span>
+                )}
+              </p>
+            )}
+            {metadataFetched && formData.name && (
+              <div className="flex items-start gap-3 rounded-2xl bg-white p-3 shadow-sm dark:bg-gray-800">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sky-50 text-sky-600 dark:bg-sky-900/30 dark:text-sky-300">
+                  <Globe className="h-4 w-4" />
+                </span>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-gray-900 dark:text-gray-100">{formData.name}</p>
+                  <p className="line-clamp-2 text-xs text-gray-500 dark:text-gray-400">{formData.description}</p>
+                </div>
               </div>
             )}
-          </div>
+          </FieldGroup>
 
-          {/* Footer */}
-          <div className="flex justify-end space-x-3 p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex-shrink-0">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={isLoading || isLoadingMetadata}
-              className="px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {t('common.cancel', 'Cancel')}
-            </button>
-            <button
-              type="submit"
-              disabled={isLoading || isLoadingMetadata}
-              className="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 dark:bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center shadow-sm"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
-                  {t('common.creating', 'Creating...')}
-                </>
-              ) : isLoadingMetadata ? (
-                <>
-                  <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
-                  {t('knowledge.metadata.fetching', 'Fetching info...')}
-                </>
-              ) : (
-                t('knowledge.create', 'Create Knowledge Base')
-              )}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+          <button
+            type="button"
+            onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
+            aria-expanded={showAdvancedOptions}
+            className="tgo-pill"
+          >
+            <Settings2 className="h-4 w-4" />
+            {t('knowledge.advancedSettings', 'Advanced Settings')}
+            <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${showAdvancedOptions ? 'rotate-180' : ''}`} />
+          </button>
+
+          {showAdvancedOptions && (
+            <div className="tgo-fade-in space-y-4">
+              <FieldGroup title={t('knowledge.basicInfo', 'Basic Information')} icon={FileText}>
+                {basicFields('-website', 2)}
+              </FieldGroup>
+
+              <FieldGroup title={t('knowledge.crawl.title', 'Crawl Configuration')} icon={Globe}>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <Field label={t('knowledge.crawl.maxPages', 'Max Pages')} htmlFor="crawl-max-pages" hint={t('knowledge.crawl.maxPagesHint', '1-10000, default 100')}>
+                    <input
+                      id="crawl-max-pages"
+                      type="number"
+                      min={1}
+                      max={10000}
+                      value={formData.crawlConfig.max_pages}
+                      onChange={(e) => handleCrawlConfigChange('max_pages', Math.min(10000, Math.max(1, parseInt(e.target.value, 10) || 100)))}
+                      disabled={isLoading}
+                      className="tgo-input"
+                    />
+                  </Field>
+                  <Field label={t('knowledge.crawl.maxDepth', 'Max Depth')} htmlFor="crawl-max-depth" hint={t('knowledge.crawl.maxDepthHint', '1-10, default 3')}>
+                    <input
+                      id="crawl-max-depth"
+                      type="number"
+                      min={1}
+                      max={10}
+                      value={formData.crawlConfig.max_depth}
+                      onChange={(e) => handleCrawlConfigChange('max_depth', Math.min(10, Math.max(1, parseInt(e.target.value, 10) || 3)))}
+                      disabled={isLoading}
+                      className="tgo-input"
+                    />
+                  </Field>
+                </div>
+
+                <Field label={t('knowledge.crawl.includePatterns', 'Include Patterns')} htmlFor="crawl-include" hint={t('knowledge.crawl.includePatternsHint', 'Comma-separated URL patterns, only crawl matching pages')}>
+                  <input
+                    id="crawl-include"
+                    type="text"
+                    value={formData.crawlConfig.include_patterns?.join(', ') || ''}
+                    onChange={(e) => handleCrawlConfigChange('include_patterns', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
+                    placeholder={t('knowledge.crawl.includePatternsPlaceholder', '/docs/*, /blog/*')}
+                    disabled={isLoading}
+                    className="tgo-input font-mono text-[13px]"
+                  />
+                </Field>
+
+                <Field label={t('knowledge.crawl.excludePatterns', 'Exclude Patterns')} htmlFor="crawl-exclude" hint={t('knowledge.crawl.excludePatternsHint', 'Comma-separated URL patterns, skip matching pages')}>
+                  <input
+                    id="crawl-exclude"
+                    type="text"
+                    value={formData.crawlConfig.exclude_patterns?.join(', ') || ''}
+                    onChange={(e) => handleCrawlConfigChange('exclude_patterns', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
+                    placeholder={t('knowledge.crawl.excludePatternsPlaceholder', '/admin/*, /login/*')}
+                    disabled={isLoading}
+                    className="tgo-input font-mono text-[13px]"
+                  />
+                </Field>
+
+                <div className="space-y-2">
+                  <CheckRow
+                    checked={formData.crawlConfig.options?.render_js || false}
+                    onChange={(checked) => handleCrawlOptionsChange('render_js', checked)}
+                    disabled={isLoading}
+                    label={t('knowledge.crawl.renderJs', 'Render JavaScript')}
+                    trailing={
+                      <span title={t('knowledge.crawl.renderJsHint', 'Enable to execute page JavaScript, suitable for dynamic content websites')}>
+                        <Info className="h-4 w-4 text-gray-400" />
+                      </span>
+                    }
+                  />
+                  <CheckRow
+                    checked={formData.crawlConfig.options?.follow_external_links || false}
+                    onChange={(checked) => handleCrawlOptionsChange('follow_external_links', checked)}
+                    disabled={isLoading}
+                    label={t('knowledge.crawl.followExternal', 'Follow External Links')}
+                  />
+                  <CheckRow
+                    checked={formData.crawlConfig.options?.respect_robots_txt !== false}
+                    onChange={(checked) => handleCrawlOptionsChange('respect_robots_txt', checked)}
+                    disabled={isLoading}
+                    label={t('knowledge.crawl.respectRobots', 'Respect robots.txt')}
+                  />
+                </div>
+
+                <Field label={t('knowledge.crawl.waitTime', 'Wait Time (seconds)')} htmlFor="crawl-wait-time" hint={t('knowledge.crawl.waitTimeHint', 'Time to wait after page load, for dynamic content')}>
+                  <input
+                    id="crawl-wait-time"
+                    type="number"
+                    min={0}
+                    max={30}
+                    value={formData.crawlConfig.options?.wait_time || 0}
+                    onChange={(e) => handleCrawlOptionsChange('wait_time', Math.min(30, Math.max(0, parseInt(e.target.value, 10) || 0)))}
+                    disabled={isLoading}
+                    className="tgo-input"
+                  />
+                </Field>
+              </FieldGroup>
+            </div>
+          )}
+        </div>
+      )}
+    </Modal>
   );
 };

@@ -7,7 +7,7 @@
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { AlertTriangle, RefreshCw, Search, type LucideIcon } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, Loader2, RefreshCw, Search, type LucideIcon } from 'lucide-react';
 
 /* ---------- Shell ---------- */
 
@@ -66,6 +66,88 @@ export const PageHeader: React.FC<PageHeaderProps> = ({ title, actions, stats, t
       </div>
     )}
   </header>
+);
+
+/* ---------- Detail header ---------- */
+
+interface DetailHeaderProps {
+  title: string;
+  description?: string;
+  /** Small uppercase label above the title, e.g. the resource type */
+  eyebrow?: string;
+  icon?: LucideIcon;
+  onBack?: () => void;
+  backLabel?: string;
+  /** Chips rendered under the description (tags etc.) */
+  meta?: React.ReactNode;
+  actions?: React.ReactNode;
+}
+
+/** Header for a single-resource page: back pill, icon badge, title and actions */
+export const DetailHeader: React.FC<DetailHeaderProps> = ({ title, description, eyebrow, icon: Icon, onBack, backLabel, meta, actions }) => {
+  const { t } = useTranslation();
+  const label = backLabel || t('common.back', 'Back');
+  return (
+    <header className="tgo-fade-up flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+      <div className="flex min-w-0 items-start gap-4 md:gap-5">
+        {onBack && (
+          <button onClick={onBack} aria-label={label} title={label} className="tgo-icon-btn mt-1 h-11 w-11">
+            <ArrowLeft className="h-4 w-4" />
+          </button>
+        )}
+        {Icon && (
+          <span className="mt-0.5 hidden h-14 w-14 shrink-0 items-center justify-center rounded-full bg-ink-900 text-acid-400 shadow-[0_12px_28px_-14px_rgb(15_16_18/0.8)] sm:flex dark:bg-acid-400 dark:text-ink-900">
+            <Icon className="h-6 w-6" />
+          </span>
+        )}
+        <div className="min-w-0">
+          {eyebrow && <p className="tgo-eyebrow mb-1.5">{eyebrow}</p>}
+          <h2 className="tgo-display truncate text-[34px] text-gray-900 md:text-[40px] dark:text-white" title={title}>{title}</h2>
+          {description && <p className="mt-2 max-w-3xl text-sm leading-relaxed text-gray-500 dark:text-gray-400">{description}</p>}
+          {meta && <div className="mt-3 flex flex-wrap items-center gap-1.5">{meta}</div>}
+        </div>
+      </div>
+      {actions && <div className="flex shrink-0 flex-wrap items-center gap-3">{actions}</div>}
+    </header>
+  );
+};
+
+interface StatTileProps {
+  label: string;
+  value: React.ReactNode;
+  icon?: LucideIcon;
+  /** Tailwind classes for the icon badge */
+  tone?: string;
+  hint?: React.ReactNode;
+}
+
+/** White metric tile with a large light figure */
+export const StatTile: React.FC<StatTileProps> = ({ label, value, icon: Icon, tone = 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300', hint }) => (
+  <div className="tgo-surface flex items-start justify-between gap-3 p-5">
+    <div className="min-w-0">
+      <p className="text-[13px] text-gray-500 dark:text-gray-400">{label}</p>
+      <p className="tgo-display mt-3 truncate text-[36px] tabular-nums text-gray-900 dark:text-white">{value}</p>
+      {hint && <p className="mt-1.5 text-xs text-gray-400">{hint}</p>}
+    </div>
+    {Icon && (
+      <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${tone}`}>
+        <Icon className="h-4 w-4" />
+      </span>
+    )}
+  </div>
+);
+
+/** Full-height centered loader matching the page canvas */
+export const PageLoader: React.FC<{ label?: string }> = ({ label }) => (
+  <div className="flex h-full min-h-[50vh] w-full flex-grow flex-col items-center justify-center gap-4 bg-gray-50 dark:bg-gray-950">
+    <span className="relative flex h-14 w-14 items-center justify-center">
+      <span className="tgo-pulse-ring absolute inset-0 rounded-full" />
+      <span className="flex h-14 w-14 items-center justify-center rounded-full bg-ink-900 text-acid-400 dark:bg-acid-400 dark:text-ink-900">
+        <Loader2 className="h-5 w-5 animate-spin" />
+      </span>
+    </span>
+    {label && <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>}
+  </div>
 );
 
 /* ---------- Buttons ---------- */

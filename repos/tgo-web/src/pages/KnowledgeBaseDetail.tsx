@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { KnowledgeBaseHeader } from '@/components/knowledge/KnowledgeBaseHeader';
 import { FileUpload } from '@/components/knowledge/FileUpload';
 import { DocumentList } from '@/components/knowledge/DocumentList';
-import { FileManagementService } from '@/services/fileManagementService';
+import { FileManagementService, type FileManagementState } from '@/services/fileManagementService';
 import { transformCollectionToKnowledgeBase } from '@/utils/knowledgeBaseTransforms';
 import { KnowledgeBaseApiService } from '@/services/knowledgeBaseApi';
 import { useToast } from '@/hooks/useToast';
@@ -15,7 +15,9 @@ import { useAuthStore } from '@/stores/authStore';
 
 import { SearchTest } from '@/components/knowledge/SearchTest';
 import { QADataView } from '@/components/knowledge/QADataView';
-import { TestTube, FileText } from 'lucide-react';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
+import { PageShell, PageLoader, ErrorPanel, EmptyPanel, InkButton, GhostButton } from '@/components/ui/PageKit';
+import { TestTube, FileText, ArrowLeft, SearchX } from 'lucide-react';
 
 /**
  * Knowledge Base Detail Page Component
@@ -35,12 +37,14 @@ const KnowledgeBaseDetail: React.FC = () => {
   const [fileTypeFilter, setFileTypeFilter] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [hasError, setHasError] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<Map<string, any>>(new Map());
+  const [uploadProgress, setUploadProgress] = useState<FileManagementState['uploadProgress']>(new Map());
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<KnowledgeFile | null>(null);
   const [downloadingFiles, setDownloadingFiles] = useState<Set<string>>(new Set());
   const [deletingFiles, setDeletingFiles] = useState<Set<string>>(new Set());
 
   // Tabs State
-  const [activeTab, setActiveTab] = useState<'documents' | 'search' | 'settings'>('documents');
+  const [activeTab, setActiveTab] = useState<'documents' | 'search'>('documents');
 
   // QA View State
   const [qaFile, setQaFile] = useState<{ id: string; name: string } | null>(null);
@@ -73,12 +77,6 @@ const KnowledgeBaseDetail: React.FC = () => {
         // Check if default embedding model is configured
         const hasEmbedding = !!(aiConfig.default_embedding_provider_id && aiConfig.default_embedding_model);
         setHasEmbeddingModel(hasEmbedding);
-
-        console.log('Embedding model check:', {
-          hasEmbedding,
-          providerId: aiConfig.default_embedding_provider_id,
-          model: aiConfig.default_embedding_model
-        });
       } catch (error) {
         console.error('Failed to check embedding model configuration:', error);
         // On error, assume no embedding model to be safe
@@ -149,13 +147,15 @@ const KnowledgeBaseDetail: React.FC = () => {
 
   // Handle refresh
   const handleRefresh = async () => {
-    if (fileServiceRef.current) {
-      try {
-        await fileServiceRef.current.loadFiles();
-      } catch (error) {
-        console.error('Failed to refresh files:', error);
-        // Error is already handled in the file service
-      }
+    if (!fileServiceRef.current) return;
+    setIsRefreshing(true);
+    try {
+      await fileServiceRef.current.loadFiles();
+    } catch (error) {
+      console.error('Failed to refresh files:', error);
+      // Error is already handled in the file service
+    } finally {
+      setIsRefreshing(false);
     }
   };
 
@@ -276,14 +276,15 @@ const KnowledgeBaseDetail: React.FC = () => {
     }
   };
 
-  const handleDelete = async (docId: string) => {
-    const doc = documents.find(d => d.id === docId);
-    const fileName = doc?.name || 'Unknown file';
+  const handleDelete = (docId: string) => {
+    setDeleteTarget(documents.find(d => d.id === docId) ?? null);
+  };
 
-    // Show confirmation dialog
-    if (!confirm(t('knowledge.file.confirmDelete.message', { name: fileName, defaultValue: `Are you sure you want to delete file "{{name}}"? This action cannot be undone.` }))) {
-      return;
-    }
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
+    const docId = deleteTarget.id;
+    const fileName = deleteTarget.name || 'Unknown file';
+    setDeleteTarget(null);
 
     // Add to deleting set
     setDeletingFiles(prev => new Set(prev).add(docId));
@@ -327,184 +328,141 @@ const KnowledgeBaseDetail: React.FC = () => {
     const dates = documents.map(doc => new Date(doc.uploadDate));
     const latest = new Date(Math.max(...dates.map(d => d.getTime())));
     return latest.toLocaleDateString(i18n.language || undefined);
-  }, [documents]);
+  }, [documents, i18n.language]);
 
-  // Show loading state
-  if (isLoading) {
-    return (
-      <div className="flex-grow flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-        <div className="text-center">
-          <div className="inline-flex items-center">
-            <svg className="w-5 h-5 animate-spin text-blue-500 dark:text-blue-400 mr-2" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span className="text-gray-500 dark:text-gray-400">{t('knowledge.detail.loadingDetails', 'Loading knowledge base details...')}</span>
-          </div>
-        </div>
-      </div>
-    );
+
+  if (isLoading && !knowledgeBase) {
+    return <PageLoader label={t('knowledge.detail.loadingDetails', 'Loading knowledge base details...')} />;
   }
 
-  // Show error state
   if (hasError) {
     return (
-      <div className="flex-grow flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-        <div className="text-center max-w-md">
-          <div className="w-16 h-16 mx-auto bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mb-4">
-            <svg className="w-8 h-8 text-red-500 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <h3 className="text-lg font-medium text-gray-800 dark:text-gray-100 mb-2">{t('common.loadFailed', 'Load Failed')}</h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-4">{error || t('knowledge.detail.loadFailedDesc', 'An error occurred while loading knowledge base details')}</p>
-          <div className="flex justify-center space-x-3">
-            <button
-              onClick={() => window.location.reload()}
-              className="inline-flex items-center px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 transition-colors"
-            >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              {t('common.retry', 'Retry')}
-            </button>
-            <button
-              onClick={() => navigate('/knowledge')}
-              className="inline-flex items-center px-4 py-2 bg-gray-500 dark:bg-gray-600 text-white rounded-lg hover:bg-gray-600 dark:hover:bg-gray-700 transition-colors"
-            >
-              {t('knowledge.detail.backToList', 'Back to Knowledge Base List')}
-            </button>
-          </div>
+      <PageShell>
+        <ErrorPanel
+          message={error || t('knowledge.detail.loadFailedDesc', 'An error occurred while loading knowledge base details')}
+          onRetry={() => window.location.reload()}
+        />
+        <div className="flex justify-center">
+          <GhostButton onClick={handleBack}>
+            <ArrowLeft className="h-4 w-4" />
+            {t('knowledge.detail.backToList', 'Back to Knowledge Base List')}
+          </GhostButton>
         </div>
-      </div>
+      </PageShell>
     );
   }
 
-  // Show not found state
   if (!knowledgeBase) {
     return (
-      <div className="flex-grow flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-        <div className="text-center">
-          <h3 className="text-lg font-medium text-gray-800 dark:text-gray-100 mb-2">{t('knowledge.detail.notFound.title', 'Knowledge Base Not Found')}</h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-4">{t('knowledge.detail.notFound.description', 'Please check if the link is correct')}</p>
-          <button
-            onClick={() => navigate('/knowledge')}
-            className="inline-flex items-center px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 transition-colors"
-          >
-            {t('knowledge.detail.backToList', 'Back to Knowledge Base List')}
-          </button>
-        </div>
-      </div>
+      <PageShell>
+        <EmptyPanel
+          icon={SearchX}
+          title={t('knowledge.detail.notFound.title', 'Knowledge Base Not Found')}
+          description={t('knowledge.detail.notFound.description', 'Please check if the link is correct')}
+          action={
+            <InkButton onClick={handleBack} motion="nudge" icon={<ArrowLeft className="h-4 w-4" />}>
+              {t('knowledge.detail.backToList', 'Back to Knowledge Base List')}
+            </InkButton>
+          }
+        />
+      </PageShell>
     );
   }
 
   return (
-    <div className="flex h-full w-full bg-gray-100 dark:bg-gray-900">
-      <div className="flex-grow flex flex-col overflow-hidden">
-        {/* Header */}
-        <KnowledgeBaseHeader
-          knowledgeBase={{
-            id: knowledgeBase.id,
-            name: knowledgeBase.name,
-            description: knowledgeBase.description,
-            category: knowledgeBase.category,
-            tags: knowledgeBase.tags
-          }}
-          onBack={handleBack}
-          onRefresh={handleRefresh}
-          onToggleUpload={handleToggleUpload}
-          isUploadVisible={isUploadVisible}
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          fileTypeFilter={fileTypeFilter}
-          onFilterChange={setFileTypeFilter}
-          totalDocuments={documents.length}
-          totalSize={totalSize}
-          lastUpdated={lastUpdated}
-        />
+    <PageShell
+      after={
+        <>
+          {qaFile && <QADataView fileId={qaFile.id} fileName={qaFile.name} onClose={handleCloseQA} />}
+          <ConfirmDialog
+            isOpen={!!deleteTarget}
+            title={t('knowledge.file.confirmDelete.title', 'Delete File')}
+            message={t('knowledge.file.confirmDelete.message', { name: deleteTarget?.name, defaultValue: 'Are you sure you want to delete file "{{name}}"? This action cannot be undone.' })}
+            confirmText={t('common.delete', 'Delete')}
+            cancelText={t('common.cancel', 'Cancel')}
+            confirmVariant="danger"
+            onConfirm={handleDeleteConfirm}
+            onCancel={() => setDeleteTarget(null)}
+          />
+        </>
+      }
+    >
+      <KnowledgeBaseHeader
+        knowledgeBase={{
+          id: knowledgeBase.id,
+          name: knowledgeBase.name,
+          description: knowledgeBase.description,
+          category: knowledgeBase.category,
+          tags: knowledgeBase.tags
+        }}
+        onBack={handleBack}
+        onRefresh={handleRefresh}
+        onToggleUpload={handleToggleUpload}
+        isUploadVisible={isUploadVisible}
+        isRefreshing={isRefreshing}
+        totalDocuments={documents.length}
+        totalSize={totalSize}
+        lastUpdated={lastUpdated}
+      />
 
-        {/* Tabs - Only show if not in legacy QA view */}
-        {!qaFile && (
-          <div className="px-6 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-            <div className="flex items-center space-x-1">
-              <button
-                onClick={() => setActiveTab('documents')}
-                className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${activeTab === 'documents'
-                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
-                  }`}
-              >
-                <FileText className="w-4 h-4" />
-                {t('knowledge.tabs.documents', 'Documents')}
-              </button>
-              <button
-                onClick={() => setActiveTab('search')}
-                className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${activeTab === 'search'
-                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
-                  }`}
-              >
-                <TestTube className="w-4 h-4" />
-                {t('knowledge.tabs.searchTest', 'Search Test')}
-              </button>
-            </div>
-          </div>
-        )}
-
-        <div className="flex-grow overflow-y-auto" style={{ height: 0 }}>
-          <div className='h-full w-full'>
-
-            {/* QA Data View Overlay */}
-            {qaFile && (
-              <div className="absolute inset-0 z-20 bg-gray-100 dark:bg-gray-900 p-6">
-                <QADataView
-                  fileId={qaFile.id}
-                  fileName={qaFile.name}
-                  onClose={handleCloseQA}
-                />
-              </div>
-            )}
-
-            {/* Document List View */}
-            {activeTab === 'documents' && !qaFile && (
-              <>
-                {/* Upload Area */}
-                <FileUpload
-                  onUpload={handleFileUpload}
-                  isVisible={isUploadVisible}
-                  onToggle={handleToggleUpload}
-                  uploadProgress={uploadProgress}
-                  onRemoveUploadProgress={handleRemoveUploadProgress}
-                  hasEmbeddingModel={hasEmbeddingModel}
-                  isCheckingEmbedding={isCheckingEmbedding}
-                />
-
-                {/* Document List */}
-                <DocumentList
-                  documents={documents}
-                  isLoading={isLoading}
-                  onDownload={handleDownload}
-                  onDelete={handleDelete}
-                  onViewQA={handleViewQA}
-                  searchTerm={searchTerm}
-                  fileTypeFilter={fileTypeFilter}
-                  downloadingFiles={downloadingFiles}
-                  deletingFiles={deletingFiles}
-                />
-              </>
-            )}
-
-            {/* Search Test View */}
-            {activeTab === 'search' && !qaFile && (
-              <SearchTest collectionId={id!} />
-            )}
-
-          </div>
-          <br /><br /><br /><br />
+      <section className="space-y-6">
+        <div className="tgo-tabs" role="tablist">
+          <button
+            role="tab"
+            aria-selected={activeTab === 'documents'}
+            data-active={activeTab === 'documents'}
+            onClick={() => setActiveTab('documents')}
+            className="tgo-tab"
+          >
+            <FileText className="h-4 w-4" />
+            {t('knowledge.tabs.documents', 'Documents')}
+            <span className="text-[11px] tabular-nums opacity-60">{documents.length}</span>
+          </button>
+          <button
+            role="tab"
+            aria-selected={activeTab === 'search'}
+            data-active={activeTab === 'search'}
+            onClick={() => setActiveTab('search')}
+            className="tgo-tab"
+          >
+            <TestTube className="h-4 w-4" />
+            {t('knowledge.tabs.searchTest', 'Search Test')}
+          </button>
         </div>
 
-      </div>
-    </div>
+        {activeTab === 'documents' ? (
+          <div key="documents" className="tgo-fade-in space-y-6">
+            <FileUpload
+              onUpload={handleFileUpload}
+              isVisible={isUploadVisible}
+              onToggle={handleToggleUpload}
+              uploadProgress={uploadProgress}
+              onRemoveUploadProgress={handleRemoveUploadProgress}
+              hasEmbeddingModel={hasEmbeddingModel}
+              isCheckingEmbedding={isCheckingEmbedding}
+            />
+
+            <DocumentList
+              documents={documents}
+              isLoading={isLoading}
+              onDownload={handleDownload}
+              onDelete={handleDelete}
+              onViewQA={handleViewQA}
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              fileTypeFilter={fileTypeFilter}
+              onFilterChange={setFileTypeFilter}
+              downloadingFiles={downloadingFiles}
+              deletingFiles={deletingFiles}
+            />
+          </div>
+        ) : (
+          <div key="search" className="tgo-fade-in">
+            <SearchTest collectionId={id!} />
+          </div>
+        )}
+      </section>
+    </PageShell>
   );
 };
 

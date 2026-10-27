@@ -1,20 +1,160 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { RefreshCw, Plus, Search, ArrowUpDown, FolderOpen, Clock, Eye, Pencil, Trash2, FileText, Globe, MessageSquare, Loader2, AlertCircle, Settings } from 'lucide-react';
+import {
+  Plus, Pencil, Trash2, FileText, Globe, MessageSquare, Loader2, Settings, ArrowUpRight,
+  MoreHorizontal, BookOpen, Clock, Sparkles, type LucideIcon,
+} from 'lucide-react';
 import { useKnowledgeStore, knowledgeSelectors } from '@/stores';
 import { useToast } from '@/hooks/useToast';
 import { showKnowledgeBaseSuccess, showKnowledgeBaseError } from '@/utils/toastHelpers';
 import { CreateKnowledgeBaseModal, type CreateKnowledgeBaseData } from '@/components/knowledge/CreateKnowledgeBaseModal';
 import { EditKnowledgeBaseModal } from '@/components/knowledge/EditKnowledgeBaseModal';
 import { formatKnowledgeBaseUpdatedTime } from '@/utils/timeFormatting';
-import { getIconComponent, getIconColor } from '@/components/knowledge/IconPicker';
-import { getTagClasses } from '@/utils/tagColors';
-import type { KnowledgeBaseItem } from '@/types';
+import { getIconComponent } from '@/components/knowledge/IconPicker';
+import type { KnowledgeBaseItem, KnowledgeBaseType } from '@/types';
 import { useTranslation } from 'react-i18next';
 import ProjectConfigApiService from '@/services/projectConfigApi';
 import { useAuthStore } from '@/stores/authStore';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
+import { Modal, PrimaryButton, SecondaryButton } from '@/components/ui/ModalKit';
+import {
+  PageShell, PageHeader, InkButton, SectionHeader, SearchField, RefreshButton, FilterPills,
+  EmptyPanel, ErrorPanel, SkeletonGrid, CardGrid, NotchCard, MenuPanel, MenuItem, type FilterOption,
+} from '@/components/ui/PageKit';
 
+type TypeFilter = KnowledgeBaseType | 'all';
 
+const TYPE_META: Record<KnowledgeBaseType, { icon: LucideIcon; dot: string }> = {
+  file: { icon: FileText, dot: 'bg-acid-500' },
+  website: { icon: Globe, dot: 'bg-sky-400' },
+  qa: { icon: MessageSquare, dot: 'bg-violet-400' },
+};
+
+const getTagName = (tag: KnowledgeBaseItem['tags'][number]): string => (typeof tag === 'string' ? tag : tag.name);
+
+/**
+ * Knowledge base card, same anatomy as the workflow card
+ */
+interface KnowledgeCardProps {
+  kb: KnowledgeBaseItem;
+  typeLabel: string;
+  onOpen: (kb: KnowledgeBaseItem) => void;
+  onEdit: (kb: KnowledgeBaseItem) => void;
+  onDelete: (kb: KnowledgeBaseItem) => void;
+}
+
+const KnowledgeCard: React.FC<KnowledgeCardProps> = ({ kb, typeLabel, onOpen, onEdit, onDelete }) => {
+  const { t } = useTranslation();
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!showMenu) return undefined;
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) setShowMenu(false);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showMenu]);
+
+  const type = kb.type ?? 'file';
+  const meta = TYPE_META[type];
+  const KbIcon = getIconComponent(kb.icon);
+  const tags = kb.tags.map(getTagName).filter(Boolean);
+
+  return (
+    <NotchCard
+      raised={showMenu}
+      corner={
+        <button
+          onClick={() => onOpen(kb)}
+          aria-label={t('common.details', 'Details')}
+          className="tgo-icon-btn h-9 w-9 group-hover:rotate-45"
+        >
+          <ArrowUpRight className="h-4 w-4" />
+        </button>
+      }
+    >
+      <div className="flex items-center gap-3 pr-10">
+        <span className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-ink-900 text-acid-400">
+          <KbIcon className="h-5 w-5" />
+          <span className={`absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-white dark:border-gray-800 ${meta.dot}`} />
+        </span>
+        <div className="min-w-0">
+          <p className="text-[11px] font-medium uppercase tracking-wider text-gray-400 dark:text-gray-500">{typeLabel}</p>
+          <p className="flex items-center gap-1 truncate text-xs text-gray-500 dark:text-gray-400">
+            <Clock className="h-3 w-3" />
+            {formatKnowledgeBaseUpdatedTime(kb.updatedAt)}
+          </p>
+        </div>
+      </div>
+
+      <button onClick={() => onOpen(kb)} className="mt-5 text-left">
+        <h3 className="line-clamp-1 text-xl font-medium tracking-tight text-gray-900 dark:text-gray-100" title={kb.title}>
+          {kb.title}
+        </h3>
+        <p className="mt-1.5 line-clamp-2 min-h-10 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
+          {kb.content || t('workflow.noDescription', 'No description')}
+        </p>
+      </button>
+
+      {tags.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {tags.slice(0, 3).map(tag => (
+            <span key={tag} className="rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-medium text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+              {tag}
+            </span>
+          ))}
+          {tags.length > 3 && <span className="self-center text-[11px] font-medium text-gray-400">+{tags.length - 3}</span>}
+        </div>
+      )}
+
+      <div className="mt-auto pt-5">
+        <p className="mb-1.5 text-[11px] text-gray-400 dark:text-gray-500">{t('knowledge.list.columns.documents', 'Documents')}</p>
+        <div className="flex items-center gap-2">
+          <span className="inline-flex h-10 min-w-0 flex-1 items-center gap-2 rounded-full px-4 text-sm text-gray-700 ring-1 ring-gray-200 dark:text-gray-200 dark:ring-gray-700">
+            <span className={`h-2 w-2 shrink-0 rounded-full ${meta.dot}`} />
+            <span className="truncate">{t('knowledge.filesCount', { count: kb.fileCount ?? 0, defaultValue: '{{count}} files' })}</span>
+          </span>
+
+          <div className="relative" ref={menuRef}>
+            <button
+              onClick={() => setShowMenu(v => !v)}
+              aria-haspopup="menu"
+              aria-expanded={showMenu}
+              aria-label={t('common.more', 'More')}
+              className="tgo-icon-btn h-10 w-10"
+            >
+              <MoreHorizontal className="h-4 w-4" />
+            </button>
+            {showMenu && (
+              <MenuPanel placement="top">
+                <MenuItem onClick={() => { onOpen(kb); setShowMenu(false); }}>
+                  <BookOpen className="h-4 w-4" /> {t('common.details', 'Details')}
+                </MenuItem>
+                <MenuItem onClick={() => { onEdit(kb); setShowMenu(false); }}>
+                  <Pencil className="h-4 w-4" /> {t('common.edit', 'Edit')}
+                </MenuItem>
+                <div className="my-1 h-px bg-gray-100 dark:bg-gray-700" />
+                <MenuItem danger onClick={() => { onDelete(kb); setShowMenu(false); }}>
+                  <Trash2 className="h-4 w-4" /> {t('common.delete', 'Delete')}
+                </MenuItem>
+              </MenuPanel>
+            )}
+          </div>
+
+          <button
+            onClick={() => onEdit(kb)}
+            aria-label={t('common.edit', 'Edit')}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink-900 text-white transition-transform duration-200 hover:scale-105 active:scale-95 dark:bg-acid-400 dark:text-ink-900"
+          >
+            <Pencil className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+    </NotchCard>
+  );
+};
 
 /**
  * Knowledge Base management page component
@@ -28,6 +168,9 @@ const KnowledgeBase: React.FC = () => {
   const [editingKnowledgeBase, setEditingKnowledgeBase] = useState<KnowledgeBaseItem | null>(null);
   const [isCheckingEmbedding, setIsCheckingEmbedding] = useState(false);
   const [showEmbeddingWarning, setShowEmbeddingWarning] = useState(false);
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
+  const [deleteTarget, setDeleteTarget] = useState<KnowledgeBaseItem | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Get current project ID from auth store (via user object)
   const currentProjectId = useAuthStore(state => state.user?.project_id);
@@ -47,64 +190,45 @@ const KnowledgeBase: React.FC = () => {
   const clearError = useKnowledgeStore(state => state.clearError);
   const retry = useKnowledgeStore(state => state.retry);
 
-  // Fetch the knowledge base data on init
+  // Fetch (and re-fetch on search change) the knowledge base data
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        await fetchKnowledgeBases();
-      } catch (error) {
-        console.error('Failed to load knowledge bases:', error);
-        // Error is already handled in the store
-      }
-    };
-
-    loadData();
-  }, [fetchKnowledgeBases]);
-
-  // Re-fetch the data when the search changes
-  useEffect(() => {
-    const loadFilteredData = async () => {
-      try {
-        const params: any = {};
-        if (searchQuery) params.search = searchQuery;
-
-        await fetchKnowledgeBases(params);
-      } catch (error) {
-        console.error('Failed to load filtered knowledge bases:', error);
-        // Error is already handled in the store
-      }
-    };
-
-    loadFilteredData();
+    fetchKnowledgeBases(searchQuery ? { search: searchQuery } : undefined).catch((err: unknown) => {
+      // Error state is already handled in the store
+      console.error('Failed to load knowledge bases:', err);
+    });
   }, [searchQuery, fetchKnowledgeBases]);
 
-  // Compute filtering and sorting in the component (pagination and status filtering removed)
-  const filteredKnowledgeBases = React.useMemo(() => {
-    let filtered = knowledgeBases;
+  const typeCounts = useMemo(() => {
+    const counts: Record<TypeFilter, number> = { all: knowledgeBases.length, file: 0, website: 0, qa: 0 };
+    knowledgeBases.forEach((kb: KnowledgeBaseItem) => {
+      counts[kb.type ?? 'file'] += 1;
+    });
+    return counts;
+  }, [knowledgeBases]);
 
-    // Search filtering
-    if (searchQuery.trim()) {
-      filtered = filtered.filter((kb: KnowledgeBaseItem) =>
-        kb.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        kb.content.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    // Sorting - descending by most recent update time
-    filtered.sort((a: KnowledgeBaseItem, b: KnowledgeBaseItem) => {
-      const aDate = new Date(a.updatedAt);
-      const bDate = new Date(b.updatedAt);
-
-      // Handle invalid dates by putting them at the end
-      if (isNaN(aDate.getTime()) && isNaN(bDate.getTime())) return 0;
-      if (isNaN(aDate.getTime())) return 1;
-      if (isNaN(bDate.getTime())) return -1;
-
-      return bDate.getTime() - aDate.getTime();
+  // Search, type filter and sort (most recently updated first)
+  const filteredKnowledgeBases = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    const filtered = knowledgeBases.filter((kb: KnowledgeBaseItem) => {
+      if (typeFilter !== 'all' && (kb.type ?? 'file') !== typeFilter) return false;
+      if (!query) return true;
+      return kb.title.toLowerCase().includes(query) || kb.content.toLowerCase().includes(query);
     });
 
-    return filtered;
-  }, [knowledgeBases, searchQuery]);
+    const time = (value: string) => {
+      const ms = new Date(value).getTime();
+      return Number.isNaN(ms) ? -Infinity : ms;
+    };
+    return [...filtered].sort((a, b) => time(b.updatedAt) - time(a.updatedAt));
+  }, [knowledgeBases, searchQuery, typeFilter]);
+
+  const typeLabel = (type: KnowledgeBaseType): string => {
+    switch (type) {
+      case 'website': return t('knowledge.typeWebsite', 'Website');
+      case 'qa': return t('knowledge.typeQA', 'QA Pairs');
+      default: return t('knowledge.typeFile', 'File');
+    }
+  };
 
   const handleCreateKnowledgeBase = async (data: CreateKnowledgeBaseData): Promise<void> => {
     try {
@@ -127,10 +251,10 @@ const KnowledgeBase: React.FC = () => {
           t('knowledge.crawl.startedDesc', 'Website crawl job has been started')
         );
       }
-    } catch (error) {
-      console.error('Failed to create knowledge base:', error);
-      showKnowledgeBaseError(showToast, 'create', error, data.name);
-      throw error; // Re-throw to let modal handle the error
+    } catch (err) {
+      console.error('Failed to create knowledge base:', err);
+      showKnowledgeBaseError(showToast, 'create', err, data.name);
+      throw err; // Re-throw to let modal handle the error
     }
   };
 
@@ -147,16 +271,14 @@ const KnowledgeBase: React.FC = () => {
       const projectConfigService = new ProjectConfigApiService();
       const aiConfig = await projectConfigService.getAIConfig(currentProjectId);
 
-      // Check if embedding model is configured
       if (!aiConfig.default_embedding_provider_id || !aiConfig.default_embedding_model) {
         setShowEmbeddingWarning(true);
         return;
       }
 
-      // Embedding model is configured, open the create modal
       setIsCreateModalOpen(true);
-    } catch (error) {
-      console.error('Failed to check AI config:', error);
+    } catch (err) {
+      console.error('Failed to check AI config:', err);
       // If API call fails, show error toast but still allow creating (fail-open)
       showToast(
         'warning',
@@ -169,16 +291,6 @@ const KnowledgeBase: React.FC = () => {
     }
   }, [currentProjectId, showToast, t]);
 
-  const handleCloseCreateModal = (): void => {
-    setIsCreateModalOpen(false);
-  };
-
-  // Close embedding warning modal
-  const handleCloseEmbeddingWarning = (): void => {
-    setShowEmbeddingWarning(false);
-  };
-
-  // Navigate to AI configuration page
   const handleGoToAIConfig = (): void => {
     setShowEmbeddingWarning(false);
     navigate('/settings/providers');
@@ -193,10 +305,10 @@ const KnowledgeBase: React.FC = () => {
         tags: data.tags
       });
       showKnowledgeBaseSuccess(showToast, 'update', data.name);
-    } catch (error) {
-      console.error('Failed to update knowledge base:', error);
-      showKnowledgeBaseError(showToast, 'update', error, data.name);
-      throw error; // Re-throw to let modal handle the error
+    } catch (err) {
+      console.error('Failed to update knowledge base:', err);
+      showKnowledgeBaseError(showToast, 'update', err, data.name);
+      throw err; // Re-throw to let modal handle the error
     }
   };
 
@@ -212,40 +324,27 @@ const KnowledgeBase: React.FC = () => {
 
   const handleRefresh = async (): Promise<void> => {
     try {
-      clearError(); // Clear any existing errors
+      clearError();
       await refreshKnowledgeBases();
-    } catch (error) {
-      console.error('Failed to refresh knowledge bases:', error);
-      // Error is already handled in the store
+    } catch (err) {
+      console.error('Failed to refresh knowledge bases:', err);
     }
   };
 
-  const handleKnowledgeBaseAction = async (actionType: string, knowledgeBase: KnowledgeBaseItem): Promise<void> => {
-    switch (actionType) {
-      case 'edit':
-        handleOpenEditModal(knowledgeBase);
-        break;
-      case 'delete':
-        if (confirm(t('knowledge.confirmDelete.message', { name: knowledgeBase.title, defaultValue: `Are you sure you want to delete knowledge base "{{name}}"? This action cannot be undone.` }))) {
-          try {
-            await deleteKnowledgeBase(knowledgeBase.id);
-            showKnowledgeBaseSuccess(showToast, 'delete', knowledgeBase.title);
-          } catch (error) {
-            console.error('Failed to delete knowledge base:', error);
-            showKnowledgeBaseError(showToast, 'delete', error, knowledgeBase.title);
-          }
-        }
-        break;
-      default:
-        console.log('Unknown action:', actionType);
+  const handleDeleteConfirm = async (): Promise<void> => {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
+    try {
+      await deleteKnowledgeBase(deleteTarget.id);
+      showKnowledgeBaseSuccess(showToast, 'delete', deleteTarget.title);
+      setDeleteTarget(null);
+    } catch (err) {
+      console.error('Failed to delete knowledge base:', err);
+      showKnowledgeBaseError(showToast, 'delete', err, deleteTarget.title);
+    } finally {
+      setIsDeleting(false);
     }
   };
-
-  const handleSearchChange = (query: string): void => {
-    setSearchQuery(query);
-  };
-
-
 
   // Navigate to knowledge base detail view
   const handleKnowledgeBaseClick = (knowledgeBase: KnowledgeBaseItem): void => {
@@ -258,325 +357,162 @@ const KnowledgeBase: React.FC = () => {
     }
   };
 
+  const filterOptions: FilterOption<TypeFilter>[] = [
+    { value: 'all', label: t('common.all', 'All'), count: typeCounts.all },
+    { value: 'file', label: typeLabel('file'), count: typeCounts.file, dot: TYPE_META.file.dot },
+    { value: 'website', label: typeLabel('website'), count: typeCounts.website, dot: TYPE_META.website.dot },
+    { value: 'qa', label: typeLabel('qa'), count: typeCounts.qa, dot: TYPE_META.qa.dot },
+  ];
+
+  const hasActiveFilters = Boolean(searchQuery.trim()) || typeFilter !== 'all';
+
+  const createButton = (
+    <InkButton
+      onClick={handleOpenCreateModal}
+      disabled={isCheckingEmbedding}
+      icon={isCheckingEmbedding ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+    >
+      {t('knowledge.create', 'Create Knowledge Base')}
+    </InkButton>
+  );
+
   return (
-    <main className="flex-grow flex flex-col bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      {/* Header */}
-      <header className="px-6 py-4 border-b border-gray-200/80 dark:border-gray-700/80 sticky top-0 bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg z-10">
-        <div className="flex justify-between items-center">
-          <div>
-            <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">{t('knowledge.manage', 'Manage Knowledge Base')}</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{t('knowledge.subtitle', 'Manage knowledge sources available to agents.')}</p>
-          </div>
-          <div className="flex items-center space-x-3">
-            <button
-              className="p-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-200/70 dark:hover:bg-gray-700/70 rounded-md transition-colors duration-200"
-              title={t('knowledge.detail.refresh', 'Refresh')}
-              onClick={handleRefresh}
-            >
-              <RefreshCw className="w-5 h-5" />
-            </button>
-            <button
-              className="flex items-center px-3 py-1.5 bg-blue-500 dark:bg-blue-600 text-white text-sm rounded-md hover:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={handleOpenCreateModal}
-              disabled={isCheckingEmbedding}
-            >
-              {isCheckingEmbedding ? (
-                <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-              ) : (
-                <Plus className="w-4 h-4 mr-1" />
-              )}
-              <span>{t('knowledge.create', 'Create Knowledge Base')}</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Search and Filters */}
-        <div className="mt-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-          <div className="relative flex-grow max-w-xs">
-            <input
-              type="text"
-              placeholder={t('knowledge.selectModal.searchPlaceholder', 'Search knowledge bases...')}
-              value={searchQuery}
-              onChange={(e) => handleSearchChange(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-sm border border-gray-300/70 dark:border-gray-600 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white/80 dark:bg-gray-700/80 dark:text-gray-100 dark:placeholder-gray-400"
-            />
-            <Search className="w-4 h-4 absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" />
-          </div>
-
-        </div>
-
-
-      </header>
-
-      {/* Content Area: Knowledge Base List */}
-      <div className="flex-grow overflow-y-auto p-6" style={{ height: 0 }}>
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-lg shadow-sm border border-gray-200/60 dark:border-gray-700/60 overflow-hidden">
-          {/* Table Header */}
-          <div className="grid grid-cols-[minmax(0,_3fr)_80px_1fr_1fr_auto] gap-4 px-4 py-2 border-b border-gray-200/60 dark:border-gray-700/60 bg-gray-50/50 dark:bg-gray-900/50">
-            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center cursor-pointer hover:text-gray-700 dark:hover:text-gray-200">
-              {t('knowledge.list.columns.name', 'Name')} <ArrowUpDown className="w-3 h-3 ml-1" />
-            </div>
-            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center">
-              {t('knowledge.list.columns.type', 'Type')}
-            </div>
-            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center cursor-pointer hover:text-gray-700 dark:hover:text-gray-200">
-              {t('knowledge.list.columns.documents', 'Documents')} <ArrowUpDown className="w-3 h-3 ml-1" />
-            </div>
-            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center cursor-pointer hover:text-gray-700 dark:hover:text-gray-200">
-              {t('knowledge.list.columns.lastUpdated', 'Last Updated')} <ArrowUpDown className="w-3 h-3 ml-1" />
-            </div>
-            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right pr-2">
-              {t('knowledge.list.columns.actions', 'Actions')}
-            </div>
-          </div>
-
-          {/* Table Body */}
-          <div>
-            {isLoading ? (
-              <div className="text-center py-12">
-                <div className="inline-flex items-center">
-                  <RefreshCw className="w-5 h-5 animate-spin text-blue-500 dark:text-blue-400 mr-2" />
-                  <span className="text-gray-500 dark:text-gray-400">{t('common.loading', 'Loading...')}</span>
-                </div>
-              </div>
-            ) : hasError ? (
-              <div className="text-center py-12">
-                <div className="w-16 h-16 mx-auto bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mb-4">
-                  <svg className="w-8 h-8 text-red-500 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-medium text-gray-800 dark:text-gray-100 mb-2">{t('common.loadFailed', 'Load Failed')}</h3>
-                <p className="text-gray-500 dark:text-gray-400 mb-4">{error || t('knowledge.list.loadFailedDesc', 'An error occurred while fetching knowledge bases')}</p>
-                <div className="flex justify-center space-x-3">
-                  <button
-                    onClick={retry}
-                    className="inline-flex items-center px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 transition-colors"
-                  >
-                    <RefreshCw className="w-4 h-4 mr-2" />
-                    {t('common.retry', 'Retry')}
-                  </button>
-                  <button
-                    onClick={clearError}
-                    className="inline-flex items-center px-4 py-2 bg-gray-500 dark:bg-gray-600 text-white rounded-lg hover:bg-gray-600 dark:hover:bg-gray-700 transition-colors"
-                  >
-                    {t('knowledge.error.clear', 'Clear Error')}
-                  </button>
-                </div>
-              </div>
-            ) : filteredKnowledgeBases.length === 0 ? (
-              <div className="text-center py-12">
-                <FolderOpen className="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600 mb-4" />
-                <h3 className="text-lg font-medium text-gray-800 dark:text-gray-100 mb-2">{t('knowledge.empty.title', 'No Knowledge Bases')}</h3>
-                <p className="text-gray-500 dark:text-gray-400 mb-4">{t('knowledge.empty.description', 'Create your first knowledge base to get started')}</p>
-                <button
-                  onClick={handleOpenCreateModal}
-                  disabled={isCheckingEmbedding}
-                  className="inline-flex items-center px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isCheckingEmbedding ? (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  ) : (
-                    <Plus className="w-4 h-4 mr-2" />
-                  )}
-                  {t('knowledge.create', 'Create Knowledge Base')}
-                </button>
-              </div>
-            ) : (
-              filteredKnowledgeBases.map((kb: KnowledgeBaseItem, index: number) => {
-                const isWebsite = kb.type === 'website';
-                const isQA = kb.type === 'qa';
-
-                return (
-                  <div
-                    key={kb.id}
-                    className={`grid grid-cols-[minmax(0,_3fr)_80px_1fr_1fr_auto] gap-4 px-4 py-3 items-center hover:bg-gray-50/30 dark:hover:bg-gray-700/30 transition-colors ${
-                      index < filteredKnowledgeBases.length - 1 ? 'border-b border-gray-200/60 dark:border-gray-700/60' : ''
-                    }`}
-                  >
-                    <div
-                      className="flex items-start space-x-3 cursor-pointer hover:bg-blue-50/50 dark:hover:bg-blue-900/30 -mx-2 px-2 py-1 rounded transition-all duration-200 group"
-                      onClick={() => handleKnowledgeBaseClick(kb)}
-                    >
-                      {(() => {
-                        const IconComponent = getIconComponent(kb.icon);
-                        const iconColor = getIconColor(kb.icon);
-                        return (
-                          <IconComponent
-                            className={`w-5 h-5 flex-shrink-0 mt-0.5 transition-colors duration-200 ${iconColor} hover:opacity-80`}
-                          />
-                        );
-                      })()}
-                      <div>
-                        <p className="text-sm font-medium text-gray-800 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">{kb.title}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-snug">{kb.content}</p>
-                        <div className="mt-1.5 flex flex-wrap gap-1.5">
-                          {kb.tags.map((tag: any, tagIndex: number) => {
-                            const tagName = typeof tag === 'string' ? tag : tag.name;
-                            return (
-                              <span
-                                key={tagIndex}
-                                className={getTagClasses(tagName, {
-                                  size: 'sm',
-                                  includeHover: false,
-                                  includeBorder: false,
-                                  rounded: true
-                                })}
-                                style={{ fontSize: '10px' }}
-                              >
-                                {tagName}
-                              </span>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Type Column */}
-                    <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-1">
-                        {isWebsite ? (
-                          <>
-                            <Globe className="w-3.5 h-3.5 text-blue-500" />
-                            <span className="text-xs text-gray-600 dark:text-gray-300">{t('knowledge.typeWebsite', 'Website')}</span>
-                          </>
-                        ) : isQA ? (
-                          <>
-                            <MessageSquare className="w-3.5 h-3.5 text-purple-500" />
-                            <span className="text-xs text-gray-600 dark:text-gray-300">{t('knowledge.typeQA', 'QA Pairs')}</span>
-                          </>
-                        ) : (
-                          <>
-                            <FileText className="w-3.5 h-3.5 text-green-500" />
-                            <span className="text-xs text-gray-600 dark:text-gray-300">{t('knowledge.typeFile', 'File')}</span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="text-sm text-gray-600 dark:text-gray-300">{t('knowledge.filesCount', { count: kb.fileCount, defaultValue: `{{count}} files` })}</div>
-                    <div className="text-sm text-gray-600 dark:text-gray-300 flex items-center">
-                      <Clock className="w-3.5 h-3.5 mr-1 text-gray-400 dark:text-gray-500" />
-                      {formatKnowledgeBaseUpdatedTime(kb.updatedAt)}
-                    </div>
-
-                    <div className="flex justify-end space-x-2">
-                      <button
-                        className="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                        title={t('common.details', 'Details')}
-                        onClick={() => handleKnowledgeBaseClick(kb)}
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
-
-                      <button
-                        className="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                        title={t('common.edit', 'Edit')}
-                        onClick={() => handleKnowledgeBaseAction('edit', kb)}
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </button>
-
-                      <button
-                        className="text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-                        title={t('common.delete', 'Delete')}
-                        onClick={() => handleKnowledgeBaseAction('delete', kb)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-
-
-      </div>
-
-      {/* Create Knowledge Base Modal */}
-      <CreateKnowledgeBaseModal
-        isOpen={isCreateModalOpen}
-        onClose={handleCloseCreateModal}
-        onSubmit={handleCreateKnowledgeBase}
-        isLoading={isLoading}
-      />
-
-      {/* Edit Knowledge Base Modal */}
-      <EditKnowledgeBaseModal
-        isOpen={isEditModalOpen}
-        onClose={handleCloseEditModal}
-        onSubmit={handleEditKnowledgeBase}
-        knowledgeBase={editingKnowledgeBase}
-        isLoading={isLoading}
-      />
-
-      {/* Embedding Model Warning Modal */}
-      {showEmbeddingWarning && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/50 dark:bg-black/70"
-            onClick={handleCloseEmbeddingWarning}
+    <PageShell
+      after={
+        <>
+          <CreateKnowledgeBaseModal
+            isOpen={isCreateModalOpen}
+            onClose={() => setIsCreateModalOpen(false)}
+            onSubmit={handleCreateKnowledgeBase}
+            isLoading={isLoading}
           />
 
-          {/* Modal */}
-          <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden">
-            {/* Header */}
-            <div className="px-6 py-5 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border-b border-amber-100 dark:border-amber-800/30">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-amber-100 dark:bg-amber-800/50 rounded-lg">
-                  <AlertCircle className="w-6 h-6 text-amber-600 dark:text-amber-400" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                    {t('knowledge.embedding.requiredTitle', 'Embedding Model Required')}
-                  </h3>
-                </div>
+          <EditKnowledgeBaseModal
+            isOpen={isEditModalOpen}
+            onClose={handleCloseEditModal}
+            onSubmit={handleEditKnowledgeBase}
+            knowledgeBase={editingKnowledgeBase}
+            isLoading={isLoading}
+          />
+
+          <ConfirmDialog
+            isOpen={!!deleteTarget}
+            title={t('knowledge.confirmDelete.title', 'Delete Knowledge Base')}
+            message={t('knowledge.confirmDelete.message', { name: deleteTarget?.title, defaultValue: 'Are you sure you want to delete knowledge base "{{name}}"? This action cannot be undone.' })}
+            confirmText={t('common.delete', 'Delete')}
+            cancelText={t('common.cancel', 'Cancel')}
+            confirmVariant="danger"
+            onConfirm={handleDeleteConfirm}
+            onCancel={() => setDeleteTarget(null)}
+            isLoading={isDeleting}
+          />
+
+          {/* Embedding model required */}
+          <Modal
+            isOpen={showEmbeddingWarning}
+            onClose={() => setShowEmbeddingWarning(false)}
+            icon={Sparkles}
+            tone="warning"
+            size="sm"
+            title={t('knowledge.embedding.requiredTitle', 'Embedding Model Required')}
+            footer={
+              <>
+                <SecondaryButton onClick={() => setShowEmbeddingWarning(false)}>
+                  {t('common.cancel', 'Cancel')}
+                </SecondaryButton>
+                <PrimaryButton onClick={handleGoToAIConfig} icon={<Settings className="h-4 w-4" />}>
+                  {t('knowledge.embedding.goToConfig', 'Go to Configuration')}
+                </PrimaryButton>
+              </>
+            }
+          >
+            <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+              {t('knowledge.embedding.requiredDesc', 'Creating a knowledge base requires a default embedding model to be configured. The embedding model is used to convert document content into vectors for semantic search.')}
+            </p>
+            <div className="tgo-well flex items-start gap-3 p-4">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-gray-600 shadow-sm dark:bg-gray-800 dark:text-gray-300">
+                <Settings className="h-4 w-4" />
+              </span>
+              <div>
+                <p className="text-sm font-medium text-gray-800 dark:text-gray-100">
+                  {t('knowledge.embedding.configPath', 'Configuration Path')}
+                </p>
+                <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
+                  {t('knowledge.embedding.configPathDesc', 'Settings → Model Providers → Set Default Embedding Model')}
+                </p>
               </div>
             </div>
+          </Modal>
+        </>
+      }
+    >
+      <PageHeader
+        title={t('knowledge.titleShort', 'Knowledge')}
+        total={typeCounts.all}
+        actions={createButton}
+        stats={[
+          { key: 'file', value: typeCounts.file, label: typeLabel('file').toLowerCase(), badge: 'bg-acid-300 text-ink-900' },
+          { key: 'website', value: typeCounts.website, label: typeLabel('website').toLowerCase(), badge: 'bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-300' },
+          { key: 'qa', value: typeCounts.qa, label: typeLabel('qa').toLowerCase(), badge: 'bg-violet-100 text-violet-800 dark:bg-violet-900/40 dark:text-violet-300' },
+        ]}
+      />
 
-            {/* Content */}
-            <div className="px-6 py-5">
-              <p className="text-gray-600 dark:text-gray-300 mb-4">
-                {t('knowledge.embedding.requiredDesc', 'Creating a knowledge base requires a default embedding model to be configured. The embedding model is used to convert document content into vectors for semantic search.')}
-              </p>
-              <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
-                <div className="flex items-start gap-3">
-                  <Settings className="w-5 h-5 text-gray-500 dark:text-gray-400 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                      {t('knowledge.embedding.configPath', 'Configuration Path')}
-                    </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                      {t('knowledge.embedding.configPathDesc', 'Settings → Model Providers → Set Default Embedding Model')}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+      <section className="space-y-5">
+        <SectionHeader
+          title={t('knowledge.listTitle', 'Knowledge Bases')}
+          count={filteredKnowledgeBases.length}
+          countLabel={t('knowledge.countLabel', 'sources')}
+        >
+          <SearchField
+            value={searchQuery}
+            onChange={setSearchQuery}
+            placeholder={t('knowledge.selectModal.searchPlaceholder', 'Search knowledge bases...')}
+            wide
+          />
+          <RefreshButton onClick={handleRefresh} spinning={isLoading} disabled={isLoading} />
+          <FilterPills options={filterOptions} value={typeFilter} onChange={setTypeFilter} />
+        </SectionHeader>
+        <p className="-mt-2 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
+          {t('knowledge.subtitle', 'Manage knowledge sources available to agents.')}
+        </p>
 
-            {/* Footer */}
-            <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
-              <button
-                onClick={handleCloseEmbeddingWarning}
-                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-              >
-                {t('common.cancel', 'Cancel')}
-              </button>
-              <button
-                onClick={handleGoToAIConfig}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 rounded-lg transition-colors flex items-center gap-2"
-              >
-                <Settings className="w-4 h-4" />
-                {t('knowledge.embedding.goToConfig', 'Go to Configuration')}
+        {hasError ? (
+          <div className="space-y-3">
+            <ErrorPanel
+              message={error || t('knowledge.list.loadFailedDesc', 'An error occurred while fetching knowledge bases')}
+              onRetry={retry}
+            />
+            <div className="text-center">
+              <button onClick={clearError} className="text-xs font-medium text-gray-500 underline-offset-4 hover:text-gray-900 hover:underline dark:hover:text-white">
+                {t('knowledge.error.clear', 'Clear Error')}
               </button>
             </div>
           </div>
-        </div>
-      )}
-    </main>
+        ) : isLoading && knowledgeBases.length === 0 ? (
+          <SkeletonGrid />
+        ) : filteredKnowledgeBases.length === 0 ? (
+          <EmptyPanel
+            icon={BookOpen}
+            title={hasActiveFilters ? t('knowledge.empty.noResults', 'No matching knowledge bases') : t('knowledge.empty.title', 'No Knowledge Bases')}
+            description={hasActiveFilters ? t('workflow.empty.noResultsDesc', 'Try adjusting your search keywords or filters') : t('knowledge.empty.description', 'Create your first knowledge base to get started')}
+            action={hasActiveFilters ? undefined : createButton}
+          />
+        ) : (
+          <CardGrid>
+            {filteredKnowledgeBases.map((kb: KnowledgeBaseItem) => (
+              <KnowledgeCard
+                key={kb.id}
+                kb={kb}
+                typeLabel={typeLabel(kb.type ?? 'file')}
+                onOpen={handleKnowledgeBaseClick}
+                onEdit={handleOpenEditModal}
+                onDelete={setDeleteTarget}
+              />
+            ))}
+          </CardGrid>
+        )}
+      </section>
+    </PageShell>
   );
 };
 

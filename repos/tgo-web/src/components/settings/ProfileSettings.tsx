@@ -5,52 +5,47 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  User,
-  RefreshCw,
-  AlertCircle,
-  Loader2,
-  PhoneOff,
-  Phone,
-} from 'lucide-react';
+import { PhoneOff, Phone, CalendarPlus, CalendarClock, AtSign, Headphones } from 'lucide-react';
 import { staffApi, StaffRole, StaffStatus } from '@/services/staffApi';
 import { StaffResponse } from '@/services/api';
 import { useToast } from '@/hooks/useToast';
+import { ErrorPanel, RefreshButton } from '@/components/ui/PageKit';
+import { PrimaryButton } from '@/components/ui/ModalKit';
+import { SettingsPage, SettingsCard, SettingsLoader, InfoLine } from './SettingsKit';
 
-// Role configuration for display (colors only, labels from i18n)
-const roleStyleConfig: Record<StaffRole, { bgColor: string; textColor: string }> = {
-  admin: { bgColor: 'bg-purple-100 dark:bg-purple-900/30', textColor: 'text-purple-700 dark:text-purple-300' },
-  user: { bgColor: 'bg-blue-100 dark:bg-blue-900/30', textColor: 'text-blue-700 dark:text-blue-300' },
-  agent: { bgColor: 'bg-green-100 dark:bg-green-900/30', textColor: 'text-green-700 dark:text-green-300' },
+const roleStyleConfig: Record<StaffRole, string> = {
+  admin: 'bg-ink-900 text-acid-400 dark:bg-acid-400 dark:text-ink-900',
+  user: 'bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-300',
+  agent: 'bg-acid-300 text-ink-900',
 };
 
-// Status configuration for display (colors only, labels from i18n)
-const statusStyleConfig: Record<StaffStatus, { dotColor: string }> = {
-  online: { dotColor: 'bg-green-500' },
-  offline: { dotColor: 'bg-gray-400' },
-  busy: { dotColor: 'bg-yellow-500' },
+const statusDotConfig: Record<StaffStatus, string> = {
+  online: 'bg-acid-500',
+  offline: 'bg-gray-400',
+  busy: 'bg-amber-400',
 };
+
+const errorMessage = (err: unknown): string | undefined =>
+  err instanceof Error ? err.message : undefined;
 
 const ProfileSettings: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { showSuccess, showError } = useToast();
 
-  // Profile state
   const [profile, setProfile] = useState<StaffResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isToggling, setIsToggling] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
 
-  // Load profile
   const loadProfile = useCallback(async () => {
     setIsLoading(true);
     setLoadError(null);
     try {
       const data = await staffApi.getMe();
       setProfile(data);
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to load profile:', err);
-      setLoadError(err?.message || t('settings.profile.loadError', 'Failed to load profile'));
+      setLoadError(errorMessage(err) || t('settings.profile.loadError', 'Failed to load profile'));
     } finally {
       setIsLoading(false);
     }
@@ -60,7 +55,6 @@ const ProfileSettings: React.FC = () => {
     loadProfile();
   }, [loadProfile]);
 
-  // Toggle service paused status
   const handleToggleServicePaused = async () => {
     if (!profile || isToggling) return;
 
@@ -75,201 +69,126 @@ const ProfileSettings: React.FC = () => {
           ? t('settings.profile.servicePaused', 'Service paused')
           : t('settings.profile.serviceResumed', 'Service resumed')
       );
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to toggle service:', err);
-      showError(err?.message || t('settings.profile.toggleError', 'Failed to toggle service status'));
+      showError(errorMessage(err) || t('settings.profile.toggleError', 'Failed to toggle service status'));
     } finally {
       setIsToggling(false);
     }
   };
 
-  // Loading state
-  if (isLoading) {
+  const title = t('settings.profile.title', 'Profile');
+  const subtitle = t('settings.profile.subtitle', 'View and manage your personal information');
+
+  if (isLoading && !profile) {
     return (
-      <div className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-4xl mx-auto p-6">
-          <div className="flex items-center justify-center h-64">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-          </div>
-        </div>
-      </div>
+      <SettingsPage title={title} subtitle={subtitle}>
+        <SettingsLoader />
+      </SettingsPage>
     );
   }
 
-  // Error state
   if (loadError) {
     return (
-      <div className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-4xl mx-auto p-6">
-          <div className="flex flex-col items-center justify-center h-64 gap-4">
-            <AlertCircle className="w-12 h-12 text-red-500" />
-            <p className="text-gray-600 dark:text-gray-400">{loadError}</p>
-            <button
-              onClick={loadProfile}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-            >
-              <RefreshCw className="w-4 h-4" />
-              {t('common.retry', 'Retry')}
-            </button>
-          </div>
-        </div>
-      </div>
+      <SettingsPage title={title} subtitle={subtitle}>
+        <ErrorPanel message={loadError} onRetry={loadProfile} />
+      </SettingsPage>
     );
   }
 
   const role = (profile?.role as StaffRole) || 'user';
   const status = (profile?.status as StaffStatus) || 'offline';
-  const roleStyle = roleStyleConfig[role] || roleStyleConfig.user;
-  const statusStyle = statusStyleConfig[status] || statusStyleConfig.offline;
-  const roleLabel = t(`settings.profile.roles.${role}`, role);
-  const statusLabel = t(`settings.profile.statuses.${status}`, status);
+  const displayName = profile?.nickname || profile?.username || '';
+  const paused = Boolean(profile?.service_paused);
+  const formatDate = (value?: string) =>
+    value ? new Date(value).toLocaleString(i18n.language, { dateStyle: 'medium', timeStyle: 'short' }) : '—';
 
   return (
-    <div className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-4xl mx-auto p-6 space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <User className="w-6 h-6 text-gray-600 dark:text-gray-400" />
-            <div>
-              <h1 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">
-                {t('settings.profile.title', 'Profile')}
-              </h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                {t('settings.profile.subtitle', 'View and manage your personal information')}
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={loadProfile}
-            className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-            title={t('common.refresh', 'Refresh')}
-          >
-            <RefreshCw className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Profile Card */}
-        <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-          <div className="flex items-start gap-6">
-            {/* Avatar */}
-            <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shrink-0">
+    <SettingsPage
+      title={title}
+      subtitle={subtitle}
+      actions={<RefreshButton onClick={loadProfile} spinning={isLoading} disabled={isLoading} />}
+    >
+      {/* Identity hero */}
+      <section className="relative overflow-hidden rounded-[28px] bg-ink-900 p-7 text-white md:p-8 dark:bg-gray-900 dark:shadow-[inset_0_0_0_1px_rgb(255_255_255/0.06)]">
+        <span aria-hidden="true" className="absolute -right-20 -top-24 h-72 w-72 rounded-full bg-acid-400/20 blur-2xl" />
+        <span aria-hidden="true" className="absolute -bottom-28 right-32 h-56 w-56 rounded-full bg-white/5" />
+        <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center">
+          <div className="relative h-24 w-24 shrink-0">
+            <div className="h-24 w-24 overflow-hidden rounded-full bg-acid-400 ring-4 ring-white/10">
               {profile?.avatar_url ? (
-                <img src={profile.avatar_url} alt="avatar" className="w-full h-full object-cover" />
+                <img src={profile.avatar_url} alt={displayName} className="h-full w-full object-cover" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-gray-600 dark:text-gray-300 font-bold text-2xl">
-                  {(profile?.nickname || profile?.username || 'U').slice(0, 1).toUpperCase()}
+                <div className="flex h-full w-full items-center justify-center text-3xl font-light text-ink-900">
+                  {(displayName || 'U').slice(0, 1).toUpperCase()}
                 </div>
               )}
             </div>
-
-            {/* Info */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-3 mb-2">
-                <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 truncate">
-                  {profile?.nickname || profile?.username}
-                </h2>
-                <span className={`px-2 py-0.5 text-xs rounded-full ${roleStyle.bgColor} ${roleStyle.textColor}`}>
-                  {roleLabel}
-                </span>
-              </div>
-
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                  <span className="font-medium">{t('settings.profile.username', 'Username')}:</span>
-                  <span>{profile?.username}</span>
-                </div>
-
-                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                  <span className="font-medium">{t('settings.profile.status', 'Status')}:</span>
-                  <span className="flex items-center gap-1.5">
-                    <span className={`w-2 h-2 rounded-full ${statusStyle.dotColor}`}></span>
-                    {statusLabel}
-                  </span>
-                </div>
-
-                {profile?.description && (
-                  <div className="text-gray-600 dark:text-gray-400">
-                    <span className="font-medium">{t('settings.profile.description', 'Bio')}:</span>
-                    <p className="mt-1">{profile.description}</p>
-                  </div>
-                )}
-              </div>
-            </div>
+            <span className={`absolute bottom-1 right-1 h-5 w-5 rounded-full border-[3px] border-ink-900 dark:border-gray-900 ${statusDotConfig[status] || statusDotConfig.offline}`} />
           </div>
-        </section>
 
-        {/* Service Status Section */}
-        <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-          <h3 className="text-lg font-medium text-gray-800 dark:text-gray-100 mb-4">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <h2 className="tgo-display truncate text-[36px]">{displayName}</h2>
+              <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${roleStyleConfig[role] || roleStyleConfig.user}`}>
+                {t(`settings.profile.roles.${role}`, role)}
+              </span>
+            </div>
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-white/60">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1">
+                <AtSign className="h-3.5 w-3.5" />
+                {profile?.username}
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1">
+                <span className={`h-2 w-2 rounded-full ${statusDotConfig[status] || statusDotConfig.offline}`} />
+                {t(`settings.profile.statuses.${status}`, status)}
+              </span>
+            </div>
+            {profile?.description && (
+              <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/70">{profile.description}</p>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Service status */}
+      <SettingsCard
+        icon={paused ? PhoneOff : Headphones}
+        iconTone={paused ? 'bg-red-50 text-red-600 dark:bg-red-900/25 dark:text-red-400' : 'bg-acid-300 text-ink-900'}
+        title={
+          <span className="flex items-center gap-2.5">
             {t('settings.profile.serviceStatus', 'Service Status')}
-          </h3>
+            <span className={`tgo-chip ${paused ? 'bg-red-50 text-red-600 dark:bg-red-900/25 dark:text-red-400' : 'bg-acid-100 text-acid-800 dark:bg-acid-400/15 dark:text-acid-300'}`}>
+              <span className={`h-1.5 w-1.5 rounded-full ${paused ? 'bg-red-500' : 'bg-acid-500 tgo-pulse-ring'}`} />
+              {paused ? t('settings.profile.servicePausedLabel', 'Service Paused') : t('settings.profile.serviceActiveLabel', 'Active')}
+            </span>
+          </span>
+        }
+        description={
+          paused
+            ? t('settings.profile.servicePausedDesc', 'You will not be assigned new visitors while paused, existing conversations are not affected')
+            : t('settings.profile.serviceActiveDesc', 'System will assign new visitors to you based on assignment rules')
+        }
+        actions={
+          <PrimaryButton
+            onClick={handleToggleServicePaused}
+            loading={isToggling}
+            variant={paused ? 'primary' : 'danger'}
+            icon={paused ? <Phone className="h-4 w-4" /> : <PhoneOff className="h-4 w-4" />}
+          >
+            {paused ? t('settings.profile.resumeService', 'Resume Service') : t('settings.profile.pauseService', 'Pause Service')}
+          </PrimaryButton>
+        }
+      />
 
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                {profile?.service_paused ? (
-                  <PhoneOff className="w-5 h-5 text-red-500" />
-                ) : (
-                  <Phone className="w-5 h-5 text-green-500" />
-                )}
-                <span className={`font-medium ${profile?.service_paused ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
-                  {profile?.service_paused
-                    ? t('settings.profile.servicePausedLabel', 'Service Paused')
-                    : t('settings.profile.serviceActiveLabel', 'Active')}
-                </span>
-              </div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {profile?.service_paused
-                  ? t('settings.profile.servicePausedDesc', 'You will not be assigned new visitors while paused, existing conversations are not affected')
-                  : t('settings.profile.serviceActiveDesc', 'System will assign new visitors to you based on assignment rules')}
-              </p>
-            </div>
-
-            <button
-              onClick={handleToggleServicePaused}
-              disabled={isToggling}
-              className={`
-                flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors
-                ${profile?.service_paused
-                  ? 'bg-green-500 hover:bg-green-600 text-white'
-                  : 'bg-red-500 hover:bg-red-600 text-white'}
-                disabled:opacity-50 disabled:cursor-not-allowed
-              `}
-            >
-              {isToggling ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : profile?.service_paused ? (
-                <Phone className="w-4 h-4" />
-              ) : (
-                <PhoneOff className="w-4 h-4" />
-              )}
-              {profile?.service_paused
-                ? t('settings.profile.resumeService', 'Resume Service')
-                : t('settings.profile.pauseService', 'Pause Service')}
-            </button>
-          </div>
-        </section>
-
-        {/* Account Info Section */}
-        <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-          <h3 className="text-lg font-medium text-gray-800 dark:text-gray-100 mb-4">
-            {t('settings.profile.accountInfo', 'Account Information')}
-          </h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-              <span className="font-medium min-w-[80px]">{t('settings.profile.createdAt', 'Created At')}:</span>
-              <span>{profile?.created_at ? new Date(profile.created_at).toLocaleString() : '-'}</span>
-            </div>
-            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-              <span className="font-medium min-w-[80px]">{t('settings.profile.updatedAt', 'Updated At')}:</span>
-              <span>{profile?.updated_at ? new Date(profile.updated_at).toLocaleString() : '-'}</span>
-            </div>
-          </div>
-        </section>
-      </div>
-    </div>
+      {/* Account */}
+      <SettingsCard title={t('settings.profile.accountInfo', 'Account Information')}>
+        <div className="divide-y divide-gray-100 dark:divide-gray-800">
+          <InfoLine icon={CalendarPlus} label={t('settings.profile.createdAt', 'Created At')}>{formatDate(profile?.created_at)}</InfoLine>
+          <InfoLine icon={CalendarClock} label={t('settings.profile.updatedAt', 'Updated At')}>{formatDate(profile?.updated_at)}</InfoLine>
+        </div>
+      </SettingsCard>
+    </SettingsPage>
   );
 };
 

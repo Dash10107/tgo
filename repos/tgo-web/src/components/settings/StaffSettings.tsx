@@ -3,48 +3,53 @@
  * Manage human agents/staff members
  */
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Users,
   Plus,
-  MoreVertical,
-  Edit2,
+  Pencil,
   Trash2,
   UserPlus,
-  X,
+  UserCog,
   Eye,
   EyeOff,
-  AlertCircle,
   Loader2,
   Info,
   Settings2,
   Save,
   ChevronDown,
-  ChevronUp,
   Clock,
   MessageSquare,
   Brain,
+  RotateCcw,
+  CalendarDays,
+  Headphones,
+  Radio,
 } from 'lucide-react';
 import { staffApi, StaffRole, StaffStatus, StaffUpdateRequest, VisitorAssignmentRuleResponse } from '@/services/staffApi';
 import { StaffResponse, StaffCreateRequest } from '@/services/api';
 import { useToast } from '@/hooks/useToast';
 import AIProvidersApiService from '@/services/aiProvidersApi';
 import Toggle from '@/components/ui/Toggle';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
+import { Modal, Field, FieldGroup, PrimaryButton, SecondaryButton } from '@/components/ui/ModalKit';
+import { InkButton, SectionHeader, EmptyPanel, SkeletonGrid } from '@/components/ui/PageKit';
+import { SettingsPage, SettingsNote } from './SettingsKit';
 
-// Role configuration for display (colors only, labels from i18n)
-const roleStyleConfig: Record<StaffRole, { bgColor: string; textColor: string }> = {
-  admin: { bgColor: 'bg-purple-100 dark:bg-purple-900/30', textColor: 'text-purple-700 dark:text-purple-300' },
-  user: { bgColor: 'bg-blue-100 dark:bg-blue-900/30', textColor: 'text-blue-700 dark:text-blue-300' },
-  agent: { bgColor: 'bg-green-100 dark:bg-green-900/30', textColor: 'text-green-700 dark:text-green-300' },
+const roleStyleConfig: Record<StaffRole, string> = {
+  admin: 'bg-ink-900 text-acid-400 dark:bg-acid-400 dark:text-ink-900',
+  user: 'bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-300',
+  agent: 'bg-acid-300 text-ink-900',
 };
 
-// Status configuration for display (colors only, labels from i18n)
-const statusStyleConfig: Record<StaffStatus, { dotColor: string }> = {
-  online: { dotColor: 'bg-green-500' },
-  offline: { dotColor: 'bg-gray-400' },
-  busy: { dotColor: 'bg-yellow-500' },
+const statusDotConfig: Record<StaffStatus, string> = {
+  online: 'bg-acid-500',
+  offline: 'bg-gray-400',
+  busy: 'bg-amber-400',
 };
+
+const errorMessage = (err: unknown): string | undefined => (err instanceof Error ? err.message : undefined);
 
 // Form data type
 interface StaffFormData {
@@ -57,7 +62,6 @@ interface StaffFormData {
   status: StaffStatus;
 }
 
-// Initial form state
 const initialFormData: StaffFormData = {
   username: '',
   name: '',
@@ -76,6 +80,40 @@ interface StaffDialogProps {
   isLoading?: boolean;
 }
 
+/** Password input with a reveal toggle */
+const PasswordInput: React.FC<{
+  id: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+  invalid?: boolean;
+}> = ({ id, value, onChange, placeholder, invalid }) => {
+  const { t } = useTranslation();
+  const [visible, setVisible] = useState(false);
+  return (
+    <div className="relative">
+      <input
+        id={id}
+        type={visible ? 'text' : 'password'}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        aria-invalid={invalid}
+        autoComplete="new-password"
+        className="tgo-input pr-12"
+        placeholder={placeholder}
+      />
+      <button
+        type="button"
+        onClick={() => setVisible(!visible)}
+        aria-label={visible ? t('common.hide', 'Hide') : t('common.show', 'Show')}
+        className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-gray-200"
+      >
+        {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+      </button>
+    </div>
+  );
+};
+
 const StaffDialog: React.FC<StaffDialogProps> = ({
   open,
   onClose,
@@ -86,8 +124,6 @@ const StaffDialog: React.FC<StaffDialogProps> = ({
   const { t } = useTranslation();
   const isEditing = !!staff;
   const [formData, setFormData] = useState<StaffFormData>(initialFormData);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof StaffFormData, string>>>({});
 
   useEffect(() => {
@@ -110,7 +146,6 @@ const StaffDialog: React.FC<StaffDialogProps> = ({
   const validate = (): boolean => {
     const newErrors: Partial<Record<keyof StaffFormData, string>> = {};
 
-    // Name is always required
     if (!formData.name.trim()) {
       newErrors.name = t('settings.staff.errors.nameRequired', 'Please enter name');
     }
@@ -171,279 +206,84 @@ const StaffDialog: React.FC<StaffDialogProps> = ({
     }
   };
 
-  if (!open) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center gap-2">
-            <UserPlus className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-            <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-              {isEditing
-                ? t('settings.staff.editStaff', 'Edit Staff')
-                : t('settings.staff.addStaff', 'Add Staff')}
-            </h2>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-          >
-            <X className="w-5 h-5 text-gray-500" />
-          </button>
-        </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* Username - Required for new staff */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('settings.staff.username', 'Username')} {!isEditing && <span className="text-red-500">*</span>}
-            </label>
-            <input
-              type="text"
-              value={formData.username}
-              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-              disabled={isEditing}
-              className={`
-                w-full px-3 py-2 rounded-lg border transition-colors
-                ${isEditing ? 'bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : 'bg-white dark:bg-gray-800'}
-                ${errors.username
-                  ? 'border-red-500 focus:ring-red-500'
-                  : 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
-                }
-                focus:outline-none focus:ring-2 focus:ring-offset-0
-                text-gray-800 dark:text-gray-200
-              `}
-              placeholder={t('settings.staff.usernamePlaceholder', 'Enter username')}
-            />
-            {errors.username && (
-              <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                <AlertCircle className="w-3 h-3" />
-                {errors.username}
-              </p>
-            )}
-          </div>
-
-          {/* Name - Required */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('settings.staff.name', 'Name')} <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className={`
-                w-full px-3 py-2 rounded-lg border transition-colors
-                bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200
-                ${errors.name
-                  ? 'border-red-500 focus:ring-red-500'
-                  : 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
-                }
-                focus:outline-none focus:ring-2 focus:ring-offset-0
-              `}
-              placeholder={t('settings.staff.namePlaceholder', 'Enter name')}
-            />
-            {errors.name && (
-              <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                <AlertCircle className="w-3 h-3" />
-                {errors.name}
-              </p>
-            )}
-          </div>
-
-          {/* Password - Required for new staff */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('settings.staff.password', 'Password')} {!isEditing && <span className="text-red-500">*</span>}
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className={`
-                  w-full px-3 py-2 pr-10 rounded-lg border transition-colors
-                  bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200
-                  ${errors.password
-                    ? 'border-red-500 focus:ring-red-500'
-                    : 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
-                  }
-                  focus:outline-none focus:ring-2 focus:ring-offset-0
-                `}
-                placeholder={isEditing
-                  ? t('settings.staff.passwordPlaceholderEdit', 'Leave empty to keep current password')
-                  : t('settings.staff.passwordPlaceholder', 'Enter password (at least 8 characters)')
-                }
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-              >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                <AlertCircle className="w-3 h-3" />
-                {errors.password}
-              </p>
-            )}
-          </div>
-
-          {/* Confirm Password */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('settings.staff.confirmPassword', 'Confirm Password')} {!isEditing && <span className="text-red-500">*</span>}
-            </label>
-            <div className="relative">
-              <input
-                type={showConfirmPassword ? 'text' : 'password'}
-                value={formData.confirmPassword}
-                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                className={`
-                  w-full px-3 py-2 pr-10 rounded-lg border transition-colors
-                  bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200
-                  ${errors.confirmPassword
-                    ? 'border-red-500 focus:ring-red-500'
-                    : 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
-                  }
-                  focus:outline-none focus:ring-2 focus:ring-offset-0
-                `}
-                placeholder={t('settings.staff.confirmPasswordPlaceholder', 'Re-enter password')}
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-              >
-                {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
-            {errors.confirmPassword && (
-              <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                <AlertCircle className="w-3 h-3" />
-                {errors.confirmPassword}
-              </p>
-            )}
-          </div>
-
-          {/* Description - Optional */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('settings.staff.descriptionLabel', 'Description')}
-            </label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              rows={3}
-              className="
-                w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600
-                bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200
-                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0
-                transition-colors resize-none
-              "
-              placeholder={t('settings.staff.descriptionPlaceholder', 'Enter staff description (optional)')}
-            />
-          </div>
-
-          {/* Actions */}
-          <div className="flex gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="
-                flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
-                text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800
-                hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors
-              "
-            >
-              {t('common.cancel', 'Cancel')}
-            </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="
-                flex-1 px-4 py-2 rounded-lg bg-blue-600 text-white
-                hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed
-                transition-colors flex items-center justify-center gap-2
-              "
-            >
-              {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-              {isEditing
-                ? t('common.save', 'Save')
-                : t('common.create', 'Create')}
-            </button>
-          </div>
-        </form>
+    <Modal
+      isOpen={open}
+      onClose={onClose}
+      preventClose={isLoading}
+      icon={isEditing ? UserCog : UserPlus}
+      title={isEditing ? t('settings.staff.editStaff', 'Edit Staff') : t('settings.staff.addStaff', 'Add Staff')}
+      subtitle={isEditing ? `@${staff?.username}` : t('settings.staff.dialogSubtitle', 'Give a teammate access to take over conversations.')}
+      onSubmit={handleSubmit}
+      footer={
+        <>
+          <SecondaryButton onClick={onClose} disabled={isLoading}>{t('common.cancel', 'Cancel')}</SecondaryButton>
+          <PrimaryButton type="submit" loading={isLoading}>
+            {isEditing ? t('common.save', 'Save') : t('common.create', 'Create')}
+          </PrimaryButton>
+        </>
+      }
+    >
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Field label={t('settings.staff.username', 'Username')} htmlFor="staff-username" required={!isEditing} error={errors.username}>
+          <input
+            id="staff-username"
+            type="text"
+            value={formData.username}
+            onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+            disabled={isEditing}
+            aria-invalid={Boolean(errors.username)}
+            autoComplete="off"
+            className="tgo-input"
+            placeholder={t('settings.staff.usernamePlaceholder', 'Enter username')}
+          />
+        </Field>
+        <Field label={t('settings.staff.name', 'Name')} htmlFor="staff-name" required error={errors.name}>
+          <input
+            id="staff-name"
+            type="text"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            aria-invalid={Boolean(errors.name)}
+            className="tgo-input"
+            placeholder={t('settings.staff.namePlaceholder', 'Enter name')}
+          />
+        </Field>
       </div>
-    </div>
-  );
-};
 
-// Delete confirmation dialog
-interface DeleteDialogProps {
-  open: boolean;
-  onClose: () => void;
-  onConfirm: () => Promise<void>;
-  staffName: string;
-  isLoading?: boolean;
-}
+      <Field label={t('settings.staff.password', 'Password')} htmlFor="staff-password" required={!isEditing} error={errors.password}>
+        <PasswordInput
+          id="staff-password"
+          value={formData.password}
+          onChange={(password) => setFormData({ ...formData, password })}
+          invalid={Boolean(errors.password)}
+          placeholder={isEditing
+            ? t('settings.staff.passwordPlaceholderEdit', 'Leave empty to keep current password')
+            : t('settings.staff.passwordPlaceholder', 'Enter password (at least 8 characters)')}
+        />
+      </Field>
 
-const DeleteDialog: React.FC<DeleteDialogProps> = ({
-  open,
-  onClose,
-  onConfirm,
-  staffName,
-  isLoading = false,
-}) => {
-  const { t } = useTranslation();
+      <Field label={t('settings.staff.confirmPassword', 'Confirm Password')} htmlFor="staff-confirm-password" required={!isEditing} error={errors.confirmPassword}>
+        <PasswordInput
+          id="staff-confirm-password"
+          value={formData.confirmPassword}
+          onChange={(confirmPassword) => setFormData({ ...formData, confirmPassword })}
+          invalid={Boolean(errors.confirmPassword)}
+          placeholder={t('settings.staff.confirmPasswordPlaceholder', 'Re-enter password')}
+        />
+      </Field>
 
-  if (!open) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-sm mx-4">
-        <div className="p-6">
-          <div className="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-red-100 dark:bg-red-900/30">
-            <Trash2 className="w-6 h-6 text-red-600 dark:text-red-400" />
-          </div>
-          <h3 className="text-lg font-semibold text-center text-gray-800 dark:text-gray-200 mb-2">
-            {t('settings.staff.deleteConfirmTitle', 'Confirm Delete')}
-          </h3>
-          <p className="text-sm text-center text-gray-600 dark:text-gray-400">
-            {t('settings.staff.deleteConfirmMessage', 'Are you sure you want to delete staff "{{name}}"? This action cannot be undone.', { name: staffName })}
-          </p>
-        </div>
-        <div className="flex gap-3 px-6 pb-6">
-          <button
-            onClick={onClose}
-            className="
-              flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
-              text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800
-              hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors
-            "
-          >
-            {t('common.cancel', 'Cancel')}
-          </button>
-          <button
-            onClick={onConfirm}
-            disabled={isLoading}
-            className="
-              flex-1 px-4 py-2 rounded-lg bg-red-600 text-white
-              hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed
-              transition-colors flex items-center justify-center gap-2
-            "
-          >
-            {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-            {t('common.delete', 'Delete')}
-          </button>
-        </div>
-      </div>
-    </div>
+      <Field label={t('settings.staff.descriptionLabel', 'Description')} htmlFor="staff-description" optional>
+        <textarea
+          id="staff-description"
+          value={formData.description}
+          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          rows={3}
+          className="tgo-input resize-none"
+          placeholder={t('settings.staff.descriptionPlaceholder', 'Enter staff description (optional)')}
+        />
+      </Field>
+    </Modal>
   );
 };
 
@@ -480,10 +320,6 @@ const StaffSettings: React.FC = () => {
   const [selectedStaff, setSelectedStaff] = useState<StaffResponse | null>(null);
   const [submitting, setSubmitting] = useState(false);
   
-  // Dropdown menu state
-  const [menuOpen, setMenuOpen] = useState<string | null>(null);
-  const [menuPosition, setMenuPosition] = useState<{ top: number; left: number } | null>(null);
-  const menuButtonRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
 
   // Service toggle state (for is_active)
   const [togglingActiveStaffId, setTogglingActiveStaffId] = useState<string | null>(null);
@@ -517,7 +353,7 @@ const StaffSettings: React.FC = () => {
       try {
         const svc = new AIProvidersApiService();
         const res = await svc.listProjectModels({ model_type: 'chat', is_active: true });
-        const options = (res.data || []).map((m: any) => ({
+        const options = (res.data || []).map(m => ({
           value: `${m.provider_id}:${m.model_id}`,
           label: `${m.model_name} · ${m.provider_name}`,
         }));
@@ -567,9 +403,9 @@ const StaffSettings: React.FC = () => {
           ? t('settings.staff.serviceStopped', 'Service stopped for this agent')
           : t('settings.staff.serviceStarted', 'Service started for this agent')
       );
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to toggle is_active:', error);
-      showError(error?.message || t('settings.staff.toggleActiveError', 'Failed to toggle service status'));
+      showError(errorMessage(error) || t('settings.staff.toggleActiveError', 'Failed to toggle service status'));
     } finally {
       setTogglingActiveStaffId(null);
     }
@@ -629,10 +465,9 @@ const StaffSettings: React.FC = () => {
       setDialogOpen(false);
       setSelectedStaff(null);
       fetchStaff();
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to save staff:', error);
-      const errorMessage = error?.message || t('settings.staff.saveError', 'Save failed');
-      showError(errorMessage);
+      showError(errorMessage(error) || t('settings.staff.saveError', 'Save failed'));
     } finally {
       setSubmitting(false);
     }
@@ -649,10 +484,9 @@ const StaffSettings: React.FC = () => {
       setDeleteDialogOpen(false);
       setSelectedStaff(null);
       fetchStaff();
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to delete staff:', error);
-      const errorMessage = error?.message || t('settings.staff.deleteError', 'Delete failed');
-      showError(errorMessage);
+      showError(errorMessage(error) || t('settings.staff.deleteError', 'Delete failed'));
     } finally {
       setSubmitting(false);
     }
@@ -662,14 +496,12 @@ const StaffSettings: React.FC = () => {
   const handleEdit = (staff: StaffResponse) => {
     setSelectedStaff(staff);
     setDialogOpen(true);
-    setMenuOpen(null);
   };
 
   // Open delete dialog
   const handleDeleteClick = (staff: StaffResponse) => {
     setSelectedStaff(staff);
     setDeleteDialogOpen(true);
-    setMenuOpen(null);
   };
 
   // Open create dialog
@@ -720,507 +552,361 @@ const StaffSettings: React.FC = () => {
     setAssignmentPrompt(defaultPrompt);
   };
 
+  const weekdays = [
+    { value: 1, label: t('settings.staff.weekday.mon', 'Mon') },
+    { value: 2, label: t('settings.staff.weekday.tue', 'Tue') },
+    { value: 3, label: t('settings.staff.weekday.wed', 'Wed') },
+    { value: 4, label: t('settings.staff.weekday.thu', 'Thu') },
+    { value: 5, label: t('settings.staff.weekday.fri', 'Fri') },
+    { value: 6, label: t('settings.staff.weekday.sat', 'Sat') },
+    { value: 7, label: t('settings.staff.weekday.sun', 'Sun') },
+  ];
+
+  const onlineCount = staffList.filter(s => s.status === 'online').length;
+  const activeCount = staffList.filter(s => s.is_active).length;
+  const promptTooLong = assignmentPrompt.length > 1000;
+
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Users className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-          <h2 className="text-lg font-medium text-gray-800 dark:text-gray-200">
-            {t('settings.staff.title', 'Human Agents')}
-          </h2>
-        </div>
-        <button
-          onClick={handleCreate}
-          className="
-            flex items-center gap-2 px-4 py-2 rounded-lg
-            bg-blue-600 text-white hover:bg-blue-700 transition-colors
-          "
-        >
-          <Plus className="w-4 h-4" />
+    <SettingsPage
+      wide
+      title={t('settings.staff.title', 'Human Agents')}
+      subtitle={t('settings.staff.subtitle', 'Your human team behind the AI: manage access, availability and how conversations are routed.')}
+      actions={
+        <InkButton onClick={handleCreate} icon={<Plus className="h-4 w-4" />}>
           {t('settings.staff.addStaff', 'Add Staff')}
-        </button>
-      </div>
-
-      {/* Description Card */}
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-        <div className="flex items-start gap-3">
-          <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-          <div className="text-sm text-blue-800 dark:text-blue-200">
-            <p className="font-medium mb-1">{t('settings.staff.description', 'About Human Agents')}</p>
-            <p className="text-blue-700 dark:text-blue-300">
-              {t('settings.staff.descriptionText', 'When AI agents cannot resolve user issues, the system automatically assigns conversations to human agents. Human agents can take over conversations to provide more professional human support.')}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Assignment Rules */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-        <button
-          onClick={() => setAssignmentRulesExpanded(!assignmentRulesExpanded)}
-          className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-        >
-          <div className="flex items-center gap-2">
-            <Settings2 className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-            <span className="font-medium text-gray-800 dark:text-gray-200">
-              {t('settings.staff.assignmentRules', 'Assignment Rules')}
+        </InkButton>
+      }
+    >
+      {/* Figures */}
+      <div className="flex flex-wrap items-end gap-8 md:gap-12">
+        {[
+          { key: 'total', value: staffList.length, label: t('settings.staff.statTotal', 'agents'), badge: 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200', badgeText: t('common.all', 'All') },
+          { key: 'online', value: onlineCount, label: t('settings.staff.statuses.online', 'online').toLowerCase(), badge: 'bg-acid-300 text-ink-900' },
+          { key: 'active', value: activeCount, label: t('settings.staff.statActive', 'in service'), badge: 'bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-300' },
+        ].map(stat => (
+          <div key={stat.key} className="flex items-end gap-2">
+            <span key={stat.value} className="tgo-pop tgo-display text-[44px] tabular-nums text-gray-900 dark:text-white">{stat.value}</span>
+            <span className="mb-1 flex flex-col items-start gap-1">
+              <span className={`rounded-full px-1.5 text-[10px] font-semibold leading-4 ${stat.badge}`}>
+                {stat.badgeText ?? `${staffList.length > 0 ? Math.round((stat.value / staffList.length) * 100) : 0}%`}
+              </span>
+              <span className="text-sm text-gray-400 dark:text-gray-500">{stat.label}</span>
             </span>
           </div>
-          {assignmentRulesExpanded ? (
-            <ChevronUp className="w-5 h-5 text-gray-500" />
-          ) : (
-            <ChevronDown className="w-5 h-5 text-gray-500" />
-          )}
+        ))}
+      </div>
+
+      {/* Assignment rules */}
+      <section className="tgo-surface overflow-hidden">
+        <button
+          onClick={() => setAssignmentRulesExpanded(!assignmentRulesExpanded)}
+          aria-expanded={assignmentRulesExpanded}
+          className="flex w-full items-center gap-4 p-6 text-left transition-colors hover:bg-gray-50/60 md:p-7 dark:hover:bg-white/[0.02]"
+        >
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink-900 text-acid-400 dark:bg-acid-400 dark:text-ink-900">
+            <Settings2 className="h-[18px] w-[18px]" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-lg font-medium tracking-tight text-gray-900 dark:text-white">
+              {t('settings.staff.assignmentRules', 'Assignment Rules')}
+            </span>
+            <span className="mt-0.5 flex flex-wrap items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
+              <span className="tgo-chip"><Clock className="h-3 w-3" />{serviceStartTime} – {serviceEndTime}</span>
+              <span className="tgo-chip"><CalendarDays className="h-3 w-3" />{serviceWeekdays.length}/7</span>
+              <span className={`tgo-chip ${llmAssignmentEnabled ? 'bg-acid-100 text-acid-800 dark:bg-acid-400/15 dark:text-acid-300' : ''}`}>
+                <Brain className="h-3 w-3" />
+                {t('settings.staff.llmAssignment', 'Intelligent Assignment')}
+              </span>
+            </span>
+          </span>
+          <span className="tgo-icon-btn">
+            <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${assignmentRulesExpanded ? 'rotate-180' : ''}`} />
+          </span>
         </button>
-        
+
         {assignmentRulesExpanded && (
-          <div className="px-4 pb-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="tgo-fade-in border-t border-gray-100 p-6 md:p-7 dark:border-gray-800">
             {rulesLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
+              <div className="flex items-center justify-center py-10">
+                <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
               </div>
             ) : (
-              <div className="space-y-6 mt-4">
-                {/* Service Time Settings */}
-                <div className="p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Clock className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                    <h3 className="font-medium text-gray-800 dark:text-gray-200">
-                      {t('settings.staff.serviceTime', 'Service Hours')}
-                    </h3>
-                  </div>
-                  
-                  {/* Weekdays */}
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      {t('settings.staff.serviceWeekdays', 'Service Days')}
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                      {[
-                        { value: 1, label: t('settings.staff.weekday.mon', 'Mon') },
-                        { value: 2, label: t('settings.staff.weekday.tue', 'Tue') },
-                        { value: 3, label: t('settings.staff.weekday.wed', 'Wed') },
-                        { value: 4, label: t('settings.staff.weekday.thu', 'Thu') },
-                        { value: 5, label: t('settings.staff.weekday.fri', 'Fri') },
-                        { value: 6, label: t('settings.staff.weekday.sat', 'Sat') },
-                        { value: 7, label: t('settings.staff.weekday.sun', 'Sun') },
-                      ].map((day) => (
-                        <button
-                          key={day.value}
-                          type="button"
-                          onClick={() => {
-                            if (serviceWeekdays.includes(day.value)) {
-                              setServiceWeekdays(serviceWeekdays.filter(d => d !== day.value));
-                            } else {
-                              setServiceWeekdays([...serviceWeekdays, day.value].sort());
-                            }
-                          }}
-                          className={`
-                            px-3 py-1.5 text-sm rounded-lg border transition-colors
-                            ${serviceWeekdays.includes(day.value)
-                              ? 'bg-blue-600 text-white border-blue-600'
-                              : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-blue-500'
-                            }
-                          `}
-                        >
-                          {day.label}
-                        </button>
-                      ))}
+              <div className="space-y-5">
+                <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+                  <FieldGroup title={t('settings.staff.serviceTime', 'Service Hours')} icon={Clock}>
+                    <Field label={t('settings.staff.serviceWeekdays', 'Service Days')}>
+                      <div className="flex flex-wrap gap-1.5">
+                        {weekdays.map(day => {
+                          const active = serviceWeekdays.includes(day.value);
+                          return (
+                            <button
+                              key={day.value}
+                              type="button"
+                              aria-pressed={active}
+                              data-active={active}
+                              onClick={() => {
+                                setServiceWeekdays(active
+                                  ? serviceWeekdays.filter(d => d !== day.value)
+                                  : [...serviceWeekdays, day.value].sort((a, b) => a - b));
+                              }}
+                              className="tgo-pill h-9 w-12 justify-center px-0"
+                            >
+                              {day.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </Field>
+                    <div className="grid grid-cols-2 gap-4">
+                      <Field label={t('settings.staff.serviceStartTime', 'Start Time')} htmlFor="service-start">
+                        <input id="service-start" type="time" value={serviceStartTime} onChange={(e) => setServiceStartTime(e.target.value)} className="tgo-input" />
+                      </Field>
+                      <Field label={t('settings.staff.serviceEndTime', 'End Time')} htmlFor="service-end">
+                        <input id="service-end" type="time" value={serviceEndTime} onChange={(e) => setServiceEndTime(e.target.value)} className="tgo-input" />
+                      </Field>
                     </div>
-                  </div>
-                  
-                  {/* Time Range */}
-                  <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        {t('settings.staff.serviceStartTime', 'Start Time')}
-                      </label>
-                      <input
-                        type="time"
-                        value={serviceStartTime}
-                        onChange={(e) => setServiceStartTime(e.target.value)}
-                        className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        {t('settings.staff.serviceEndTime', 'End Time')}
-                      </label>
-                      <input
-                        type="time"
-                        value={serviceEndTime}
-                        onChange={(e) => setServiceEndTime(e.target.value)}
-                        className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                  </div>
-                  
-                  {/* Timezone */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      {t('settings.staff.timezone', 'Timezone')}
-                    </label>
-                    <select
-                      value={timezone}
-                      onChange={(e) => setTimezone(e.target.value)}
-                      className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="Asia/Shanghai">Asia/Shanghai (UTC+8)</option>
-                      <option value="Asia/Tokyo">Asia/Tokyo (UTC+9)</option>
-                      <option value="Asia/Singapore">Asia/Singapore (UTC+8)</option>
-                      <option value="America/New_York">America/New_York (UTC-5)</option>
-                      <option value="America/Los_Angeles">America/Los_Angeles (UTC-8)</option>
-                      <option value="Europe/London">Europe/London (UTC+0)</option>
-                      <option value="Europe/Paris">Europe/Paris (UTC+1)</option>
-                    </select>
-                  </div>
-                </div>
+                    <Field label={t('settings.staff.timezone', 'Timezone')} htmlFor="service-timezone">
+                      <select id="service-timezone" value={timezone} onChange={(e) => setTimezone(e.target.value)} className="tgo-input">
+                        <option value="Asia/Shanghai">Asia/Shanghai (UTC+8)</option>
+                        <option value="Asia/Tokyo">Asia/Tokyo (UTC+9)</option>
+                        <option value="Asia/Singapore">Asia/Singapore (UTC+8)</option>
+                        <option value="America/New_York">America/New_York (UTC-5)</option>
+                        <option value="America/Los_Angeles">America/Los_Angeles (UTC-8)</option>
+                        <option value="Europe/London">Europe/London (UTC+0)</option>
+                        <option value="Europe/Paris">Europe/Paris (UTC+1)</option>
+                      </select>
+                    </Field>
+                  </FieldGroup>
 
-                {/* Chat Settings */}
-                <div className="p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700">
-                  <div className="flex items-center gap-2 mb-4">
-                    <MessageSquare className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                    <h3 className="font-medium text-gray-800 dark:text-gray-200">
-                      {t('settings.staff.chatSettings', 'Chat Settings')}
-                    </h3>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    {/* Max Concurrent Chats */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        {t('settings.staff.maxConcurrentChats', 'Max Concurrent Chats')}
-                      </label>
+                  <FieldGroup title={t('settings.staff.chatSettings', 'Chat Settings')} icon={MessageSquare}>
+                    <Field
+                      label={t('settings.staff.maxConcurrentChats', 'Max Concurrent Chats')}
+                      htmlFor="max-concurrent"
+                      hint={t('settings.staff.maxConcurrentChatsHint', 'Maximum number of conversations each agent can handle simultaneously')}
+                    >
                       <input
+                        id="max-concurrent"
                         type="number"
                         min="1"
                         max="100"
                         value={maxConcurrentChats}
-                        onChange={(e) => setMaxConcurrentChats(Math.max(1, Math.min(100, parseInt(e.target.value) || 1)))}
-                        className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        onChange={(e) => setMaxConcurrentChats(Math.max(1, Math.min(100, parseInt(e.target.value, 10) || 1)))}
+                        className="tgo-input"
                       />
-                      <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                        {t('settings.staff.maxConcurrentChatsHint', 'Maximum number of conversations each agent can handle simultaneously')}
-                      </p>
-                    </div>
-                    
-                    {/* Auto Close Hours */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        {t('settings.staff.autoCloseHours', 'Auto Close Time')}
-                      </label>
-                      <div className="flex items-center gap-2">
+                    </Field>
+                    <Field
+                      label={t('settings.staff.autoCloseHours', 'Auto Close Time')}
+                      htmlFor="auto-close"
+                      hint={t('settings.staff.autoCloseHoursHint', 'Time after which inactive conversations are automatically closed')}
+                    >
+                      <div className="relative">
                         <input
+                          id="auto-close"
                           type="number"
                           min="1"
                           max="720"
                           value={autoCloseHours}
-                          onChange={(e) => setAutoCloseHours(Math.max(1, Math.min(720, parseInt(e.target.value) || 1)))}
-                          className="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          onChange={(e) => setAutoCloseHours(Math.max(1, Math.min(720, parseInt(e.target.value, 10) || 1)))}
+                          className="tgo-input pr-16"
                         />
-                        <span className="text-sm text-gray-500 dark:text-gray-400">
+                        <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-400">
                           {t('settings.staff.hours', 'hours')}
                         </span>
                       </div>
-                      <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                        {t('settings.staff.autoCloseHoursHint', 'Time after which inactive conversations are automatically closed')}
-                      </p>
-                    </div>
-                  </div>
+                    </Field>
+                  </FieldGroup>
                 </div>
 
-                {/* LLM Assignment Settings */}
-                <div className="p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <Brain className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                      <h3 className="font-medium text-gray-800 dark:text-gray-200">
-                        {t('settings.staff.llmAssignment', 'Intelligent Assignment')}
-                      </h3>
+                <FieldGroup>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-start gap-3">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
+                        <Brain className="h-4 w-4" />
+                      </span>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{t('settings.staff.llmAssignment', 'Intelligent Assignment')}</p>
+                        <p className="mt-0.5 text-[13px] text-gray-500 dark:text-gray-400">
+                          {t('settings.staff.llmAssignmentHint', 'When enabled, the system uses an LLM with this prompt to intelligently assign conversations to the most suitable agent.')}
+                        </p>
+                      </div>
                     </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={llmAssignmentEnabled}
-                        onChange={(e) => setLlmAssignmentEnabled(e.target.checked)}
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                    </label>
+                    <Toggle
+                      checked={llmAssignmentEnabled}
+                      onChange={setLlmAssignmentEnabled}
+                      aria-label={t('settings.staff.llmAssignment', 'Intelligent Assignment')}
+                    />
                   </div>
-                  
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                    {t('settings.staff.llmAssignmentHint', 'When enabled, the system uses an LLM with this prompt to intelligently assign conversations to the most suitable agent.')}
-                  </p>
-                  
+
                   {llmAssignmentEnabled && (
-                    <>
-                      {/* Model Selector */}
-                      <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          {t('settings.staff.assignmentModel', 'Assignment Model')}
-                        </label>
+                    <div className="tgo-fade-in space-y-5">
+                      <Field
+                        label={t('settings.staff.assignmentModel', 'Assignment Model')}
+                        htmlFor="assignment-model"
+                        hint={t('settings.staff.assignmentModelHint', 'Select the LLM for intelligent conversation assignment, models come from Model Providers configuration')}
+                      >
                         <select
+                          id="assignment-model"
                           value={selectedModelId}
                           onChange={(e) => setSelectedModelId(e.target.value)}
-                          className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition-colors"
+                          className="tgo-input"
                           disabled={modelsLoading}
                         >
                           <option value="">{t('settings.staff.selectModel', 'Select a model')}</option>
-                          {llmOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
+                          {llmOptions.map(option => (
+                            <option key={option.value} value={option.value}>{option.label}</option>
                           ))}
                         </select>
-                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                          {t('settings.staff.assignmentModelHint', 'Select the LLM for intelligent conversation assignment, models come from Model Providers configuration')}
-                        </p>
-                      </div>
+                      </Field>
 
-                      {/* Assignment Prompt */}
-                      <div className="mb-3">
-                        <div className="flex items-center justify-between mb-1">
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            {t('settings.staff.assignmentPrompt', 'Assignment Prompt')}
-                          </label>
-                          <span className={`text-xs ${assignmentPrompt.length > 1000 ? 'text-red-500' : 'text-gray-400'}`}>
-                            {assignmentPrompt.length}/1000
-                          </span>
-                        </div>
+                      <Field
+                        label={t('settings.staff.assignmentPrompt', 'Assignment Prompt')}
+                        htmlFor="assignment-prompt"
+                        aside={<span className={promptTooLong ? 'text-red-500' : ''}>{assignmentPrompt.length}/1000</span>}
+                        error={promptTooLong ? t('settings.staff.promptTooLong', 'Prompt cannot exceed 1000 characters') : undefined}
+                      >
                         <textarea
+                          id="assignment-prompt"
                           value={assignmentPrompt}
                           onChange={(e) => {
-                            if (e.target.value.length <= 1000) {
-                              setAssignmentPrompt(e.target.value);
-                            }
+                            if (e.target.value.length <= 1000) setAssignmentPrompt(e.target.value);
                           }}
                           maxLength={1000}
                           rows={8}
-                          className={`
-                            w-full px-3 py-2 rounded-lg border
-                            bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200
-                            focus:outline-none focus:ring-2 focus:ring-offset-0
-                            placeholder:text-gray-400 transition-colors font-mono text-sm
-                            resize-y min-h-[150px]
-                            ${assignmentPrompt.length > 1000
-                              ? 'border-red-500 focus:ring-red-500'
-                              : 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
-                            }
-                          `}
+                          aria-invalid={promptTooLong}
+                          className="tgo-input min-h-[160px] font-mono text-[13px] leading-relaxed"
                           placeholder={t('settings.staff.assignmentRulesPlaceholder', 'Enter assignment rules prompt...')}
                         />
-                        {assignmentPrompt.length > 1000 && (
-                          <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {t('settings.staff.promptTooLong', 'Prompt cannot exceed 1000 characters')}
-                          </p>
-                        )}
-                        <button
-                          onClick={handleResetRules}
-                          className="mt-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
-                        >
-                          {t('settings.staff.resetToDefault', 'Reset to Default')}
-                        </button>
-                      </div>
-                    </>
+                      </Field>
+                      <button onClick={handleResetRules} className="tgo-pill h-8 px-3 text-xs">
+                        <RotateCcw className="h-3.5 w-3.5" />
+                        {t('settings.staff.resetToDefault', 'Reset to Default')}
+                      </button>
+                    </div>
                   )}
-                </div>
+                </FieldGroup>
 
-                {/* Save Button */}
                 <div className="flex justify-end">
-                  <button
+                  <PrimaryButton
                     onClick={handleSaveRules}
-                    disabled={savingRules || assignmentPrompt.length > 1000}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    loading={savingRules}
+                    disabled={promptTooLong}
+                    icon={<Save className="h-4 w-4" />}
                   >
-                    {savingRules ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Save className="w-4 h-4" />
-                    )}
                     {t('settings.staff.saveRules', 'Save Rules')}
-                  </button>
+                  </PrimaryButton>
                 </div>
               </div>
             )}
           </div>
         )}
-      </div>
+      </section>
 
-      {/* Staff List */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-        {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-          </div>
+      {/* Staff list */}
+      <section className="space-y-5">
+        <SectionHeader title={t('settings.staff.listTitle', 'Team')} count={staffList.length} countLabel={t('settings.staff.statTotal', 'agents')} />
+
+        {loading && staffList.length === 0 ? (
+          <SkeletonGrid count={3} className="grid grid-cols-1 gap-5 md:grid-cols-2 2xl:grid-cols-3" itemClassName="h-56" />
         ) : staffList.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400">
-            <Users className="w-12 h-12 mb-4 opacity-50" />
-            <p className="text-sm">
-              {t('settings.staff.empty', 'No staff yet, click "Add Staff" to create')}
-            </p>
-          </div>
+          <EmptyPanel
+            icon={Users}
+            title={t('settings.staff.emptyTitle', 'No agents yet')}
+            description={t('settings.staff.empty', 'No staff yet, click "Add Staff" to create')}
+            action={
+              <InkButton onClick={handleCreate} icon={<Plus className="h-4 w-4" />}>
+                {t('settings.staff.addStaff', 'Add Staff')}
+              </InkButton>
+            }
+          />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    {t('settings.staff.tableUser', 'User')}
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    {t('settings.staff.tableRole', 'Role')}
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    {t('settings.staff.tableDescription', 'Description')}
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    {t('settings.staff.tableStatus', 'Status')}
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    {t('settings.staff.tableServiceActive', 'Service')}
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    {t('settings.staff.tableCreated', 'Created At')}
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    {t('settings.staff.tableActions', 'Actions')}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                {staffList.map((staff) => (
-                  <tr key={staff.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-medium">
-                          {(staff.nickname || staff.username).charAt(0).toUpperCase()}
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                            {staff.nickname || staff.username}
-                          </div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400">
-                            @{staff.username}
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`
-                        inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                        ${roleStyleConfig[staff.role as StaffRole]?.bgColor || 'bg-gray-100 dark:bg-gray-700'}
-                        ${roleStyleConfig[staff.role as StaffRole]?.textColor || 'text-gray-700 dark:text-gray-300'}
-                      `}>
-                        {t(`settings.staff.roles.${staff.role}`, staff.role)}
+          <div className="tgo-stagger grid grid-cols-1 gap-5 md:grid-cols-2 2xl:grid-cols-3">
+            {staffList.map(staff => {
+              const name = staff.nickname || staff.username;
+              const role = staff.role as StaffRole;
+              const status = staff.status as StaffStatus;
+              return (
+                <article key={staff.id} className="tgo-surface group flex flex-col p-6 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1">
+                  <div className="flex items-start gap-4">
+                    <div className="relative shrink-0">
+                      <span className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-lg font-light text-gray-800 dark:bg-gray-800 dark:text-gray-100">
+                        {name.charAt(0).toUpperCase()}
                       </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 max-w-xs">
-                        {staff.description || '-'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2">
-                        <span className={`w-2 h-2 rounded-full ${statusStyleConfig[staff.status as StaffStatus]?.dotColor || 'bg-gray-400'}`} />
-                        <span className="text-sm text-gray-600 dark:text-gray-400">
-                          {t(`settings.staff.statuses.${staff.status}`, staff.status)}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        {togglingActiveStaffId === staff.id ? (
-                          <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
-                        ) : (
-                          <Toggle
-                            checked={staff.is_active}
-                            onChange={() => handleToggleIsActive(staff.id, staff.is_active)}
-                            size="sm"
-                            aria-label={staff.is_active
-                              ? t('settings.staff.clickToStop', 'Click to stop service')
-                              : t('settings.staff.clickToStart', 'Click to start service')}
-                          />
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                      <span className={`absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-white dark:border-gray-900 ${statusDotConfig[status] || 'bg-gray-400'}`} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="truncate text-lg font-medium tracking-tight text-gray-900 dark:text-gray-100" title={name}>{name}</h3>
+                      <p className="truncate text-xs text-gray-500 dark:text-gray-400">@{staff.username}</p>
+                    </div>
+                    <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${roleStyleConfig[role] || 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'}`}>
+                      {t(`settings.staff.roles.${staff.role}`, staff.role)}
+                    </span>
+                  </div>
+
+                  <p className="mt-4 line-clamp-2 min-h-[2lh] text-sm leading-relaxed text-gray-500 dark:text-gray-400">
+                    {staff.description || t('workflow.noDescription', 'No description')}
+                  </p>
+
+                  <div className="mt-4 flex flex-wrap items-center gap-1.5">
+                    <span className="tgo-chip">
+                      <span className={`h-1.5 w-1.5 rounded-full ${statusDotConfig[status] || 'bg-gray-400'}`} />
+                      {t(`settings.staff.statuses.${staff.status}`, staff.status)}
+                    </span>
+                    <span className="tgo-chip">
+                      <CalendarDays className="h-3 w-3" />
                       {new Date(staff.created_at).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                    </span>
+                  </div>
+
+                  <div className="mt-auto flex items-center gap-2 pt-5">
+                    <label className="flex h-10 min-w-0 flex-1 cursor-pointer items-center justify-between gap-2 rounded-full pl-4 pr-2 text-sm text-gray-700 ring-1 ring-gray-200 dark:text-gray-200 dark:ring-gray-700">
+                      <span className="flex min-w-0 items-center gap-2">
+                        {staff.is_active ? <Headphones className="h-4 w-4 shrink-0 text-acid-600 dark:text-acid-400" /> : <Radio className="h-4 w-4 shrink-0 text-gray-400" />}
+                        <span className="truncate">{t('settings.staff.tableServiceActive', 'Service')}</span>
+                      </span>
+                      {togglingActiveStaffId === staff.id ? (
+                        <Loader2 className="mr-1 h-4 w-4 animate-spin text-gray-400" />
+                      ) : (
+                        <Toggle
+                          checked={staff.is_active}
+                          onChange={() => handleToggleIsActive(staff.id, staff.is_active)}
+                          size="sm"
+                          aria-label={staff.is_active
+                            ? t('settings.staff.clickToStop', 'Click to stop service')
+                            : t('settings.staff.clickToStart', 'Click to start service')}
+                        />
+                      )}
+                    </label>
+                    {staff.role !== 'admin' && (
                       <button
-                        ref={(el) => {
-                          if (el) menuButtonRefs.current.set(staff.id, el);
-                        }}
-                        onClick={(e) => {
-                          if (menuOpen === staff.id) {
-                            setMenuOpen(null);
-                            setMenuPosition(null);
-                          } else {
-                            const rect = e.currentTarget.getBoundingClientRect();
-                            setMenuPosition({
-                              top: rect.bottom + 4,
-                              left: rect.right - 144, // 144 = menu width (w-36 = 9rem = 144px)
-                            });
-                            setMenuOpen(staff.id);
-                          }
-                        }}
-                        className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                        onClick={() => handleDeleteClick(staff)}
+                        aria-label={t('common.delete', 'Delete')}
+                        title={t('common.delete', 'Delete')}
+                        className="tgo-icon-btn h-10 w-10 hover:!bg-red-50 hover:!text-red-600 dark:hover:!bg-red-900/30 dark:hover:!text-red-400"
                       >
-                        <MoreVertical className="w-4 h-4 text-gray-500" />
+                        <Trash2 className="h-4 w-4" />
                       </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    )}
+                    <button
+                      onClick={() => handleEdit(staff)}
+                      aria-label={t('common.edit', 'Edit')}
+                      title={t('common.edit', 'Edit')}
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink-900 text-white transition-transform duration-200 hover:scale-105 active:scale-95 dark:bg-acid-400 dark:text-ink-900"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         )}
-      </div>
+      </section>
 
-      {/* Dropdown Menu - Rendered outside table to avoid overflow clipping */}
-      {menuOpen && menuPosition && (
-        <>
-          <div 
-            className="fixed inset-0 z-40" 
-            onClick={() => {
-              setMenuOpen(null);
-              setMenuPosition(null);
-            }}
-          />
-          <div 
-            className="fixed w-36 py-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50"
-            style={{ top: menuPosition.top, left: menuPosition.left }}
-          >
-            <button
-              onClick={() => {
-                const staff = staffList.find(s => s.id === menuOpen);
-                if (staff) handleEdit(staff);
-              }}
-              className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-            >
-              <Edit2 className="w-4 h-4" />
-              {t('common.edit', 'Edit')}
-            </button>
-            {staffList.find(s => s.id === menuOpen)?.role !== 'admin' && (
-              <button
-                onClick={() => {
-                  const staff = staffList.find(s => s.id === menuOpen);
-                  if (staff) handleDeleteClick(staff);
-                }}
-                className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
-              >
-                <Trash2 className="w-4 h-4" />
-                {t('common.delete', 'Delete')}
-              </button>
-            )}
-          </div>
-        </>
-      )}
+      <SettingsNote icon={Info}>
+        <p className="font-medium text-gray-900 dark:text-gray-100">{t('settings.staff.description', 'About Human Agents')}</p>
+        <p className="mt-0.5">{t('settings.staff.descriptionText', 'When AI agents cannot resolve user issues, the system automatically assigns conversations to human agents. Human agents can take over conversations to provide more professional human support.')}</p>
+      </SettingsNote>
 
-      {/* Create/Edit Dialog */}
       <StaffDialog
         open={dialogOpen}
         onClose={() => {
@@ -1232,20 +918,22 @@ const StaffSettings: React.FC = () => {
         isLoading={submitting}
       />
 
-      {/* Delete Confirmation Dialog */}
-      <DeleteDialog
-        open={deleteDialogOpen}
-        onClose={() => {
+      <ConfirmDialog
+        isOpen={deleteDialogOpen}
+        title={t('settings.staff.deleteConfirmTitle', 'Confirm Delete')}
+        message={t('settings.staff.deleteConfirmMessage', 'Are you sure you want to delete staff "{{name}}"? This action cannot be undone.', { name: selectedStaff?.nickname || selectedStaff?.username || '' })}
+        confirmText={t('common.delete', 'Delete')}
+        cancelText={t('common.cancel', 'Cancel')}
+        confirmVariant="danger"
+        onConfirm={handleDelete}
+        onCancel={() => {
           setDeleteDialogOpen(false);
           setSelectedStaff(null);
         }}
-        onConfirm={handleDelete}
-        staffName={selectedStaff?.nickname || selectedStaff?.username || ''}
         isLoading={submitting}
       />
-    </div>
+    </SettingsPage>
   );
 };
 
 export default StaffSettings;
-

@@ -5,19 +5,24 @@ import {
   ArrowLeft,
   Plus,
   Loader2,
-  Search,
   Pencil,
+  PencilLine,
   Trash2,
   Upload,
   MessageSquare,
-  X,
-  CheckCircle,
+  CheckCircle2,
   Clock,
   AlertCircle,
-  Filter,
+  Folder,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
+import { Modal, Field, PrimaryButton, SecondaryButton } from '@/components/ui/ModalKit';
+import {
+  PageShell, PageLoader, DetailHeader, InkButton, GhostButton, RefreshButton, SectionHeader, SearchField,
+  FilterPills, EmptyPanel, ErrorPanel, StatTile, type FilterOption,
+} from '@/components/ui/PageKit';
 import { useToast } from '@/hooks/useToast';
 import { KnowledgeBaseApiService, type QAPairResponse, type QAPairListResponse, type QACategoryListResponse } from '@/services/knowledgeBaseApi';
 import { transformCollectionToKnowledgeBase } from '@/utils/knowledgeBaseTransforms';
@@ -71,10 +76,12 @@ const QAKnowledgeBaseDetail: React.FC = () => {
 
   // Delete state
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
+  const [deleteTarget, setDeleteTarget] = useState<QAPairResponse | null>(null);
 
   // Statistics
   const stats = {
-    total: total,
+    total,
+
     pending: qaPairs.filter(p => p.status === 'pending').length,
     processing: qaPairs.filter(p => p.status === 'processing').length,
     processed: qaPairs.filter(p => p.status === 'processed').length,
@@ -112,8 +119,8 @@ const QAKnowledgeBaseDetail: React.FC = () => {
         category: categoryFilter || undefined,
         status: statusFilter || undefined,
       });
-      setQaPairs(response.data);
-      setTotal(response.total);
+      setQaPairs(response.data ?? []);
+      setTotal(response.total ?? 0);
     } catch (err) {
       console.error('Failed to load QA pairs:', err);
       showToast('error', t('knowledge.qa.loadPairsFailed'));
@@ -127,7 +134,7 @@ const QAKnowledgeBaseDetail: React.FC = () => {
     if (!id) return;
     try {
       const response: QACategoryListResponse = await KnowledgeBaseApiService.getQACategories(id);
-      setCategories(response.categories);
+      setCategories(response.categories ?? []);
     } catch (err) {
       console.error('Failed to load categories:', err);
       // Don't show toast for category loading failure, it's not critical
@@ -271,459 +278,352 @@ const QAKnowledgeBaseDetail: React.FC = () => {
     setOffset((page - 1) * limit);
   };
 
-  // Get status icon
-  const getStatusIcon = (status: QAPairResponse['status']) => {
-    switch (status) {
-      case 'processed':
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case 'pending':
-        return <Clock className="h-4 w-4 text-yellow-500" />;
-      case 'processing':
-        return <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />;
-      case 'failed':
-        return <AlertCircle className="h-4 w-4 text-red-500" />;
-      default:
-        return null;
-    }
+  const STATUS_META: Record<QAPairResponse['status'], { dot: string; chip: string; icon: React.ReactNode }> = {
+    processed: { dot: 'bg-acid-500', chip: 'bg-acid-100 text-acid-800 dark:bg-acid-400/15 dark:text-acid-300', icon: <CheckCircle2 className="h-3 w-3" /> },
+    pending: { dot: 'bg-amber-400', chip: 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300', icon: <Clock className="h-3 w-3" /> },
+    processing: { dot: 'bg-sky-400', chip: 'bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300', icon: <Loader2 className="h-3 w-3 animate-spin" /> },
+    failed: { dot: 'bg-red-500', chip: 'bg-red-50 text-red-600 dark:bg-red-900/25 dark:text-red-400', icon: <AlertCircle className="h-3 w-3" /> },
   };
 
   // Filter QA pairs by search term (client-side)
   const filteredPairs = qaPairs.filter(pair => {
     if (!searchTerm.trim()) return true;
     const term = searchTerm.toLowerCase();
-    return (
-      pair.question.toLowerCase().includes(term) ||
-      pair.answer.toLowerCase().includes(term)
-    );
+    return pair.question.toLowerCase().includes(term) || pair.answer.toLowerCase().includes(term);
   });
 
-  // Loading state
+  const closePairDialog = () => {
+    setIsAddDialogOpen(false);
+    setIsEditDialogOpen(false);
+    setEditingPair(null);
+    resetForm();
+  };
+
+  const closeImportDialog = () => {
+    setIsImportDialogOpen(false);
+    setImportData('');
+  };
+
   if (isLoading) {
-    return (
-      <div className="h-full w-full flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-        <span className="ml-2 text-gray-500">{t('knowledge.qa.loading')}</span>
-      </div>
-    );
+    return <PageLoader label={t('knowledge.qa.loading')} />;
   }
 
-  // Error state
   if (error || !knowledgeBase) {
     return (
-      <div className="h-full w-full flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-900">
-        <p className="text-red-500 mb-4">{error || t('knowledge.qa.loadFailed')}</p>
-        <button
-          onClick={() => navigate('/knowledge')}
-          className="flex items-center text-blue-500 hover:text-blue-600"
-        >
-          <ArrowLeft className="h-4 w-4 mr-1" />
-          {t('common.back')}
-        </button>
-      </div>
+      <PageShell>
+        <ErrorPanel message={error || t('knowledge.qa.loadFailed')} />
+        <div className="flex justify-center">
+          <GhostButton onClick={() => navigate('/knowledge')}>
+            <ArrowLeft className="h-4 w-4" />
+            {t('common.back')}
+          </GhostButton>
+        </div>
+      </PageShell>
     );
   }
 
+  const statusOptions: FilterOption<string>[] = [
+    { value: '', label: t('knowledge.qa.allStatuses') },
+    { value: 'pending', label: t('knowledge.qa.status.pending'), dot: STATUS_META.pending.dot },
+    { value: 'processing', label: t('knowledge.qa.status.processing'), dot: STATUS_META.processing.dot },
+    { value: 'processed', label: t('knowledge.qa.status.processed'), dot: STATUS_META.processed.dot },
+    { value: 'failed', label: t('knowledge.qa.status.failed'), dot: STATUS_META.failed.dot },
+  ];
+
+  const openAddDialog = () => {
+    resetForm();
+    setIsAddDialogOpen(true);
+  };
+
   return (
-    <div className="h-full w-full flex flex-col bg-gray-100 dark:bg-gray-900">
-      {/* Fixed Header */}
-      <div className="flex-shrink-0 w-full bg-gray-100 dark:bg-gray-900 px-6 pt-6 pb-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <button
-              onClick={() => navigate('/knowledge')}
-              className="mr-4 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </button>
-            <div>
-              <h1 className="text-2xl font-bold flex items-center gap-2">
-                <MessageSquare className="h-6 w-6 text-green-500" />
-                {knowledgeBase.name}
-              </h1>
-              {knowledgeBase.description && (
-                <p className="text-gray-500 text-sm mt-1">{knowledgeBase.description}</p>
-              )}
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setIsImportDialogOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
-            >
-              <Upload className="h-4 w-4" />
-              {t('knowledge.qa.import')}
-            </button>
-            <button
-              onClick={() => {
-                resetForm();
-                setIsAddDialogOpen(true);
-              }}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-            >
-              <Plus className="h-4 w-4" />
-              {t('knowledge.qa.add')}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Scrollable Content */}
-      <div className="flex-1 w-full overflow-y-auto px-6 pb-6" style={{ height: 0 }}>
-        {/* Statistics Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border border-gray-200 dark:border-gray-700">
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</div>
-            <div className="text-sm text-gray-500">{t('knowledge.qa.stats.total')}</div>
-          </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border border-gray-200 dark:border-gray-700">
-            <div className="text-2xl font-bold text-yellow-500">{stats.pending}</div>
-            <div className="text-sm text-gray-500">{t('knowledge.qa.stats.pending')}</div>
-          </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border border-gray-200 dark:border-gray-700">
-            <div className="text-2xl font-bold text-green-500">{stats.processed}</div>
-            <div className="text-sm text-gray-500">{t('knowledge.qa.stats.processed')}</div>
-          </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border border-gray-200 dark:border-gray-700">
-            <div className="text-2xl font-bold text-red-500">{stats.failed}</div>
-            <div className="text-sm text-gray-500">{t('knowledge.qa.stats.failed')}</div>
-          </div>
-        </div>
-
-        {/* Filters */}
-        <div className="flex flex-wrap gap-4 mb-6">
-          <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder={t('knowledge.qa.searchPlaceholder')}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
-            />
-          </div>
-          <select
-            value={categoryFilter}
-            onChange={(e) => {
-              setCategoryFilter(e.target.value);
-              setOffset(0);
-            }}
-            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+    <PageShell
+      after={
+        <>
+          {/* Add / edit pair */}
+          <Modal
+            isOpen={isAddDialogOpen || isEditDialogOpen}
+            onClose={closePairDialog}
+            preventClose={isSubmitting}
+            size="lg"
+            icon={isEditDialogOpen ? PencilLine : Plus}
+            title={isEditDialogOpen ? t('knowledge.qa.editTitle') : t('knowledge.qa.addTitle')}
+            subtitle={knowledgeBase.name}
+            footer={
+              <>
+                <SecondaryButton onClick={closePairDialog} disabled={isSubmitting}>
+                  {t('common.cancel')}
+                </SecondaryButton>
+                <PrimaryButton
+                  onClick={isEditDialogOpen ? handleEditPair : handleAddPair}
+                  loading={isSubmitting}
+                  disabled={!formQuestion.trim() || !formAnswer.trim()}
+                >
+                  {isEditDialogOpen ? t('common.save') : t('common.add')}
+                </PrimaryButton>
+              </>
+            }
           >
-            <option value="">{t('knowledge.qa.allCategories')}</option>
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-          <select
-            value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value);
-              setOffset(0);
-            }}
-            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
-          >
-            <option value="">{t('knowledge.qa.allStatuses')}</option>
-            <option value="pending">{t('knowledge.qa.status.pending')}</option>
-            <option value="processing">{t('knowledge.qa.status.processing')}</option>
-            <option value="processed">{t('knowledge.qa.status.processed')}</option>
-            <option value="failed">{t('knowledge.qa.status.failed')}</option>
-          </select>
-        </div>
-
-        {/* QA Pairs List */}
-        {isLoadingPairs ? (
-          <div className="flex items-center justify-center h-32">
-            <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
-          </div>
-        ) : filteredPairs.length === 0 ? (
-          <div className="text-center py-12 text-gray-500">
-            <MessageSquare className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-            <p>{t('knowledge.qa.noPairs')}</p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {filteredPairs.map((pair) => (
-              <div
-                key={pair.id}
-                className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border border-gray-200 dark:border-gray-700"
-              >
-                <div className="flex justify-between items-start mb-2">
-                  <div className="flex-1">
-                    <div className="font-medium text-gray-900 dark:text-white mb-1">
-                      Q: {pair.question}
-                    </div>
-                    <div className="text-gray-600 dark:text-gray-400 text-sm">
-                      A: {pair.answer.length > 200 ? `${pair.answer.slice(0, 200)}...` : pair.answer}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 ml-4">
-                    <button
-                      onClick={() => openEditDialog(pair)}
-                      className="p-2 text-gray-500 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDeletePair(pair.id)}
-                      disabled={deletingIds.has(pair.id)}
-                      className="p-2 text-gray-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
-                    >
-                      {deletingIds.has(pair.id) ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Trash2 className="h-4 w-4" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4 text-xs text-gray-500">
-                  <span className="flex items-center gap-1">
-                    {getStatusIcon(pair.status)}
-                    {t(`knowledge.qa.status.${pair.status}`)}
-                  </span>
-                  {pair.category && (
-                    <span className="flex items-center gap-1">
-                      <Filter className="h-3 w-3" />
-                      {pair.category}
-                    </span>
-                  )}
-                  {pair.tags && pair.tags.length > 0 && (
-                    <span>{pair.tags.join(', ')}</span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 mt-6">
-            <button
-              onClick={() => goToPage(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-            <span className="text-sm text-gray-500">
-              {t('knowledge.qa.pagination', { current: currentPage, total: totalPages })}
-            </span>
-            <button
-              onClick={() => goToPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <ChevronRight className="h-5 w-5" />
-            </button>
-          </div>
-        )}
-
-      {/* Add/Edit Dialog */}
-      {(isAddDialogOpen || isEditDialogOpen) && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-              <h2 className="text-lg font-semibold">
-                {isEditDialogOpen ? t('knowledge.qa.editTitle') : t('knowledge.qa.addTitle')}
-              </h2>
-              <button
-                onClick={() => {
-                  setIsAddDialogOpen(false);
-                  setIsEditDialogOpen(false);
-                  setEditingPair(null);
-                  resetForm();
-                }}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <div className="p-4 space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  {t('knowledge.qa.form.question')} *
-                </label>
-                <textarea
-                  value={formQuestion}
-                  onChange={(e) => setFormQuestion(e.target.value)}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900"
-                  placeholder={t('knowledge.qa.form.questionPlaceholder')}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  {t('knowledge.qa.form.answer')} *
-                </label>
-                <textarea
-                  value={formAnswer}
-                  onChange={(e) => setFormAnswer(e.target.value)}
-                  rows={5}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900"
-                  placeholder={t('knowledge.qa.form.answerPlaceholder')}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  {t('knowledge.qa.form.category')}
-                </label>
+            <Field label={t('knowledge.qa.form.question')} htmlFor="qa-question" required>
+              <textarea
+                id="qa-question"
+                value={formQuestion}
+                onChange={(e) => setFormQuestion(e.target.value)}
+                rows={3}
+                className="tgo-input"
+                placeholder={t('knowledge.qa.form.questionPlaceholder')}
+                autoFocus
+              />
+            </Field>
+            <Field label={t('knowledge.qa.form.answer')} htmlFor="qa-answer" required>
+              <textarea
+                id="qa-answer"
+                value={formAnswer}
+                onChange={(e) => setFormAnswer(e.target.value)}
+                rows={5}
+                className="tgo-input"
+                placeholder={t('knowledge.qa.form.answerPlaceholder')}
+              />
+            </Field>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Field label={t('knowledge.qa.form.category')} htmlFor="qa-category">
                 <input
+                  id="qa-category"
                   type="text"
+                  list="qa-category-options"
                   value={formCategory}
                   onChange={(e) => setFormCategory(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900"
+                  className="tgo-input"
                   placeholder={t('knowledge.qa.form.categoryPlaceholder')}
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  {t('knowledge.qa.form.tags')}
-                </label>
+                <datalist id="qa-category-options">
+                  {categories.map(category => <option key={category} value={category} />)}
+                </datalist>
+              </Field>
+              <Field label={t('knowledge.qa.form.tags')} htmlFor="qa-tags" hint={t('knowledge.qa.form.tagsHint')}>
                 <input
+                  id="qa-tags"
                   type="text"
                   value={formTags}
                   onChange={(e) => setFormTags(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900"
+                  className="tgo-input"
                   placeholder={t('knowledge.qa.form.tagsPlaceholder')}
                 />
-                <p className="text-xs text-gray-500 mt-1">{t('knowledge.qa.form.tagsHint')}</p>
-              </div>
+              </Field>
             </div>
-            <div className="flex justify-end gap-2 p-4 border-t border-gray-200 dark:border-gray-700">
-              <button
-                onClick={() => {
-                  setIsAddDialogOpen(false);
-                  setIsEditDialogOpen(false);
-                  setEditingPair(null);
-                  resetForm();
-                }}
-                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
-              >
-                {t('common.cancel')}
-              </button>
-              <button
-                onClick={isEditDialogOpen ? handleEditPair : handleAddPair}
-                disabled={isSubmitting || !formQuestion.trim() || !formAnswer.trim()}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              >
-                {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
-                {isEditDialogOpen ? t('common.save') : t('common.add')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          </Modal>
 
-      {/* Import Dialog */}
-      {isImportDialogOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-              <h2 className="text-lg font-semibold">{t('knowledge.qa.importTitle')}</h2>
-              <button
-                onClick={() => {
-                  setIsImportDialogOpen(false);
-                  setImportData('');
-                }}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <div className="p-4 space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  {t('knowledge.qa.importFormat')}
-                </label>
-                <div className="flex gap-4">
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      value="json"
-                      checked={importFormat === 'json'}
-                      onChange={() => setImportFormat('json')}
-                    />
-                    JSON
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      value="csv"
-                      checked={importFormat === 'csv'}
-                      onChange={() => setImportFormat('csv')}
-                    />
-                    CSV
-                  </label>
-                </div>
+          {/* Import */}
+          <Modal
+            isOpen={isImportDialogOpen}
+            onClose={closeImportDialog}
+            preventClose={isImporting}
+            size="lg"
+            icon={Upload}
+            title={t('knowledge.qa.importTitle')}
+            subtitle={knowledgeBase.name}
+            footer={
+              <>
+                <SecondaryButton onClick={closeImportDialog} disabled={isImporting}>
+                  {t('common.cancel')}
+                </SecondaryButton>
+                <PrimaryButton onClick={handleImport} loading={isImporting} disabled={!importData.trim()}>
+                  {t('knowledge.qa.importButton')}
+                </PrimaryButton>
+              </>
+            }
+          >
+            <Field label={t('knowledge.qa.importFormat')}>
+              <div className="tgo-tabs" role="radiogroup">
+                {(['json', 'csv'] as const).map(format => (
+                  <button
+                    key={format}
+                    type="button"
+                    role="radio"
+                    aria-checked={importFormat === format}
+                    data-active={importFormat === format}
+                    onClick={() => setImportFormat(format)}
+                    className="tgo-tab px-5 uppercase"
+                  >
+                    {format}
+                  </button>
+                ))}
               </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  {t('knowledge.qa.importData')}
-                </label>
-                <textarea
-                  value={importData}
-                  onChange={(e) => setImportData(e.target.value)}
-                  rows={10}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 font-mono text-sm"
-                  placeholder={
-                    importFormat === 'json'
-                      ? t('knowledge.qa.importJsonPlaceholder')
-                      : t('knowledge.qa.importCsvPlaceholder')
-                  }
-                />
-              </div>
-              <div className="text-sm text-gray-500">
-                {importFormat === 'json' ? (
-                  <div>
-                    <p className="font-medium mb-1">{t('knowledge.qa.importJsonFormat')}</p>
-                    <pre className="bg-gray-100 dark:bg-gray-900 p-2 rounded text-xs overflow-x-auto">
-{`[
-  {"question": "Question 1", "answer": "Answer 1"},
-  {"question": "Question 2", "answer": "Answer 2"}
-]`}
-                    </pre>
-                  </div>
-                ) : (
-                  <div>
-                    <p className="font-medium mb-1">{t('knowledge.qa.importCsvFormat')}</p>
-                    <pre className="bg-gray-100 dark:bg-gray-900 p-2 rounded text-xs overflow-x-auto">
-{`question,answer
-Question 1,Answer 1
-Question 2,Answer 2`}
-                    </pre>
-                  </div>
-                )}
-              </div>
+            </Field>
+            <Field label={t('knowledge.qa.importData')} htmlFor="qa-import-data" required>
+              <textarea
+                id="qa-import-data"
+                value={importData}
+                onChange={(e) => setImportData(e.target.value)}
+                rows={9}
+                className="tgo-input font-mono text-[13px]"
+                placeholder={importFormat === 'json' ? t('knowledge.qa.importJsonPlaceholder') : t('knowledge.qa.importCsvPlaceholder')}
+              />
+            </Field>
+            <div className="overflow-hidden rounded-2xl bg-ink-900">
+              <p className="border-b border-white/10 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-400">
+                {importFormat === 'json' ? t('knowledge.qa.importJsonFormat') : t('knowledge.qa.importCsvFormat')}
+              </p>
+              <pre className="overflow-x-auto px-4 py-3 font-mono text-xs leading-relaxed text-acid-300">
+                {importFormat === 'json'
+                  ? '[\n  {"question": "Question 1", "answer": "Answer 1"},\n  {"question": "Question 2", "answer": "Answer 2"}\n]'
+                  : 'question,answer\nQuestion 1,Answer 1\nQuestion 2,Answer 2'}
+              </pre>
             </div>
-            <div className="flex justify-end gap-2 p-4 border-t border-gray-200 dark:border-gray-700">
-              <button
-                onClick={() => {
-                  setIsImportDialogOpen(false);
-                  setImportData('');
-                }}
-                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
-              >
-                {t('common.cancel')}
-              </button>
-              <button
-                onClick={handleImport}
-                disabled={isImporting || !importData.trim()}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              >
-                {isImporting && <Loader2 className="h-4 w-4 animate-spin" />}
-                {t('knowledge.qa.importButton')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          </Modal>
+
+          <ConfirmDialog
+            isOpen={!!deleteTarget}
+            title={t('knowledge.qa.deleteTitle', 'Delete QA Pair')}
+            message={t('knowledge.qa.deleteConfirm', { question: deleteTarget?.question, defaultValue: 'Delete "{{question}}"? This action cannot be undone.' })}
+            confirmText={t('common.delete', 'Delete')}
+            cancelText={t('common.cancel', 'Cancel')}
+            confirmVariant="danger"
+            onConfirm={() => {
+              if (deleteTarget) handleDeletePair(deleteTarget.id);
+              setDeleteTarget(null);
+            }}
+            onCancel={() => setDeleteTarget(null)}
+          />
+        </>
+      }
+    >
+      <DetailHeader
+        title={knowledgeBase.name}
+        description={knowledgeBase.description}
+        eyebrow={t('knowledge.typeQA', 'QA Pairs')}
+        icon={MessageSquare}
+        onBack={() => navigate('/knowledge')}
+        backLabel={t('knowledge.detail.backToList', 'Back')}
+        actions={
+          <>
+            <GhostButton onClick={() => setIsImportDialogOpen(true)}>
+              <Upload className="h-4 w-4" />
+              {t('knowledge.qa.import')}
+            </GhostButton>
+            <InkButton onClick={openAddDialog} icon={<Plus className="h-4 w-4" />}>
+              {t('knowledge.qa.add')}
+            </InkButton>
+          </>
+        }
+      />
+
+      {/* Statistics */}
+      <div className="tgo-stagger grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <StatTile label={t('knowledge.qa.stats.total')} value={stats.total} icon={MessageSquare} tone="bg-ink-900 text-acid-400 dark:bg-acid-400 dark:text-ink-900" />
+        <StatTile label={t('knowledge.qa.stats.pending')} value={stats.pending} icon={Clock} tone="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300" />
+        <StatTile label={t('knowledge.qa.stats.processed')} value={stats.processed} icon={CheckCircle2} tone="bg-acid-300 text-ink-900" />
+        <StatTile label={t('knowledge.qa.stats.failed')} value={stats.failed} icon={AlertCircle} tone="bg-red-50 text-red-600 dark:bg-red-900/25 dark:text-red-400" />
       </div>
-    </div>
+
+      <section className="space-y-5">
+        <SectionHeader title={t('knowledge.qa.results', 'Q&A Pairs')} count={total} countLabel={t('knowledge.qa.countLabel', 'pairs')}>
+          <SearchField value={searchTerm} onChange={setSearchTerm} placeholder={t('knowledge.qa.searchPlaceholder')} wide />
+          <RefreshButton onClick={loadQAPairs} spinning={isLoadingPairs} disabled={isLoadingPairs} />
+          {categories.length > 0 && (
+            <select
+              value={categoryFilter}
+              onChange={(e) => {
+                setCategoryFilter(e.target.value);
+                setOffset(0);
+              }}
+              aria-label={t('knowledge.qa.allCategories')}
+              className="tgo-input !h-9 !min-h-0 w-auto !rounded-full !bg-white !py-0 pl-4 text-[13px] dark:!bg-gray-900"
+            >
+              <option value="">{t('knowledge.qa.allCategories')}</option>
+              {categories.map(category => (
+                <option key={category} value={category}>{category}</option>
+              ))}
+            </select>
+          )}
+        </SectionHeader>
+        <FilterPills
+          options={statusOptions}
+          value={statusFilter}
+          onChange={(value) => {
+            setStatusFilter(value);
+            setOffset(0);
+          }}
+        />
+
+        {isLoadingPairs && qaPairs.length === 0 ? (
+          <div className="space-y-3">
+            {[0, 1, 2].map(i => <div key={i} className="tgo-skeleton h-32 rounded-[28px]" style={{ opacity: 1 - i * 0.2 }} />)}
+          </div>
+        ) : filteredPairs.length === 0 ? (
+          <EmptyPanel
+            icon={MessageSquare}
+            title={t('knowledge.qa.noPairs')}
+            action={
+              searchTerm || statusFilter || categoryFilter ? undefined : (
+                <InkButton onClick={openAddDialog} icon={<Plus className="h-4 w-4" />}>
+                  {t('knowledge.qa.add')}
+                </InkButton>
+              )
+            }
+          />
+        ) : (
+          <div className={`tgo-stagger grid grid-cols-1 gap-4 xl:grid-cols-2 ${isLoadingPairs ? 'opacity-60 transition-opacity' : ''}`}>
+            {filteredPairs.map(pair => {
+              const status = STATUS_META[pair.status] ?? STATUS_META.pending;
+              const isDeleting = deletingIds.has(pair.id);
+              return (
+                <article key={pair.id} className={`tgo-surface group flex flex-col p-6 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 ${isDeleting ? 'opacity-50' : ''}`}>
+                  <div className="flex items-start gap-3">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink-900 text-xs font-semibold text-acid-400 dark:bg-acid-400 dark:text-ink-900">Q</span>
+                    <h3 className="min-w-0 flex-1 pt-1 text-[15px] font-medium leading-snug text-gray-900 dark:text-white">{pair.question}</h3>
+                    <div className="flex shrink-0 items-center gap-1.5 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
+                      <button onClick={() => openEditDialog(pair)} className="tgo-icon-btn h-8 w-8" aria-label={t('common.edit', 'Edit')} title={t('common.edit', 'Edit')}>
+                        <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        onClick={() => setDeleteTarget(pair)}
+                        disabled={isDeleting}
+                        className="tgo-icon-btn h-8 w-8 hover:!bg-red-50 hover:!text-red-600 dark:hover:!bg-red-900/30 dark:hover:!text-red-400"
+                        aria-label={t('common.delete', 'Delete')}
+                        title={t('common.delete', 'Delete')}
+                      >
+                        {isDeleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex items-start gap-3">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-acid-200 text-xs font-semibold text-ink-900 dark:bg-acid-400/20 dark:text-acid-300">A</span>
+                    <p className="line-clamp-4 min-w-0 flex-1 pt-1 text-sm leading-relaxed text-gray-600 dark:text-gray-300">{pair.answer}</p>
+                  </div>
+                  <div className="mt-auto flex flex-wrap items-center gap-1.5 pt-5">
+                    <span className={`tgo-chip ${status.chip}`}>
+                      {status.icon}
+                      {t(`knowledge.qa.status.${pair.status}`)}
+                    </span>
+                    {pair.category && (
+                      <span className="tgo-chip"><Folder className="h-3 w-3" />{pair.category}</span>
+                    )}
+                    {pair.tags?.map(tag => (
+                      <span key={tag} className="tgo-chip bg-transparent shadow-[inset_0_0_0_1px_var(--color-gray-200)] dark:bg-transparent dark:shadow-[inset_0_0_0_1px_var(--color-gray-700)]">#{tag}</span>
+                    ))}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-3 pt-2">
+            <button onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} className="tgo-icon-btn h-10 w-10" aria-label={t('common.previous', 'Previous')}>
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <span className="tgo-chip h-10 px-4 text-sm tabular-nums">
+              {t('knowledge.qa.pagination', { current: currentPage, total: totalPages })}
+            </span>
+            <button onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages} className="tgo-icon-btn h-10 w-10" aria-label={t('common.next', 'Next')}>
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        )}
+      </section>
+    </PageShell>
   );
 };
 
 export default QAKnowledgeBaseDetail;
-

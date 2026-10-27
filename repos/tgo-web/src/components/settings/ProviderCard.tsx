@@ -1,8 +1,7 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FiEdit2, FiTrash2, FiLoader, FiZap, FiBox, FiCheckCircle, FiPlus, FiX } from 'react-icons/fi';
-import Button from '@/components/ui/Button';
-import Badge from '@/components/ui/Badge';
+import { Pencil, Trash2, Loader2, Zap, Box, Plus, X, Activity, Link2 } from 'lucide-react';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { useProvidersStore, type ModelProviderConfig } from '@/stores/providersStore';
 import { ToastContext } from '@/components/ui/ToastContainer';
 
@@ -15,136 +14,154 @@ interface ProviderCardProps {
   isTesting: boolean;
 }
 
-const ProviderCard: React.FC<ProviderCardProps> = ({ 
-  provider, 
-  onEdit, 
-  onDelete, 
+const MAX_VISIBLE_MODELS = 6;
+
+const ProviderCard: React.FC<ProviderCardProps> = ({
+  provider,
+  onEdit,
+  onDelete,
   onTest,
   onAddModel,
-  isTesting 
+  isTesting
 }) => {
   const { t } = useTranslation();
   const toast = useContext(ToastContext);
   const { removeModelFromProvider } = useProvidersStore();
+  const [modelToDelete, setModelToDelete] = useState<string | null>(null);
+  const [isDeletingModel, setIsDeletingModel] = useState(false);
   const isStore = !!provider.isFromStore;
-  const displayName = provider.name;
+  const models = provider.models || [];
 
-  const handleDeleteModel = async (modelId: string) => {
-    if (window.confirm(t('settings.providers.confirmDeleteModel', { model: modelId }))) {
-      try {
-        await removeModelFromProvider(provider.id, modelId);
-        toast?.showToast('success', t('settings.providers.toast.modelDeleted'));
-      } catch (e: any) {
-        toast?.showToast('error', t('common.deleteFailed'), e?.message);
-      }
+  const handleDeleteModel = async () => {
+    if (!modelToDelete) return;
+    setIsDeletingModel(true);
+    try {
+      await removeModelFromProvider(provider.id, modelToDelete);
+      toast?.showToast('success', t('settings.providers.toast.modelDeleted'));
+      setModelToDelete(null);
+    } catch (e) {
+      toast?.showToast('error', t('common.deleteFailed'), e instanceof Error ? e.message : undefined);
+    } finally {
+      setIsDeletingModel(false);
     }
   };
 
   return (
-    <div className="group relative bg-white dark:bg-gray-900 rounded-[2rem] border border-gray-100 dark:border-gray-800 p-8 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1 transition-all duration-500 overflow-hidden">
-      {/* Background Glow */}
-      <div className={`absolute -top-24 -right-24 w-48 h-48 blur-3xl transition-all duration-500 rounded-full ${isStore ? 'bg-purple-500/5 group-hover:bg-purple-500/10' : 'bg-blue-500/5 group-hover:bg-blue-500/10'}`} />
-      
-      <div className="relative z-10">
-        <div className="flex items-start justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-xl ${isStore ? 'bg-purple-600 shadow-purple-200 dark:shadow-none' : 'bg-blue-600 shadow-blue-200 dark:shadow-none'}`}>
-              {isStore ? <FiBox className="w-7 h-7" /> : <FiZap className="w-7 h-7" />}
-            </div>
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="text-xl font-black text-gray-900 dark:text-gray-100 tracking-tight">
-                  {displayName}
-                </h3>
-                {provider.enabled && (
-                  <Badge variant="success" size="sm">
-                    <div className="flex items-center gap-1">
-                      <FiCheckCircle className="w-3 h-3" />
-                      {t('common.enabled')}
-                    </div>
-                  </Badge>
-                )}
-              </div>
-              <div className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-widest">
-                {isStore ? (
-                  <span className="text-purple-500">{t('settings.providers.storeModel')}</span>
-                ) : (
-                  <span>{t(`settings.providers.provider.${provider.kind}`)}</span>
-                )}
-                <span className="text-gray-200 dark:text-gray-700">•</span>
-                <span className="truncate max-w-[200px]">{provider.apiBaseUrl || t('settings.providers.placeholders.baseUrl.default', 'Default URL')}</span>
-              </div>
-            </div>
+    <div className="group relative h-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1">
+      <div className="tgo-surface relative flex h-full flex-col p-6">
+        {/* Header */}
+        <div className="flex items-start gap-4">
+          <span className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-ink-900 text-acid-400 dark:bg-acid-400 dark:text-ink-900">
+            {isStore ? <Box className="h-5 w-5" /> : <Zap className="h-5 w-5" />}
+            <span className={`absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-white dark:border-gray-900 ${provider.enabled ? 'bg-acid-500' : 'bg-gray-300'}`} />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="text-[11px] font-medium uppercase tracking-wider text-gray-400">
+              {isStore ? t('settings.providers.storeModel') : t(`settings.providers.provider.${provider.kind}`)}
+            </p>
+            <h3 className="mt-0.5 truncate text-xl font-medium tracking-tight text-gray-900 dark:text-gray-100" title={provider.name}>
+              {provider.name}
+            </h3>
           </div>
+          {provider.enabled && (
+            <span className="tgo-chip bg-acid-100 text-acid-800 dark:bg-acid-400/15 dark:text-acid-300">
+              <span className="h-1.5 w-1.5 rounded-full bg-acid-500" />
+              {t('common.enabled')}
+            </span>
+          )}
         </div>
 
-        <div className="space-y-4 mb-8">
+        <p className="mt-4 flex items-center gap-1.5 truncate font-mono text-xs text-gray-500 dark:text-gray-400" title={provider.apiBaseUrl}>
+          <Link2 className="h-3.5 w-3.5 shrink-0 text-gray-400" />
+          <span className="truncate">{provider.apiBaseUrl || t('settings.providers.placeholders.baseUrl.default', 'Default URL')}</span>
+        </p>
+
+        {/* Models */}
+        <div className="mt-5">
+          <p className="mb-2 text-[11px] text-gray-400">
+            {t('settings.providers.modelsLabel', 'models')} · {models.length}
+          </p>
           <div className="flex flex-wrap gap-1.5">
-            {(provider.models || []).slice(0, 5).map((m) => (
-              <span key={m} className={`group/model relative px-3 py-1 text-[10px] font-black rounded-lg border uppercase tracking-tighter transition-all ${provider.defaultModel === m ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700' : 'bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-100 dark:border-gray-700'}`}>
-                {m}{provider.defaultModel === m ? ` (${t('settings.providers.badges.default')})` : ''}
-                <button 
-                  onClick={(e) => { e.stopPropagation(); handleDeleteModel(m); }}
-                  className="ml-1.5 opacity-0 group-hover/model:opacity-100 hover:text-red-500 transition-all"
-                  title={t('common.delete')}
+            {models.slice(0, MAX_VISIBLE_MODELS).map(m => {
+              const isDefault = provider.defaultModel === m;
+              return (
+                <span
+                  key={m}
+                  className={`group/model inline-flex h-7 max-w-full items-center gap-1 rounded-full pl-3 pr-1.5 text-xs font-medium transition-colors ${
+                    isDefault
+                      ? 'bg-ink-900 text-white dark:bg-acid-400 dark:text-ink-900'
+                      : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
+                  }`}
+                  title={isDefault ? `${m} (${t('settings.providers.badges.default')})` : m}
                 >
-                  <FiX className="w-2.5 h-2.5 inline-block -mt-0.5" />
-                </button>
-              </span>
-            ))}
-            {(provider.models?.length || 0) > 5 && (
-              <span className="px-3 py-1 text-[10px] font-black bg-gray-50 dark:bg-gray-800 text-gray-400 rounded-lg border border-gray-100 dark:border-gray-700">
-                +{(provider.models?.length || 0) - 5} {t('common.more').toUpperCase()}
+                  <span className="truncate">{m}</span>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setModelToDelete(m); }}
+                    className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full opacity-40 transition-all hover:bg-red-500 hover:text-white hover:opacity-100 group-hover/model:opacity-80"
+                    title={t('common.delete')}
+                    aria-label={`${t('common.delete')} ${m}`}
+                  >
+                    <X className="h-2.5 w-2.5" />
+                  </button>
+                </span>
+              );
+            })}
+            {models.length > MAX_VISIBLE_MODELS && (
+              <span className="inline-flex h-7 items-center rounded-full px-2.5 text-xs font-medium text-gray-400">
+                +{models.length - MAX_VISIBLE_MODELS}
               </span>
             )}
-            <button 
+            <button
               onClick={() => onAddModel(provider)}
-              className="flex items-center justify-center w-6 h-6 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-all border border-blue-100 dark:border-blue-800"
+              className="inline-flex h-7 items-center gap-1 rounded-full px-3 text-xs font-medium text-gray-600 shadow-[inset_0_0_0_1px_var(--color-gray-200)] transition-colors hover:bg-acid-300 hover:text-ink-900 hover:shadow-none dark:text-gray-300 dark:shadow-[inset_0_0_0_1px_var(--color-gray-700)] dark:hover:bg-acid-400 dark:hover:text-ink-900"
               title={t('settings.providers.addModel', 'Add Model')}
             >
-              <FiPlus className="w-3.5 h-3.5" />
+              <Plus className="h-3 w-3" />
+              {t('settings.providers.addModel', 'Add Model')}
             </button>
           </div>
         </div>
 
-        <div className="flex items-center justify-between pt-6 border-t border-gray-50 dark:border-gray-800">
-          <div className="flex gap-2">
-            {!isStore && (
-              <>
-                <Button 
-                  variant="secondary" 
-                  size="sm" 
-                  onClick={() => onTest(provider)} 
-                  disabled={isTesting}
-                  className="rounded-xl font-bold"
-                >
-                  {isTesting ? <FiLoader className="animate-spin mr-1" /> : null}
-                  {t('settings.providers.testButton', 'Test')}
-                </Button>
-                <Button 
-                  variant="secondary" 
-                  size="sm" 
-                  onClick={() => onEdit(provider)}
-                  className="rounded-xl font-bold"
-                >
-                  <FiEdit2 className="mr-1" />
-                  {t('common.edit', 'Edit')}
-                </Button>
-              </>
-            )}
-          </div>
-          
-          <Button 
-            variant="ghost" 
-            size="sm" 
+        {/* Actions */}
+        <div className="mt-auto flex items-center gap-2 pt-6">
+          {!isStore && (
+            <>
+              <button onClick={() => onTest(provider)} disabled={isTesting} className="tgo-pill h-10 flex-1 justify-center disabled:opacity-60">
+                {isTesting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Activity className="h-4 w-4" />}
+                {t('settings.providers.testButton', 'Test')}
+              </button>
+              <button
+                onClick={() => onEdit(provider)}
+                aria-label={t('common.edit', 'Edit')}
+                title={t('common.edit', 'Edit')}
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink-900 text-white transition-transform duration-200 hover:scale-105 active:scale-95 dark:bg-acid-400 dark:text-ink-900"
+              >
+                <Pencil className="h-4 w-4" />
+              </button>
+            </>
+          )}
+          <button
             onClick={() => onDelete(provider.id)}
-            className="text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl font-bold"
+            aria-label={t('common.delete', 'Delete')}
+            title={t('common.delete', 'Delete')}
+            className={`tgo-icon-btn h-10 w-10 hover:!bg-red-50 hover:!text-red-600 dark:hover:!bg-red-900/30 dark:hover:!text-red-400 ${isStore ? 'ml-auto' : ''}`}
           >
-            <FiTrash2 className="mr-1" />
-            {t('common.delete', 'Delete')}
-          </Button>
+            <Trash2 className="h-4 w-4" />
+          </button>
         </div>
       </div>
+
+      <ConfirmDialog
+        isOpen={!!modelToDelete}
+        title={t('settings.providers.deleteModelTitle', 'Remove Model')}
+        message={t('settings.providers.confirmDeleteModel', { model: modelToDelete })}
+        confirmText={t('common.delete', 'Delete')}
+        cancelText={t('common.cancel', 'Cancel')}
+        confirmVariant="danger"
+        onConfirm={handleDeleteModel}
+        onCancel={() => setModelToDelete(null)}
+        isLoading={isDeletingModel}
+      />
     </div>
   );
 };
