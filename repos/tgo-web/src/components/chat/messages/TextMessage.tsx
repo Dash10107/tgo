@@ -6,10 +6,10 @@ import { MessagePayloadType } from '@/types';
 /**
  * Streaming cursor animation component
  */
-const StreamingCursor: React.FC<{ isWhite?: boolean }> = ({ isWhite }) => (
+const StreamingCursor: React.FC<{ onAccent?: boolean }> = ({ onAccent }) => (
   <span
-    className={`inline-block w-2 h-4 ml-0.5 animate-pulse ${
-      isWhite ? 'bg-white/80' : 'bg-gray-500 dark:bg-gray-400'
+    className={`inline-block w-1.5 h-4 ml-0.5 rounded-full animate-pulse ${
+      onAccent ? 'bg-ink-900/70' : 'bg-acid-500'
     }`}
     style={{ verticalAlign: 'text-bottom' }}
   />
@@ -57,11 +57,11 @@ const TextMessage: React.FC<MessageComponentProps> = ({ message, isStaff, onSend
       <div className="inline-block tgo-bubble tgo-bubble-out overflow-hidden">
         {shouldRenderMarkdown ? (
           <>
-            <MarkdownContent content={textContent} className="text-sm markdown-white" onSendMessage={onSendMessage} />
-            {isStreaming && <StreamingCursor isWhite />}
+            <MarkdownContent content={textContent} className="text-sm markdown-on-accent" onSendMessage={onSendMessage} />
+            {isStreaming && <StreamingCursor onAccent />}
           </>
         ) : (
-          <p className="text-sm break-words">
+          <p className="text-sm break-words whitespace-pre-wrap">
             {hasLink ? (
               <>
                 {textContent.split('Headphone connection guide')[0]}
@@ -70,7 +70,7 @@ const TextMessage: React.FC<MessageComponentProps> = ({ message, isStaff, onSend
             ) : (
               textContent
             )}
-            {isStreaming && <StreamingCursor isWhite />}
+            {isStreaming && <StreamingCursor onAccent />}
           </p>
         )}
       </div>
@@ -85,7 +85,7 @@ const TextMessage: React.FC<MessageComponentProps> = ({ message, isStaff, onSend
           {isStreaming && <StreamingCursor />}
         </>
       ) : (
-        <p className="text-sm text-gray-800 dark:text-gray-200 break-words">
+        <p className="text-sm text-gray-800 dark:text-gray-200 break-words whitespace-pre-wrap">
           {textContent}
           {isStreaming && <StreamingCursor />}
         </p>

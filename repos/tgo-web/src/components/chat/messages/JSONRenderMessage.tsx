@@ -81,7 +81,7 @@ const JSONRenderMessage: React.FC<JSONRenderMessageProps> = ({ message, isStaff,
 
   return (
     <div
-      className={`json-render-message inline-block max-w-full p-3 shadow-sm overflow-hidden ${
+      className={`json-render-message inline-block max-w-full p-3.5 overflow-hidden ${
         isStaff
           ? 'tgo-bubble-out'
           : 'tgo-bubble-in'
@@ -92,10 +92,10 @@ const JSONRenderMessage: React.FC<JSONRenderMessageProps> = ({ message, isStaff,
           if (group.type === 'text') {
             if (!group.text.trim()) return null;
             return (
-              <div key={i} className={`text-sm ${isStaff ? 'text-white' : 'text-gray-900 dark:text-gray-100'}`}>
+              <div key={i} className={`text-sm ${isStaff ? 'text-ink-900' : 'text-gray-900 dark:text-gray-100'}`}>
                 <MarkdownContent
                   content={group.text}
-                  className={isStaff ? 'markdown-white' : ''}
+                  className={isStaff ? 'markdown-on-accent' : ''}
                   onSendMessage={onSendMessage}
                 />
               </div>
@@ -107,10 +107,10 @@ const JSONRenderMessage: React.FC<JSONRenderMessageProps> = ({ message, isStaff,
         (() => {
           const fallbackText = stripSpecFences(message.content || '');
           return fallbackText ? (
-            <div className={`text-sm ${isStaff ? 'text-white' : 'text-gray-900 dark:text-gray-100'}`}>
+            <div className={`text-sm ${isStaff ? 'text-ink-900' : 'text-gray-900 dark:text-gray-100'}`}>
               <MarkdownContent
                 content={fallbackText}
-                className={isStaff ? 'markdown-white' : ''}
+                className={isStaff ? 'markdown-on-accent' : ''}
                 onSendMessage={onSendMessage}
               />
             </div>

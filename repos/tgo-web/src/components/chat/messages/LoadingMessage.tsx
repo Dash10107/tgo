@@ -42,11 +42,11 @@ const LoadingMessage: React.FC<LoadingMessageProps> = ({ isStaff }) => {
 
   const bubbleClass = isStaff
     ? 'tgo-bubble-out'
-    : 'tgo-bubble-in text-gray-600 dark:text-gray-300';
+    : 'tgo-bubble-in text-gray-500 dark:text-gray-400';
 
   return (
     <div
-      className={`${bubbleClass} py-2 pl-2 pr-4 overflow-hidden max-w-full`}
+      className={`${bubbleClass} py-2 pl-2 pr-5 overflow-hidden max-w-full`}
       role="status"
       aria-live="polite"
     >
@@ -54,7 +54,7 @@ const LoadingMessage: React.FC<LoadingMessageProps> = ({ isStaff }) => {
         <ThinkingOrb
           state={phase.state}
           size={32}
-          theme={isStaff ? 'dark' : 'auto'}
+          theme="auto"
           aria-label={t('chat.messages.aiThinking', 'AI is thinking...')}
         />
         <span key={phase.state} className="text-sm animate-thinking-label">

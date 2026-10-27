@@ -101,8 +101,9 @@ const SystemMessage: React.FC<SystemMessageProps> = ({ payload }) => {
   }, [payload, t]);
 
   return (
-    <div className="flex justify-center my-3">
-      <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-gray-100/80 dark:bg-gray-700/50 text-[11px] text-gray-500 dark:text-gray-400 max-w-[90%]">
+    <div className="my-2 flex justify-center">
+      <div className="inline-flex max-w-[90%] items-center gap-2 rounded-full bg-white/80 px-3.5 py-1.5 text-[11px] text-gray-500 shadow-sm ring-1 ring-gray-100 backdrop-blur dark:bg-gray-900/80 dark:text-gray-400 dark:ring-gray-800">
+        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-acid-500" />
         <span className="text-center leading-relaxed">
           {localizedContent}
         </span>

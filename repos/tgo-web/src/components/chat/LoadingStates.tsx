@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Loader2, AlertCircle, ChevronUp } from 'lucide-react';
+import { Loader2, AlertCircle, ChevronUp, RotateCw } from 'lucide-react';
 
 /**
  * Props for the LoadingStates component
@@ -71,8 +71,8 @@ const LoadingStates: React.FC<LoadingStatesProps> = React.memo(({
           { side: 'right', width: 'w-32' },
         ].map((row, i) => (
           <div key={i} className={`flex items-end gap-2 ${row.side === 'right' ? 'justify-end' : ''}`} style={{ opacity: 1 - i * 0.18 }}>
-            {row.side === 'left' && <div className="tgo-skeleton h-8 w-8 shrink-0 rounded-full" />}
-            <div className={`tgo-skeleton h-10 ${row.width} ${row.side === 'right' ? 'rounded-[20px] rounded-br-md' : 'rounded-[20px] rounded-bl-md'}`} />
+            {row.side === 'left' && <div className="tgo-skeleton h-9 w-9 shrink-0 rounded-full" />}
+            <div className={`tgo-skeleton h-11 ${row.width} ${row.side === 'right' ? 'rounded-3xl rounded-br-lg !bg-acid-200/80 dark:!bg-acid-400/20' : 'rounded-3xl rounded-bl-lg'}`} />
           </div>
         ))}
       </div>
@@ -82,13 +82,13 @@ const LoadingStates: React.FC<LoadingStatesProps> = React.memo(({
   // Error State
   if (historyError) {
     return (
-      <div className="flex flex-col items-center justify-center h-32">
-        <AlertCircle className="w-12 h-12 text-red-500 dark:text-red-400 mb-4" />
-        <p className="text-gray-600 dark:text-gray-400 text-center mb-4">{historyError}</p>
-        <button
-          onClick={onRetry}
-          className="px-5 py-2 bg-ink-900 text-white text-sm font-medium rounded-full hover:bg-ink-700 active:scale-95 transition-all dark:bg-acid-400 dark:text-ink-900"
-        >
+      <div className="tgo-fade-up flex flex-col items-center justify-center py-10">
+        <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-red-500 dark:bg-red-900/20 dark:text-red-400">
+          <AlertCircle className="h-6 w-6" />
+        </span>
+        <p className="mb-5 max-w-sm text-center text-sm text-gray-500 dark:text-gray-400">{historyError}</p>
+        <button onClick={onRetry} className="tgo-btn-ink" data-icon-motion="nudge">
+          <span className="tgo-btn-icon"><RotateCw className="h-4 w-4" /></span>
           {t('chat.history.retry', 'Retry')}
         </button>
       </div>

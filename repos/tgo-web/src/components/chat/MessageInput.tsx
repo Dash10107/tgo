@@ -1245,7 +1245,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
   // If visitor is in queued status, show accept button instead of input area
   if (isQueued && visitorId) {
     return (
-      <footer className="relative z-10 mx-4 mb-4 mt-2 rounded-[24px] bg-gray-50 ring-1 ring-gray-100 dark:bg-gray-800/60 dark:ring-gray-700">
+      <footer className="relative z-10 mx-auto mb-5 mt-2 w-[calc(100%-2rem)] max-w-[920px] rounded-[28px] bg-white/80 shadow-[0_14px_32px_-22px_rgba(15,16,18,0.4)] ring-1 ring-gray-100 backdrop-blur dark:bg-gray-900/80 dark:ring-gray-800">
         <div className="flex flex-col items-center justify-center py-6 space-y-3">
           <p className="text-sm text-gray-500 dark:text-gray-400">
             {t('chat.input.accept.hint', 'This visitor is waiting to be accepted')}
@@ -1275,7 +1275,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
   // If conversation is closed, don't show input area
   if (isClosed) {
     return (
-      <footer className="relative z-10 mx-4 mb-4 mt-2 rounded-[24px] bg-gray-50 ring-1 ring-gray-100 dark:bg-gray-800/60 dark:ring-gray-700">
+      <footer className="relative z-10 mx-auto mb-5 mt-2 w-[calc(100%-2rem)] max-w-[920px] rounded-[28px] bg-white/80 shadow-[0_14px_32px_-22px_rgba(15,16,18,0.4)] ring-1 ring-gray-100 backdrop-blur dark:bg-gray-900/80 dark:ring-gray-800">
         <div className="flex items-center justify-center py-4">
           <p className="text-sm text-gray-400 dark:text-gray-500">
             {t('chat.input.closed', 'Conversation ended')}
@@ -1291,7 +1291,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
   if (isNotMyVisitor) {
     const staffDisplayName = assignedStaffName || t('chat.input.otherAgent', 'another agent');
     return (
-      <footer className="relative z-10 mx-4 mb-4 mt-2 rounded-[24px] bg-gray-50 ring-1 ring-gray-100 dark:bg-gray-800/60 dark:ring-gray-700">
+      <footer className="relative z-10 mx-auto mb-5 mt-2 w-[calc(100%-2rem)] max-w-[920px] rounded-[28px] bg-white/80 shadow-[0_14px_32px_-22px_rgba(15,16,18,0.4)] ring-1 ring-gray-100 backdrop-blur dark:bg-gray-900/80 dark:ring-gray-800">
         <div className="flex items-center justify-center py-4">
           <p className="text-sm text-gray-400 dark:text-gray-500">
             {t('chat.input.notMyVisitor', 'This visitor is assigned to {{name}}', { name: staffDisplayName })}
@@ -1305,11 +1305,11 @@ const MessageInput: React.FC<MessageInputProps> = ({
     && !isSending && !isSendingLocal && !isManualDisabled;
 
   return (
-    <footer className="relative z-10 px-4 pb-4 pt-2">
-      <div className={`rounded-[24px] bg-white ring-1 shadow-[0_10px_30px_-18px_rgba(15,16,18,0.35)] transition-[box-shadow,background-color] duration-300 dark:bg-gray-800 ${
+    <footer className="relative z-10 px-4 pb-5 pt-2 md:px-8">
+      <div className={`mx-auto max-w-[920px] rounded-[28px] bg-white ring-1 shadow-[0_18px_40px_-24px_rgba(15,16,18,0.45)] transition-[box-shadow,background-color] duration-300 dark:bg-gray-900 ${
         isManualDisabled
           ? 'ring-gray-100 dark:ring-gray-700'
-          : 'ring-gray-200 focus-within:ring-2 focus-within:ring-acid-400 focus-within:shadow-[0_16px_40px_-20px_rgba(143,179,30,0.55)] dark:ring-gray-700'
+          : 'ring-gray-100 focus-within:ring-2 focus-within:ring-acid-400 focus-within:shadow-[0_20px_44px_-22px_rgba(143,179,30,0.6)] dark:ring-gray-800'
       }`}>
 
       {/* Hidden file input for image selection */}
@@ -1465,19 +1465,19 @@ const MessageInput: React.FC<MessageInputProps> = ({
         readOnly={isSending || isSendingLocal || isManualDisabled}
         disabled={isManualDisabled}
         title={isManualDisabled ? t('chat.input.disabled.placeholder', 'AI assistant enabled, manual input disabled') : undefined}
-        className={`block w-full resize-none bg-transparent px-4 pt-3.5 pb-1 text-sm leading-relaxed text-gray-900 placeholder:text-gray-400 focus:outline-none dark:text-gray-100 dark:placeholder:text-gray-500 ${
+        className={`block w-full resize-none bg-transparent px-5 pt-4 pb-1 text-[15px] leading-relaxed text-gray-900 placeholder:text-gray-400 focus:outline-none dark:text-gray-100 dark:placeholder:text-gray-500 ${
           isSending || isSendingLocal || isManualDisabled ? 'opacity-50 cursor-not-allowed' : ''
         }`}
       />
 
       {/* Toolbar + send controls */}
-      <div className="flex items-center justify-between gap-2 px-2.5 pb-2.5">
+      <div className="flex items-center justify-between gap-2 px-3 pb-3">
         <div className="flex items-center gap-0.5">
           <button
             ref={emojiBtnRef}
             onClick={() => { if (isManualDisabled) return; setShowEmoji(v => !v); }}
             disabled={isManualDisabled}
-            className="flex h-8 w-8 items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 hover:text-ink-900 dark:hover:bg-gray-700 dark:hover:text-white transition-colors duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-acid-300 hover:text-ink-900 dark:hover:bg-acid-400 dark:hover:text-ink-900 transition-colors duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
             aria-label={t('chat.input.emoji.aria', 'Open emoji picker')}
             title={isManualDisabled ? t('chat.input.disabled.tooltip', 'AI assistant enabled, manual input disabled') : t('chat.input.emoji.title', 'Insert emoji')}
           >
@@ -1487,16 +1487,16 @@ const MessageInput: React.FC<MessageInputProps> = ({
             ref={screenshotBtnRef}
             onClick={() => { if (isManualDisabled) return; handleClickScreenshotBtn(); }}
             disabled={isManualDisabled}
-            className="flex h-8 w-8 items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 hover:text-ink-900 dark:hover:bg-gray-700 dark:hover:text-white transition-colors duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-acid-300 hover:text-ink-900 dark:hover:bg-acid-400 dark:hover:text-ink-900 transition-colors duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
             aria-label={t('chat.input.screenshot.aria', 'Screenshot paste instructions')}
             title={isManualDisabled ? t('chat.input.disabled.tooltip', 'AI assistant enabled, manual input disabled') : t('chat.input.screenshot.title', 'Screenshot')}
           >
             <Scissors className="w-[18px] h-[18px]" />
           </button>
-          <button onClick={handleClickImageBtn} disabled={isManualDisabled} className="flex h-8 w-8 items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 hover:text-ink-900 dark:hover:bg-gray-700 dark:hover:text-white transition-colors duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed" aria-label={t('chat.input.image.aria', 'Upload image')} title={isManualDisabled ? t('chat.input.disabled.tooltip', 'AI assistant enabled, manual input disabled') : t('chat.input.image.title', 'Send image')}>
+          <button onClick={handleClickImageBtn} disabled={isManualDisabled} className="flex h-9 w-9 items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-acid-300 hover:text-ink-900 dark:hover:bg-acid-400 dark:hover:text-ink-900 transition-colors duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed" aria-label={t('chat.input.image.aria', 'Upload image')} title={isManualDisabled ? t('chat.input.disabled.tooltip', 'AI assistant enabled, manual input disabled') : t('chat.input.image.title', 'Send image')}>
             <ImageIcon className="w-[18px] h-[18px]" />
           </button>
-          <button onClick={handleClickFileBtn} disabled={isManualDisabled} className="flex h-8 w-8 items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 hover:text-ink-900 dark:hover:bg-gray-700 dark:hover:text-white transition-colors duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed" aria-label={t('chat.input.file.aria', 'Upload file')} title={isManualDisabled ? t('chat.input.disabled.tooltip', 'AI assistant enabled, manual input disabled') : t('chat.input.file.title', 'Send file')}>
+          <button onClick={handleClickFileBtn} disabled={isManualDisabled} className="flex h-9 w-9 items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-acid-300 hover:text-ink-900 dark:hover:bg-acid-400 dark:hover:text-ink-900 transition-colors duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed" aria-label={t('chat.input.file.aria', 'Upload file')} title={isManualDisabled ? t('chat.input.disabled.tooltip', 'AI assistant enabled, manual input disabled') : t('chat.input.file.title', 'Send file')}>
             <Folder className="w-[18px] h-[18px]" />
           </button>
 
@@ -1535,7 +1535,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
 
           {isStreamingInProgress ? (
             <button
-              className="inline-flex h-9 items-center gap-1.5 rounded-full bg-orange-500 px-4 text-sm font-medium text-white transition-all duration-200 hover:bg-orange-600 active:scale-95 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-1 dark:bg-orange-600 dark:hover:bg-orange-700"
+              className="inline-flex h-10 items-center gap-1.5 rounded-full bg-orange-500 px-4 text-sm font-medium text-white transition-all duration-200 hover:bg-orange-600 active:scale-95 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-1 dark:bg-orange-600 dark:hover:bg-orange-700"
               onMouseDown={(e) => e.preventDefault()}
               onClick={handleCancelStream}
               title={t('chat.input.streaming.pauseTooltip', 'Pause streaming message')}
@@ -1545,7 +1545,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
             </button>
           ) : (
             <button
-              className={`group inline-flex h-9 items-center gap-2 rounded-full pl-4 pr-1 text-sm font-medium transition-all duration-300 focus:outline-none ${
+              className={`group inline-flex h-10 items-center gap-2.5 rounded-full pl-4 pr-1 text-sm font-medium transition-all duration-300 focus:outline-none ${
                 canSend
                   ? 'bg-ink-900 text-white shadow-[0_10px_22px_-12px_rgba(15,16,18,0.8)] hover:-translate-y-px active:scale-95 dark:bg-acid-400 dark:text-ink-900'
                   : 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500'
@@ -1556,7 +1556,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
               title={isManualDisabled ? t('chat.input.disabled.cannotSendTooltip', 'AI assistant enabled, manual send disabled') : undefined}
             >
               <span>{isSending || isSendingLocal ? t('chat.input.send.sending', 'Sending...') : t('chat.input.send.label', 'Send')}</span>
-              <span className={`flex h-7 w-7 items-center justify-center rounded-full transition-all duration-300 ${
+              <span className={`flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300 ${
                 canSend ? 'bg-acid-400 text-ink-900 group-hover:translate-x-0.5 dark:bg-ink-900 dark:text-acid-400' : 'bg-gray-200 text-gray-400 dark:bg-gray-600 dark:text-gray-400'
               }`}>
                 {isSending || isSendingLocal ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ArrowUp className="h-3.5 w-3.5" strokeWidth={2.5} />}

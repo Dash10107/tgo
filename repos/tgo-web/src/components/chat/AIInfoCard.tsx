@@ -27,15 +27,15 @@ const AIInfoCard: React.FC<AIInfoCardProps> = ({ aiInfo }) => {
   };
 
   const getDetailValueClass = (key: string): string => {
-    return key === 'status' ? 'text-blue-700 dark:text-blue-400' : 'text-gray-800 dark:text-gray-200';
+    return key === 'status' ? 'text-acid-700 dark:text-acid-400' : 'text-gray-800 dark:text-gray-200';
   };
 
   return (
-    <div className="mt-2 ml-10 pl-0">
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 shadow-sm max-w-md">
+    <div className="mt-2">
+      <div className="tgo-surface max-w-md rounded-3xl p-4">
         <div className="flex justify-between items-center mb-2">
           <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{aiInfo.title}</h4>
-          <span className="text-xs text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30 px-1.5 py-0.5 rounded-full">
+          <span className="rounded-full bg-acid-300 px-2 py-0.5 text-[11px] font-semibold text-ink-900">
             {aiInfo.status}
           </span>
         </div>
@@ -58,10 +58,10 @@ const AIInfoCard: React.FC<AIInfoCardProps> = ({ aiInfo }) => {
             {aiInfo.actions.map((action, index) => (
               <button
                 key={index}
-                className={`text-xs px-2 py-1 rounded-md transition-colors ${
+                className={`h-8 rounded-full px-3.5 text-xs font-medium transition-all active:scale-95 ${
                   action.type === 'primary'
-                    ? 'bg-blue-500 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700 text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600'
+                    ? 'bg-ink-900 text-white hover:bg-ink-700 dark:bg-acid-400 dark:text-ink-900'
+                    : 'bg-white text-gray-700 ring-1 ring-gray-200 hover:bg-acid-300 hover:text-ink-900 hover:ring-transparent dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-700'
                 }`}
               >
                 {action.label}

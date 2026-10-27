@@ -1,6 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { LuPackage, LuSearch } from 'react-icons/lu';
-import { Globe } from 'lucide-react';
+import { Globe, Package, Plug, Store, Wrench } from 'lucide-react';
+import {
+  PageShell, PageHeader, InkButton, GhostButton, SectionHeader, SearchField, RefreshButton,
+  FilterPills, FeatureBanner, EmptyPanel, ErrorPanel, SkeletonGrid, type FilterOption,
+} from '@/components/ui/PageKit';
 import { useTranslation } from 'react-i18next';
 import ToolsList from './ToolsList';
 import AddToolModal from './AddToolModal';
@@ -11,7 +14,6 @@ import { ToolToastProvider, useToast } from './ToolToastProvider';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { useProjectToolsStore } from '@/stores/projectToolsStore';
 import { transformAiToolResponseList, searchProjectTools } from '@/utils/projectToolsTransform';
-import { AiToolsGridSkeleton, AiToolsErrorState, AiToolsEmptyState } from '@/components/ui/AiToolsSkeleton';
 import ToolStoreModal from './ToolStoreModal';
 import type { AiTool, AiToolResponse } from '@/types';
 
@@ -19,8 +21,15 @@ import type { AiTool, AiToolResponse } from '@/types';
  * Tools page component content
  * Updated to use NEW /v1/ai/tools API
  */
+type ToolTypeFilter = 'all' | 'mcp' | 'http';
+
+/** HTTP tools are stored as FUNCTION tools; everything else is served over MCP */
+const getToolKind = (tool: AiTool): Exclude<ToolTypeFilter, 'all'> =>
+  tool.config?.tool_type === 'FUNCTION' ? 'http' : 'mcp';
+
 const ToolsContent: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [typeFilter, setTypeFilter] = useState<ToolTypeFilter>('all');
   const [showAddToolModal, setShowAddToolModal] = useState<boolean>(false);
   const [showAddHTTPToolModal, setShowAddHTTPToolModal] = useState<boolean>(false);
   const [showEditToolModal, setShowEditToolModal] = useState<boolean>(false);
@@ -57,13 +66,22 @@ const ToolsContent: React.FC = () => {
   const filteredTools = useMemo(() => {
     let filtered = tools;
 
+    if (typeFilter !== 'all') {
+      filtered = filtered.filter(tool => getToolKind(tool) === typeFilter);
+    }
+
     // Apply search filter
     if (searchQuery.trim()) {
       filtered = searchProjectTools(filtered, searchQuery);
     }
 
     return filtered;
-  }, [tools, searchQuery]);
+  }, [tools, searchQuery, typeFilter]);
+
+  const typeCounts = useMemo(() => {
+    const http = tools.filter(tool => getToolKind(tool) === 'http').length;
+    return { all: tools.length, http, mcp: tools.length - http };
+  }, [tools]);
 
   const handleToolAction = async (actionType: string, tool: AiTool): Promise<void> => {
     try {
@@ -114,7 +132,6 @@ const ToolsContent: React.FC = () => {
     setIsDeleting(true);
     try {
       await deleteTool(toolToDelete.id);
-          <div className="col-span-1">{t('knowledge.table.statusColumn', 'Status')}</div>
       await loadTools(false);
       setShowDeleteConfirm(false);
       setToolToDelete(null);
@@ -127,108 +144,18 @@ const ToolsContent: React.FC = () => {
     }
   };
 
+  const filterOptions: FilterOption<ToolTypeFilter>[] = [
+    { value: 'all', label: t('common.all', 'All'), count: typeCounts.all },
+    { value: 'mcp', label: 'MCP', count: typeCounts.mcp, dot: 'bg-acid-500' },
+    { value: 'http', label: 'HTTP', count: typeCounts.http, dot: 'bg-sky-400' },
+  ];
+
+  const hasActiveFilters = Boolean(searchQuery.trim()) || typeFilter !== 'all';
+
   return (
-    <main className="flex-grow flex flex-col bg-[#f8fafc] dark:bg-gray-950 overflow-hidden">
-      {/* Header */}
-      <header className="px-8 py-5 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-800/50 flex flex-col md:flex-row md:items-center justify-between gap-4 sticky top-0 z-30">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <LuPackage className="w-7 h-7 text-blue-600" />
-            {t('tools.title', 'Tools')}
-          </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            {t('tools.subtitle', 'Configure and extend the capabilities of AI agents')}
-          </p>
-        </div>
-        
-        <div className="flex items-center gap-3">
-          {/* Search Bar matching AgentManagement */}
-          <div className="relative group hidden sm:block">
-            <LuSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
-            <input 
-              type="text"
-              placeholder={t('tools.search.placeholder', 'Search tools...')}
-              value={searchQuery}
-              onChange={(e) => handleSearchChange(e.target.value)}
-              className="pl-10 pr-4 py-2 w-48 lg:w-64 bg-gray-100/50 dark:bg-gray-800/50 border-transparent focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 rounded-xl text-sm transition-all outline-none"
-            />
-          </div>
-
-          <div className="h-8 w-px bg-gray-200 dark:bg-gray-800 mx-1 hidden sm:block"></div>
-
-          <button
-            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 text-sm font-bold rounded-xl border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all active:scale-95 shadow-sm"
-            onClick={() => setShowToolStoreModal(true)}
-          >
-            <LuPackage className="w-4 h-4 text-blue-600" />
-            <span>{t('tools.toolStore', 'Tool Store')}</span>
-          </button>
-
-          <button
-            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 text-sm font-bold rounded-xl border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all active:scale-95 shadow-sm"
-            onClick={() => setShowAddHTTPToolModal(true)}
-          >
-            <Globe className="w-4 h-4" />
-            <span className="hidden lg:inline">{t('tools.addHttpTool', 'Add HTTP Tool')}</span>
-          </button>
-          <button
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-200 dark:shadow-none transition-all active:scale-95"
-            onClick={() => setShowAddToolModal(true)}
-          >
-            <LuPackage className="w-4 h-4" />
-            <span className="hidden lg:inline">{t('tools.addMCPTool', 'Add MCP Tool')}</span>
-          </button>
-        </div>
-      </header>
-
-      {/* Content Area */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
-        <div className="max-w-[1600px] mx-auto p-8 space-y-8">
-          
-          {/* Banner / Info Card */}
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-6 text-white shadow-xl shadow-blue-200 dark:shadow-none flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
-            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-            <div className="relative z-10">
-              <h3 className="text-xl font-bold flex items-center gap-2">
-                <LuPackage className="w-6 h-6" />
-                {t('tools.banner.title', 'Enhance AI Capabilities')}
-              </h3>
-              <p className="text-blue-100 text-sm mt-1 opacity-90 max-w-xl">
-                {t('tools.banner.description', 'By adding HTTP or MCP protocol tools, you can give AI agents unlimited possibilities such as searching, querying databases, and calling external services.')}
-              </p>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t('tools.listTitle', 'Tool List')}</h3>
-            </div>
-
-            {/* Tools List with Loading/Error States */}
-            {error ? (
-              <AiToolsErrorState
-                error={error}
-                onRetry={handleRetry}
-              />
-            ) : isLoading ? (
-              <AiToolsGridSkeleton count={8} />
-            ) : filteredTools.length === 0 ? (
-              <AiToolsEmptyState
-                title={t('tools.tools.installedEmpty.title', 'No installed tools')}
-                description={t('tools.tools.installedEmpty.description', 'Click the "Add Tool" button in the top-right to create your first tool')}
-              />
-            ) : (
-              <ToolsList
-                tools={filteredTools}
-                selectedCategory="all"
-                onToolAction={handleToolAction}
-                onShowToast={showToast}
-              />
-            )}
-          </div>
-        </div>
-      </div>
-
+    <PageShell
+      after={
+        <>
       {/* Add MCP Tool Modal */}
       <AddToolModal
         isOpen={showAddToolModal}
@@ -281,7 +208,85 @@ const ToolsContent: React.FC = () => {
         }}
         isLoading={isDeleting}
       />
-    </main>
+        </>
+      }
+    >
+      {/* Header */}
+      <PageHeader
+        title={t('tools.title', 'Tools')}
+        total={typeCounts.all}
+        stats={[
+          { key: 'mcp', value: typeCounts.mcp, label: 'mcp', badge: 'bg-acid-300 text-ink-900' },
+          { key: 'http', value: typeCounts.http, label: 'http', badge: 'bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-300' },
+        ]}
+        actions={
+          <>
+            <InkButton onClick={() => setShowAddToolModal(true)} icon={<Plug className="h-4 w-4" />}>
+              {t('tools.addMCPTool', 'Add MCP Tool')}
+            </InkButton>
+            <GhostButton onClick={() => setShowAddHTTPToolModal(true)}>
+              <Globe className="h-4 w-4" />
+              {t('tools.addHttpTool', 'Add HTTP Tool')}
+            </GhostButton>
+            <GhostButton onClick={() => setShowToolStoreModal(true)}>
+              <Store className="h-4 w-4" />
+              {t('tools.toolStore', 'Tool Store')}
+            </GhostButton>
+          </>
+        }
+      />
+
+      <FeatureBanner
+        icon={Package}
+        eyebrow={t('tools.banner.eyebrow', 'Capabilities')}
+        title={t('tools.banner.title', 'Enhance AI Capabilities')}
+        description={t('tools.banner.description', 'By adding HTTP or MCP protocol tools, you can give AI agents unlimited possibilities such as searching, querying databases, and calling external services.')}
+        action={
+          <button
+            onClick={() => setShowToolStoreModal(true)}
+            className="group inline-flex h-11 items-center gap-2.5 rounded-full bg-ink-900 pl-1.5 pr-5 text-sm font-medium text-white shadow-[0_10px_24px_-12px_rgb(15_16_18/0.7)] transition-all duration-200 hover:-translate-y-px active:scale-[0.98]"
+          >
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-acid-400 text-ink-900 transition-transform duration-300 group-hover:rotate-12">
+              <Store className="h-4 w-4" />
+            </span>
+            {t('tools.banner.browse', 'Browse the Tool Store')}
+          </button>
+        }
+      />
+
+      {/* Tool list */}
+      <section className="space-y-5">
+        <SectionHeader title={t('tools.listTitle', 'Tool List')} count={filteredTools.length} countLabel={t('tools.countLabel', 'tools')}>
+          <SearchField value={searchQuery} onChange={handleSearchChange} placeholder={t('tools.search.placeholder', 'Search tools...')} />
+          <RefreshButton onClick={() => loadTools(false)} spinning={isLoading} disabled={isLoading} />
+          <FilterPills options={filterOptions} value={typeFilter} onChange={setTypeFilter} />
+        </SectionHeader>
+
+        {error ? (
+          <ErrorPanel message={error} onRetry={handleRetry} />
+        ) : isLoading && tools.length === 0 ? (
+          <SkeletonGrid count={8} itemClassName="h-60" />
+        ) : filteredTools.length === 0 ? (
+          <EmptyPanel
+            icon={Wrench}
+            title={hasActiveFilters ? t('tools.empty.noResults', 'No matching tools') : t('tools.tools.installedEmpty.title', 'No installed tools')}
+            description={hasActiveFilters ? t('tools.empty.noResultsDesc', 'Try adjusting your search keywords or filters') : t('tools.tools.installedEmpty.description', 'Click the "Add Tool" button in the top-right to create your first tool')}
+            action={!hasActiveFilters && (
+              <InkButton onClick={() => setShowAddToolModal(true)} icon={<Plug className="h-4 w-4" />}>
+                {t('tools.addMCPTool', 'Add MCP Tool')}
+              </InkButton>
+            )}
+          />
+        ) : (
+          <ToolsList
+            tools={filteredTools}
+            selectedCategory="all"
+            onToolAction={handleToolAction}
+            onShowToast={showToast}
+          />
+        )}
+      </section>
+    </PageShell>
   );
 };
 

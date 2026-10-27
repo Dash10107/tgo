@@ -210,22 +210,23 @@ const ChatHeader: React.FC<ChatHeaderProps> = React.memo(({ activeChat, onEndCha
   }, [showTransferMenu]);
   
   return (
-    <header className="relative z-10 flex items-center justify-between gap-4 border-b border-gray-100 bg-white/85 px-5 py-3.5 backdrop-blur-lg dark:border-gray-800 dark:bg-gray-900/85">
+    <header className="relative z-10 flex items-center justify-between gap-4 border-b border-gray-100/80 bg-white/80 px-6 py-4 backdrop-blur-xl dark:border-gray-800/80 dark:bg-gray-900/80">
       <div className="flex min-w-0 items-center gap-3">
         <ChatAvatar
           displayName={displayName}
           displayAvatar={channelAvatar}
           colorSeed={activeChat.channelId}
-          sizePx={42}
-          wrapperClassName="relative flex-shrink-0"
+          sizePx={46}
+          wrapperClassName="relative flex-shrink-0 rounded-full ring-4 ring-acid-200/70 dark:ring-acid-400/15"
           visitorStatus={isAgentChat ? undefined : (visitorExtra?.is_online ? 'online' : undefined)}
         />
         <div className="min-w-0">
-        <h2 className="flex items-center text-[17px] font-semibold tracking-tight text-gray-900 dark:text-gray-100">
+        <h2 className="flex items-center gap-2 text-xl font-medium tracking-tight text-gray-900 dark:text-gray-100">
           <span className="truncate">{displayName}</span>
           {isAgentChat ? (
-            <span title={t('chat.header.agentTooltip', 'AI Employee Chat')}>
-              <Bot className="w-4 h-4 inline-block ml-1.5 -mt-0.5 text-purple-500 dark:text-purple-400" />
+            <span className="tgo-ai-chip" title={t('chat.header.agentTooltip', 'AI Employee Chat')}>
+              <Bot className="h-2.5 w-2.5" />
+              {t('chat.messages.aiBadge', 'AI')}
             </span>
           ) : (
             (() => {
@@ -234,14 +235,15 @@ const ChatHeader: React.FC<ChatHeaderProps> = React.memo(({ activeChat, onEndCha
               const IconComp = getPlatformIconComponent(type);
               const label = getPlatformLabel(type);
               return (
-                <span title={label}>
-                  <IconComp size={16} className={`w-3.5 h-3.5 inline-block ml-1 -mt-0.5 ${getPlatformColor(type)}`} />
+                <span title={label} className="inline-flex h-6 items-center gap-1 rounded-full bg-gray-100 px-2 text-[11px] font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                  <IconComp size={12} className={`h-3 w-3 ${getPlatformColor(type)}`} />
+                  {label}
                 </span>
               );
             })()
           )}
         </h2>
-        <p className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500">
+        <p className="mt-1 flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
           {isAgentChat ? (
             <>
               <span className="h-1.5 w-1.5 rounded-full bg-acid-500" />
@@ -272,7 +274,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = React.memo(({ activeChat, onEndCha
             <button
               onClick={handleTransferClick}
               disabled={isTransferring}
-              className="tgo-pill h-9 px-3.5 text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+              className="tgo-pill h-10 px-4 text-xs disabled:opacity-50 disabled:cursor-not-allowed"
               title={t('chat.header.transferTooltip', 'Transfer to another agent')}
             >
               {isTransferring ? (
@@ -317,14 +319,16 @@ const ChatHeader: React.FC<ChatHeaderProps> = React.memo(({ activeChat, onEndCha
           <button
             onClick={handleEndChat}
             disabled={isClosing}
-            className="inline-flex h-9 items-center gap-1.5 rounded-full bg-ink-900 px-3.5 text-xs font-medium text-white transition-all duration-200 hover:bg-red-600 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:hover:bg-red-600"
+            className="group inline-flex h-10 items-center gap-2 rounded-full bg-ink-900 pl-1.5 pr-4 text-xs font-medium text-white shadow-[0_8px_20px_-10px_rgb(15_16_18/0.6)] transition-all duration-200 hover:bg-red-600 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:hover:bg-red-600"
             title={t('chat.header.endChatTooltip', 'End the current chat')}
           >
-            {isClosing ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            ) : (
-              <LogOut className="w-3.5 h-3.5" />
-            )}
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-acid-400 text-ink-900 transition-colors group-hover:bg-white group-hover:text-red-600">
+              {isClosing ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <LogOut className="w-3.5 h-3.5" />
+              )}
+            </span>
             <span>{t('chat.header.endChat', 'End Chat')}</span>
           </button>
         </div>
@@ -335,7 +339,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = React.memo(({ activeChat, onEndCha
           <button
             onClick={handleClearMemory}
             disabled={isClearingMemory}
-            className="tgo-pill h-9 px-3.5 text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+            className="tgo-pill h-10 px-4 text-xs disabled:opacity-50 disabled:cursor-not-allowed"
             title={t('chat.header.clearMemoryTooltip', 'Clear AI conversation memory and restart')}
           >
             {isClearingMemory ? (

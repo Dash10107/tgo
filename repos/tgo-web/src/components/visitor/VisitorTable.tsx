@@ -31,32 +31,32 @@ const VisitorTable: React.FC<VisitorTableProps> = ({ visitors, onVisitorClick })
 
   return (
     <table className="w-full text-left border-collapse">
-      <thead className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-900/95">
-        <tr className="border-b border-gray-200 dark:border-gray-700">
-          <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+      <thead>
+        <tr className="border-b border-gray-100 dark:border-gray-800">
+          <th className="px-6 pb-3 pt-5 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-400 dark:text-gray-500">
             {t('visitor.table.visitor', 'Visitor')}
           </th>
-          <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+          <th className="px-6 pb-3 pt-5 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-400 dark:text-gray-500">
             {t('visitor.table.platform', 'Platform')}
           </th>
-          <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+          <th className="px-6 pb-3 pt-5 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-400 dark:text-gray-500">
             {t('visitor.table.lastVisit', 'Last Visit')}
           </th>
-          <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+          <th className="px-6 pb-3 pt-5 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-400 dark:text-gray-500">
             {t('visitor.table.lastOnline', 'Last Online')}
           </th>
-          <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+          <th className="px-6 pb-3 pt-5 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-400 dark:text-gray-500">
             {t('visitor.table.tags', 'Tags')}
           </th>
-          <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right">
+          <th className="px-6 pb-3 pt-5 text-right text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-400 dark:text-gray-500">
             {t('visitor.table.actions', 'Actions')}
           </th>
         </tr>
       </thead>
-      <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+      <tbody className="divide-y divide-gray-50 dark:divide-gray-800/70">
             {(!visitors || visitors.length === 0) ? (
               <tr>
-                <td colSpan={5} className="px-6 py-10 text-center text-gray-500 dark:text-gray-400">
+                <td colSpan={6} className="px-6 py-10 text-center text-gray-500 dark:text-gray-400">
                   {t('visitor.table.empty', 'No visitor data')}
                 </td>
               </tr>
@@ -66,7 +66,7 @@ const VisitorTable: React.FC<VisitorTableProps> = ({ visitors, onVisitorClick })
                 return (
                   <tr
                     key={v.id}
-                    className="hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors group"
+                    className="group cursor-pointer transition-colors hover:bg-acid-50 dark:hover:bg-acid-400/5"
                     onClick={() => onVisitorClick(v)}
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -77,31 +77,34 @@ const VisitorTable: React.FC<VisitorTableProps> = ({ visitors, onVisitorClick })
                           visitorStatus={v.is_online ? 'online' : 'offline'}
                           sizePx={40}
                           colorSeed={`${v.id}-vtr`}
-                          wrapperClassName="relative flex-shrink-0"
+                          wrapperClassName="relative flex-shrink-0 rounded-full ring-4 ring-gray-50 transition-shadow group-hover:ring-acid-200 dark:ring-gray-800 dark:group-hover:ring-acid-400/20"
                         />
                         <div className="flex flex-col min-w-0">
-                          <span className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate max-w-[150px]">
+                          <span className="max-w-[180px] truncate text-sm font-medium text-gray-900 dark:text-gray-100">
                             {v.name || v.display_nickname || v.nickname_zh || v.nickname || t('visitor.fallbackName', 'Visitor {{suffix}}').replace('{{suffix}}', (v.platform_open_id || '').slice(-4))}
                           </span>
-                          <span className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[150px]">
+                          <span className="max-w-[180px] truncate text-xs text-gray-400 dark:text-gray-500">
                             {v.email || v.phone_number || v.platform_open_id || '-'}
                           </span>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2">
+                      <div className="inline-flex h-8 items-center gap-2 rounded-full bg-gray-50 px-3 dark:bg-gray-800">
                         <ChatPlatformIcon platformType={v.platform_type as any} />
-                        <span className="text-sm text-gray-600 dark:text-gray-300">
+                        <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
                           {getPlatformLabel(toPlatformType(v.platform_type)) || v.platform_type || '-'}
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm tabular-nums text-gray-600 dark:text-gray-300">
                       {formatLastVisit(v.last_visit_time)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
-                      {formatOnlineDuration(v.last_online_duration_minutes, v.is_online)}
+                      <span className="inline-flex items-center gap-2">
+                        <span className={`h-2 w-2 rounded-full ${v.is_online ? 'bg-acid-500 tgo-pulse-ring' : 'bg-gray-300 dark:bg-gray-600'}`} />
+                        {formatOnlineDuration(v.last_online_duration_minutes, v.is_online)}
+                      </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex flex-wrap gap-1">
@@ -111,7 +114,7 @@ const VisitorTable: React.FC<VisitorTableProps> = ({ visitors, onVisitorClick })
                             return (
                               <span
                                 key={tag.id}
-                                className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium border"
+                                className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-medium"
                                 style={{
                                   backgroundColor: hexToRgba(hex, 0.1),
                                   color: hex,
@@ -130,17 +133,19 @@ const VisitorTable: React.FC<VisitorTableProps> = ({ visitors, onVisitorClick })
                     <td className="px-6 py-4 whitespace-nowrap text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button
-                          onClick={(e) => handleGoToChat(e, v.id)}
-                          className="text-gray-400 hover:text-green-600 dark:hover:text-green-400 p-1 rounded-md hover:bg-green-50 dark:hover:bg-green-900/20 transition-all"
-                          title={t('chat.openChat', 'Open Chat')}
+                          className="tgo-icon-btn h-9 w-9 group-hover:rotate-45"
+                          title={t('common.details', 'Details')}
+                          aria-label={t('common.details', 'Details')}
                         >
-                          <Icon name="MessageCircle" size={16} />
+                          <Icon name="ArrowUpRight" size={16} />
                         </button>
                         <button
-                          className="text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 p-1 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all"
-                          title={t('common.details', 'Details')}
+                          onClick={(e) => handleGoToChat(e, v.id)}
+                          className="flex h-9 w-9 items-center justify-center rounded-full bg-ink-900 text-acid-400 transition-transform duration-200 hover:scale-105 active:scale-95 dark:bg-acid-400 dark:text-ink-900"
+                          title={t('chat.openChat', 'Open Chat')}
+                          aria-label={t('chat.openChat', 'Open Chat')}
                         >
-                          <Icon name="ExternalLink" size={16} />
+                          <Icon name="MessageCircle" size={16} />
                         </button>
                       </div>
                     </td>

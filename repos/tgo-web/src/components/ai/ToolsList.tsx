@@ -38,7 +38,7 @@ const ToolsList: React.FC<ToolsListProps> = ({
           }
         </p>
         <div className="mt-6">
-          <button className="inline-flex items-center px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white text-sm rounded-md hover:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+          <button className="inline-flex h-10 items-center rounded-full bg-ink-900 px-5 text-sm font-medium text-white transition-transform active:scale-95 dark:bg-acid-400 dark:text-ink-900">
             {t('tools.list.emptyAction', 'Start adding tools')}
           </button>
         </div>
@@ -47,7 +47,7 @@ const ToolsList: React.FC<ToolsListProps> = ({
   }
 
   return (
-    <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 ${className}`}>
+    <div className={`tgo-stagger grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 ${className}`}>
       {tools.map((tool) => (
         <ToolCard
           key={tool.id}

@@ -10,7 +10,7 @@ interface DeviceTagProps {
 }
 
 const sizeClasses: Record<NonNullable<DeviceTagProps['size']>, string> = {
-  xs: 'px-1.5 py-0.5 text-[11px]',
+  xs: 'px-2 py-0.5 text-[11px]',
   sm: 'px-2 py-1 text-xs',
   md: 'px-3 py-1.5 text-sm',
 };
@@ -42,7 +42,7 @@ const DeviceTag: React.FC<DeviceTagProps> = ({
   return (
     <span
       className={[
-        'inline-flex items-center rounded-md border transition-colors duration-200',
+        'inline-flex items-center rounded-full border transition-colors duration-200',
         'bg-violet-50 text-violet-700 border-violet-200 hover:bg-violet-100',
         'dark:bg-violet-900/20 dark:text-violet-300 dark:border-violet-700 dark:hover:bg-violet-900/30',
         sizeClasses[size],

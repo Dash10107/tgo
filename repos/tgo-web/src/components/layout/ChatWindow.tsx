@@ -280,12 +280,12 @@ const ChatWindow: React.FC<ChatWindowProps> = React.memo(({ activeChat, onSendMe
   }
 
   return (
-    <main className="tgo-surface relative flex-grow min-w-0 flex flex-col overflow-hidden">
+    <main className="tgo-surface tgo-chat-canvas relative flex-grow min-w-0 flex flex-col overflow-hidden">
       {/* Chat Header */}
       <ChatHeader activeChat={activeChat} onEndChatSuccess={onEndChatSuccess} />
 
       {/* Messages Area */}
-      <div className="flex-1 min-h-0 overflow-hidden bg-[radial-gradient(circle_at_1px_1px,rgb(15_16_18/0.06)_1px,transparent_0)] bg-[size:22px_22px] dark:bg-[radial-gradient(circle_at_1px_1px,rgb(255_255_255/0.05)_1px,transparent_0)]">
+      <div className="flex-1 min-h-0 overflow-hidden">
         <MessagesList
           key={activeChat.id}
           isWuKongIMChat={isWuKongIMChat}

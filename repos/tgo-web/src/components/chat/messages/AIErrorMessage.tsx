@@ -13,20 +13,20 @@ export interface AIErrorMessageProps {
 const AIErrorMessage: React.FC<AIErrorMessageProps> = ({ isStaff, errorText }) => {
   if (isStaff) {
     return (
-      <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800/50 px-3.5 py-2.5 rounded-[20px] rounded-br-md overflow-hidden max-w-full">
-        <div className="flex items-start space-x-2 text-red-600 dark:text-red-400">
-          <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-          <span className="text-sm">{errorText}</span>
+      <div className="bg-red-50 dark:bg-red-950/40 ring-1 ring-red-100 dark:ring-red-900/60 px-4 py-3 rounded-3xl rounded-br-lg overflow-hidden max-w-full">
+        <div className="flex items-start gap-2.5 text-red-600 dark:text-red-400">
+          <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/50"><AlertCircle className="w-3.5 h-3.5" /></span>
+          <span className="pt-0.5 text-sm leading-relaxed">{errorText}</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800/50 px-3.5 py-2.5 rounded-[20px] rounded-bl-md overflow-hidden max-w-full">
-      <div className="flex items-start space-x-2 text-red-600 dark:text-red-400">
-        <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-        <span className="text-sm">{errorText}</span>
+    <div className="bg-red-50 dark:bg-red-950/40 ring-1 ring-red-100 dark:ring-red-900/60 px-4 py-3 rounded-3xl rounded-bl-lg overflow-hidden max-w-full">
+      <div className="flex items-start gap-2.5 text-red-600 dark:text-red-400">
+        <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/50"><AlertCircle className="w-3.5 h-3.5" /></span>
+        <span className="pt-0.5 text-sm leading-relaxed">{errorText}</span>
       </div>
     </div>
   );

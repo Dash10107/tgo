@@ -186,8 +186,8 @@ const RichTextMessage: React.FC<MessageComponentProps> = ({ message, isStaff, on
   const renderRichFile = () => {
     if (!richFile) return null;
     const boxClass = isStaff
-      ? 'flex items-center space-x-3 rounded-md border border-blue-200 dark:border-blue-700 bg-white dark:bg-gray-800 px-3 py-2 max-w-xs self-end'
-      : 'mt-2 flex items-center space-x-3 rounded-md border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 max-w-xs';
+      ? 'flex items-center space-x-3 rounded-2xl border border-acid-300 dark:border-acid-700 bg-white dark:bg-gray-900 px-3 py-2.5 max-w-xs self-end'
+      : 'mt-2 flex items-center space-x-3 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2.5 max-w-xs';
     return (
       <div className={boxClass}>
         {getFileIcon(richFile.name, 'w-5 h-5 flex-shrink-0')}
@@ -224,7 +224,7 @@ const RichTextMessage: React.FC<MessageComponentProps> = ({ message, isStaff, on
   const textBubble = isStaff ? (
     <div ref={rtTextRef} className="inline-block tgo-bubble tgo-bubble-out">
       {shouldRenderMarkdown ? (
-        <MarkdownContent content={richContent} className="text-sm markdown-white" onSendMessage={onSendMessage} />
+        <MarkdownContent content={richContent} className="text-sm markdown-on-accent" onSendMessage={onSendMessage} />
       ) : (
         <p className="text-sm">{richContent}</p>
       )}
@@ -252,8 +252,8 @@ const RichTextMessage: React.FC<MessageComponentProps> = ({ message, isStaff, on
                 key={idx}
                 className={
                   (isStaff
-                    ? 'relative rounded-md overflow-hidden border border-blue-200 dark:border-blue-700 bg-white dark:bg-gray-800 '
-                    : 'relative rounded-md overflow-hidden border border-gray-100 dark:border-gray-600 bg-white dark:bg-gray-800 '
+                    ? 'relative rounded-2xl overflow-hidden ring-2 ring-acid-300 dark:ring-acid-500/60 bg-white dark:bg-gray-800 '
+                    : 'relative rounded-2xl overflow-hidden ring-1 ring-gray-100 dark:ring-gray-700 bg-white dark:bg-gray-800 '
                   ) +
                   (im.upload_status === 'error'
                     ? 'cursor-pointer hover:opacity-95'

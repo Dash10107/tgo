@@ -436,3 +436,52 @@
 .markdown-white pre code .hljs-function .hljs-title {
   color: #ffeb99 !important;
 }
+/* Markdown inside the acid-lime "own message" bubble */
+.markdown-on-accent,
+.markdown-on-accent :is(h1, h2, h3, h4, h5, h6, p, li, strong) {
+  color: var(--color-ink-900);
+}
+
+.markdown-on-accent :is(h1, h2, h3, h4, h5, h6, hr, table, th, td) {
+  border-color: rgb(15 16 18 / 0.15);
+}
+
+.markdown-on-accent a,
+.markdown-on-accent a:hover {
+  color: var(--color-ink-900);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.markdown-on-accent code {
+  background-color: rgb(15 16 18 / 0.08);
+  color: var(--color-ink-900);
+  border-color: rgb(15 16 18 / 0.1);
+}
+
+.markdown-on-accent pre {
+  background-color: rgb(255 255 255 / 0.55);
+  border-color: rgb(15 16 18 / 0.1);
+}
+
+.markdown-on-accent pre code {
+  background-color: transparent;
+  border: none;
+}
+
+.markdown-on-accent blockquote {
+  color: rgb(15 16 18 / 0.75);
+  border-left-color: rgb(15 16 18 / 0.3);
+  background-color: rgb(255 255 255 / 0.35);
+}
+
+.dark .markdown-on-accent code:not(pre code) {
+  background-color: rgb(15 16 18 / 0.1);
+  color: var(--color-ink-900);
+  border-color: rgb(15 16 18 / 0.12);
+}
+
+.dark .markdown-on-accent pre {
+  background-color: rgb(15 16 18 / 0.85);
+  border-color: rgb(15 16 18 / 0.2);
+}

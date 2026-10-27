@@ -29,22 +29,22 @@ const WorkflowTag: React.FC<WorkflowTagProps> = ({
   // Determine the color theme from the workflow state
   const getColorTheme = (enabled: boolean = true) => {
     if (enabled) {
-      return 'bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-200';
+      return 'bg-ink-900 text-white border-ink-900 hover:bg-ink-700 dark:bg-gray-900 dark:border-gray-700';
     } else {
-      return 'bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200';
+      return 'bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600';
     }
   };
 
   const getIconColor = (enabled: boolean = true) => {
     if (enabled) {
-      return 'text-purple-600';
+      return 'text-acid-400';
     } else {
       return 'text-gray-400';
     }
   };
 
   const sizeClasses = {
-    xs: 'px-1.5 py-0.5 text-[11px]',
+    xs: 'px-2 py-0.5 text-[11px]',
     sm: 'px-2 py-1 text-xs',
     md: 'px-3 py-1.5 text-sm'
   };
@@ -69,7 +69,7 @@ const WorkflowTag: React.FC<WorkflowTagProps> = ({
   return (
     <span
       className={`
-        inline-flex items-center rounded-md border transition-colors duration-200
+        inline-flex items-center rounded-full border transition-colors duration-200
         ${sizeClasses[size]}
         ${colorTheme}
         ${onClick ? 'cursor-pointer' : 'cursor-default'}

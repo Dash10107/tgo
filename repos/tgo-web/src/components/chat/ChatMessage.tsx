@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { AlertCircle, Check, CheckCheck, Loader2, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { MessagePayloadType, PlatformType, isSystemMessageType, type Message, type PayloadSystem } from '@/types';
@@ -21,8 +21,13 @@ import LoadingMessage from './messages/LoadingMessage';
 import AIErrorMessage from './messages/AIErrorMessage';
 import SystemMessage from './messages/SystemMessage';
 
+/** Where a message sits within a run of consecutive messages from the same sender */
+export type MessageGroupPosition = 'single' | 'first' | 'middle' | 'last';
+
 interface ChatMessageProps {
   message: Message;
+  /** Position inside a sender run; controls avatar, name and timestamp visibility */
+  groupPosition?: MessageGroupPosition;
   onSuggestionClick?: (suggestion: string) => void;
   /** Callback for sending a message (used by the msg:// protocol in Widgets) */
   onSendMessage?: (message: string) => void;
@@ -58,8 +63,15 @@ const MessageContent: React.FC<{
 /**
  * Individual chat message component
  */
-const ChatMessage: React.FC<ChatMessageProps> = ({ message, onSuggestionClick, onSendMessage }) => {
-  const { t } = useTranslation();
+/** Normalize a message timestamp (ISO string or unix seconds) to a Date */
+const toMessageDate = (timestamp: string | number | undefined): Date | null => {
+  if (timestamp === undefined || timestamp === null || timestamp === '') return null;
+  const date = typeof timestamp === 'number' ? new Date(timestamp * 1000) : new Date(timestamp);
+  return Number.isNaN(date.getTime()) ? null : date;
+};
+
+const ChatMessage: React.FC<ChatMessageProps> = ({ message, groupPosition = 'single', onSuggestionClick, onSendMessage }) => {
+  const { t, i18n } = useTranslation();
   const user = useAuthStore(state => state.user);
   const currentUid = React.useMemo(() => (user?.id ? `${user.id}-staff` : null), [user?.id]);
 
@@ -181,8 +193,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, onSuggestionClick, o
     }
     // Compatible with the legacy simple system message format
     return (
-      <div className="flex justify-center my-3">
-        <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-gray-100/80 dark:bg-gray-700/50 text-xs text-gray-500 dark:text-gray-400">
+      <div className="my-2 flex justify-center">
+        <div className="inline-flex items-center rounded-full bg-white/80 px-3.5 py-1.5 text-xs text-gray-500 shadow-sm ring-1 ring-gray-100 backdrop-blur dark:bg-gray-900/80 dark:text-gray-400 dark:ring-gray-800">
           {message.content}
         </div>
       </div>
@@ -206,78 +218,122 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, onSuggestionClick, o
   };
 
 
+  // Group layout: name on the first message of a run, avatar and timestamp on the last
+  const startsGroup = groupPosition === 'single' || groupPosition === 'first';
+  const endsGroup = groupPosition === 'single' || groupPosition === 'last';
+  const messageDate = toMessageDate(message.timestamp as string | number | undefined);
+  const timeLabel = messageDate
+    ? messageDate.toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' })
+    : '';
+  const isAISender = Boolean(senderChannelId && /-(agent|ai)$/.test(senderChannelId));
+
+  const content = (
+    <MessageContent
+      message={message}
+      isStaff={isOwnMessage}
+      streamError={streamError}
+      streamErrorText={getStreamErrorText()}
+      isStreamLoading={isStreamLoading}
+      isStreamEmpty={isStreamEmpty}
+      emptyStreamText={emptyStreamText}
+      isRichText={isRichText}
+      isImage={isImage}
+      isFile={isFile}
+      isJSONRender={isJSONRender}
+      onSendMessage={onSendMessage}
+    />
+  );
+
   // Visitor/AI message (left side)
   if (!isOwnMessage) {
     return (
-      <div className="tgo-msg-left flex flex-col items-start max-w-[85%]">
-        <div className="text-[11px] font-medium text-gray-400 dark:text-gray-500 mb-1.5 ml-10">
-          {displayName} {getPlatformIcon()}
+      <div className="tgo-msg tgo-msg-left flex w-full items-end gap-3" data-pos={groupPosition}>
+        <div className="w-9 shrink-0">
+          {endsGroup && (
+            <ChatAvatar
+              displayName={displayName}
+              displayAvatar={displayAvatar}
+              colorSeed={colorSeedChannelId}
+              sizePx={36}
+              wrapperClassName="relative flex-shrink-0 rounded-full ring-4 ring-white dark:ring-gray-950"
+            />
+          )}
         </div>
-        <div className="flex items-end space-x-2">
-          <ChatAvatar
-            displayName={displayName}
-            displayAvatar={displayAvatar}
-            colorSeed={colorSeedChannelId}
-            sizePx={32} // keep existing 8x8 size
-            wrapperClassName="relative flex-shrink-0 self-end"
-          />
-          <MessageContent
-            message={message}
-            isStaff={false}
-            streamError={streamError}
-            streamErrorText={getStreamErrorText()}
-            isStreamLoading={isStreamLoading}
-            isStreamEmpty={isStreamEmpty}
-            emptyStreamText={emptyStreamText}
-            isRichText={isRichText}
-            isImage={isImage}
-            isFile={isFile}
-            isJSONRender={isJSONRender}
-            onSendMessage={onSendMessage}
-          />
+        <div className="flex min-w-0 max-w-[min(80%,680px)] flex-col items-start">
+          {startsGroup && (
+            <div className="mb-1.5 flex items-center gap-1.5 pl-1 text-xs">
+              <span className="font-semibold text-gray-800 dark:text-gray-200">{displayName}</span>
+              {isAISender && (
+                <span className="tgo-ai-chip">
+                  <Sparkles className="h-2.5 w-2.5" />
+                  {t('chat.messages.aiBadge', 'AI')}
+                </span>
+              )}
+              {getPlatformIcon()}
+            </div>
+          )}
+          <div className="flex max-w-full items-end gap-2">
+            {content}
+            {!endsGroup && timeLabel && (
+              <span className="tgo-msg-time mb-1 shrink-0 text-[10px] tabular-nums text-gray-400 dark:text-gray-500">{timeLabel}</span>
+            )}
+          </div>
+          {endsGroup && timeLabel && (
+            <span className="mt-1.5 pl-1 text-[11px] tabular-nums text-gray-400 dark:text-gray-500">{timeLabel}</span>
+          )}
+          <AIInfoCard aiInfo={message.aiInfo} />
+          <ReplySuggestions suggestions={(message as any).suggestions} onSuggestionClick={onSuggestionClick} />
         </div>
-        <AIInfoCard aiInfo={message.aiInfo} />
-        <ReplySuggestions suggestions={(message as any).suggestions} onSuggestionClick={onSuggestionClick} />
       </div>
     );
   }
 
   // Own message (right side)
   return (
-    <div className="tgo-msg-right flex flex-col items-end ml-auto max-w-[85%]">
-      <div className="flex items-start flex-row-reverse mt-1">
-        <MessageContent
-          message={message}
-          isStaff={true}
-          streamError={streamError}
-          streamErrorText={getStreamErrorText()}
-          isStreamLoading={isStreamLoading}
-          isStreamEmpty={isStreamEmpty}
-          emptyStreamText={emptyStreamText}
-          isRichText={isRichText}
-          isImage={isImage}
-          isFile={isFile}
-          isJSONRender={isJSONRender}
-          onSendMessage={onSendMessage}
-        />
-        {isSending && (
-          <div className="relative self-center text-gray-400 dark:text-gray-500 mr-2" title={t('chat.messages.sending', 'Sending...')}>
-            <Loader2 className="w-5 h-5 animate-spin" />
-          </div>
-        )}
-        {hasSendError && (
-          <div
-            className="relative self-center text-red-500 dark:text-red-400 cursor-pointer mr-2"
-            onClick={() => setErrorOpen(v => !v)}
-            title={t('chat.messages.sendFailedTitle', 'Send Failed')}
-          >
-            <AlertCircle className="w-5 h-5" />
-            {errorOpen && (
-              <div className="absolute right-full mr-2 top-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 border border-red-200 dark:border-red-800/50 text-red-700 dark:text-red-400 text-xs rounded-xl py-2 px-3 shadow-lg z-50 w-fit min-w-[240px] max-w-[80vw] sm:max-w-md max-h-[60vh] overflow-auto whitespace-pre-wrap break-words">
-                {getSendErrorText()}
-              </div>
+    <div className="tgo-msg tgo-msg-right flex w-full justify-end" data-pos={groupPosition}>
+      <div className="flex min-w-0 max-w-[min(80%,680px)] flex-col items-end">
+        <div className="flex max-w-full flex-row-reverse items-end gap-2">
+          {content}
+          {hasSendError && (
+            <div
+              className="relative mb-1 shrink-0 cursor-pointer text-red-500 dark:text-red-400"
+              onClick={() => setErrorOpen(v => !v)}
+              title={t('chat.messages.sendFailedTitle', 'Send Failed')}
+            >
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-red-50 ring-1 ring-red-100 transition-transform hover:scale-110 dark:bg-red-950/50 dark:ring-red-900/60">
+                <AlertCircle className="h-4 w-4" />
+              </span>
+              {errorOpen && (
+                <div className="animate-in fade-in zoom-in-95 absolute right-full top-1/2 z-50 mr-2 max-h-[60vh] w-fit min-w-[240px] max-w-[80vw] -translate-y-1/2 overflow-auto whitespace-pre-wrap break-words rounded-2xl bg-white px-3.5 py-2.5 text-xs text-red-700 shadow-xl ring-1 ring-red-100 sm:max-w-md dark:bg-gray-900 dark:text-red-400 dark:ring-red-900/50">
+                  {getSendErrorText()}
+                </div>
+              )}
+            </div>
+          )}
+          {!endsGroup && !hasSendError && timeLabel && (
+            <span className="tgo-msg-time mb-1 shrink-0 text-[10px] tabular-nums text-gray-400 dark:text-gray-500">{timeLabel}</span>
+          )}
+        </div>
+        {(endsGroup || isSending || hasSendError) && (
+          <span className={`mt-1.5 flex items-center gap-1 pr-1 text-[11px] tabular-nums ${hasSendError ? 'text-red-500 dark:text-red-400' : 'text-gray-400 dark:text-gray-500'}`}>
+            {hasSendError ? (
+              t('chat.messages.sendFailedTitle', 'Send Failed')
+            ) : isSending ? (
+              <>
+                <Loader2 className="h-3 w-3 animate-spin" />
+                {t('chat.messages.sending', 'Sending...')}
+              </>
+            ) : (
+              <>
+                {timeLabel}
+                {meta.isLocal ? (
+                  <Check className="h-3.5 w-3.5 text-acid-600 dark:text-acid-400" />
+                ) : (
+                  <CheckCheck className="h-3.5 w-3.5 text-acid-600 dark:text-acid-400" />
+                )}
+              </>
             )}
-          </div>
+          </span>
         )}
       </div>
     </div>

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Pencil, Trash2, Copy, Check, Globe, Radio, MoreVertical, Terminal, Wrench, Package } from 'lucide-react';
+import { Pencil, Trash2, Copy, Check, Globe, Radio, MoreHorizontal, Terminal, Wrench, Package, ArrowUpRight, Link2 } from 'lucide-react';
+import { NotchCard, MenuPanel, MenuItem } from '@/components/ui/PageKit';
 import type { AiTool } from '@/types';
 import { useTranslation } from 'react-i18next';
 import { getToolDisplayTitle } from '@/utils/projectToolsTransform';
@@ -70,8 +71,9 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onAction, onShowToast }) => {
       // Function/HTTP tools use a consistent blue/globe theme
       return {
         icon: Globe,
-        color: 'text-blue-600 dark:text-blue-400',
-        bgColor: 'bg-blue-50 dark:bg-blue-900/20',
+        color: 'text-sky-300',
+        bgColor: 'bg-ink-900',
+        dot: 'bg-sky-400',
         label: 'HTTP'
       };
     }
@@ -84,8 +86,9 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onAction, onShowToast }) => {
       
       return {
         icon: Icon,
-        color: 'text-green-600 dark:text-green-400',
-        bgColor: 'bg-green-50 dark:bg-green-900/20',
+        color: 'text-acid-400',
+        bgColor: 'bg-ink-900',
+        dot: 'bg-acid-500',
         label: transport.toUpperCase() || 'MCP'
       };
     }
@@ -93,8 +96,9 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onAction, onShowToast }) => {
     // Fallback for unknown types
     return {
       icon: Wrench,
-      color: 'text-gray-500',
-      bgColor: 'bg-gray-50 dark:bg-gray-800/30',
+      color: 'text-gray-200',
+      bgColor: 'bg-ink-900',
+      dot: 'bg-gray-400',
       label: transportType.toUpperCase() || 'TOOL'
     };
   };
@@ -103,77 +107,91 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onAction, onShowToast }) => {
   const ToolIcon = toolConfig.icon;
 
   return (
-    <div className="group relative bg-white dark:bg-gray-800 rounded-2xl p-5 flex flex-col justify-between shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 dark:border-gray-700 overflow-hidden">
-      <div>
-        <div className="flex justify-between items-start mb-4 gap-2">
-          <div className="flex items-center space-x-3 flex-1 min-w-0">
-            <div className={`flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center ${toolConfig.bgColor} ${toolConfig.color} border border-gray-100 dark:border-gray-700/50`}>
-              <ToolIcon className="w-5 h-5" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="font-bold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200 truncate text-base" title={displayTitle}>
-                {displayTitle}
-              </h3>
-              <div className="flex items-center mt-0.5">
-                <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-medium ${toolConfig.bgColor} ${toolConfig.color} border border-gray-100 dark:border-gray-700 flex-shrink-0`}>
-                  {toolConfig.label}
-                </span>
-                <span className="mx-1.5 text-gray-300 dark:text-gray-600 flex-shrink-0">•</span>
-                <span className="text-[10px] text-gray-400 dark:text-gray-500 font-medium truncate uppercase tracking-wider">{toolType}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="relative flex-shrink-0" ref={menuRef}>
-            <button 
-              onClick={() => setShowMenu(!showMenu)}
-              className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              <MoreVertical className="w-5 h-5" />
-            </button>
-            
-            {showMenu && (
-              <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-1 z-20 animate-in fade-in zoom-in-95 duration-200">
-                <button onClick={() => handleAction('edit')} className="w-full flex items-center px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                  <Pencil className="w-4 h-4 mr-2" /> {t('common.edit', 'Edit')}
-                </button>
-                {endpoint && (
-                  <button onClick={handleCopyEndpoint} className="w-full flex items-center px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                    {copiedEndpoint ? <Check className="w-4 h-4 mr-2 text-green-500" /> : <Copy className="w-4 h-4 mr-2" />}
-                    {t('tools.copyEndpoint', 'Copy Endpoint')}
-                  </button>
-                )}
-                <div className="h-px bg-gray-100 dark:bg-gray-700 my-1"></div>
-                <button onClick={() => handleAction('delete')} className="w-full flex items-center px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
-                  <Trash2 className="w-4 h-4 mr-2" /> {t('common.delete', 'Delete')}
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4 line-clamp-2 h-10 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
-          {tool.description || t('tools.noDescription', 'No description')}
-        </p>
-
-        {endpoint && (
-          <div className="flex items-center text-[11px] text-gray-500 dark:text-gray-500 bg-gray-50/50 dark:bg-gray-800/50 px-2 py-1.5 rounded-lg border border-gray-100/50 dark:border-gray-700/50 mt-auto">
-            <Globe className="w-3.5 h-3.5 mr-2 opacity-50" />
-            <span className="font-mono truncate opacity-80">{endpoint}</span>
-          </div>
-        )}
-      </div>
-
-      <div className="mt-5 flex items-center gap-2">
+    <NotchCard
+      raised={showMenu}
+      corner={
         <button
           onClick={() => handleAction('edit')}
-          className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-blue-200 dark:shadow-none transition-all duration-200 active:scale-95"
+          aria-label={t('tools.editTool', 'Edit Tool')}
+          title={t('tools.editTool', 'Edit Tool')}
+          className="tgo-icon-btn h-9 w-9 group-hover:rotate-45"
         >
-          <Pencil className="w-3.5 h-3.5" />
-          {t('tools.editTool', 'Edit Tool')}
+          <ArrowUpRight className="h-4 w-4" />
         </button>
+      }
+    >
+      <div className="flex items-center gap-3 pr-10">
+        <span className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${toolConfig.bgColor} ${toolConfig.color}`}>
+          <ToolIcon className="h-5 w-5" />
+          <span className={`absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-white dark:border-gray-800 ${toolConfig.dot}`} />
+        </span>
+        <div className="min-w-0">
+          <p className="text-[11px] font-medium uppercase tracking-wider text-gray-400 dark:text-gray-500">{toolType}</p>
+          <p className="truncate text-xs text-gray-500 dark:text-gray-400">{toolConfig.label}</p>
+        </div>
       </div>
-    </div>
+
+      <button onClick={() => handleAction('edit')} className="mt-5 text-left">
+        <h3 className="line-clamp-1 text-xl font-medium tracking-tight text-gray-900 dark:text-gray-100" title={displayTitle}>
+          {displayTitle}
+        </h3>
+        <p className="mt-1.5 line-clamp-2 min-h-10 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
+          {tool.description || t('tools.noDescription', 'No description')}
+        </p>
+      </button>
+
+      <div className="mt-auto pt-5">
+        <p className="mb-1.5 text-[11px] text-gray-400 dark:text-gray-500">{t('tools.endpointLabel', 'Endpoint')}</p>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleCopyEndpoint}
+            disabled={!endpoint}
+            title={endpoint ? t('tools.copyEndpoint', 'Copy Endpoint') : undefined}
+            className="group/ep inline-flex h-10 min-w-0 flex-1 items-center gap-2 rounded-full px-4 text-left text-xs text-gray-600 ring-1 ring-gray-200 transition-colors enabled:hover:bg-gray-50 disabled:cursor-default dark:text-gray-300 dark:ring-gray-700 dark:enabled:hover:bg-gray-700/50"
+          >
+            {copiedEndpoint ? <Check className="h-3.5 w-3.5 shrink-0 text-acid-600" /> : <Link2 className="h-3.5 w-3.5 shrink-0 text-gray-400" />}
+            <span className="truncate font-mono">{endpoint || t('tools.noEndpoint', 'Built-in')}</span>
+          </button>
+
+          <div className="relative" ref={menuRef}>
+            <button
+              onClick={() => setShowMenu(v => !v)}
+              aria-haspopup="menu"
+              aria-expanded={showMenu}
+              aria-label={t('common.more', 'More')}
+              className="tgo-icon-btn h-10 w-10"
+            >
+              <MoreHorizontal className="h-4 w-4" />
+            </button>
+            {showMenu && (
+              <MenuPanel placement="top">
+                <MenuItem onClick={() => handleAction('edit')}>
+                  <Pencil className="h-4 w-4" /> {t('common.edit', 'Edit')}
+                </MenuItem>
+                {endpoint && (
+                  <MenuItem onClick={handleCopyEndpoint}>
+                    {copiedEndpoint ? <Check className="h-4 w-4 text-acid-600" /> : <Copy className="h-4 w-4" />}
+                    {t('tools.copyEndpoint', 'Copy Endpoint')}
+                  </MenuItem>
+                )}
+                <div className="my-1 h-px bg-gray-100 dark:bg-gray-700" />
+                <MenuItem danger onClick={() => handleAction('delete')}>
+                  <Trash2 className="h-4 w-4" /> {t('common.delete', 'Delete')}
+                </MenuItem>
+              </MenuPanel>
+            )}
+          </div>
+
+          <button
+            onClick={() => handleAction('edit')}
+            aria-label={t('tools.editTool', 'Edit Tool')}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink-900 text-white transition-transform duration-200 hover:scale-105 active:scale-95 dark:bg-acid-400 dark:text-ink-900"
+          >
+            <Pencil className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+    </NotchCard>
   );
 };
 

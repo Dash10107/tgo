@@ -1,9 +1,9 @@
 import React, { useRef, useEffect, useCallback, useLayoutEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import ChatMessage from './ChatMessage';
+import ChatMessage, { type MessageGroupPosition } from './ChatMessage';
 import LoadingStates from './LoadingStates';
 import EmptyState from './EmptyState';
-import type { WuKongIMMessage, Message } from '@/types';
+import { isSystemMessageType, type WuKongIMMessage, type Message } from '@/types';
 
 // Constants
 const SCROLL_THRESHOLD = 100; // Load more when within 100px of top
@@ -73,7 +73,7 @@ const MessagesListComponent: React.FC<MessagesListProps> = ({
   onScrolledToSeq,
   onSendMessage
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const highlightTimersRef = useRef<number[]>([]);
@@ -181,6 +181,75 @@ const MessagesListComponent: React.FC<MessagesListProps> = ({
     return [...historical, ...realtime];
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [historicalMessages, realtimeMessages]);
+
+  // Per-message layout: time separators (5+ minute gaps) and sender runs for bubble grouping
+  const messageLayout = useMemo(() => {
+    const TIME_GAP_THRESHOLD = 300; // 5 minutes in seconds
+    const GROUP_GAP_THRESHOLD = 120; // consecutive messages within 2 minutes stack together
+    const toSeconds = (timestamp: Message['timestamp'] | number | undefined): number => {
+      if (!timestamp) return 0;
+      return typeof timestamp === 'string' ? new Date(timestamp).getTime() / 1000 : timestamp;
+    };
+    const isSystem = (message: Message): boolean => {
+      const payloadType = (message.payload as { type?: number } | undefined)?.type ?? message.payloadType;
+      return message.type === 'system' || (typeof payloadType === 'number' && isSystemMessageType(payloadType));
+    };
+    const formatSeparator = (seconds: number): string => {
+      const date = new Date(seconds * 1000);
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const msgDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      const diffDays = Math.floor((today.getTime() - msgDate.getTime()) / (1000 * 60 * 60 * 24));
+      const timeString = date.toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' });
+
+      if (diffDays === 0) return `${t('chat.history.today', 'Today')} · ${timeString}`;
+      if (diffDays === 1) return `${t('chat.history.yesterday', 'Yesterday')} · ${timeString}`;
+      if (diffDays < 7) {
+        const weekdays = [
+          t('chat.history.weekday.sunday', 'Sunday'),
+          t('chat.history.weekday.monday', 'Monday'),
+          t('chat.history.weekday.tuesday', 'Tuesday'),
+          t('chat.history.weekday.wednesday', 'Wednesday'),
+          t('chat.history.weekday.thursday', 'Thursday'),
+          t('chat.history.weekday.friday', 'Friday'),
+          t('chat.history.weekday.saturday', 'Saturday'),
+        ];
+        return `${weekdays[date.getDay()]} · ${timeString}`;
+      }
+      return `${date.toLocaleDateString(i18n.language, { day: 'numeric', month: 'short', year: 'numeric' })} · ${timeString}`;
+    };
+
+    const items = combinedMessages.map(({ message }, index) => {
+      const seconds = toSeconds(message.timestamp);
+      const prevSeconds = index > 0 ? toSeconds(combinedMessages[index - 1].message.timestamp) : 0;
+      const showSeparator = index === 0 || seconds - prevSeconds >= TIME_GAP_THRESHOLD;
+      return {
+        seconds,
+        system: isSystem(message),
+        separatorText: showSeparator && seconds > 0 ? formatSeparator(seconds) : '',
+      };
+    });
+
+    // A message continues the previous run when the sender matches, it is close in time and no separator splits them
+    const continuesRun = (index: number): boolean => {
+      if (index <= 0 || index >= items.length) return false;
+      const cur = items[index];
+      const prev = items[index - 1];
+      if (cur.separatorText || cur.system || prev.system) return false;
+      const curFrom = combinedMessages[index].message.fromUid;
+      const prevFrom = combinedMessages[index - 1].message.fromUid;
+      return Boolean(curFrom) && curFrom === prevFrom && cur.seconds - prev.seconds < GROUP_GAP_THRESHOLD;
+    };
+
+    return items.map((item, index) => {
+      const joinsPrev = continuesRun(index);
+      const joinsNext = continuesRun(index + 1);
+      const groupPosition: MessageGroupPosition = joinsPrev
+        ? (joinsNext ? 'middle' : 'last')
+        : (joinsNext ? 'first' : 'single');
+      return { separatorText: item.separatorText, groupPosition };
+    });
+  }, [combinedMessages, i18n.language, t]);
 
   // Reset initial load state when conversation changes (no messages to some messages)
   useEffect(() => {
@@ -416,14 +485,15 @@ const MessagesListComponent: React.FC<MessagesListProps> = ({
   if (isWuKongIMChat) {
     return (
       <div
-        className="h-full overflow-y-auto px-6 py-6 space-y-5"
+        className="h-full overflow-y-auto px-4 pb-8 pt-4 md:px-8"
         onScroll={handleScroll}
         ref={messagesContainerRef}
       >
+        <div className="mx-auto w-full max-w-[920px]">
         {/* Local highlight animation styles */}
         <style>{`
           @keyframes targetFlash { from { background-color: rgba(205, 238, 85, 0.55); } to { background-color: transparent; } }
-          .target-highlight { animation: targetFlash 2.6s ease-out forwards; border-radius: 0.5rem; box-shadow: inset 0 0 0 1px rgba(143, 179, 30, 0.45); }
+          .target-highlight { animation: targetFlash 2.6s ease-out forwards; border-radius: 1.5rem; box-shadow: inset 0 0 0 1px rgba(143, 179, 30, 0.45); }
         `}</style>
         {/* Load More Button */}
         <LoadingStates
@@ -442,87 +512,26 @@ const MessagesListComponent: React.FC<MessagesListProps> = ({
         ) : totalMessageCount > 0 ? (
           /* Combined Messages: Historical + Real-time */
           <>
-            {/* Render Combined Messages with Time Separators (like WeChat) */}
+            {/* Render Combined Messages with Time Separators and sender runs */}
             {combinedMessages.map(({ key, message }, index) => {
-              // Get the timestamp of the current message (seconds)
-              const currentTimestamp = message.timestamp 
-                ? (typeof message.timestamp === 'string' ? new Date(message.timestamp).getTime() / 1000 : message.timestamp)
-                : 0;
-              
-              let showTimeSeparator = false;
-              let timeSeparatorText = '';
-              
-              if (index === 0) {
-                // The first message always shows the time
-                showTimeSeparator = true;
-              } else {
-                // Get the timestamp of the previous message
-                const prevMessage = combinedMessages[index - 1].message;
-                const prevTimestamp = prevMessage.timestamp
-                  ? (typeof prevMessage.timestamp === 'string' ? new Date(prevMessage.timestamp).getTime() / 1000 : prevMessage.timestamp)
-                  : 0;
-                
-                // If the time gap exceeds 5 minutes (300 seconds), show a time separator
-                const TIME_GAP_THRESHOLD = 300; // 5 minutes in seconds
-                if (currentTimestamp - prevTimestamp >= TIME_GAP_THRESHOLD) {
-                  showTimeSeparator = true;
-                }
-              }
-              
-              // Format the time separator text
-              if (showTimeSeparator && currentTimestamp > 0) {
-                const date = new Date(currentTimestamp * 1000);
-                const now = new Date();
-                
-                // Compute the day difference (compare dates rather than milliseconds; more accurate)
-                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-                const msgDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-                const diffDays = Math.floor((today.getTime() - msgDate.getTime()) / (1000 * 60 * 60 * 24));
-                
-                const timeString = date.toLocaleTimeString('zh-CN', {
-                  hour: '2-digit',
-                  minute: '2-digit'
-                });
-                
-                if (diffDays === 0) {
-                  // Today: show only the time
-                  timeSeparatorText = timeString;
-                } else if (diffDays === 1) {
-                  // Yesterday
-                  timeSeparatorText = `${t('chat.history.yesterday', 'Yesterday')} ${timeString}`;
-                } else if (diffDays < 7) {
-                  // Within a week: show the weekday
-                  const weekdays = [
-                    t('chat.history.weekday.sunday', 'Sunday'),
-                    t('chat.history.weekday.monday', 'Monday'),
-                    t('chat.history.weekday.tuesday', 'Tuesday'),
-                    t('chat.history.weekday.wednesday', 'Wednesday'),
-                    t('chat.history.weekday.thursday', 'Thursday'),
-                    t('chat.history.weekday.friday', 'Friday'),
-                    t('chat.history.weekday.saturday', 'Saturday'),
-                  ];
-                  const weekday = weekdays[date.getDay()];
-                  timeSeparatorText = `${weekday} ${timeString}`;
-                } else {
-                  // Earlier: show the full date
-                  timeSeparatorText = `${date.toLocaleDateString('zh-CN')} ${timeString}`;
-                }
-              }
-              
+              const { separatorText, groupPosition } = messageLayout[index];
+              const continuesRun = groupPosition === 'middle' || groupPosition === 'last';
               return (
                 <React.Fragment key={key}>
-                  {showTimeSeparator && timeSeparatorText && (
-                    <div className="flex items-center gap-3 py-1" role="separator">
-                      <span className="h-px flex-1 bg-gradient-to-r from-transparent to-gray-200 dark:to-gray-700" />
-                      <span className="rounded-full bg-white px-3 py-1 text-[11px] font-medium tabular-nums text-gray-400 shadow-sm ring-1 ring-gray-100 dark:bg-gray-800 dark:text-gray-500 dark:ring-gray-700">
-                        {timeSeparatorText}
+                  {separatorText && (
+                    <div className="flex items-center gap-4 pb-2 pt-8 first:pt-2" role="separator">
+                      <span className="h-px flex-1 bg-gradient-to-r from-transparent to-gray-200 dark:to-gray-800" />
+                      <span className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3.5 py-1.5 text-[11px] font-medium tabular-nums text-gray-500 shadow-sm ring-1 ring-gray-100 backdrop-blur dark:bg-gray-900/90 dark:text-gray-400 dark:ring-gray-800">
+                        <span className="h-1.5 w-1.5 rounded-full bg-acid-500" />
+                        {separatorText}
                       </span>
-                      <span className="h-px flex-1 bg-gradient-to-l from-transparent to-gray-200 dark:to-gray-700" />
+                      <span className="h-px flex-1 bg-gradient-to-l from-transparent to-gray-200 dark:to-gray-800" />
                     </div>
                   )}
-                  <div data-message-seq={message.messageSeq ?? undefined}>
+                  <div data-message-seq={message.messageSeq ?? undefined} className={continuesRun ? 'pt-1' : 'pt-5'}>
                     <ChatMessage
                       message={message}
+                      groupPosition={groupPosition}
                       onSuggestionClick={onSuggestionClick}
                       onSendMessage={onSendMessage}
                     />
@@ -532,11 +541,15 @@ const MessagesListComponent: React.FC<MessagesListProps> = ({
             })}
 
             {isLoadingMoreNewer ? (
-              <div className="text-center py-2 text-gray-400 dark:text-gray-500 text-xs">{t('chat.history.loadingNewer', 'Loading...')}</div>
+              <div className="flex items-center justify-center gap-2 py-4 text-xs text-gray-400 dark:text-gray-500">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-acid-500" />
+                {t('chat.history.loadingNewer', 'Loading...')}
+              </div>
             ) : null}
             <div ref={messagesEndRef} />
           </>
         ) : null}
+        </div>
       </div>
     );
   }

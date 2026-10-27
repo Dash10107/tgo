@@ -11,7 +11,7 @@ interface KnowledgeBaseTagProps {
 }
 
 const sizeClasses: Record<NonNullable<KnowledgeBaseTagProps['size']>, string> = {
-  xs: 'px-1.5 py-0.5 text-[11px]',
+  xs: 'px-2 py-0.5 text-[11px]',
   sm: 'px-2 py-1 text-xs',
   md: 'px-3 py-1.5 text-sm',
 };
@@ -39,8 +39,8 @@ const KnowledgeBaseTag: React.FC<KnowledgeBaseTagProps> = ({
   return (
     <span
       className={[
-        'inline-flex items-center rounded-md border transition-colors duration-200',
-        'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100',
+        'inline-flex items-center rounded-full border transition-colors duration-200',
+        'bg-white text-gray-700 border-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600',
         sizeClasses[size],
         className,
       ].join(' ')}

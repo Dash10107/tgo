@@ -8,11 +8,13 @@ import AgentStoreModal from './AgentStoreModal';
 import ToolToastProvider from './ToolToastProvider';
 // import AiToolDetailModal from '@/components/ui/AiToolDetailModal';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
-import { AgentsGridSkeleton, AgentsErrorState, AgentsEmptyState } from '@/components/ui/AgentsSkeleton';
 import { useAIStore } from '@/stores';
 import { useToast } from '@/hooks/useToast';
-import { LuPlus, LuChevronLeft, LuChevronRight, LuSearch, LuRefreshCw, LuStore } from 'react-icons/lu';
-import { Bot } from 'lucide-react';
+import { Bot, ChevronLeft, ChevronRight, MessageCircle, Plus, Store } from 'lucide-react';
+import {
+  PageShell, PageHeader, InkButton, GhostButton, SectionHeader, SearchField, RefreshButton,
+  FilterPills, FeatureBanner, EmptyPanel, ErrorPanel, SkeletonGrid, CardGrid, type FilterOption,
+} from '@/components/ui/PageKit';
 import type { Agent, AgentToolResponse, AgentWithDetailsResponse } from '@/types';
 import { AIAgentsApiService } from '@/services/aiAgentsApi';
 
@@ -31,6 +33,8 @@ const selectUpdateAgent = (state: any) => state.updateAgent;
 const selectDeleteAgent = (state: any) => state.deleteAgent;
 const selectSetShowCreateAgentModal = (state: any) => state.setShowCreateAgentModal;
 const selectLoadAgents = (state: any) => state.loadAgents;
+
+type AgentStatusFilter = 'all' | 'active' | 'inactive';
 
 const AgentManagement: React.FC = () => {
   const { t } = useTranslation();
@@ -58,6 +62,7 @@ const AgentManagement: React.FC = () => {
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<AgentStatusFilter>('all');
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Default agent state
@@ -126,16 +131,29 @@ const AgentManagement: React.FC = () => {
 
   // Compute pagination and filtering in the component
   const { paginatedAgents, totalPages } = React.useMemo(() => {
-    const filtered = agents.filter((a: Agent) => 
-      a.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      a.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      a.role?.toLowerCase().includes(searchQuery.toLowerCase())
+    const query = searchQuery.toLowerCase();
+    const filtered = agents.filter((a: Agent) =>
+      (statusFilter === 'all' || (statusFilter === 'active' ? a.status === 'active' : a.status !== 'active')) && (
+        a.name.toLowerCase().includes(query) ||
+        a.description?.toLowerCase().includes(query) ||
+        a.role?.toLowerCase().includes(query)
+      )
     );
     const total = Math.ceil(filtered.length / pageSize);
     const startIndex = (currentPage - 1) * pageSize;
     const paginated = filtered.slice(startIndex, startIndex + pageSize);
     return { paginatedAgents: paginated, totalPages: total };
-  }, [agents, currentPage, pageSize, searchQuery]);
+  }, [agents, currentPage, pageSize, searchQuery, statusFilter]);
+
+  const statusCounts = React.useMemo(() => {
+    const active = agents.filter((a: Agent) => a.status === 'active').length;
+    return { all: agents.length, active, inactive: agents.length - active };
+  }, [agents]);
+
+  // Reset to the first page whenever the visible set changes shape
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter, setCurrentPage]);
 
   const handleCreateAgent = (): void => {
     setShowCreateAgentModal(true);
@@ -274,166 +292,18 @@ const AgentManagement: React.FC = () => {
     setCurrentPage(page);
   };
 
+  const filterOptions: FilterOption<AgentStatusFilter>[] = [
+    { value: 'all', label: t('common.all', 'All'), count: statusCounts.all },
+    { value: 'active', label: t('agents.card.status.active', 'Active'), count: statusCounts.active, dot: 'bg-acid-500' },
+    { value: 'inactive', label: t('agents.card.status.inactive', 'Inactive'), count: statusCounts.inactive, dot: 'bg-gray-400' },
+  ];
+
+  const hasActiveFilters = Boolean(searchQuery) || statusFilter !== 'all';
+
   return (
-    <main className="flex-grow flex flex-col bg-[#f8fafc] dark:bg-gray-950 overflow-hidden">
-      {/* Header */}
-      <header className="px-8 py-5 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-800/50 flex flex-col md:flex-row md:items-center justify-between gap-4 sticky top-0 z-30">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <Bot className="w-7 h-7 text-blue-600" />
-            {t('agents.title', 'Agent Team Management')}
-          </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            {t('agents.subtitle', 'Manage your AI agents')}
-          </p>
-        </div>
-        
-        <div className="flex items-center gap-3">
-          <div className="relative group hidden sm:block">
-            <LuSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
-            <input 
-              type="text"
-              placeholder={t('common.search', 'Search')}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-4 py-2 w-64 bg-gray-100/50 dark:bg-gray-800/50 border-transparent focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 rounded-xl text-sm transition-all outline-none"
-            />
-          </div>
-          
-          <div className="h-8 w-px bg-gray-200 dark:border-gray-800 mx-1 hidden sm:block"></div>
-          
-          <div className="flex items-center gap-2">
-            <button
-              className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all"
-              onClick={() => handleRefresh()}
-              disabled={isRefreshing}
-              title={t('common.refresh', 'Refresh')}
-            >
-              <LuRefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
-            </button>
-            <button
-              className="flex items-center gap-2 px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-sm font-bold rounded-xl transition-all active:scale-95 border border-indigo-100 dark:bg-indigo-900/20 dark:border-indigo-800/50 dark:text-indigo-400"
-              onClick={() => setShowAgentStore(true)}
-            >
-              <LuStore className="w-4 h-4" />
-              <span className="hidden sm:inline">{t('agents.actions.store', 'Hire Agents')}</span>
-            </button>
-            <button
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-200 dark:shadow-none transition-all active:scale-95"
-              onClick={handleCreateAgent}
-            >
-              <LuPlus className="w-4 h-4" />
-              <span className="hidden sm:inline">{t('agents.actions.create', 'Create Agent')}</span>
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Content Area */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
-        <div className="max-w-[1600px] mx-auto p-8 space-y-8">
-          
-          {/* Quick Actions / Default Agent */}
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-6 text-white shadow-xl shadow-blue-200 dark:shadow-none flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
-            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-            <div className="relative z-10">
-              <h3 className="text-xl font-bold flex items-center gap-2">
-                <Bot className="w-6 h-6" />
-                {defaultAgent?.name || t('agents.defaultAgent.defaultName', 'Default AI Agent')}
-              </h3>
-              <p className="text-blue-100 text-sm mt-1 opacity-90 max-w-xl">
-                {defaultAgent?.instruction || t('agents.defaultAgent.description', 'The project\'s default AI agent handles AI conversations when no target is explicitly specified.')}
-              </p>
-            </div>
-            <div className="flex items-center gap-3 relative z-10">
-              <button
-                onClick={handleChatWithDefaultAgent}
-                disabled={!defaultAgent || isLoadingDefaultAgent}
-                className="px-5 py-2.5 bg-white text-blue-600 hover:bg-blue-50 text-sm font-bold rounded-xl transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {t('agents.actions.defaultAgentChat', 'Chat with the default AI agent')}
-              </button>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t('agents.listTitle', 'Agent List')}</h3>
-            </div>
-
-            {agentsError ? (
-              <AgentsErrorState error={agentsError} onRetry={handleRetry} />
-            ) : isLoadingAgents ? (
-              <AgentsGridSkeleton count={9} />
-            ) : paginatedAgents.length === 0 ? (
-              <AgentsEmptyState
-                title={searchQuery ? t('agents.empty.noResults', 'No matching AI agents found') : t('agents.empty.title', 'No Agents')}
-                description={searchQuery ? t('agents.empty.noResultsDesc', 'Try different search keywords') : t('agents.empty.description', 'Click the "Create Agent" button to start creating your first agent')}
-                actionButton={!searchQuery && (
-                  <button
-                    onClick={handleCreateAgent}
-                    className="inline-flex items-center px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-200 dark:shadow-none transition-all"
-                  >
-                    <LuPlus className="w-4 h-4 mr-2" />
-                    {t('agents.actions.create', 'Create Agent')}
-                  </button>
-                )}
-              />
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                {paginatedAgents.map((agent: Agent) => (
-                  <AgentCard
-                    key={agent.id}
-                    agent={agent}
-                    onAction={handleAgentAction}
-                    onToolClick={handleToolClick}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex justify-center pt-4 pb-12">
-              <nav className="flex items-center gap-1 p-1.5 bg-white dark:bg-gray-900 border border-gray-200/50 dark:border-gray-800 rounded-2xl shadow-sm">
-                <button
-                  className="p-2 rounded-xl text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                  onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                >
-                  <LuChevronLeft className="w-5 h-5" />
-                </button>
-
-                <div className="flex items-center gap-1 px-2">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <button
-                      key={page}
-                      onClick={() => handlePageChange(page)}
-                      className={`min-w-[36px] h-9 flex items-center justify-center rounded-xl text-sm font-bold transition-all ${
-                        page === currentPage
-                          ? 'bg-blue-600 text-white shadow-md shadow-blue-200 dark:shadow-none scale-105'
-                          : 'text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900'
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  ))}
-                </div>
-
-                <button
-                  className="p-2 rounded-xl text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                  onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                  disabled={currentPage === totalPages}
-                >
-                  <LuChevronRight className="w-5 h-5" />
-                </button>
-              </nav>
-            </div>
-          )}
-        </div>
-      </div>
-
+    <PageShell
+      after={
+        <>
       {/* Modals */}
       <CreateAgentModal />
       <EditAgentModal agentId={selectedAgent?.id || null} isOpen={showEditAgent} onClose={() => setShowEditAgent(false)} />
@@ -457,7 +327,120 @@ const AgentManagement: React.FC = () => {
         onCancel={() => setShowDeleteConfirm(false)}
         isLoading={isDeleting}
       />
-    </main>
+        </>
+      }
+    >
+      {/* Header */}
+      <PageHeader
+        title={t('agents.titleShort', 'Agents')}
+        total={statusCounts.all}
+        stats={[
+          { key: 'total', value: statusCounts.all, label: t('agents.headerStats.total', 'total'), badge: 'bg-ink-900 text-acid-400 dark:bg-acid-400 dark:text-ink-900', badgeText: t('agents.headerStats.team', 'team') },
+          { key: 'active', value: statusCounts.active, label: t('agents.headerStats.active', 'active'), badge: 'bg-acid-300 text-ink-900' },
+          { key: 'inactive', value: statusCounts.inactive, label: t('agents.headerStats.inactive', 'inactive'), badge: 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300' },
+        ]}
+        actions={
+          <>
+            <InkButton onClick={handleCreateAgent} icon={<Plus className="h-4 w-4" />}>
+              {t('agents.actions.create', 'Create Agent')}
+            </InkButton>
+            <GhostButton onClick={() => setShowAgentStore(true)}>
+              <Store className="h-4 w-4" />
+              {t('agents.actions.store', 'Hire Agents')}
+            </GhostButton>
+          </>
+        }
+      />
+
+      {/* Default agent */}
+      <FeatureBanner
+        icon={Bot}
+        eyebrow={t('agents.defaultAgent.eyebrow', 'Default agent')}
+        title={defaultAgent?.name || t('agents.defaultAgent.defaultName', 'Default AI Agent')}
+        description={defaultAgent?.instruction || t('agents.defaultAgent.description', 'The project\'s default AI agent handles AI conversations when no target is explicitly specified.')}
+        action={
+          <button
+            onClick={handleChatWithDefaultAgent}
+            disabled={!defaultAgent || isLoadingDefaultAgent}
+            className="group inline-flex h-11 items-center gap-2.5 rounded-full bg-ink-900 pl-1.5 pr-5 text-sm font-medium text-white shadow-[0_10px_24px_-12px_rgb(15_16_18/0.7)] transition-all duration-200 hover:-translate-y-px active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-acid-400 text-ink-900 transition-transform duration-300 group-hover:translate-x-0.5">
+              <MessageCircle className="h-4 w-4" />
+            </span>
+            {t('agents.actions.defaultAgentChat', 'Chat with the default AI agent')}
+          </button>
+        }
+      />
+
+      {/* Agent list */}
+      <section className="space-y-5">
+        <SectionHeader title={t('agents.listTitle', 'Agent List')} count={paginatedAgents.length} countLabel={t('agents.countLabel', 'agents')}>
+          <SearchField value={searchQuery} onChange={setSearchQuery} />
+          <RefreshButton onClick={() => handleRefresh()} spinning={isRefreshing} disabled={isRefreshing} />
+          <FilterPills options={filterOptions} value={statusFilter} onChange={setStatusFilter} />
+        </SectionHeader>
+
+        {agentsError ? (
+          <ErrorPanel message={agentsError} onRetry={handleRetry} />
+        ) : isLoadingAgents ? (
+          <SkeletonGrid count={8} />
+        ) : paginatedAgents.length === 0 ? (
+          <EmptyPanel
+            icon={Bot}
+            title={hasActiveFilters ? t('agents.empty.noResults', 'No matching AI agents found') : t('agents.empty.title', 'No Agents')}
+            description={hasActiveFilters ? t('agents.empty.noResultsDesc', 'Try different search keywords') : t('agents.empty.description', 'Click the "Create Agent" button to start creating your first agent')}
+            action={!hasActiveFilters && (
+              <InkButton onClick={handleCreateAgent} icon={<Plus className="h-4 w-4" />}>
+                {t('agents.actions.create', 'Create Agent')}
+              </InkButton>
+            )}
+          />
+        ) : (
+          <CardGrid>
+            {paginatedAgents.map((agent: Agent) => (
+              <AgentCard
+                key={agent.id}
+                agent={agent}
+                onAction={handleAgentAction}
+                onToolClick={handleToolClick}
+              />
+            ))}
+          </CardGrid>
+        )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <nav className="flex items-center justify-center gap-2 pt-4" aria-label={t('common.pagination', 'Pagination')}>
+            <button
+              className="tgo-icon-btn"
+              onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+              aria-label={t('common.previous', 'Previous')}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() => handlePageChange(page)}
+                data-active={page === currentPage}
+                className="tgo-pill min-w-9 justify-center px-3 tabular-nums"
+              >
+                {page}
+              </button>
+            ))}
+            <button
+              className="tgo-icon-btn"
+              onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+              disabled={currentPage === totalPages}
+              aria-label={t('common.next', 'Next')}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </nav>
+        )}
+      </section>
+    </PageShell>
   );
 };
 

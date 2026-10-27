@@ -5,7 +5,8 @@ import VisitorTable from '@/components/visitor/VisitorTable';
 import VisitorFilters from '@/components/visitor/VisitorFilters';
 import VisitorDetailPanel from '@/components/visitor/VisitorDetailPanel';
 import Pagination from '@/components/ui/Pagination';
-import Icon from '@/components/ui/Icon';
+import { Users } from 'lucide-react';
+import { PageShell, PageHeader, SectionHeader, RefreshButton, EmptyPanel, ErrorPanel, SkeletonGrid } from '@/components/ui/PageKit';
 import { visitorApiService, type VisitorResponse } from '@/services/visitorApi';
 
 const VisitorManagement: React.FC = () => {
@@ -59,117 +60,92 @@ const VisitorManagement: React.FC = () => {
 
   const totalPages = Math.ceil(total / pageSize);
 
+  const onlineInView = (visitors || []).filter(v => v?.is_online).length;
+
   return (
-    <div className="flex-1 flex flex-col h-full bg-gray-50 dark:bg-gray-900 overflow-hidden relative">
-      {/* Header */}
-      <div className="flex-shrink-0 px-6 py-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between shadow-sm z-10">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
-            <Icon name="Users" size={20} />
-          </div>
-          <div>
-            <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">
-              {t('visitor.management.title', 'Visitor Management')}
-            </h1>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              {t('visitor.management.subtitle', 'View and manage visitor information from all platforms')}
-            </p>
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-4">
-          <div className="text-right">
-            <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">
-              {t('visitor.management.totalVisitors', 'Total Visitors')}
-            </p>
-            <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
-              {(total || 0).toLocaleString()}
-            </p>
-          </div>
-          <button
-            onClick={() => fetchVisitors()}
-            className="p-2 text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-all"
-            title={t('common.refresh', 'Refresh')}
+    <PageShell
+      after={
+        /* Visitor Detail Drawer - Using shared VisitorDetailPanel */
+        selectedVisitor && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-end bg-black/20 backdrop-blur-sm"
+            onClick={handleCloseDetail}
           >
-            <Icon name="RefreshCw" size={18} className={loading ? 'animate-spin' : ''} />
-          </button>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div className="flex-shrink-0 px-6 pt-6 pb-4">
-        <VisitorFilters />
-      </div>
-
-      {/* Scrollable Table Container */}
-      <div className="flex-1 min-h-0 px-6 overflow-hidden">
-        {error ? (
-          <div className="h-full flex flex-col items-center justify-center p-12 bg-white dark:bg-gray-800 rounded-lg border border-red-100 dark:border-red-900/30 text-center">
-            <div className="w-12 h-12 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center text-red-500 mb-4">
-              <Icon name="AlertCircle" size={24} />
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-              {t('visitor.management.errorTitle', 'Load Failed')}
-            </h3>
-            <p className="text-gray-500 dark:text-gray-400 max-w-md mb-6">
-              {error}
-            </p>
-            <button
-              onClick={() => fetchVisitors()}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+            <div
+              className="h-full w-full max-w-md shadow-2xl animate-in slide-in-from-right duration-300"
+              onClick={(e) => e.stopPropagation()}
             >
-              {t('common.retry', 'Retry')}
-            </button>
-          </div>
-        ) : loading && (!visitors || visitors.length === 0) ? (
-          <div className="h-full flex items-center justify-center bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-            <div className="flex flex-col items-center gap-3">
-              <Icon name="Loader2" size={32} className="animate-spin text-blue-500" />
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {t('common.loading', 'Loading...')}
-              </p>
+              <VisitorDetailPanel
+                visitorId={selectedVisitor.id}
+                visitorData={selectedVisitor}
+                showCloseButton={true}
+                onClose={handleCloseDetail}
+                onVisitorUpdated={handleVisitorUpdated}
+                variant="drawer"
+              />
             </div>
           </div>
+        )
+      }
+    >
+      {/* Header */}
+      <PageHeader
+        title={t('visitor.management.titleShort', 'Visitors')}
+        stats={[
+          {
+            key: 'total',
+            value: total || 0,
+            label: t('visitor.stats.total', 'total'),
+            badge: 'bg-ink-900 text-acid-400 dark:bg-acid-400 dark:text-ink-900',
+            badgeText: t('visitor.stats.allPlatforms', 'all'),
+          },
+          {
+            key: 'online',
+            value: onlineInView,
+            label: t('visitor.stats.onlineInView', 'online in view'),
+            badge: 'bg-acid-300 text-ink-900',
+            badgeText: t('visitor.stats.live', 'live'),
+          },
+        ]}
+      />
+
+      <section className="space-y-5">
+        <SectionHeader title={t('visitor.listTitle', 'Visitor List')} count={total || 0} countLabel={t('visitor.countLabel', 'visitors')}>
+          <RefreshButton onClick={() => fetchVisitors()} spinning={loading} disabled={loading} />
+        </SectionHeader>
+
+        <VisitorFilters />
+
+        {error ? (
+          <ErrorPanel message={error} onRetry={() => fetchVisitors()} />
+        ) : loading && (!visitors || visitors.length === 0) ? (
+          <SkeletonGrid count={6} className="space-y-2" itemClassName="h-16 !rounded-3xl" />
+        ) : !visitors || visitors.length === 0 ? (
+          <EmptyPanel
+            icon={Users}
+            title={t('visitor.table.empty', 'No visitor data')}
+            description={t('visitor.management.subtitle', 'View and manage visitor information from all platforms')}
+          />
         ) : (
-          <div className="h-full overflow-auto rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-            <VisitorTable visitors={visitors} onVisitorClick={handleVisitorClick} />
+          <div className="tgo-surface tgo-fade-up overflow-hidden">
+            <div className="overflow-x-auto">
+              <VisitorTable visitors={visitors} onVisitorClick={handleVisitorClick} />
+            </div>
           </div>
         )}
-      </div>
 
-      {/* Pagination - Fixed at bottom */}
-      {!error && totalPages > 1 && (
-        <div className="flex-shrink-0 px-6 py-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex justify-end shadow-sm">
-          <Pagination
-            currentPage={page}
-            totalPages={totalPages}
-            onPageChange={setPage}
-          />
-        </div>
-      )}
-
-      {/* Visitor Detail Drawer - Using shared VisitorDetailPanel */}
-      {selectedVisitor && (
-        <div 
-          className="fixed inset-0 z-50 flex items-center justify-end bg-black/20 backdrop-blur-sm"
-          onClick={handleCloseDetail}
-        >
-          <div 
-            className="w-full max-w-md h-full shadow-2xl animate-in slide-in-from-right duration-300"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <VisitorDetailPanel
-              visitorId={selectedVisitor.id}
-              visitorData={selectedVisitor}
-              showCloseButton={true}
-              onClose={handleCloseDetail}
-              onVisitorUpdated={handleVisitorUpdated}
-              variant="drawer"
+        {/* Pagination */}
+        {!error && totalPages > 1 && (
+          <div className="flex justify-center pt-2">
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
             />
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </section>
+    </PageShell>
   );
 };
 

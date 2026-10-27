@@ -229,35 +229,102 @@
     mask: radial-gradient(circle var(--notch-r) at calc(100% - var(--notch-x)) var(--notch-x), transparent calc(var(--notch-r) - 0.5px), #000 var(--notch-r));
   }
 
+  /* ---------- Chat ---------- */
+
+  /* Conversation backdrop: soft neutral with a lime glow, like the workflow canvas */
+  .tgo-chat-canvas {
+    background-color: #f7f7f5;
+    background-image:
+      radial-gradient(42rem 26rem at 100% 0%, rgb(205 238 85 / 0.18), transparent 62%),
+      radial-gradient(36rem 24rem at 0% 100%, rgb(15 16 18 / 0.04), transparent 60%);
+  }
+
+  .dark .tgo-chat-canvas {
+    background-color: var(--color-gray-950);
+    background-image:
+      radial-gradient(42rem 26rem at 100% 0%, rgb(205 238 85 / 0.06), transparent 62%),
+      radial-gradient(36rem 24rem at 0% 100%, rgb(255 255 255 / 0.02), transparent 60%);
+  }
+
   /* Chat bubbles */
   .tgo-bubble {
-    padding: 0.625rem 0.95rem;
-    line-height: 1.55;
+    padding: 0.75rem 1.05rem;
+    font-size: 0.875rem;
+    line-height: 1.6;
   }
 
+  .tgo-bubble .markdown-content {
+    max-width: 36rem;
+  }
+
+  /* Own messages: acid-lime, the same accent as the featured workflow card */
   .tgo-bubble-out {
-    color: #fff;
-    background-color: var(--color-ink-900);
-    border-radius: 1.25rem 1.25rem 0.375rem 1.25rem;
-    box-shadow: 0 10px 24px -14px rgb(15 16 18 / 0.7);
+    color: var(--color-ink-900);
+    background-color: var(--color-acid-300);
+    border-radius: 1.5rem 1.5rem 0.5rem 1.5rem;
+    box-shadow: inset 0 0 0 1px rgb(15 16 18 / 0.04), 0 14px 30px -20px rgb(107 136 23 / 0.9);
   }
 
+  /* Incoming messages: white card */
   .tgo-bubble-in {
     color: var(--color-gray-800);
     background-color: #fff;
-    border-radius: 1.25rem 1.25rem 1.25rem 0.375rem;
-    box-shadow: 0 0 0 1px rgb(15 16 18 / 0.05), 0 6px 18px -12px rgb(15 16 18 / 0.25);
+    border-radius: 1.5rem 1.5rem 1.5rem 0.5rem;
+    box-shadow: 0 0 0 1px rgb(15 16 18 / 0.05), 0 1px 2px rgb(15 16 18 / 0.03), 0 14px 30px -22px rgb(15 16 18 / 0.35);
   }
 
   .dark .tgo-bubble-out {
-    background-color: #34421a;
-    box-shadow: inset 0 0 0 1px rgb(205 238 85 / 0.22);
+    color: var(--color-ink-900);
+    background-color: var(--color-acid-400);
+    box-shadow: 0 14px 30px -20px rgb(205 238 85 / 0.45);
   }
 
   .dark .tgo-bubble-in {
     color: var(--color-gray-200);
-    background-color: var(--color-gray-800);
-    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.05);
+    background-color: var(--color-gray-900);
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.06), 0 14px 30px -22px rgb(0 0 0 / 0.7);
+  }
+
+  /* Consecutive messages from one sender read as a single stack */
+  .tgo-msg:is([data-pos="middle"], [data-pos="last"]) .tgo-bubble-in {
+    border-top-left-radius: 0.5rem;
+  }
+
+  .tgo-msg:is([data-pos="middle"], [data-pos="last"]) .tgo-bubble-out {
+    border-top-right-radius: 0.5rem;
+  }
+
+  /* Hover-revealed timestamp for messages inside a stack */
+  .tgo-msg-time {
+    opacity: 0;
+    transform: translateY(2px);
+    transition: opacity 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+  }
+
+  .tgo-msg:hover .tgo-msg-time {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* "AI" sender badge */
+  .tgo-ai-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    height: 1.125rem;
+    padding: 0 0.4rem;
+    border-radius: 9999px;
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-acid-400);
+    background-color: var(--color-ink-900);
+  }
+
+  .dark .tgo-ai-chip {
+    color: var(--color-ink-900);
+    background-color: var(--color-acid-400);
   }
 
   /* Skeleton shimmer */

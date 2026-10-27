@@ -144,11 +144,15 @@ const EmptyState: React.FC<EmptyStateProps> = React.memo(({ type, summary }) => 
 
   if (type === 'no-messages') {
     return (
-      <div className="tgo-fade-up flex h-full min-h-48 flex-col items-center justify-center text-center">
-        <span className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-white text-gray-400 shadow-sm ring-1 ring-gray-100 dark:bg-gray-800 dark:text-gray-500 dark:ring-gray-700">
-          <Icon name="MessageCircle" size={20} className="h-5 w-5" />
-        </span>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+      <div className="tgo-fade-up flex h-full min-h-64 flex-col items-center justify-center text-center">
+        <div className="relative mb-5 flex h-24 w-24 items-center justify-center">
+          <span className="absolute inset-0 rounded-full bg-acid-200/60 dark:bg-acid-400/10" />
+          <span className="absolute inset-4 rounded-full bg-acid-300/70 dark:bg-acid-400/20" />
+          <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-ink-900 text-acid-400 shadow-lg">
+            <Icon name="MessageCircle" size={20} className="h-5 w-5" />
+          </span>
+        </div>
+        <p className="text-base font-medium tracking-tight text-gray-700 dark:text-gray-300">
           {t('chat.history.noMessages', 'No historical messages')}
         </p>
       </div>

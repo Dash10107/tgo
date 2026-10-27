@@ -86,7 +86,8 @@
     "noData": "No data",
     "processing": "Processing...",
     "tableCreated": "Created",
-    "lastUpdated": "Last Updated"
+    "lastUpdated": "Last Updated",
+    "pagination": "Pagination"
   },
   "config": {
     "respondDirectly": "Respond Directly",
@@ -792,7 +793,8 @@
         "inactive": "Inactive",
         "error": "Error",
         "unknown": "Unknown"
-      }
+      },
+      "statusLabel": "Status"
     },
     "copy": {
       "suffix": " (Copy)",
@@ -1056,7 +1058,8 @@
     },
     "defaultAgent": {
       "defaultName": "Default AI Agent",
-      "description": "The project's default AI agent handles AI conversations when no target is explicitly specified."
+      "description": "The project's default AI agent handles AI conversations when no target is explicitly specified.",
+      "eyebrow": "Default agent"
     },
     "store": {
       "hire": "Hire",
@@ -1067,6 +1070,14 @@
       "searchPlaceholder": "Search agent name or responsibilities...",
       "noResults": "No matching agents found",
       "noDescription": "No description"
+    },
+    "titleShort": "Agents",
+    "countLabel": "agents",
+    "headerStats": {
+      "total": "total",
+      "team": "team",
+      "active": "active",
+      "inactive": "inactive"
     }
   },
   "team": {
@@ -2084,7 +2095,8 @@
       "title": "Visitor Management",
       "subtitle": "View and manage visitor information from all platforms",
       "totalVisitors": "Total Visitors",
-      "errorTitle": "Load Failed"
+      "errorTitle": "Load Failed",
+      "titleShort": "Visitors"
     },
     "table": {
       "visitor": "Visitor",
@@ -2308,7 +2320,15 @@
         "noTagId": "Failed to get tag ID"
       }
     },
-    "defaultName": "Visitor"
+    "defaultName": "Visitor",
+    "stats": {
+      "total": "total",
+      "allPlatforms": "all",
+      "onlineInView": "online in view",
+      "live": "live"
+    },
+    "listTitle": "Visitor List",
+    "countLabel": "visitors"
   },
   "errors": {
     "incompleteVisitorInfo": "Visitor information is incomplete",
@@ -2455,7 +2475,8 @@
         "thursday": "Thursday",
         "friday": "Friday",
         "saturday": "Saturday"
-      }
+      },
+      "today": "Today"
     },
     "empty": {
       "selectConversation": "Select a chat to start conversation"
@@ -2521,7 +2542,7 @@
       "offline": "Offline"
     },
     "suggestions": {
-      "label": "✨ Suggestions:"
+      "label": "Suggestions"
     },
     "send": {
       "platformErrorLog": "Platform message send failed",
@@ -2571,7 +2592,8 @@
         "composing": "Composing a reply..."
       },
       "noResponse": "Sorry, I couldn’t put together an answer for that. Could you rephrase your question, or ask to talk with a human agent?",
-      "aiReply": "[AI Reply]"
+      "aiReply": "[AI Reply]",
+      "aiBadge": "AI"
     },
     "input": {
       "placeholder": "Type a message...",
@@ -2717,7 +2739,9 @@
     "editTool": "Edit Tool",
     "banner": {
       "title": "Enhance AI Capabilities",
-      "description": "By adding HTTP or MCP protocol tools, you can give AI agents unlimited possibilities such as searching, querying databases, and calling external services."
+      "description": "By adding HTTP or MCP protocol tools, you can give AI agents unlimited possibilities such as searching, querying databases, and calling external services.",
+      "eyebrow": "Capabilities",
+      "browse": "Browse the Tool Store"
     },
     "listTitle": "Tool List",
     "addHttpTool": "Add HTTP Tool",
@@ -3076,7 +3100,14 @@
       "emptyTitle": "No tools yet",
       "emptyDescriptionAll": "Click the \"Add Tool\" button to add your first tool",
       "emptyAction": "Start adding tools"
-    }
+    },
+    "countLabel": "tools",
+    "empty": {
+      "noResults": "No matching tools",
+      "noResultsDesc": "Try adjusting your search keywords or filters"
+    },
+    "endpointLabel": "Endpoint",
+    "noEndpoint": "Built-in"
   },
   "platforms": {
     "list": {
@@ -4352,12 +4383,15 @@
     "createSkill": "Create Skill",
     "banner": {
       "title": "Build Professional Skills",
-      "description": "By creating skills, you can break down complex tasks into standardized instruction templates. Enable AI agents to complete specific tasks like code review, copywriting, and data analysis like experts following best practices."
+      "description": "By creating skills, you can break down complex tasks into standardized instruction templates. Enable AI agents to complete specific tasks like code review, copywriting, and data analysis like experts following best practices.",
+      "eyebrow": "Expertise"
     },
     "listTitle": "Skills List",
     "empty": {
       "title": "No skills yet",
-      "description": "Create your first skill to make AI agents more professional"
+      "description": "Create your first skill to make AI agents more professional",
+      "noResults": "No matching skills",
+      "noResultsDesc": "Try adjusting your search keywords or filters"
     },
     "card": {
       "author": "Author",
@@ -4423,7 +4457,20 @@
     },
     "disable": "Disable skill",
     "enable": "Enable skill",
-    "toggleFailed": "Failed to toggle skill status"
+    "toggleFailed": "Failed to toggle skill status",
+    "titleShort": "Skills",
+    "stats": {
+      "enabled": "enabled",
+      "official": "official",
+      "custom": "custom"
+    },
+    "countLabel": "skills",
+    "filter": {
+      "enabled": "Enabled",
+      "disabled": "Disabled"
+    },
+    "updated": "Updated",
+    "deleteTitle": "Delete Skill"
   },
   "modelDetail": {
     "details": "Agent Details",

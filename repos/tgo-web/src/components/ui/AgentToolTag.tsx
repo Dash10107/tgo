@@ -24,16 +24,16 @@ const AgentToolTag: React.FC<AgentToolTagProps> = ({
   // Determine the color theme from the tool's enabled state
   const getColorTheme = (enabled: boolean) => {
     if (enabled) {
-      return 'bg-green-100 text-green-800 border-green-200 hover:bg-green-200';
+      return 'bg-acid-100 text-ink-900 border-acid-200 hover:bg-acid-200 dark:bg-acid-400/10 dark:text-acid-300 dark:border-acid-400/20';
     } else {
-      return 'bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200';
+      return 'bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600';
     }
   };
 
   // Determine the icon color from the tool's enabled state
   const getIconColor = (enabled: boolean) => {
     if (enabled) {
-      return 'text-green-600';
+      return 'text-acid-700 dark:text-acid-400';
     } else {
       return 'text-gray-400';
     }
@@ -56,7 +56,7 @@ const AgentToolTag: React.FC<AgentToolTagProps> = ({
   };
 
   const sizeClasses = {
-    xs: 'px-1.5 py-0.5 text-[11px]',
+    xs: 'px-2 py-0.5 text-[11px]',
     sm: 'px-2 py-1 text-xs',
     md: 'px-3 py-1.5 text-sm'
   };
@@ -85,7 +85,7 @@ const AgentToolTag: React.FC<AgentToolTagProps> = ({
   return (
     <span
       className={`
-        inline-flex items-center rounded-md border transition-colors duration-200
+        inline-flex items-center rounded-full border transition-colors duration-200
         ${sizeClasses[size]}
         ${colorTheme}
         ${onClick ? 'cursor-pointer' : 'cursor-default'}

@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import Icon from '@/components/ui/Icon';
 import Select from '@/components/ui/Select';
 import { useVisitorStore } from '@/stores/visitorStore';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { tagsApiService, type TagResponse } from '@/services/tagsApi';
 import { platformsApiService, type PlatformResponse } from '@/services/platformsApi';
-import { X } from 'lucide-react';
+import { RotateCcw, X } from 'lucide-react';
+import { FilterPills, SearchField, type FilterOption } from '@/components/ui/PageKit';
 
 import { normalizeTagHex, hexToRgba } from '@/utils/tagUtils';
 
@@ -60,12 +60,6 @@ const VisitorFilters: React.FC = () => {
     ];
   }, [platforms, t]);
 
-  const onlineOptions = [
-    { value: '', label: t('visitor.filters.online.all', 'All Statuses') },
-    { value: 'true', label: t('visitor.filters.online.online', 'Online') },
-    { value: 'false', label: t('visitor.filters.online.offline', 'Offline') },
-  ];
-
   const tagOptions = useMemo(() => {
     return [
       { value: '', label: t('visitor.filters.tags.all', 'All Tags') },
@@ -113,27 +107,34 @@ const VisitorFilters: React.FC = () => {
 
   const hasFilters = searchValue || filters.platform_id || filters.is_online !== undefined || (filters.tag_ids && filters.tag_ids.length > 0);
 
+  type OnlineFilter = 'all' | 'online' | 'offline';
+  const onlineFilter: OnlineFilter = filters.is_online === undefined ? 'all' : (filters.is_online ? 'online' : 'offline');
+  const onlinePills: FilterOption<OnlineFilter>[] = [
+    { value: 'all', label: t('visitor.filters.online.all', 'All Statuses') },
+    { value: 'online', label: t('visitor.filters.online.online', 'Online'), dot: 'bg-acid-500' },
+    { value: 'offline', label: t('visitor.filters.online.offline', 'Offline'), dot: 'bg-gray-400' },
+  ];
+
   return (
-    <div className="space-y-4 mb-6">
-      <div className="flex flex-wrap items-center gap-4">
-        {/* Search Input */}
-        <div className="relative flex-1 min-w-[200px] max-w-sm">
-          <Icon
-            name="Search"
-            size={16}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-          />
-          <input
-            type="text"
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            placeholder={t('visitor.filters.search.placeholder', 'Search name, email or phone...')}
-            className="w-full pl-9 pr-4 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none dark:text-gray-100"
-          />
-        </div>
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center gap-3">
+        <SearchField
+          value={searchValue}
+          onChange={setSearchValue}
+          placeholder={t('visitor.filters.search.placeholder', 'Search name, email or phone...')}
+          wide
+        />
+
+        <FilterPills
+          options={onlinePills}
+          value={onlineFilter}
+          onChange={(value) => handleOnlineChange(value === 'all' ? '' : String(value === 'online'))}
+        />
+
+        <span className="mx-1 hidden h-6 w-px bg-gray-200 md:block dark:bg-gray-800" />
 
         {/* Platform Filter */}
-        <div className="w-40">
+        <div className="w-44">
           <Select
             value={filters.platform_id || ''}
             onChange={handlePlatformChange}
@@ -142,17 +143,8 @@ const VisitorFilters: React.FC = () => {
           />
         </div>
 
-        {/* Online Status Filter */}
-        <div className="w-40">
-          <Select
-            value={filters.is_online === undefined ? '' : String(filters.is_online)}
-            onChange={handleOnlineChange}
-            options={onlineOptions}
-          />
-        </div>
-
         {/* Tag Filter */}
-        <div className="w-48">
+        <div className="w-44">
           <Select
             value=""
             onChange={handleTagSelect}
@@ -165,7 +157,7 @@ const VisitorFilters: React.FC = () => {
         {/* Sort Order */}
         <div className="w-40">
           <Select
-            value={`${filters.sort_by || 'last_visit_time'}:${filters.sort_order || 'desc'}`}
+            value={`${filters.sort_by || 'last_offline_time'}:${filters.sort_order || 'desc'}`}
             onChange={handleSortChange}
             options={sortOptions}
           />
@@ -178,9 +170,9 @@ const VisitorFilters: React.FC = () => {
               setSearchValue('');
               resetFilters();
             }}
-            className="flex items-center gap-1 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            className="inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-sm text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:text-gray-400 dark:hover:bg-red-900/20"
           >
-            <Icon name="RotateCcw" size={14} />
+            <RotateCcw className="h-3.5 w-3.5" />
             {t('common.reset', 'Reset')}
           </button>
         )}
@@ -188,17 +180,17 @@ const VisitorFilters: React.FC = () => {
 
       {/* Selected Tags Chips */}
       {filters.tag_ids && filters.tag_ids.length > 0 && (
-        <div className="flex flex-wrap gap-2 items-center">
-          <span className="text-xs text-gray-500 dark:text-gray-400">{t('visitor.filters.tags.selected', 'Selected Tags')}:</span>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="tgo-eyebrow">{t('visitor.filters.tags.selected', 'Selected Tags')}</span>
           {filters.tag_ids.map(tagId => {
             const tag = availableTags.find(t => t.id === tagId);
             if (!tag) return null;
-            
+
             const hex = normalizeTagHex(tag.color);
             return (
               <span
                 key={tagId}
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium border transition-colors"
+                className="tgo-pop inline-flex h-7 items-center gap-1 rounded-full border pl-3 pr-1 text-xs font-medium transition-colors"
                 style={{
                   backgroundColor: hexToRgba(hex, 0.1),
                   color: hex,
@@ -208,7 +200,7 @@ const VisitorFilters: React.FC = () => {
                 {tag.display_name || tag.name}
                 <button
                   onClick={() => removeTag(tagId)}
-                  className="ml-1 p-0.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                  className="flex h-5 w-5 items-center justify-center rounded-full transition-colors hover:bg-black/5 dark:hover:bg-white/10"
                   aria-label={t('common.remove', 'Remove')}
                 >
                   <X size={12} />

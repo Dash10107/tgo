@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Download } from 'lucide-react';
 import type { Message } from '@/types';
 import { MessagePayloadType } from '@/types';
 import { uploadChatFileWithProgress } from '@/services/chatUploadApi';
@@ -72,8 +73,8 @@ const FileMessage: React.FC<MessageComponentProps> = ({ message, isStaff }) => {
   }, [message.metadata, message.channelId, message.channelType, message.clientMsgNo, message.id, isConnected, sendWsMessage, updateMessageByClientMsgNo, showToast]);
 
   const wrapperClass = isStaff
-    ? 'bg-white dark:bg-gray-700 p-3 rounded-[20px] rounded-br-md shadow-sm border border-gray-200 dark:border-gray-600 w-[280px] max-w-xs cursor-pointer'
-    : 'bg-white dark:bg-gray-800 p-3 rounded-[20px] rounded-bl-md shadow-sm border border-gray-100 dark:border-gray-700 w-[280px] max-w-xs cursor-pointer';
+    ? 'group bg-acid-300 dark:bg-acid-400 p-3 rounded-3xl rounded-br-lg shadow-[0_14px_30px_-20px_rgb(107_136_23/0.9)] w-[290px] max-w-xs cursor-pointer transition-transform duration-200 hover:-translate-y-0.5'
+    : 'group tgo-bubble-in p-3 w-[290px] max-w-xs cursor-pointer transition-transform duration-200 hover:-translate-y-0.5';
 
   return (
     <div
@@ -88,16 +89,23 @@ const FileMessage: React.FC<MessageComponentProps> = ({ message, isStaff }) => {
         }
       }}
     >
-      <div className="flex items-center space-x-3">
-        {getFileIcon(fileName, 'w-8 h-8', 32)}
+      <div className="flex items-center gap-3">
+        <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${isStaff ? 'bg-white/70 dark:bg-ink-900/10' : 'bg-gray-50 dark:bg-gray-800'}`}>
+          {getFileIcon(fileName, 'w-6 h-6', 24)}
+        </span>
         <div className="flex-1 min-w-0">
-          <div className="text-sm text-gray-800 dark:text-gray-200 truncate">{fileName || t('chat.messages.file.placeholder', '[File]')}</div>
-          <div className="text-xs text-gray-500 dark:text-gray-400">
+          <div className={`text-sm font-medium truncate ${isStaff ? 'text-ink-900' : 'text-gray-800 dark:text-gray-200'}`}>{fileName || t('chat.messages.file.placeholder', '[File]')}</div>
+          <div className={`text-xs ${isStaff ? 'text-ink-900/60' : 'text-gray-500 dark:text-gray-400'}`}>
             {fileUploadError ? t('chat.messages.file.uploadFailedRetry', 'Upload failed, click to retry') : (fileUploading ? t('chat.messages.file.uploadingWithPercent', 'Uploading {{percent}}%', { percent: fileUploadProgress ?? 0 }) : formatBytes(fileSize))}
           </div>
         </div>
         {fileUrl && !fileUploading && !fileUploadError ? (
-          <img src="https://unpkg.com/lucide-static@latest/icons/download.svg" alt={t('chat.messages.file.download', 'Download')} className="w-5 h-5 opacity-70" />
+          <span
+            aria-label={t('chat.messages.file.download', 'Download')}
+            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors ${isStaff ? 'bg-ink-900 text-acid-400' : 'bg-gray-100 text-gray-600 group-hover:bg-acid-300 group-hover:text-ink-900 dark:bg-gray-800 dark:text-gray-300'}`}
+          >
+            <Download className="h-4 w-4" />
+          </span>
         ) : null}
       </div>
     </div>

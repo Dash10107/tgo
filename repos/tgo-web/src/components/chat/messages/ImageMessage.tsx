@@ -34,8 +34,8 @@ const ImageMessage: React.FC<MessageComponentProps> = ({ message, isStaff }) => 
   const [previewOpen, setPreviewOpen] = React.useState(false);
 
   const bubbleClass = isStaff
-    ? 'relative rounded-[18px] overflow-hidden border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 '
-    : 'relative rounded-[18px] overflow-hidden border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 ';
+    ? 'relative rounded-3xl rounded-br-lg overflow-hidden ring-4 ring-acid-300 dark:ring-acid-400 bg-white dark:bg-gray-800 shadow-[0_14px_30px_-20px_rgb(107_136_23/0.9)] transition-transform duration-300 hover:scale-[1.015] '
+    : 'relative rounded-3xl rounded-bl-lg overflow-hidden ring-4 ring-white dark:ring-gray-900 bg-white dark:bg-gray-800 shadow-[0_14px_30px_-20px_rgb(15_16_18/0.45)] transition-transform duration-300 hover:scale-[1.015] ';
 
   return (
     <>
