@@ -1,0 +1,491 @@
+/* =====================================================================
+ * Workflow editor canvas
+ * Deep-space backdrop, node cards, handles, controls and run animations.
+ * Imported from index.css after the base workflow run styles.
+ * ===================================================================== */
+
+/* ---------- Space backdrop ---------- */
+
+.wf-space {
+  /* Star colors as RGB triplets: light theme uses fine ink specks on white */
+  --wf-star: 15 16 18;
+  --wf-star-warm: 143 179 30;
+  --wf-star-cool: 2 132 199;
+  --wf-stars-opacity: 0.32;
+  --wf-shoot: 15 16 18;
+
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 50% at 88% -5%, rgb(205 238 85 / 0.26), transparent 70%),
+    radial-gradient(50% 45% at -5% 105%, rgb(56 189 248 / 0.1), transparent 70%),
+    radial-gradient(40% 40% at 50% 55%, rgb(139 92 246 / 0.04), transparent 70%),
+    #ffffff;
+}
+
+.dark .wf-space {
+  --wf-star: 255 255 255;
+  --wf-star-warm: 230 247 166;
+  --wf-star-cool: 186 230 253;
+  --wf-stars-opacity: 0.55;
+  --wf-shoot: 255 255 255;
+
+  background:
+    radial-gradient(60% 50% at 88% -5%, rgb(205 238 85 / 0.13), transparent 70%),
+    radial-gradient(50% 45% at -5% 105%, rgb(56 189 248 / 0.09), transparent 70%),
+    radial-gradient(40% 40% at 50% 55%, rgb(139 92 246 / 0.05), transparent 70%),
+    #0a0b0d;
+}
+
+/* Breathing lime glow that wakes up while a run is in progress */
+.wf-space::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: radial-gradient(45% 40% at 50% 45%, rgb(205 238 85 / 0.09), transparent 75%);
+  transition: opacity 0.8s ease;
+}
+
+.wf-canvas--running .wf-space::after {
+  opacity: 1;
+  animation: wf-breathe 3.2s ease-in-out infinite;
+}
+
+.wf-space-stars {
+  position: absolute;
+  inset: -240px;
+  opacity: var(--wf-stars-opacity);
+  background-image:
+    radial-gradient(1.3px 1.3px at 24px 36px, rgb(var(--wf-star) / 0.95), transparent 70%),
+    radial-gradient(1px 1px at 132px 84px, rgb(var(--wf-star) / 0.7), transparent 70%),
+    radial-gradient(1.6px 1.6px at 196px 18px, rgb(var(--wf-star-warm) / 0.9), transparent 70%),
+    radial-gradient(1px 1px at 72px 150px, rgb(var(--wf-star) / 0.6), transparent 70%),
+    radial-gradient(1.2px 1.2px at 168px 196px, rgb(var(--wf-star) / 0.85), transparent 70%),
+    radial-gradient(1px 1px at 8px 212px, rgb(var(--wf-star-cool) / 0.8), transparent 70%),
+    radial-gradient(0.8px 0.8px at 110px 226px, rgb(var(--wf-star) / 0.5), transparent 70%),
+    radial-gradient(1px 1px at 222px 128px, rgb(var(--wf-star) / 0.7), transparent 70%);
+  background-size: 240px 240px;
+  animation: wf-stars-drift 110s linear infinite;
+  will-change: transform;
+}
+
+.wf-space-stars--far {
+  inset: -360px;
+  opacity: 0.35;
+  background-size: 360px 360px;
+  animation: wf-stars-drift-far 180s linear infinite, wf-twinkle 5s ease-in-out infinite alternate;
+}
+
+@keyframes wf-stars-drift {
+  to { transform: translate3d(240px, 240px, 0); }
+}
+
+@keyframes wf-stars-drift-far {
+  to { transform: translate3d(-360px, 360px, 0); }
+}
+
+@keyframes wf-twinkle {
+  from { opacity: 0.15; }
+  to { opacity: 0.45; }
+}
+
+@keyframes wf-breathe {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+/* Occasional shooting stars streaking across the backdrop */
+.wf-shooting-star {
+  position: absolute;
+  top: 10%;
+  left: -12%;
+  width: 150px;
+  height: 1.5px;
+  border-radius: 9999px;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent, rgb(var(--wf-shoot) / 0.75));
+  filter: drop-shadow(0 0 4px rgb(205 238 85 / 0.8));
+  animation: wf-shoot 15s linear 3s infinite;
+}
+
+.wf-shooting-star--late {
+  top: 42%;
+  width: 110px;
+  animation-duration: 21s;
+  animation-delay: 11s;
+}
+
+@keyframes wf-shoot {
+  0% { opacity: 0; transform: translate3d(0, 0, 0) rotate(18deg); }
+  1% { opacity: 1; }
+  7% { opacity: 0; transform: translate3d(75vw, 24vw, 0) rotate(18deg); }
+  100% { opacity: 0; transform: translate3d(75vw, 24vw, 0) rotate(18deg); }
+}
+
+/* A lime shockwave rolls across the canvas when a run completes */
+.wf-space::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 160vmax;
+  height: 160vmax;
+  border-radius: 9999px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0);
+  background: radial-gradient(circle, transparent 52%, rgb(205 238 85 / 0.16) 64%, transparent 70%);
+}
+
+.wf-canvas--done .wf-space::before {
+  animation: wf-complete-wave 1.8s var(--ease-out) forwards;
+}
+
+@keyframes wf-complete-wave {
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(0.04); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+}
+
+/* ---------- React Flow chrome on the dark canvas ---------- */
+
+.wf-canvas .react-flow__pane {
+  cursor: grab;
+}
+
+.wf-canvas .react-flow__pane.dragging {
+  cursor: grabbing;
+}
+
+.wf-canvas .react-flow__controls.wf-controls {
+  margin: 16px;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-radius: 9999px;
+  background: rgb(255 255 255 / 0.9);
+  border: 1px solid rgb(15 16 18 / 0.08);
+  box-shadow: 0 16px 40px -20px rgb(15 16 18 / 0.3);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.dark .wf-canvas .react-flow__controls.wf-controls {
+  background: rgb(28 29 33 / 0.88);
+  border-color: rgb(255 255 255 / 0.1);
+  box-shadow: 0 16px 40px -18px rgb(0 0 0 / 0.8);
+}
+
+.wf-canvas .wf-controls .react-flow__controls-button {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--color-gray-600);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dark .wf-canvas .wf-controls .react-flow__controls-button {
+  color: rgb(255 255 255 / 0.75);
+}
+
+.wf-canvas .wf-controls .react-flow__controls-button svg {
+  fill: currentColor;
+  max-width: 12px;
+  max-height: 12px;
+}
+
+.wf-canvas .wf-controls .react-flow__controls-button:hover {
+  background: var(--color-acid-400);
+  color: var(--color-ink-900);
+}
+
+.wf-canvas .react-flow__minimap.wf-minimap {
+  margin: 16px;
+  overflow: hidden;
+  border-radius: 20px;
+  background: rgb(255 255 255 / 0.92);
+  border: 1px solid rgb(15 16 18 / 0.08);
+  box-shadow: 0 16px 40px -20px rgb(15 16 18 / 0.3);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.dark .wf-canvas .react-flow__minimap.wf-minimap {
+  background: rgb(17 18 21 / 0.92);
+  border-color: rgb(255 255 255 / 0.1);
+  box-shadow: 0 16px 40px -18px rgb(0 0 0 / 0.8);
+}
+
+.wf-canvas .react-flow__attribution {
+  background: transparent;
+}
+
+.wf-canvas .react-flow__attribution a {
+  color: rgb(15 16 18 / 0.3);
+}
+
+.dark .wf-canvas .react-flow__attribution a {
+  color: rgb(255 255 255 / 0.25);
+}
+
+.wf-canvas .react-flow__selection {
+  background: rgb(205 238 85 / 0.08);
+  border: 1px dashed rgb(205 238 85 / 0.6);
+}
+
+/* ---------- Node cards ---------- */
+
+.wf-node {
+  box-shadow: 0 0 0 1px rgb(15 16 18 / 0.07), 0 14px 34px -16px rgb(15 16 18 / 0.22);
+  transition: box-shadow 0.3s var(--ease-out);
+}
+
+.dark .wf-node {
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.09), 0 18px 40px -18px rgb(0 0 0 / 0.9);
+}
+
+.react-flow__node:hover .wf-node {
+  box-shadow: 0 0 0 1px rgb(143 179 30 / 0.55), 0 20px 44px -18px rgb(15 16 18 / 0.3);
+}
+
+.dark .react-flow__node:hover .wf-node {
+  box-shadow: 0 0 0 1px rgb(205 238 85 / 0.45), 0 24px 52px -18px rgb(0 0 0 / 0.85);
+}
+
+.react-flow__node .wf-node.wf-node--selected {
+  box-shadow: 0 0 0 2px var(--color-acid-500), 0 0 0 8px rgb(205 238 85 / 0.28), 0 20px 48px -18px rgb(15 16 18 / 0.3);
+}
+
+.dark .react-flow__node .wf-node.wf-node--selected {
+  box-shadow: 0 0 0 2px var(--color-acid-400), 0 0 0 8px rgb(205 238 85 / 0.16), 0 24px 56px -18px rgb(0 0 0 / 0.9);
+}
+
+/*
+ * Nodes fade in when added or when the editor opens. Opacity only: React Flow
+ * positions the node wrapper with transform, and run states animate the card.
+ */
+.wf-canvas .react-flow__node {
+  animation: wf-node-in 0.45s ease-out backwards;
+}
+
+@keyframes wf-node-in {
+  from { opacity: 0; }
+}
+
+/* ---------- Handles ---------- */
+
+.wf-node .react-flow__handle.wf-handle {
+  width: 12px;
+  height: 12px;
+  min-width: 0;
+  min-height: 0;
+  border-radius: 9999px;
+  background: #fff;
+  border: 2.5px solid var(--color-ink-900);
+  transition: scale 0.2s var(--ease-out), background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.wf-node .react-flow__handle.wf-handle.react-flow__handle-top {
+  top: -7px;
+}
+
+.wf-node .react-flow__handle.wf-handle.react-flow__handle-bottom {
+  bottom: -7px;
+}
+
+.wf-node .react-flow__handle.wf-handle:hover,
+.wf-node .react-flow__handle.wf-handle.connectingfrom,
+.wf-node .react-flow__handle.wf-handle.connectingto {
+  scale: 1.35;
+  background: var(--color-acid-400);
+  box-shadow: 0 0 0 5px rgb(205 238 85 / 0.25);
+}
+
+.wf-node .react-flow__handle.wf-handle.wf-handle--yes {
+  background: var(--color-acid-400);
+}
+
+.wf-node .react-flow__handle.wf-handle.wf-handle--no {
+  background: #f43f5e;
+  border-color: #fff;
+}
+
+.dark .wf-node .react-flow__handle.wf-handle {
+  background: var(--color-gray-900);
+  border-color: var(--color-acid-400);
+}
+
+/* ---------- Run animation ---------- */
+
+/* The run frame sits 5px outside the card, so its corners need a matching larger radius */
+.wf-node > .wf-run-frame {
+  border-radius: 27px;
+}
+
+/* Waiting and skipped nodes fade back into the canvas so the running path stands out */
+.wf-canvas .wf-run-veil {
+  background: rgb(255 255 255 / 0.4);
+}
+
+.wf-canvas .wf-run-veil--skipped {
+  background: rgb(255 255 255 / 0.66);
+  -webkit-backdrop-filter: grayscale(0.9);
+  backdrop-filter: grayscale(0.9);
+}
+
+.dark .wf-canvas .wf-run-veil {
+  background: rgb(10 11 13 / 0.3);
+}
+
+.dark .wf-canvas .wf-run-veil--skipped {
+  background: rgb(10 11 13 / 0.62);
+}
+
+/* Light sweep across a running node */
+.wf-run-scan {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.wf-run-scan > span {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 45%;
+  background: linear-gradient(100deg, transparent, rgb(205 238 85 / 0.24), transparent);
+  transform: translateX(-120%);
+  animation: wf-scan 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes wf-scan {
+  to { transform: translateX(260%); }
+}
+
+/* One-shot glow when a node finishes */
+.wf-run-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(circle at 24px 28px, rgb(205 238 85 / 0.5), transparent 70%);
+  animation: wf-flash 1s ease-out forwards;
+}
+
+@keyframes wf-flash {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Icon disc pulses while running and lights up lime once done */
+.react-flow__node:has(.wf-run-frame--running) .wf-node-icon {
+  animation: wf-icon-pulse 1.4s ease-out infinite;
+}
+
+.react-flow__node:has(.wf-run-frame--completed) .wf-node-icon {
+  background: var(--color-acid-400);
+  color: var(--color-ink-900);
+  animation: wf-icon-pop 0.5s var(--ease-spring);
+}
+
+.react-flow__node:has(.wf-run-frame--failed) .wf-node-icon {
+  background: #f43f5e;
+  color: #fff;
+}
+
+@keyframes wf-icon-pulse {
+  0% { box-shadow: 0 0 0 0 rgb(205 238 85 / 0.7); }
+  100% { box-shadow: 0 0 0 12px rgb(205 238 85 / 0); }
+}
+
+@keyframes wf-icon-pop {
+  0% { scale: 0.7; }
+  100% { scale: 1; }
+}
+
+/* Taken edges: the lime line draws itself, then keeps a soft halo */
+.wf-edge-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  filter: drop-shadow(0 0 4px rgb(205 238 85 / 0.55));
+  animation: wf-edge-draw 0.7s var(--ease-out) forwards;
+}
+
+@keyframes wf-edge-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+.wf-edge-halo {
+  animation: wf-halo-in 0.6s ease-out backwards;
+}
+
+@keyframes wf-halo-in {
+  from { stroke-opacity: 0; }
+}
+
+/* Run status pill drops in from the top */
+.wf-status-in {
+  animation: wf-status-in 0.45s var(--ease-spring) backwards;
+}
+
+@keyframes wf-status-in {
+  from { opacity: 0; transform: translate3d(0, -10px, 0) scale(0.94); }
+}
+
+/* ---------- Node config form ---------- */
+
+/*
+ * Type-specific fields in the node config panel predate the design system and
+ * carry bordered inputs; this gives them the same filled, borderless look and
+ * lime focus ring as the rest of the editor.
+ */
+.wf-form :is(input:not([type="checkbox"], [type="radio"], [type="range"]), select, textarea) {
+  border-color: transparent;
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-900);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dark .wf-form :is(input:not([type="checkbox"], [type="radio"], [type="range"]), select, textarea) {
+  background-color: var(--color-gray-800);
+  color: var(--color-gray-100);
+}
+
+.wf-form :is(input:not([type="checkbox"], [type="radio"], [type="range"]), select, textarea):focus {
+  border-color: transparent;
+  background-color: #fff;
+  box-shadow: inset 0 0 0 2px var(--color-acid-400);
+}
+
+.dark .wf-form :is(input:not([type="checkbox"], [type="radio"], [type="range"]), select, textarea):focus {
+  background-color: var(--color-gray-900);
+}
+
+.wf-form :is(input[type="checkbox"], input[type="radio"], input[type="range"]) {
+  accent-color: var(--color-acid-500);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wf-shooting-star,
+  .wf-canvas--done .wf-space::before {
+    animation: none;
+  }
+
+  .wf-space-stars,
+  .wf-canvas--running .wf-space::after,
+  .wf-run-scan > span,
+  .react-flow__node:has(.wf-run-frame--running) .wf-node-icon {
+    animation: none;
+  }
+}

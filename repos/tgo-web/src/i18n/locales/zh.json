@@ -1856,7 +1856,14 @@
     "namePlaceholder": "工作流名称",
     "settings": "设置",
     "loading": "加载工作流...",
-    "tagsPlaceholder": "用逗号分隔"
+    "tagsPlaceholder": "用逗号分隔",
+    "kicker": {
+      "trigger": "触发器",
+      "ai": "AI",
+      "logic": "逻辑",
+      "external": "集成",
+      "output": "输出"
+    }
   },
   "platforms": {
     "list": {

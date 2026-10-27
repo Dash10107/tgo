@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores';
 import { APIError } from '@/services/api';
 import type { LoginFormData, AuthValidationErrors } from '@/types';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, ArrowRight, Loader2 } from 'lucide-react';
 
 /**
  * Login Page Component
@@ -158,154 +158,197 @@ const LoginPage: React.FC = () => {
     }
   };
 
+  const inputClass = (hasError: boolean): string => `w-full h-12 px-5 text-sm rounded-full outline-none transition-all duration-200 bg-gray-100 text-gray-900 placeholder:text-gray-400 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-500 focus:bg-white focus:shadow-[inset_0_0_0_2px_var(--color-acid-400),0_8px_24px_-14px_rgba(143,179,30,0.6)] dark:focus:bg-gray-900 ${
+    hasError ? 'shadow-[inset_0_0_0_1.5px_var(--color-red-400)] bg-red-50/60 dark:bg-red-900/20' : ''
+  }`;
+
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-blue-50/50 dark:from-gray-900 dark:to-blue-900/20 flex items-center justify-center min-h-screen font-sans antialiased">
-      <div className="w-full max-w-md px-8 py-10 bg-white/80 dark:bg-gray-800/90 backdrop-blur-lg rounded-xl shadow-lg border border-gray-200/60 dark:border-gray-700/60">
-        {/* Logo */}
-        <div className="flex justify-center mb-8">
-          <Link to="/" className="flex items-center space-x-2">
-            <img src="/logo.svg" alt="Pelatis CS Logo" className="w-10 h-10" />
-            <span className="font-semibold text-2xl text-gray-800 dark:text-gray-200">{t('brand.name')}</span>
+    <div className="tgo-canvas min-h-screen p-3 font-sans antialiased">
+      <div className="mx-auto grid min-h-[calc(100vh-1.5rem)] max-w-[1400px] gap-3 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
+        {/* Showcase panel */}
+        <section className="relative hidden overflow-hidden rounded-[32px] bg-ink-900 p-10 text-white lg:flex lg:flex-col lg:justify-between">
+          <div aria-hidden="true" className="pointer-events-none absolute -right-40 -top-40 h-[34rem] w-[34rem] rounded-full border border-white/[0.06]" />
+          <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-16 h-80 w-80 rounded-full border border-white/[0.08]" />
+          <div aria-hidden="true" className="pointer-events-none absolute -bottom-40 -left-32 h-[28rem] w-[28rem] rounded-full bg-acid-400/10 blur-3xl" />
+
+          <Link to="/" className="relative flex items-center gap-3">
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white">
+              <img src="/logo.svg" alt="" className="h-6 w-6" />
+            </span>
+            <span className="text-lg font-medium">{t('brand.name')}</span>
           </Link>
-        </div>
 
-        <h2 className="text-2xl font-semibold text-center text-gray-700 dark:text-gray-200 mb-6">{t('auth.login.title')}</h2>
-
-        {/* General Error Message */}
-        {errors.general && (
-          <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800/50 rounded-md">
-            <p className="text-sm text-red-600 dark:text-red-400">{errors.general}</p>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit}>
-          {/* Email or Username Field */}
-          <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
-              {t('auth.login.emailOrUsername')}
-            </label>
-            <input
-              type="text"
-              id="email"
-              name="email"
-              required
-              value={formData.email}
-              onChange={handleInputChange}
-              className={`w-full px-4 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white/90 dark:bg-gray-700/50 dark:text-gray-200 transition-colors ${
-                errors.email ? 'border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/30' : 'border-gray-300/80 dark:border-gray-600/80'
-              }`}
-              placeholder={t('auth.login.emailOrUsernamePlaceholder')}
-              disabled={isLoading}
-            />
-            {errors.email && (
-              <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.email}</p>
-            )}
+          <div className="relative">
+            <h1 className="tgo-display tgo-fade-up text-[64px] leading-[0.95] xl:text-[80px]">
+              {t('auth.showcase.headlineTop', 'Support that')}
+              <br />
+              <span className="text-acid-400">{t('auth.showcase.headlineBottom', 'thinks ahead.')}</span>
+            </h1>
+            <p className="tgo-fade-up mt-6 max-w-md text-base leading-relaxed text-white/60" style={{ animationDelay: '80ms' }}>
+              {t('auth.showcase.subtitle', 'AI agents, your knowledge base and human teammates working one shared inbox.')}
+            </p>
           </div>
 
-          {/* Password Field */}
-          <div className="mb-6">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
-              {t('auth.login.password')}
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              required
-              value={formData.password}
-              onChange={handleInputChange}
-              className={`w-full px-4 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white/90 dark:bg-gray-700/50 dark:text-gray-200 transition-colors ${
-                errors.password ? 'border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/30' : 'border-gray-300/80 dark:border-gray-600/80'
-              }`}
-              placeholder={t('auth.login.passwordPlaceholder')}
-              disabled={isLoading}
-            />
-            {errors.password && (
-              <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.password}</p>
-            )}
-
-            {/* Remember me and Forgot password */}
-            <div className="flex items-center justify-between mt-2">
-              <div className="flex items-center">
-                <input
-                  id="rememberMe"
-                  name="rememberMe"
-                  type="checkbox"
-                  checked={formData.rememberMe}
-                  onChange={handleInputChange}
-                  className="h-4 w-4 text-blue-600 dark:text-blue-500 focus:ring-blue-500 dark:focus:ring-blue-400 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700"
-                  disabled={isLoading}
-                />
-                <label htmlFor="rememberMe" className="ml-2 block text-xs text-gray-600 dark:text-gray-400">
-                  {t('auth.login.rememberMe')}
-                </label>
-              </div>
-              <div className="relative" ref={forgotPasswordRef}>
-                <button
-                  type="button"
-                  onMouseEnter={() => setShowForgotPassword(true)}
-                  onClick={() => setShowForgotPassword(!showForgotPassword)}
-                  className="text-xs text-blue-500 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors"
-                >
-                  {t('auth.login.forgotPassword', 'Forgot password?')}
-                </button>
-                {showForgotPassword && (
-                  <div
-                    ref={popupRef}
-                    className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 z-50"
-                    style={{ minWidth: '320px' }}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <p className="text-xs text-gray-700 dark:text-gray-300 mb-3">
-                      {t('auth.login.resetAdminInstruction', 'Run the following command to reset the admin user')}
-                    </p>
-                    <div className="bg-gray-900 dark:bg-black rounded-md p-3 flex items-center gap-2 group">
-                      <code className="text-white text-xs font-mono flex-1 whitespace-nowrap min-w-0">
-                        docker exec tgo-api resetadmin
-                      </code>
-                      <button
-                        type="button"
-                        onClick={handleCopyCommand}
-                        className="p-1.5 text-gray-400 hover:text-white transition-colors rounded hover:bg-gray-800 dark:hover:bg-gray-700 flex-shrink-0"
-                        title={copied ? t('auth.login.copied', 'Copied') : t('auth.login.copy', 'Copy')}
-                      >
-                        {copied ? (
-                          <Check className="w-4 h-4 text-green-400" />
-                        ) : (
-                          <Copy className="w-4 h-4" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
+          {/* Decorative conversation preview */}
+          <div className="relative max-w-md space-y-3" aria-hidden="true">
+            <div className="tgo-msg-left flex items-end gap-2" style={{ animationDelay: '250ms' }}>
+              <span className="h-8 w-8 shrink-0 rounded-full bg-gradient-to-br from-amber-300 to-rose-400" />
+              <span className="rounded-[20px] rounded-bl-md bg-white/10 px-4 py-2.5 text-sm text-white/90 backdrop-blur">
+                {t('auth.showcase.visitorMessage', 'Where is my order #2048?')}
+              </span>
+            </div>
+            <div className="tgo-msg-right flex justify-end" style={{ animationDelay: '650ms' }}>
+              <span className="max-w-[85%] rounded-[20px] rounded-br-md bg-acid-400 px-4 py-2.5 text-sm text-ink-900">
+                {t('auth.showcase.agentMessage', 'It shipped this morning and arrives Thursday. Want the tracking link?')}
+              </span>
+            </div>
+            <div className="tgo-fade-in flex justify-end" style={{ animationDelay: '1050ms' }}>
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[11px] text-white/70">
+                <span className="h-1.5 w-1.5 rounded-full bg-acid-400 tgo-pulse-ring" />
+                {t('auth.showcase.agentMeta', 'AI agent replied in 1.2s')}
+              </span>
             </div>
           </div>
+        </section>
 
-          {/* Submit Button */}
-          <div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full px-4 py-2.5 bg-blue-600 dark:bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-700 dark:hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoading ? (
-                <div className="flex items-center justify-center">
-                  <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  {t('auth.login.loggingIn')}
+        {/* Form panel */}
+        <section className="flex items-center justify-center rounded-[32px] bg-white px-6 py-12 dark:bg-gray-900 sm:px-12">
+          <div className="tgo-fade-up w-full max-w-sm">
+            {/* Logo (compact screens) */}
+            <Link to="/" className="mb-10 flex items-center gap-2 lg:hidden">
+              <img src="/logo.svg" alt="Pelatis CS Logo" className="h-9 w-9" />
+              <span className="text-xl font-semibold text-gray-800 dark:text-gray-200">{t('brand.name')}</span>
+            </Link>
+
+            <p className="tgo-eyebrow">{t('auth.login.eyebrow', 'Welcome back')}</p>
+            <h2 className="tgo-display mt-3 text-[44px] text-gray-900 dark:text-white">{t('auth.login.title')}</h2>
+
+            {/* General Error Message */}
+            {errors.general && (
+              <div className="tgo-pop mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 dark:border-red-800/50 dark:bg-red-900/30" role="alert">
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.general}</p>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+              {/* Email or Username Field */}
+              <div>
+                <label htmlFor="email" className="mb-2 ml-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                  {t('auth.login.emailOrUsername')}
+                </label>
+                <input
+                  type="text"
+                  id="email"
+                  name="email"
+                  required
+                  autoComplete="username"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className={inputClass(Boolean(errors.email))}
+                  placeholder={t('auth.login.emailOrUsernamePlaceholder')}
+                  disabled={isLoading}
+                />
+                {errors.email && (
+                  <p className="ml-1 mt-1.5 text-xs text-red-600 dark:text-red-400">{errors.email}</p>
+                )}
+              </div>
+
+              {/* Password Field */}
+              <div>
+                <label htmlFor="password" className="mb-2 ml-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                  {t('auth.login.password')}
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  required
+                  autoComplete="current-password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  className={inputClass(Boolean(errors.password))}
+                  placeholder={t('auth.login.passwordPlaceholder')}
+                  disabled={isLoading}
+                />
+                {errors.password && (
+                  <p className="ml-1 mt-1.5 text-xs text-red-600 dark:text-red-400">{errors.password}</p>
+                )}
+
+                {/* Remember me and Forgot password */}
+                <div className="mt-3 flex items-center justify-between px-1">
+                  <label htmlFor="rememberMe" className="flex cursor-pointer items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+                    <input
+                      id="rememberMe"
+                      name="rememberMe"
+                      type="checkbox"
+                      checked={formData.rememberMe}
+                      onChange={handleInputChange}
+                      className="h-4 w-4 rounded border-gray-300 accent-[var(--color-ink-900)] dark:border-gray-600 dark:bg-gray-700 dark:accent-[var(--color-acid-400)]"
+                      disabled={isLoading}
+                    />
+                    {t('auth.login.rememberMe')}
+                  </label>
+                  <div className="relative" ref={forgotPasswordRef}>
+                    <button
+                      type="button"
+                      onMouseEnter={() => setShowForgotPassword(true)}
+                      onClick={() => setShowForgotPassword(!showForgotPassword)}
+                      className="text-xs font-medium text-gray-900 underline decoration-gray-300 underline-offset-4 transition-colors hover:decoration-acid-500 dark:text-gray-200 dark:decoration-gray-600"
+                    >
+                      {t('auth.login.forgotPassword', 'Forgot password?')}
+                    </button>
+                    {showForgotPassword && (
+                      <div
+                        ref={popupRef}
+                        className="animate-in fade-in zoom-in-95 slide-in-from-top-1 absolute right-0 top-full z-50 mt-2 w-80 rounded-2xl border border-gray-100 bg-white p-4 shadow-xl dark:border-gray-700 dark:bg-gray-800"
+                        style={{ minWidth: '320px' }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <p className="mb-3 text-xs text-gray-700 dark:text-gray-300">
+                          {t('auth.login.resetAdminInstruction', 'Run the following command to reset the admin user')}
+                        </p>
+                        <div className="group flex items-center gap-2 rounded-xl bg-ink-900 p-3 dark:bg-black">
+                          <code className="min-w-0 flex-1 whitespace-nowrap font-mono text-xs text-acid-300">
+                            docker exec tgo-api resetadmin
+                          </code>
+                          <button
+                            type="button"
+                            onClick={handleCopyCommand}
+                            className="flex-shrink-0 rounded-full p-1.5 text-gray-400 transition-colors hover:bg-white/10 hover:text-white"
+                            title={copied ? t('auth.login.copied', 'Copied') : t('auth.login.copy', 'Copy')}
+                          >
+                            {copied ? (
+                              <Check className="h-4 w-4 text-acid-400" />
+                            ) : (
+                              <Copy className="h-4 w-4" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              ) : (
-                t('auth.login.loginButton')
-              )}
-            </button>
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="group flex h-12 w-full items-center justify-between rounded-full bg-ink-900 pl-6 pr-1.5 text-sm font-medium text-white shadow-[0_14px_30px_-14px_rgba(15,16,18,0.8)] transition-all duration-300 hover:-translate-y-px active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 dark:bg-acid-400 dark:text-ink-900"
+              >
+                <span>{isLoading ? t('auth.login.loggingIn') : t('auth.login.loginButton')}</span>
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-acid-400 text-ink-900 transition-transform duration-300 group-hover:translate-x-0.5 dark:bg-ink-900 dark:text-acid-400">
+                  {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
+                </span>
+              </button>
+            </form>
+
+            {/* Footer Copyright */}
+            <p className="mt-12 text-xs text-gray-400 dark:text-gray-500">
+              {t('footer.copyright')}
+            </p>
           </div>
-        </form>
-
-
-        {/* Footer Copyright */}
-        <p className="mt-10 text-center text-xs text-gray-400 dark:text-gray-500">
-          {t('footer.copyright')}
-        </p>
+        </section>
       </div>
     </div>
   );

@@ -23,7 +23,7 @@ const ReplySuggestions: React.FC<ReplySuggestionsProps> = ({ suggestions, onSugg
       {suggestions.map((suggestion, index) => (
         <button
           key={index}
-          className="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-2 py-1 rounded-full border border-gray-200 dark:border-gray-600 transition-colors"
+          className="text-xs bg-white dark:bg-gray-800 hover:bg-acid-300 hover:text-ink-900 dark:hover:bg-acid-400 text-gray-700 dark:text-gray-200 px-3 py-1.5 rounded-full ring-1 ring-gray-200 dark:ring-gray-700 hover:ring-transparent transition-all duration-200 active:scale-95"
           onClick={() => handleSuggestionClick(suggestion)}
         >
           {suggestion}

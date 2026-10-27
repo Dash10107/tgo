@@ -44,7 +44,7 @@ const LoadingStates: React.FC<LoadingStatesProps> = React.memo(({
         <button
           onClick={onLoadMore}
           disabled={isLoadingMore}
-          className="flex items-center px-4 py-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="tgo-pill h-8 px-3.5 text-xs disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoadingMore ? (
             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -63,11 +63,18 @@ const LoadingStates: React.FC<LoadingStatesProps> = React.memo(({
   // Initial Loading State
   if (isLoadingHistory && !hasMessages) {
     return (
-      <div className="flex items-center justify-center h-32">
-        <Loader2 className="w-6 h-6 animate-spin text-blue-500 dark:text-blue-400 mr-2" />
-        <span className="text-gray-600 dark:text-gray-400">
-          {t('chat.history.loading', 'Loading historical messages...')}
-        </span>
+      <div className="space-y-5 py-2" role="status" aria-label={t('chat.history.loading', 'Loading historical messages...')}>
+        {[
+          { side: 'left', width: 'w-56' },
+          { side: 'right', width: 'w-44' },
+          { side: 'left', width: 'w-72' },
+          { side: 'right', width: 'w-32' },
+        ].map((row, i) => (
+          <div key={i} className={`flex items-end gap-2 ${row.side === 'right' ? 'justify-end' : ''}`} style={{ opacity: 1 - i * 0.18 }}>
+            {row.side === 'left' && <div className="tgo-skeleton h-8 w-8 shrink-0 rounded-full" />}
+            <div className={`tgo-skeleton h-10 ${row.width} ${row.side === 'right' ? 'rounded-[20px] rounded-br-md' : 'rounded-[20px] rounded-bl-md'}`} />
+          </div>
+        ))}
       </div>
     );
   }
@@ -80,7 +87,7 @@ const LoadingStates: React.FC<LoadingStatesProps> = React.memo(({
         <p className="text-gray-600 dark:text-gray-400 text-center mb-4">{historyError}</p>
         <button
           onClick={onRetry}
-          className="px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 transition-colors"
+          className="px-5 py-2 bg-ink-900 text-white text-sm font-medium rounded-full hover:bg-ink-700 active:scale-95 transition-all dark:bg-acid-400 dark:text-ink-900"
         >
           {t('chat.history.retry', 'Retry')}
         </button>

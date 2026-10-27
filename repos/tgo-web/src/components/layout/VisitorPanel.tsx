@@ -114,14 +114,14 @@ const VisitorPanel: React.FC<VisitorPanelProps> = ({ activeChat }) => {
   if (!activeChat) {
     return (
       <aside 
-        className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-l border-gray-200/60 dark:border-gray-700/60 flex items-center justify-center shrink-0 font-sans antialiased relative group"
+        className="tgo-surface overflow-hidden flex items-center justify-center shrink-0 font-sans antialiased relative group"
         style={{ width: `${width}px` }}
       >
         <div
           className={`absolute left-0 top-0 bottom-0 w-1.5 cursor-col-resize z-[60] group/resize flex items-center justify-center`}
           onMouseDown={startResizing}
         >
-          <div className={`h-full w-0.5 transition-colors duration-200 ${isResizing ? 'bg-blue-500' : 'bg-transparent group-hover/resize:bg-blue-400/50'}`} />
+          <div className={`h-full w-0.5 transition-colors duration-200 ${isResizing ? 'bg-acid-500' : 'bg-transparent group-hover/resize:bg-acid-400/70'}`} />
         </div>
         <div className="text-center text-gray-500 dark:text-gray-400 px-4">
           <User size={48} className="mx-auto mb-4 text-gray-300 dark:text-gray-600" />
@@ -132,20 +132,20 @@ const VisitorPanel: React.FC<VisitorPanelProps> = ({ activeChat }) => {
   }
 
   return (
-    <div className="relative flex shrink-0 h-full" style={{ width: `${width}px` }}>
+    <div className="tgo-surface relative flex shrink-0 h-full overflow-hidden" style={{ width: `${width}px` }}>
       {/* Drag handle: increases the hit area */}
       <div
         className={`absolute left-0 top-0 bottom-0 w-1.5 cursor-col-resize z-[60] group/resize flex items-center justify-center`}
         onMouseDown={startResizing}
       >
-        <div className={`h-full w-0.5 transition-colors duration-200 ${isResizing ? 'bg-blue-500' : 'bg-transparent group-hover/resize:bg-blue-400/50'}`} />
+        <div className={`h-full w-0.5 transition-colors duration-200 ${isResizing ? 'bg-acid-500' : 'bg-transparent group-hover/resize:bg-acid-400/70'}`} />
       </div>
       
       <VisitorDetailPanel
         channelId={channelId}
         channelType={channelType}
         variant="sidebar"
-        className="w-full h-full border-l border-gray-200/60 dark:border-gray-700/60"
+        className="w-full h-full"
         style={{ width: '100%' }}
       />
     </div>

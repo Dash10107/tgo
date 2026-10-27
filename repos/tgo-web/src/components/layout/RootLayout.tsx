@@ -71,10 +71,15 @@ const RootLayout: React.FC = () => {
   // Show loading screen while checking
   if (isInitializing || isChecking) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">{t('setup.guard.checking')}</p>
+      <div className="tgo-canvas min-h-screen flex items-center justify-center">
+        <div className="tgo-fade-in flex flex-col items-center text-center">
+          <div className="relative mb-6 flex h-16 w-16 items-center justify-center">
+            <span className="absolute inset-0 animate-spin rounded-full border-2 border-gray-200 border-t-acid-500 dark:border-gray-800 dark:border-t-acid-400" />
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-sm dark:bg-gray-900">
+              <img src="/logo.svg" alt="" className="h-6 w-6" />
+            </span>
+          </div>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{t('setup.guard.checking')}</p>
         </div>
       </div>
     );
@@ -83,8 +88,8 @@ const RootLayout: React.FC = () => {
   // Show error screen if check failed
   if (checkError && isInstalled === null) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-md w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8">
+      <div className="tgo-canvas min-h-screen flex items-center justify-center p-4">
+        <div className="tgo-surface tgo-pop max-w-md w-full p-8">
           <div className="text-center">
             <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
               <svg
@@ -109,7 +114,7 @@ const RootLayout: React.FC = () => {
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="inline-flex h-11 items-center rounded-full bg-ink-900 px-6 text-sm font-medium text-white transition-all hover:-translate-y-px active:scale-95 dark:bg-acid-400 dark:text-ink-900"
             >
               {t('setup.guard.retryButton')}
             </button>

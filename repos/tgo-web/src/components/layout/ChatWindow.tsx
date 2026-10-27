@@ -8,7 +8,7 @@ import { useWuKongIMWebSocket } from '@/hooks/useWuKongIMWebSocket';
 import { useChatStore } from '@/stores/chatStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useChannelStore } from '@/stores/channelStore';
-import type { Chat, Message, ChannelVisitorExtra } from '@/types';
+import type { Chat, Message, ChannelVisitorExtra, InboxSummary } from '@/types';
 import { PlatformType, MessagePayloadType } from '@/types';
 import { chatMessagesApiService } from '@/services/chatMessagesApi';
 import { useToast } from '@/hooks/useToast';
@@ -28,6 +28,8 @@ export interface ChatWindowProps {
   onAcceptVisitor?: () => void;
   /** Callback when a chat is ended successfully (with channel info) */
   onEndChatSuccess?: (channelId: string, channelType: number) => void;
+  /** Inbox totals for the workspace overview shown when no chat is open */
+  inboxSummary?: InboxSummary | null;
 }
 
 /**
@@ -43,7 +45,7 @@ export interface ChatWindowProps {
  * @param activeChat - The currently active chat
  * @param onSendMessage - Callback when a message is sent
  */
-const ChatWindow: React.FC<ChatWindowProps> = React.memo(({ activeChat, onSendMessage, onAcceptVisitor, onEndChatSuccess }) => {
+const ChatWindow: React.FC<ChatWindowProps> = React.memo(({ activeChat, onSendMessage, onAcceptVisitor, onEndChatSuccess, inboxSummary }) => {
   const { t } = useTranslation();
   // Get channel info for WuKongIM integration (flattened on Chat)
   const channelId = activeChat?.channelId;
@@ -224,11 +226,6 @@ const ChatWindow: React.FC<ChatWindowProps> = React.memo(({ activeChat, onSendMe
     }
   }, [isWuKongIMChat, channelId, channelType, isConnected, isAIChat, user, addMessage, updateConversationLastMessage, moveConversationToTop, platformType, onSendMessage, sendWsMessage, updateMessageByClientMsgNo, showToast, t]);
 
-  // Handle empty state when no chat is selected
-  if (!activeChat) {
-    return <EmptyState type="no-chat" />;
-  }
-
   // Target message jump & highlight from SearchPanel
   const targetLoc = useChatStore(state => state.targetMessageLocation);
   const loadMessageContext = useChatStore(state => state.loadMessageContext);
@@ -277,13 +274,18 @@ const ChatWindow: React.FC<ChatWindowProps> = React.memo(({ activeChat, onSendMe
   // We want to re-run when target changes or conversation changes
   }, [isWuKongIMChat, channelId, channelType, targetLoc, loadMessageContext, clearHistoricalMessages, setLoadingHistory, setTargetMessageLocation, showToast, t]);
 
+  // Handle empty state when no chat is selected (after all hooks so hook order stays stable)
+  if (!activeChat) {
+    return <EmptyState type="no-chat" summary={inboxSummary} />;
+  }
+
   return (
-    <main className="flex-grow flex flex-col bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+    <main className="tgo-surface relative flex-grow min-w-0 flex flex-col overflow-hidden">
       {/* Chat Header */}
       <ChatHeader activeChat={activeChat} onEndChatSuccess={onEndChatSuccess} />
 
       {/* Messages Area */}
-      <div className="flex-1 min-h-0 overflow-hidden">
+      <div className="flex-1 min-h-0 overflow-hidden bg-[radial-gradient(circle_at_1px_1px,rgb(15_16_18/0.06)_1px,transparent_0)] bg-[size:22px_22px] dark:bg-[radial-gradient(circle_at_1px_1px,rgb(255_255_255/0.05)_1px,transparent_0)]">
         <MessagesList
           key={activeChat.id}
           isWuKongIMChat={isWuKongIMChat}

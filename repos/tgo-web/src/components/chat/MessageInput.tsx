@@ -24,7 +24,7 @@ import { getFileIcon } from '@/utils/fileIcons';
 import { chatMessagesApiService } from '@/services/chatMessagesApi';
 import { APIError } from '@/services/api';
 
-import { Smile, Scissors, Image as ImageIcon, Folder, Pause, Loader2, UserPlus } from 'lucide-react';
+import { Smile, Scissors, Image as ImageIcon, Folder, Pause, Loader2, UserPlus, ArrowUp } from 'lucide-react';
 import ChatToolbarPluginButtons from '../plugin/ChatToolbarPluginButtons';
 
 /**
@@ -1245,7 +1245,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
   // If visitor is in queued status, show accept button instead of input area
   if (isQueued && visitorId) {
     return (
-      <footer className="p-4 border-t border-gray-200/80 dark:border-gray-700/80 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg sticky bottom-0 z-10">
+      <footer className="relative z-10 mx-4 mb-4 mt-2 rounded-[24px] bg-gray-50 ring-1 ring-gray-100 dark:bg-gray-800/60 dark:ring-gray-700">
         <div className="flex flex-col items-center justify-center py-6 space-y-3">
           <p className="text-sm text-gray-500 dark:text-gray-400">
             {t('chat.input.accept.hint', 'This visitor is waiting to be accepted')}
@@ -1253,7 +1253,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
           <button
             onClick={handleAcceptVisitor}
             disabled={isAccepting}
-            className="flex items-center space-x-2 px-6 py-2.5 bg-green-500 hover:bg-green-600 disabled:bg-green-400 text-white text-sm font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+            className="inline-flex h-11 items-center gap-2 rounded-full bg-ink-900 px-6 text-sm font-medium text-white shadow-[0_10px_24px_-12px_rgba(15,16,18,0.7)] transition-all duration-200 hover:-translate-y-px active:scale-95 disabled:opacity-60 dark:bg-acid-400 dark:text-ink-900"
           >
             {isAccepting ? (
               <>
@@ -1275,7 +1275,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
   // If conversation is closed, don't show input area
   if (isClosed) {
     return (
-      <footer className="p-4 border-t border-gray-200/80 dark:border-gray-700/80 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg sticky bottom-0 z-10">
+      <footer className="relative z-10 mx-4 mb-4 mt-2 rounded-[24px] bg-gray-50 ring-1 ring-gray-100 dark:bg-gray-800/60 dark:ring-gray-700">
         <div className="flex items-center justify-center py-4">
           <p className="text-sm text-gray-400 dark:text-gray-500">
             {t('chat.input.closed', 'Conversation ended')}
@@ -1291,7 +1291,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
   if (isNotMyVisitor) {
     const staffDisplayName = assignedStaffName || t('chat.input.otherAgent', 'another agent');
     return (
-      <footer className="p-4 border-t border-gray-200/80 dark:border-gray-700/80 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg sticky bottom-0 z-10">
+      <footer className="relative z-10 mx-4 mb-4 mt-2 rounded-[24px] bg-gray-50 ring-1 ring-gray-100 dark:bg-gray-800/60 dark:ring-gray-700">
         <div className="flex items-center justify-center py-4">
           <p className="text-sm text-gray-400 dark:text-gray-500">
             {t('chat.input.notMyVisitor', 'This visitor is assigned to {{name}}', { name: staffDisplayName })}
@@ -1301,54 +1301,16 @@ const MessageInput: React.FC<MessageInputProps> = ({
     );
   }
 
+  const canSend = Boolean(message.trim() || pastedItems.length > 0 || selectedFiles.length > 0)
+    && !isSending && !isSendingLocal && !isManualDisabled;
+
   return (
-    <footer className="p-4 border-t border-gray-200/80 dark:border-gray-700/80 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg sticky bottom-0 z-10">
-
-
-      {/* Toolbar */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <button
-            ref={emojiBtnRef}
-            onClick={() => { if (isManualDisabled) return; setShowEmoji(v => !v); }}
-            disabled={isManualDisabled}
-            className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            aria-label={t('chat.input.emoji.aria', 'Open emoji picker')}
-            title={isManualDisabled ? t('chat.input.disabled.tooltip', 'AI assistant enabled, manual input disabled') : t('chat.input.emoji.title', 'Insert emoji')}
-          >
-            <Smile className="w-6 h-6" />
-          </button>
-          <button
-            ref={screenshotBtnRef}
-            onClick={() => { if (isManualDisabled) return; handleClickScreenshotBtn(); }}
-            disabled={isManualDisabled}
-            className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            aria-label={t('chat.input.screenshot.aria', 'Screenshot paste instructions')}
-            title={isManualDisabled ? t('chat.input.disabled.tooltip', 'AI assistant enabled, manual input disabled') : t('chat.input.screenshot.title', 'Screenshot')}
-          >
-            <Scissors className="w-6 h-6" />
-          </button>
-          <button onClick={handleClickImageBtn} disabled={isManualDisabled} className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" aria-label={t('chat.input.image.aria', 'Upload image')} title={isManualDisabled ? t('chat.input.disabled.tooltip', 'AI assistant enabled, manual input disabled') : t('chat.input.image.title', 'Send image')}>
-            <ImageIcon className="w-6 h-6" />
-          </button>
-          <button onClick={handleClickFileBtn} disabled={isManualDisabled} className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" aria-label={t('chat.input.file.aria', 'Upload file')} title={isManualDisabled ? t('chat.input.disabled.tooltip', 'AI assistant enabled, manual input disabled') : t('chat.input.file.title', 'Send file')}>
-            <Folder className="w-6 h-6" />
-          </button>
-          
-          <ChatToolbarPluginButtons
-            disabled={isManualDisabled}
-            context={{
-              extension_type: 'chat_toolbar',
-              visitor_id: visitorId,
-              channel_id: channelId,
-              channel_type: channelType,
-              platform_type: visitorExtra?.platform_type,
-            }}
-          />
-          {/* <button className="p-1.5 text-gray-500 hover:text-gray-700 transition-colors duration-200">
-            <Ellipsis className="w-6 h-6" />
-          </button> */}
-        </div>
+    <footer className="relative z-10 px-4 pb-4 pt-2">
+      <div className={`rounded-[24px] bg-white ring-1 shadow-[0_10px_30px_-18px_rgba(15,16,18,0.35)] transition-[box-shadow,background-color] duration-300 dark:bg-gray-800 ${
+        isManualDisabled
+          ? 'ring-gray-100 dark:ring-gray-700'
+          : 'ring-gray-200 focus-within:ring-2 focus-within:ring-acid-400 focus-within:shadow-[0_16px_40px_-20px_rgba(143,179,30,0.55)] dark:ring-gray-700'
+      }`}>
 
       {/* Hidden file input for image selection */}
       <input ref={fileInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handleImageChange} disabled={isManualDisabled} />
@@ -1363,20 +1325,6 @@ const MessageInput: React.FC<MessageInputProps> = ({
         onChange={handleFileChange}
         disabled={isManualDisabled}
       />
-
-        {/* AI assistant toggle - not shown in agent conversations */}
-        {!isAIChat && (
-          <div className="flex items-center space-x-2" title={isAIEnabled ? t('chat.input.ai.enabled', 'AI enabled') : t('chat.input.ai.disabled', 'AI disabled')}>
-            <span className="text-xs text-gray-600 dark:text-gray-400 select-none">{t('chat.input.ai.label', 'AI Assistant')}</span>
-            <Toggle
-              aria-label={t('chat.input.ai.toggleAria', 'Toggle AI assistant')}
-              checked={isAIEnabled}
-              onChange={handleChangeAI}
-              disabled={!visitorId || isTogglingAI}
-            />
-          </div>
-        )}
-      </div>
 
       {showEmoji && (
         <EmojiPickerPopover
@@ -1394,18 +1342,16 @@ const MessageInput: React.FC<MessageInputProps> = ({
           )}
           {createPortal(
             <div
-              className="fixed z-[1000] w-80 bg-white dark:bg-gray-900 rounded-md shadow-lg border border-gray-200 dark:border-gray-700"
+              className="animate-in fade-in zoom-in-95 fixed z-[1000] w-80 bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700"
               style={{ top: screenshotTipPos.top, left: screenshotTipPos.left, width: TIP_WIDTH }}
               role="dialog"
               aria-label={t('chat.input.screenshotTip.aria', 'Screenshot send tip')}
             >
-              <div className="p-3">
+              <div className="p-4">
                 <div className="flex items-center justify-between mb-2">
-
-
                   <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{t('chat.input.screenshotTip.title', 'Screenshot Send Tip')}</span>
                   <button
-                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                    className="flex h-6 w-6 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
                     aria-label={t('common.close', 'Close')}
                     onClick={() => setShowScreenshotTip(false)}
                   >
@@ -1416,13 +1362,13 @@ const MessageInput: React.FC<MessageInputProps> = ({
                   <p>{t('chat.input.screenshotTip.line1', 'You can use QQ, WeChat, or system screenshot tools to take a screenshot,')}</p>
                   <p>
                     {t('chat.input.screenshotTip.line2.prefix', 'then press')}
-                    <span className="mx-1 inline-block font-mono text-[11px] px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                    <span className="mx-1 inline-block font-mono text-[11px] px-1.5 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
                       {isMac ? '⌘ + V' : 'Ctrl + V'}
                     </span>
                     {isMac && (
                       <>
                         {t('common.or', 'or')}
-                        <span className="ml-1 inline-block font-mono text-[11px] px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">Cmd + V</span>
+                        <span className="ml-1 inline-block font-mono text-[11px] px-1.5 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">Cmd + V</span>
                       </>
                     )}
                     {t('chat.input.screenshotTip.line2.suffix', 'in the message input box to paste and send the image')}
@@ -1435,16 +1381,12 @@ const MessageInput: React.FC<MessageInputProps> = ({
         </>
       )}
 
-
-
-
-
       {/* Selected files preview (documents) */}
       {selectedFiles.length > 0 && (
-        <div className="mt-2">
+        <div className="px-3 pt-3">
           <ul className="space-y-2">
             {selectedFiles.map((sf) => (
-              <li key={sf.id} className="flex items-center justify-between rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2">
+              <li key={sf.id} className="tgo-fade-up flex items-center justify-between rounded-2xl bg-gray-50 dark:bg-gray-900 px-3 py-2">
                 <div className="flex items-center space-x-3 min-w-0">
                   {getFileIcon(sf.file.name, 'w-5 h-5')}
                   <span className="text-sm text-gray-800 dark:text-gray-100 truncate max-w-[280px]">{sf.file.name}</span>
@@ -1452,7 +1394,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
                 </div>
                 <button
                   onClick={() => removeSelectedFile(sf.id)}
-                  className="text-gray-400 hover:text-red-500 text-sm"
+                  className="flex h-6 w-6 items-center justify-center rounded-full text-gray-400 hover:bg-red-50 hover:text-red-500 text-sm transition-colors"
                   aria-label={t('chat.input.file.remove', 'Remove file')}
                   title={t('chat.input.file.remove', 'Remove file')}
                 >
@@ -1466,7 +1408,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
 
       {/* Pasted images preview (multiple) */}
       {pastedItems.length > 0 && (
-        <div className="mt-2">
+        <div className="px-3 pt-3">
           {(() => {
             const count = pastedItems.length;
             const gridColsClass = count === 1 ? 'grid-cols-1' : count === 2 ? 'grid-cols-2' : 'grid-cols-3';
@@ -1481,22 +1423,22 @@ const MessageInput: React.FC<MessageInputProps> = ({
             return (
               <div className={`grid ${gridColsClass} gap-2 w-fit`}>
                 {pastedItems.map((it, idx) => (
-                  <div key={idx} className={"relative rounded-md overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 " + getGridItemClass(idx)}>
-                    <img src={it.previewUrl} alt={t('chat.input.preview.imageAlt', 'Preview image {{index}}', { index: idx + 1 })} className="w-[100px] h-[100px] object-cover" />
+                  <div key={idx} className={`tgo-pop relative rounded-2xl bg-white dark:bg-gray-900 ${getGridItemClass(idx)}`}>
+                    <img src={it.previewUrl} alt={t('chat.input.preview.imageAlt', 'Preview image {{index}}', { index: idx + 1 })} className="w-[100px] h-[100px] rounded-2xl object-cover ring-1 ring-gray-200 dark:ring-gray-700" />
                     {/* Progress overlay */}
                     {it.status && it.status !== 'idle' && it.status !== 'completed' && (
-                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                      <div className="absolute inset-0 rounded-2xl bg-black/40 flex items-center justify-center">
                         <span className="text-white text-xs">{Math.round(it.progress || 0)}%</span>
                       </div>
                     )}
                     {it.status === 'error' && (
-                      <div className="absolute inset-0 bg-red-500/20 flex items-center justify-center text-red-700 text-xs text-center px-1 leading-5">
+                      <div className="absolute inset-0 rounded-2xl bg-red-500/20 flex items-center justify-center text-red-700 text-xs text-center px-1 leading-5">
                         {t('chat.input.upload.failed', 'Upload failed')}
                       </div>
                     )}
                     <button
                       onClick={() => removePastedItem(idx)}
-                      className="absolute -top-2 -right-2 bg-black/60 text-white rounded-full w-6 h-6 leading-6 text-center text-xs hover:bg-black/80"
+                      className="absolute -top-2 -right-2 bg-ink-900 text-white rounded-full w-6 h-6 leading-6 text-center text-xs shadow-md hover:scale-110 transition-transform"
                       aria-label={t('chat.input.preview.removeAria', 'Remove preview')}
                     >
                       ×
@@ -1510,58 +1452,119 @@ const MessageInput: React.FC<MessageInputProps> = ({
       )}
 
       {/* Message input */}
-      <div className="mt-2">
-        <textarea
-          ref={textareaRef}
-          placeholder={isManualDisabled ? t('chat.input.disabled.placeholder', 'AI assistant enabled, manual input disabled') : t('chat.input.placeholder', 'Type a message...')}
-          rows={2}
-          value={message}
-          onChange={handleMessageChange}
-          onKeyDown={handleKeyPress}
-          onPaste={handlePaste}
-          onCompositionStart={handleCompositionStart}
-          onCompositionEnd={handleCompositionEnd}
-          readOnly={isSending || isSendingLocal || isManualDisabled}
-          disabled={isManualDisabled}
-          title={isManualDisabled ? t('chat.input.disabled.placeholder', 'AI assistant enabled, manual input disabled') : undefined}
-          className={`w-full text-sm p-2 border border-transparent rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 resize-none bg-transparent dark:text-gray-200 ${
-            isSending || isSendingLocal || isManualDisabled ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
-        />
-      </div>
+      <textarea
+        ref={textareaRef}
+        placeholder={isManualDisabled ? t('chat.input.disabled.placeholder', 'AI assistant enabled, manual input disabled') : t('chat.input.placeholder', 'Type a message...')}
+        rows={2}
+        value={message}
+        onChange={handleMessageChange}
+        onKeyDown={handleKeyPress}
+        onPaste={handlePaste}
+        onCompositionStart={handleCompositionStart}
+        onCompositionEnd={handleCompositionEnd}
+        readOnly={isSending || isSendingLocal || isManualDisabled}
+        disabled={isManualDisabled}
+        title={isManualDisabled ? t('chat.input.disabled.placeholder', 'AI assistant enabled, manual input disabled') : undefined}
+        className={`block w-full resize-none bg-transparent px-4 pt-3.5 pb-1 text-sm leading-relaxed text-gray-900 placeholder:text-gray-400 focus:outline-none dark:text-gray-100 dark:placeholder:text-gray-500 ${
+          isSending || isSendingLocal || isManualDisabled ? 'opacity-50 cursor-not-allowed' : ''
+        }`}
+      />
 
-      {/* Send controls */}
-      <div className="flex justify-end mt-1">
-        <button className="text-xs text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 mr-2" title={isManualDisabled ? t('chat.input.disabled.tooltip', 'AI assistant enabled, manual input disabled') : undefined}>
-          {t('chat.input.shortcuts.sendWithHint', 'Enter to send • {{hint}}', { hint: newlineHint })}
-        </button>
-        {isStreamingInProgress ? (
+      {/* Toolbar + send controls */}
+      <div className="flex items-center justify-between gap-2 px-2.5 pb-2.5">
+        <div className="flex items-center gap-0.5">
           <button
-            className="px-4 py-1 text-white text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-400 focus:ring-offset-1 transition-colors duration-200 bg-orange-500 hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-700 flex items-center space-x-1.5"
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={handleCancelStream}
-            title={t('chat.input.streaming.pauseTooltip', 'Pause streaming message')}
+            ref={emojiBtnRef}
+            onClick={() => { if (isManualDisabled) return; setShowEmoji(v => !v); }}
+            disabled={isManualDisabled}
+            className="flex h-8 w-8 items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 hover:text-ink-900 dark:hover:bg-gray-700 dark:hover:text-white transition-colors duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+            aria-label={t('chat.input.emoji.aria', 'Open emoji picker')}
+            title={isManualDisabled ? t('chat.input.disabled.tooltip', 'AI assistant enabled, manual input disabled') : t('chat.input.emoji.title', 'Insert emoji')}
           >
-            <Pause className="w-4 h-4" />
-            <span>{t('chat.input.streaming.pause', 'Pause')}</span>
+            <Smile className="w-[18px] h-[18px]" />
           </button>
-        ) : (
           <button
-            className={`px-4 py-1 text-white text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-1 transition-colors duration-200 ${
-              isSending || isSendingLocal || isManualDisabled
-                ? 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed'
-                : (message.trim() || pastedItems.length > 0 || selectedFiles.length > 0)
-                ? 'bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700'
-                : 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed'
-            }`}
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={handleSend}
-            disabled={(!message.trim() && pastedItems.length === 0 && selectedFiles.length === 0) || isSending || isSendingLocal || isManualDisabled}
-            title={isManualDisabled ? t('chat.input.disabled.cannotSendTooltip', 'AI assistant enabled, manual send disabled') : undefined}
+            ref={screenshotBtnRef}
+            onClick={() => { if (isManualDisabled) return; handleClickScreenshotBtn(); }}
+            disabled={isManualDisabled}
+            className="flex h-8 w-8 items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 hover:text-ink-900 dark:hover:bg-gray-700 dark:hover:text-white transition-colors duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+            aria-label={t('chat.input.screenshot.aria', 'Screenshot paste instructions')}
+            title={isManualDisabled ? t('chat.input.disabled.tooltip', 'AI assistant enabled, manual input disabled') : t('chat.input.screenshot.title', 'Screenshot')}
           >
-            {isSending || isSendingLocal ? t('chat.input.send.sending', 'Sending...') : t('chat.input.send.label', 'Send')}
+            <Scissors className="w-[18px] h-[18px]" />
           </button>
-        )}
+          <button onClick={handleClickImageBtn} disabled={isManualDisabled} className="flex h-8 w-8 items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 hover:text-ink-900 dark:hover:bg-gray-700 dark:hover:text-white transition-colors duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed" aria-label={t('chat.input.image.aria', 'Upload image')} title={isManualDisabled ? t('chat.input.disabled.tooltip', 'AI assistant enabled, manual input disabled') : t('chat.input.image.title', 'Send image')}>
+            <ImageIcon className="w-[18px] h-[18px]" />
+          </button>
+          <button onClick={handleClickFileBtn} disabled={isManualDisabled} className="flex h-8 w-8 items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 hover:text-ink-900 dark:hover:bg-gray-700 dark:hover:text-white transition-colors duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed" aria-label={t('chat.input.file.aria', 'Upload file')} title={isManualDisabled ? t('chat.input.disabled.tooltip', 'AI assistant enabled, manual input disabled') : t('chat.input.file.title', 'Send file')}>
+            <Folder className="w-[18px] h-[18px]" />
+          </button>
+
+          <ChatToolbarPluginButtons
+            disabled={isManualDisabled}
+            context={{
+              extension_type: 'chat_toolbar',
+              visitor_id: visitorId,
+              channel_id: channelId,
+              channel_type: channelType,
+              platform_type: visitorExtra?.platform_type,
+            }}
+          />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <span className="hidden text-[11px] text-gray-400 dark:text-gray-500 xl:inline">
+            {t('chat.input.shortcuts.sendWithHint', 'Enter to send • {{hint}}', { hint: newlineHint })}
+          </span>
+
+          {/* AI assistant toggle - not shown in agent conversations */}
+          {!isAIChat && (
+            <div
+              className={`flex h-9 items-center gap-2 rounded-full pl-3 pr-1.5 transition-colors duration-300 ${isAIEnabled ? 'bg-acid-200/70 dark:bg-acid-400/15' : 'bg-gray-100 dark:bg-gray-700/60'}`}
+              title={isAIEnabled ? t('chat.input.ai.enabled', 'AI enabled') : t('chat.input.ai.disabled', 'AI disabled')}
+            >
+              <span className="text-xs font-medium text-gray-700 dark:text-gray-300 select-none">{t('chat.input.ai.label', 'AI Assistant')}</span>
+              <Toggle
+                aria-label={t('chat.input.ai.toggleAria', 'Toggle AI assistant')}
+                checked={isAIEnabled}
+                onChange={handleChangeAI}
+                disabled={!visitorId || isTogglingAI}
+              />
+            </div>
+          )}
+
+          {isStreamingInProgress ? (
+            <button
+              className="inline-flex h-9 items-center gap-1.5 rounded-full bg-orange-500 px-4 text-sm font-medium text-white transition-all duration-200 hover:bg-orange-600 active:scale-95 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-1 dark:bg-orange-600 dark:hover:bg-orange-700"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={handleCancelStream}
+              title={t('chat.input.streaming.pauseTooltip', 'Pause streaming message')}
+            >
+              <Pause className="w-4 h-4" />
+              <span>{t('chat.input.streaming.pause', 'Pause')}</span>
+            </button>
+          ) : (
+            <button
+              className={`group inline-flex h-9 items-center gap-2 rounded-full pl-4 pr-1 text-sm font-medium transition-all duration-300 focus:outline-none ${
+                canSend
+                  ? 'bg-ink-900 text-white shadow-[0_10px_22px_-12px_rgba(15,16,18,0.8)] hover:-translate-y-px active:scale-95 dark:bg-acid-400 dark:text-ink-900'
+                  : 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500'
+              }`}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={handleSend}
+              disabled={!canSend}
+              title={isManualDisabled ? t('chat.input.disabled.cannotSendTooltip', 'AI assistant enabled, manual send disabled') : undefined}
+            >
+              <span>{isSending || isSendingLocal ? t('chat.input.send.sending', 'Sending...') : t('chat.input.send.label', 'Send')}</span>
+              <span className={`flex h-7 w-7 items-center justify-center rounded-full transition-all duration-300 ${
+                canSend ? 'bg-acid-400 text-ink-900 group-hover:translate-x-0.5 dark:bg-ink-900 dark:text-acid-400' : 'bg-gray-200 text-gray-400 dark:bg-gray-600 dark:text-gray-400'
+              }`}>
+                {isSending || isSendingLocal ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ArrowUp className="h-3.5 w-3.5" strokeWidth={2.5} />}
+              </span>
+            </button>
+          )}
+        </div>
+      </div>
       </div>
     </footer>
   );

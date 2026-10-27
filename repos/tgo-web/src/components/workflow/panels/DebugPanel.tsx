@@ -25,6 +25,7 @@ import {
 import { useWorkflowStore } from '@/stores/workflowStore';
 import type { NodeExecution, WorkflowNode } from '@/types/workflow';
 import { formatDuration, useElapsed } from '../overlays/runState';
+import { getNodeAccent } from '../nodes/nodeTheme';
 
 type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
 
@@ -34,22 +35,6 @@ interface InputVariable {
   description?: string;
   nodeId: string;
 }
-
-// Accent color per node type, matching the node cards on the canvas
-const NODE_TYPE_ACCENT: Record<string, string> = {
-  input: 'bg-green-500',
-  timer: 'bg-green-500',
-  webhook: 'bg-green-500',
-  event: 'bg-green-500',
-  answer: 'bg-indigo-500',
-  agent: 'bg-blue-500',
-  tool: 'bg-orange-500',
-  condition: 'bg-purple-500',
-  llm: 'bg-cyan-500',
-  parallel: 'bg-indigo-500',
-  api: 'bg-sky-500',
-  classifier: 'bg-orange-500',
-};
 
 const CopyButton: React.FC<{ text: string; label: string }> = ({ text, label }) => {
   const [copied, setCopied] = useState(false);
@@ -62,17 +47,17 @@ const CopyButton: React.FC<{ text: string; label: string }> = ({ text, label }) 
           window.setTimeout(() => setCopied(false), 1500);
         }).catch(() => setCopied(false));
       }}
-      className="p-1.5 rounded-lg text-gray-400 hover:text-blue-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+      className="p-1.5 rounded-full text-gray-400 hover:text-ink-900 hover:bg-gray-100 dark:hover:text-white dark:hover:bg-gray-800 transition-colors"
       title={label}
       aria-label={label}
     >
-      {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+      {copied ? <Check className="w-3.5 h-3.5 text-acid-600" /> : <Copy className="w-3.5 h-3.5" />}
     </button>
   );
 };
 
 const JsonBlock: React.FC<{ value: unknown; tone: 'input' | 'output' }> = ({ value, tone }) => (
-  <pre className={`p-3 bg-gray-950 rounded-xl text-[11px] leading-relaxed overflow-x-auto font-mono max-h-56 custom-scrollbar ${tone === 'input' ? 'text-sky-300' : 'text-emerald-300'}`}>
+  <pre className={`p-3 bg-gray-950 rounded-xl text-[11px] leading-relaxed overflow-x-auto font-mono max-h-56 custom-scrollbar ${tone === 'input' ? 'text-sky-300' : 'text-acid-300'}`}>
     {JSON.stringify(value, null, 2)}
   </pre>
 );
@@ -98,17 +83,17 @@ const TimelineStep: React.FC<{
       {/* Connector to the next step */}
       {!isLast && (
         <span
-          className={`absolute left-[13px] top-8 -bottom-1 w-0.5 rounded-full transition-colors duration-500 ${isCompleted ? 'bg-emerald-300 dark:bg-emerald-700' : 'bg-gray-200 dark:bg-gray-700'}`}
+          className={`absolute left-[13px] top-8 -bottom-1 w-0.5 rounded-full transition-colors duration-500 ${isCompleted ? 'bg-acid-400 dark:bg-acid-600' : 'bg-gray-200 dark:bg-gray-700'}`}
           aria-hidden="true"
         />
       )}
 
       {/* Status marker */}
       <span className="absolute left-0 top-1 flex items-center justify-center w-7 h-7">
-        {isRunning && <span className="absolute inset-0 rounded-full bg-blue-400/30 animate-ping" aria-hidden="true" />}
+        {isRunning && <span className="absolute inset-0 rounded-full bg-acid-400/40 animate-ping" aria-hidden="true" />}
         <span
           className={`relative flex items-center justify-center w-7 h-7 rounded-full border-2 bg-white dark:bg-gray-900 ${
-            isRunning ? 'border-blue-500 text-blue-500' : isCompleted ? 'border-emerald-500 text-emerald-500' : 'border-red-500 text-red-500'
+            isRunning ? 'border-ink-900 text-ink-900 dark:border-acid-400 dark:text-acid-400' : isCompleted ? 'border-acid-500 bg-acid-400 !text-ink-900 dark:!bg-acid-400' : 'border-rose-500 text-rose-500'
           }`}
         >
           {isRunning ? (
@@ -128,9 +113,9 @@ const TimelineStep: React.FC<{
           disabled={!hasDetails}
           className="w-full flex items-center gap-3 px-3 py-2 text-left rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors disabled:cursor-default disabled:hover:bg-transparent"
         >
-          <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${NODE_TYPE_ACCENT[execution.node_type] ?? 'bg-gray-400'}`} />
+          <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: getNodeAccent(execution.node_type).hex }} />
           <span className="min-w-0 flex-1">
-            <span className={`block text-sm font-semibold truncate ${isRunning ? 'text-blue-600 dark:text-blue-400' : 'text-gray-800 dark:text-gray-100'}`}>
+            <span className={`block text-sm font-semibold truncate ${isRunning ? 'text-ink-900 dark:text-acid-300' : 'text-gray-800 dark:text-gray-100'}`}>
               {node?.data.label || execution.node_type}
             </span>
             <span className="block text-[11px] text-gray-400 capitalize">
@@ -194,7 +179,7 @@ const FinalOutput: React.FC<{ output: Record<string, JsonValue> }> = ({ output }
     <section ref={sectionRef} className="wf-fade-in space-y-3 scroll-mb-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-emerald-500" />
+          <Sparkles className="w-4 h-4 text-acid-600 dark:text-acid-400" />
           <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{t('workflow.debug.final_output', 'Final Output')}</h4>
         </div>
         <div className="flex items-center gap-1">
@@ -215,10 +200,10 @@ const FinalOutput: React.FC<{ output: Record<string, JsonValue> }> = ({ output }
       {showRaw || entries.length === 0 ? (
         <JsonBlock value={output} tone="output" />
       ) : (
-        <div className="rounded-2xl border border-emerald-100 dark:border-emerald-900/40 bg-emerald-50/50 dark:bg-emerald-950/20 divide-y divide-emerald-100/80 dark:divide-emerald-900/40">
+        <div className="rounded-2xl border border-acid-200 dark:border-acid-400/20 bg-acid-50 dark:bg-acid-400/5 divide-y divide-acid-200/70 dark:divide-acid-400/15">
           {entries.map(([key, value]) => (
             <div key={key} className="px-4 py-3 space-y-1">
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-emerald-700/70 dark:text-emerald-400/70">{key}</div>
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-acid-800/70 dark:text-acid-300/70">{key}</div>
               {typeof value === 'string' ? (
                 <p className="text-sm text-gray-800 dark:text-gray-100 leading-relaxed whitespace-pre-wrap break-words">{value}</p>
               ) : (
@@ -301,12 +286,12 @@ const DebugPanel: React.FC = () => {
   const statusChip: Record<string, { label: string; className: string; icon: React.ReactNode }> = {
     running: {
       label: t('workflow.debug.running', 'Running...'),
-      className: 'bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800',
+      className: 'bg-ink-900 text-acid-300 border-ink-900 dark:bg-acid-400/15 dark:text-acid-300 dark:border-acid-400/30',
       icon: <Loader2 className="w-3.5 h-3.5 animate-spin" />,
     },
     completed: {
       label: t('workflow.debug.success', 'Success'),
-      className: 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800',
+      className: 'bg-acid-300 text-ink-900 border-acid-400 dark:bg-acid-400 dark:text-ink-900 dark:border-acid-400',
       icon: <CheckCircle2 className="w-3.5 h-3.5" />,
     },
     failed: {
@@ -328,30 +313,30 @@ const DebugPanel: React.FC = () => {
   const chip = statusChip[status] ?? statusChip.pending;
 
   return (
-    <aside className="wf-slide-in-right w-[26rem] max-w-[90vw] flex-shrink-0 bg-white dark:bg-gray-900 border-l border-gray-200/70 dark:border-gray-800 flex flex-col z-20 shadow-xl">
+    <aside className="tgo-surface wf-slide-in-right z-20 flex w-[26rem] max-w-[90vw] flex-shrink-0 flex-col overflow-hidden">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-400 to-rose-500 text-white flex items-center justify-center shadow-sm shadow-orange-500/30">
-            <FlaskConical className="w-5 h-5" />
-          </div>
-          <div>
-            <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-[15px] leading-tight">{t('workflow.debug.title', 'Online Debug')}</h3>
-            <p className="text-xs text-gray-400 mt-0.5">{t('workflow.debug.subtitle', 'Run the workflow with test input')}</p>
+      <div className="flex items-center justify-between gap-3 px-5 pb-4 pt-5">
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-ink-900 text-acid-400 dark:bg-acid-400 dark:text-ink-900">
+            <FlaskConical className="h-5 w-5" />
+          </span>
+          <div className="min-w-0">
+            <h3 className="text-[15px] font-semibold tracking-tight text-gray-900 dark:text-gray-100">{t('workflow.debug.title', 'Online Debug')}</h3>
+            <p className="mt-0.5 truncate text-xs text-gray-400">{t('workflow.debug.subtitle', 'Run the workflow with test input')}</p>
           </div>
         </div>
         <button
           type="button"
           onClick={() => setDebugPanelOpen(false)}
-          className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors"
+          className="tgo-icon-btn"
           aria-label={t('common.close', 'Close')}
         >
-          <X className="w-5 h-5" />
+          <X className="h-4 w-4" />
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
-        <div className="px-6 py-6 space-y-8">
+      <div className="flex-1 overflow-y-auto">
+        <div className="space-y-8 px-5 pb-6 pt-1">
           {/* Input Variables Section */}
           <section className="space-y-4">
             <div className="flex items-center justify-between">
@@ -361,7 +346,7 @@ const DebugPanel: React.FC = () => {
                   type="button"
                   onClick={() => setDebugInput({})}
                   disabled={isExecuting}
-                  className="flex items-center gap-1 text-xs font-medium text-gray-400 hover:text-blue-500 transition-colors disabled:opacity-40"
+                  className="flex items-center gap-1 text-xs font-medium text-gray-400 hover:text-ink-900 dark:hover:text-white transition-colors disabled:opacity-40"
                 >
                   <RotateCcw className="w-3 h-3" />
                   <span>{t('workflow.debug.reset', 'Reset')}</span>
@@ -373,14 +358,14 @@ const DebugPanel: React.FC = () => {
               <div className="space-y-5">
                 {inputVariables.map((v) => {
                   const fieldId = `debug-input-${v.nodeId}-${v.name}`;
-                  const fieldClass = 'w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white dark:focus:bg-gray-800 outline-none transition-all text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 disabled:opacity-60';
+                  const fieldClass = 'w-full rounded-2xl bg-gray-100 px-4 py-3 text-sm text-gray-900 outline-none transition-all duration-200 placeholder:text-gray-400 focus:bg-white focus:shadow-[inset_0_0_0_2px_var(--color-acid-400)] disabled:opacity-60 dark:bg-gray-800 dark:text-gray-100 dark:focus:bg-gray-900';
                   return (
                     <div key={`${v.nodeId}-${v.name}`} className="space-y-1.5">
                       <div className="flex items-center justify-between gap-2">
                         <label htmlFor={fieldId} className="text-sm font-medium text-gray-700 dark:text-gray-200">
                           {v.name}
                         </label>
-                        <span className="text-[10px] text-blue-600 dark:text-blue-300 font-mono bg-blue-50 dark:bg-blue-900/30 px-1.5 py-0.5 rounded-md">{v.type}</span>
+                        <span className="rounded-full bg-gray-100 px-2 py-0.5 font-mono text-[10px] text-gray-600 dark:bg-gray-800 dark:text-gray-300">{v.type}</span>
                       </div>
                       {v.description && (
                         <p className="text-xs text-gray-400 leading-relaxed">{v.description}</p>
@@ -435,18 +420,20 @@ const DebugPanel: React.FC = () => {
                 key="run"
                 type="button"
                 onClick={handleRun}
-                className="w-full flex items-center justify-center gap-2.5 h-11 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold text-sm transition-colors shadow-md shadow-blue-500/25"
+                className="group flex h-12 w-full items-center justify-between rounded-full bg-ink-900 pl-1.5 pr-5 text-sm font-medium text-white shadow-[0_14px_30px_-14px_rgba(15,16,18,0.8)] transition-all duration-300 hover:-translate-y-px active:scale-[0.99] dark:bg-acid-400 dark:text-ink-900"
               >
-                <Play className="w-4 h-4 fill-current" />
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-acid-400 text-ink-900 transition-transform duration-300 group-hover:scale-110 dark:bg-ink-900 dark:text-acid-400">
+                  <Play className="ml-0.5 h-4 w-4 fill-current" />
+                </span>
                 <span>{t('workflow.debug.run', 'Run Workflow')}</span>
-                <kbd className="ml-1 hidden sm:inline text-[10px] font-mono font-medium bg-white/15 rounded px-1.5 py-0.5">⌘/Ctrl ↵</kbd>
+                <kbd className="hidden rounded-full bg-white/10 px-2 py-0.5 font-mono text-[10px] font-medium sm:inline dark:bg-ink-900/10">⌘/Ctrl ↵</kbd>
               </button>
             ) : (
               <button
                 key="stop"
                 type="button"
                 onClick={() => cancelExecution()}
-                className="w-full flex items-center justify-center gap-2.5 h-11 bg-white dark:bg-gray-800 border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl font-semibold text-sm transition-colors"
+                className="flex h-12 w-full items-center justify-center gap-2.5 rounded-full bg-rose-50 text-sm font-medium text-rose-600 transition-colors hover:bg-rose-100 dark:bg-rose-500/10 dark:text-rose-400 dark:hover:bg-rose-500/20"
               >
                 <Square className="w-3.5 h-3.5 fill-current" />
                 <span>{t('workflow.debug.stop', 'Stop')}</span>
@@ -486,7 +473,7 @@ const DebugPanel: React.FC = () => {
                   </span>
                   {isExecuting && (
                     <span className="absolute left-0 right-0 bottom-0 h-0.5 overflow-hidden" aria-hidden="true">
-                      <span className="wf-shimmer block h-full w-2/5 bg-gradient-to-r from-transparent via-blue-500 to-transparent" />
+                      <span className="wf-shimmer block h-full w-2/5 bg-gradient-to-r from-transparent via-acid-500 to-transparent" />
                     </span>
                   )}
                 </div>

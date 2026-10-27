@@ -72,8 +72,8 @@ const FileMessage: React.FC<MessageComponentProps> = ({ message, isStaff }) => {
   }, [message.metadata, message.channelId, message.channelType, message.clientMsgNo, message.id, isConnected, sendWsMessage, updateMessageByClientMsgNo, showToast]);
 
   const wrapperClass = isStaff
-    ? 'bg-white dark:bg-gray-700 p-3 rounded-lg rounded-tr-none shadow-sm border border-blue-200 dark:border-blue-700 w-[280px] max-w-xs cursor-pointer'
-    : 'bg-white dark:bg-gray-800 p-3 rounded-lg rounded-tl-none shadow-sm border border-gray-100 dark:border-gray-700 w-[280px] max-w-xs cursor-pointer';
+    ? 'bg-white dark:bg-gray-700 p-3 rounded-[20px] rounded-br-md shadow-sm border border-gray-200 dark:border-gray-600 w-[280px] max-w-xs cursor-pointer'
+    : 'bg-white dark:bg-gray-800 p-3 rounded-[20px] rounded-bl-md shadow-sm border border-gray-100 dark:border-gray-700 w-[280px] max-w-xs cursor-pointer';
 
   return (
     <div

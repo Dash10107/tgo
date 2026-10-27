@@ -759,6 +759,16 @@ export interface VisitorTag {
   id: string;
 }
 
+/** Aggregate figures for the staff inbox, shown on the workspace overview */
+export interface InboxSummary {
+  /** Conversations assigned to the current staff member */
+  conversations: number;
+  /** Unread messages across those conversations */
+  unread: number;
+  /** Visitors waiting in the unassigned queue */
+  waiting: number;
+}
+
 export interface Chat {
   id: string;
   platform: string; // Channel platform (wechat/tiktok/website, etc.)

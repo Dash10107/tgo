@@ -1115,7 +1115,8 @@
       "passwordPlaceholder": "Enter your password",
       "resetAdminInstruction": "Run the following command to reset the admin user",
       "copied": "Copied",
-      "copy": "Copy"
+      "copy": "Copy",
+      "eyebrow": "Welcome back"
     },
     "register": {
       "title": "Create new account",
@@ -1161,7 +1162,15 @@
       "goToLogin": "Go to Sign In"
     },
     "loginFailed": "Login failed",
-    "registerFailed": "Registration failed"
+    "registerFailed": "Registration failed",
+    "showcase": {
+      "headlineTop": "Support that",
+      "headlineBottom": "thinks ahead.",
+      "subtitle": "AI agents, your knowledge base and human teammates working one shared inbox.",
+      "visitorMessage": "Where is my order #2048?",
+      "agentMessage": "It shipped this morning and arrives Thursday. Want the tracking link?",
+      "agentMeta": "AI agent replied in 1.2s"
+    }
   },
   "navigation": {
     "chat": "Chat",
@@ -1217,12 +1226,14 @@
         "agent_answer": "Answer with Agent",
         "empathetic_reply": "Empathetic Reply",
         "return_escalation": "Return Escalation"
-      }
+      },
+      "countLabel": "templates"
     },
     "title": "Workflows",
     "management": {
       "title": "Workflow Management",
-      "subtitle": "Orchestrate complex AI task flows"
+      "subtitle": "Orchestrate complex AI task flows",
+      "titleShort": "Workflows"
     },
     "banner": {
       "title": "Automated Workflows",
@@ -1250,7 +1261,10 @@
       "searchVariables": "Search variables...",
       "noUpstreamVariables": "No upstream variables",
       "noMatchingVariables": "No matching variables",
-      "variableTip": "Select a variable to reference in current input."
+      "variableTip": "Select a variable to reference in current input.",
+      "dragHint": "Drag onto the canvas",
+      "expand": "Expand components",
+      "collapse": "Collapse components"
     },
     "categories": {
       "trigger": "Trigger",
@@ -1312,7 +1326,8 @@
     "status": {
       "active": "Active",
       "draft": "Draft",
-      "archived": "Archived"
+      "archived": "Archived",
+      "inactive": "Inactive"
     },
     "actions": {
       "create": "Create Workflow",
@@ -1490,7 +1505,8 @@
     },
     "panel": {
       "nodeConfig": "Node Configuration",
-      "properties": "Properties"
+      "properties": "Properties",
+      "workflow": "Workflow"
     },
     "messages": {
       "saveSuccess": "Saved",
@@ -1537,11 +1553,21 @@
     "tagsPlaceholder": "Separate with commas",
     "config": {
       "unlimited": "∞ Unlimited"
+    },
+    "statusLabel": "Status",
+    "countLabel": "workflows",
+    "kicker": {
+      "trigger": "Trigger",
+      "ai": "AI",
+      "logic": "Logic",
+      "external": "Integration",
+      "output": "Output"
     }
   },
   "ai": {
     "menu": {
-      "title": "AI Features"
+      "title": "AI Features",
+      "subtitle": "Build & automate"
     }
   },
   "knowledge": {
@@ -2462,7 +2488,10 @@
         "days": "{{count}}d",
         "daysHours": "{{d}}d {{h}}h",
         "status": "Waiting"
-      }
+      },
+      "title": "Inbox",
+      "countLabel": "chats",
+      "emptyHint": "New conversations will appear here the moment they arrive."
     },
     "header": {
       "staffFallback": "Agent",
@@ -2487,7 +2516,9 @@
       "endChatError": "Failed to end chat",
       "loadStaffError": "Failed to load the agent list",
       "noAvailableStaff": "No agents available",
-      "endChatTooltip": "End the current chat"
+      "endChatTooltip": "End the current chat",
+      "agentSubtitle": "AI agent · replies instantly",
+      "offline": "Offline"
     },
     "suggestions": {
       "label": "✨ Suggestions:"
@@ -2655,7 +2686,29 @@
     },
     "aiTyping": "AI is typing...",
     "agentRole": "Support Agent",
-    "userRole": "User"
+    "userRole": "User",
+    "hero": {
+      "title": "Workspace",
+      "greeting": {
+        "morning": "Good morning",
+        "afternoon": "Good afternoon",
+        "evening": "Good evening"
+      },
+      "stats": {
+        "conversations": "conversations",
+        "unread": "unread",
+        "waiting": "waiting"
+      },
+      "callout": {
+        "title": "Pick a conversation to start replying.",
+        "body": "New chats land in your inbox in real time, with AI drafting answers alongside you."
+      },
+      "links": {
+        "agents": "Train and test your AI employees",
+        "knowledge": "Ground answers in your own docs",
+        "workflows": "Automate hand-offs and triage"
+      }
+    }
   },
   "tools": {
     "title": "Tools",
@@ -4137,13 +4190,16 @@
       "estimatedTime": "~2 min",
       "skip": "Skip Guide",
       "later": "Setup Later",
-      "start": "Start Setup"
+      "start": "Start Setup",
+      "badge": "Getting started",
+      "stepsTitle": "Your setup checklist"
     },
     "panel": {
       "title": "Quick Start",
       "progress": "Progress",
       "skip": "Skip",
-      "viewAll": "View All"
+      "viewAll": "View All",
+      "stepsDone": "{{done}} of {{total}} done"
     },
     "modal": {
       "close": "Close"
@@ -4584,6 +4640,12 @@
       "loadFailed": "Load failed",
       "detailNamed": "Knowledge base \"{{name}}\": {{title}}",
       "detail": "Knowledge base: {{title}}"
+    }
+  },
+  "shell": {
+    "theme": {
+      "light": "Switch to light mode",
+      "dark": "Switch to dark mode"
     }
   }
 }

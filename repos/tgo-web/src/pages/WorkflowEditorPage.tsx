@@ -81,57 +81,60 @@ const WorkflowEditorPage: React.FC = () => {
     navigate('/ai/workflows');
   };
 
+  const settingsLabelClass = 'tgo-eyebrow flex items-center gap-2';
+  const settingsInputClass = 'w-full rounded-2xl bg-gray-100 px-4 py-3 text-sm text-gray-900 outline-none transition-all duration-200 placeholder:text-gray-400 focus:bg-white focus:shadow-[inset_0_0_0_2px_var(--color-acid-400)] dark:bg-gray-800 dark:text-gray-100 dark:focus:bg-gray-900';
+
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#f8fafc] dark:bg-gray-950 overflow-hidden">
+    <div className="flex h-full min-w-0 flex-1 flex-col gap-3 overflow-hidden bg-gray-50 p-3 dark:bg-gray-950">
       {/* Header */}
-      <header className="flex items-center justify-between px-8 h-18 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-800/50 flex-shrink-0 z-30 shadow-sm">
-        <div className="flex items-center gap-6">
+      <header className="tgo-surface relative z-30 flex shrink-0 items-center justify-between gap-4 rounded-[24px] py-2.5 pl-2.5 pr-3">
+        <div className="flex min-w-0 items-center gap-3">
           <button
             onClick={handleBack}
-            className="flex items-center gap-3 text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 transition-all group"
+            className="tgo-icon-btn h-10 w-10"
+            aria-label={t('common.back', 'Back')}
+            title={t('common.back', 'Back')}
           >
-            <div className="p-2 rounded-xl group-hover:bg-gray-100 dark:group-hover:bg-gray-800 transition-colors border border-transparent group-hover:border-gray-200/50 dark:group-hover:border-gray-700/50">
-              <ChevronLeft className="w-5 h-5" />
-            </div>
-            <span className="text-sm font-bold">{t('common.back', 'Back')}</span>
+            <ChevronLeft className="h-5 w-5" />
           </button>
-
-          <div className="h-8 w-px bg-gray-200/50 dark:bg-gray-800" />
 
           {isLoadingCurrentWorkflow ? (
             <div className="flex items-center gap-2 text-gray-400">
-              <Loader2 className="w-4 h-4 animate-spin text-purple-500" />
-              <span className="text-sm font-bold tracking-wider">{t('common.loading', 'Loading...')}</span>
+              <Loader2 className="h-4 w-4 animate-spin text-acid-600" />
+              <span className="text-sm">{t('common.loading', 'Loading...')}</span>
             </div>
           ) : currentWorkflow ? (
-            <div className="flex items-center gap-4">
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-purple-200 dark:shadow-none border border-white/20">
-                <GitBranch className="w-6 h-6" />
-              </div>
-              <div className="flex flex-col">
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink-900 text-acid-400 dark:bg-acid-400 dark:text-ink-900">
+                <GitBranch className="h-[18px] w-[18px]" />
+              </span>
+              <div className="flex min-w-0 flex-col">
                 <input
                   type="text"
                   value={currentWorkflow.name}
                   onChange={(e) => updateWorkflowMeta({ name: e.target.value })}
-                  className="text-lg font-bold text-gray-900 dark:text-gray-100 bg-transparent border-none focus:outline-none focus:ring-0 p-0 h-7 min-w-[240px] hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-xl transition-all px-2 -ml-2 focus:bg-gray-50 dark:focus:bg-gray-800/50"
+                  aria-label={t('workflow.fields.name', 'Name')}
+                  className="-ml-2 h-7 min-w-[220px] rounded-xl border-none bg-transparent px-2 text-[17px] font-semibold tracking-tight text-gray-900 outline-none transition-colors hover:bg-gray-100 focus:bg-gray-100 focus:ring-0 dark:text-gray-100 dark:hover:bg-gray-800 dark:focus:bg-gray-800"
                   placeholder={t('workflow.namePlaceholder', 'Workflow name')}
                 />
-                <div className="flex items-center gap-2 mt-0.5">
-                  <span className={`text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-lg border shadow-sm ${
-                    currentWorkflow.status === 'active' 
-                      ? 'bg-green-50 text-green-600 border-green-100 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800' 
-                      : 'bg-yellow-50 text-yellow-600 border-yellow-100 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800'
+                <div className="mt-0.5 flex items-center gap-2">
+                  <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10.5px] font-semibold ${
+                    currentWorkflow.status === 'active'
+                      ? 'bg-acid-200 text-acid-900 dark:bg-acid-400/15 dark:text-acid-300'
+                      : 'bg-amber-100 text-amber-800 dark:bg-amber-400/15 dark:text-amber-300'
                   }`}>
+                    <span className={`h-1.5 w-1.5 rounded-full ${currentWorkflow.status === 'active' ? 'bg-acid-600' : 'bg-amber-500'}`} />
                     {currentWorkflow.status === 'active' ? t('workflow.status.active', 'Active') : t('workflow.status.draft', 'Draft')}
                   </span>
+                  <span className="text-[11px] tabular-nums text-gray-400">v{currentWorkflow.version}</span>
                   {isDirty && (
-                    <>
-                      <span className="text-gray-300 dark:text-gray-600 font-bold">•</span>
-                      <span className="text-[10px] text-amber-500 font-bold uppercase tracking-widest animate-pulse flex items-center gap-1.5">
-                        <div className="w-2 h-2 rounded-full bg-amber-500 shadow-sm shadow-amber-200"></div>
-                        {t('common.unsaved_changes', 'Unsaved Changes')}
+                    <span className="tgo-fade-in flex items-center gap-1.5 text-[11px] font-medium text-amber-600 dark:text-amber-400">
+                      <span className="relative flex h-1.5 w-1.5">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />
+                        <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-amber-500" />
                       </span>
-                    </>
+                      {t('common.unsaved_changes', 'Unsaved Changes')}
+                    </span>
                   )}
                 </div>
               </div>
@@ -139,11 +142,9 @@ const WorkflowEditorPage: React.FC = () => {
           ) : null}
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex shrink-0 items-center gap-2">
           {/* Action Toolbar (Undo, Redo, Validate, Save) */}
           <WorkflowToolbar />
-
-          <div className="h-8 w-px bg-gray-200/50 dark:bg-gray-800" />
 
           {/* Settings Toggle */}
           <button
@@ -154,37 +155,35 @@ const WorkflowEditorPage: React.FC = () => {
               }
               setShowSettings(!showSettings);
             }}
-            className={`flex items-center gap-2 px-5 h-10 rounded-2xl transition-all border font-bold text-xs active:scale-95 shadow-sm ${
-              showSettings
-                ? 'bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-gray-900 dark:border-white shadow-lg'
-                : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
-            }`}
+            data-active={showSettings}
+            className="tgo-pill h-10 px-4"
+            aria-label={t('workflow.settings', 'Settings')}
             title={t('workflow.settings', 'Settings')}
           >
-            <Settings className={`w-4 h-4 ${showSettings ? 'animate-spin-slow' : ''}`} />
-            <span className="hidden sm:inline">{t('common.settings', 'Settings')}</span>
+            <Settings className={`h-4 w-4 transition-transform duration-500 ${showSettings ? 'rotate-90' : ''}`} />
+            <span className="hidden xl:inline">{t('common.settings', 'Settings')}</span>
           </button>
         </div>
       </header>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex overflow-hidden relative">
+      <div className="relative flex min-h-0 flex-1 gap-3 overflow-hidden">
         {/* Left Side: Node Palette */}
-        <NodePalette 
-          isCollapsed={paletteCollapsed} 
-          onToggleCollapse={() => setPaletteCollapsed(!paletteCollapsed)} 
+        <NodePalette
+          isCollapsed={paletteCollapsed}
+          onToggleCollapse={() => setPaletteCollapsed(!paletteCollapsed)}
         />
 
         {/* Center: Editor */}
-        <div className="flex-1 relative overflow-hidden z-10">
-          {/* Background pattern - now correctly scoped */}
-          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-fixed opacity-[0.03] dark:opacity-[0.01] pointer-events-none z-0" />
-          
+        <div className="relative z-10 min-w-0 flex-1 overflow-hidden rounded-[28px] bg-white shadow-[0_24px_60px_-30px_rgba(15,16,18,0.22)] ring-1 ring-black/[0.06] dark:bg-[#0a0b0d] dark:shadow-[0_24px_60px_-30px_rgba(0,0,0,0.6)] dark:ring-white/[0.06]">
           {isLoadingCurrentWorkflow ? (
-            <div className="absolute inset-0 flex items-center justify-center bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm z-20">
-              <div className="text-center">
-                <Loader2 className="w-10 h-10 animate-spin text-purple-600 mx-auto mb-4" />
-                <p className="text-gray-500 dark:text-gray-400 text-sm font-bold uppercase tracking-widest">
+            <div className="wf-space flex items-center justify-center">
+              <div className="relative text-center">
+                <div className="relative mx-auto mb-4 flex h-14 w-14 items-center justify-center">
+                  <span className="absolute inset-0 animate-spin rounded-full border-2 border-gray-200 border-t-acid-500 dark:border-white/10 dark:border-t-acid-400" />
+                  <GitBranch className="h-5 w-5 text-acid-600 dark:text-acid-400" />
+                </div>
+                <p className="text-xs font-medium uppercase tracking-[0.2em] text-gray-400 dark:text-white/50">
                   {t('workflow.loading', 'Loading workflow...')}
                 </p>
               </div>
@@ -194,81 +193,74 @@ const WorkflowEditorPage: React.FC = () => {
           )}
         </div>
 
-        {/* Right Side: Panels (Overlay or Fixed) */}
+        {/* Right Side: Panels */}
         {isDebugPanelOpen ? (
           <DebugPanel />
         ) : selectedNode ? (
           <NodeConfigPanel node={selectedNode} />
         ) : showSettings && currentWorkflow ? (
-          <div className="w-80 bg-white dark:bg-gray-900 border-l border-gray-200/50 dark:border-gray-800/50 flex flex-col shadow-2xl z-30 transition-all animate-in slide-in-from-right duration-300">
-            <div className="px-6 py-5 border-b border-gray-100/50 dark:border-gray-800/50 flex items-center justify-between bg-white/80 dark:bg-gray-900/80 backdrop-blur-md sticky top-0 z-10">
+          <div className="tgo-surface wf-slide-in-right z-30 flex w-80 shrink-0 flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-5 pb-4 pt-5">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded-xl text-purple-600 dark:text-purple-400">
-                  <Settings className="w-5 h-5" />
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-ink-900 text-acid-400 dark:bg-acid-400 dark:text-ink-900">
+                  <Settings className="h-[18px] w-[18px]" />
+                </span>
+                <div>
+                  <p className="tgo-eyebrow">{t('workflow.panel.workflow', 'Workflow')}</p>
+                  <h3 className="text-[15px] font-semibold tracking-tight text-gray-900 dark:text-gray-100">
+                    {t('workflow.settings', 'Settings')}
+                  </h3>
                 </div>
-                <h3 className="font-bold text-gray-900 dark:text-gray-100 text-sm uppercase tracking-wider">
-                  {t('workflow.settings', 'Settings')}
-                </h3>
               </div>
-              <button 
+              <button
                 onClick={() => setShowSettings(false)}
-                className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-400"
+                className="tgo-icon-btn"
+                aria-label={t('common.close', 'Close')}
               >
-                <ChevronRight className="w-5 h-5" />
+                <ChevronRight className="h-4 w-4" />
               </button>
             </div>
-            
-            <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
+
+            <div className="flex-1 space-y-6 overflow-y-auto px-5 pb-6">
               {/* Name */}
-              <div className="space-y-2.5">
-                <label className="text-[11px] uppercase font-bold text-gray-400 tracking-widest flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-purple-500"></div>
-                  {t('workflow.fields.name', 'Name')}
-                </label>
+              <div className="space-y-2">
+                <label className={settingsLabelClass}>{t('workflow.fields.name', 'Name')}</label>
                 <input
                   type="text"
                   value={currentWorkflow.name}
                   onChange={(e) => updateWorkflowMeta({ name: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none transition-all text-sm font-bold dark:text-gray-100"
+                  className={`${settingsInputClass} font-medium`}
                 />
               </div>
 
               {/* Description */}
-              <div className="space-y-2.5">
-                <label className="text-[11px] uppercase font-bold text-gray-400 tracking-widest flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                  {t('workflow.fields.description', 'Description')}
-                </label>
+              <div className="space-y-2">
+                <label className={settingsLabelClass}>{t('workflow.fields.description', 'Description')}</label>
                 <textarea
                   value={currentWorkflow.description || ''}
                   onChange={(e) => updateWorkflowMeta({ description: e.target.value })}
                   rows={4}
-                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none transition-all text-sm dark:text-gray-100 resize-none leading-relaxed"
+                  className={`${settingsInputClass} resize-none leading-relaxed`}
                   placeholder={t('workflow.fields.description_placeholder', 'Describe what this workflow does...')}
                 />
               </div>
 
               {/* Status */}
-              <div className="space-y-2.5">
-                <label className="text-[11px] uppercase font-bold text-gray-400 tracking-widest flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-yellow-500"></div>
-                  {t('workflow.fields.status', 'Status')}
-                </label>
-                <div className="grid grid-cols-3 gap-2 p-1 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-700">
+              <div className="space-y-2">
+                <label className={settingsLabelClass}>{t('workflow.fields.status', 'Status')}</label>
+                <div className="grid grid-cols-3 gap-1 rounded-full bg-gray-100 p-1 dark:bg-gray-800">
                   {(['draft', 'active', 'archived'] as const).map((status) => (
                     <button
                       key={status}
                       onClick={() => updateWorkflowMeta({ status })}
-                      className={`
-                        py-2 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all
-                        ${currentWorkflow.status === status
-                          ? 'bg-white dark:bg-gray-700 text-purple-600 dark:text-purple-400 shadow-sm border border-gray-100 dark:border-gray-600'
-                          : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
-                        }
-                      `}
+                      className={`rounded-full py-2 text-xs font-medium transition-all duration-300 ${
+                        currentWorkflow.status === status
+                          ? 'bg-ink-900 text-white shadow-sm dark:bg-acid-400 dark:text-ink-900'
+                          : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100'
+                      }`}
                     >
-                      {status === 'active' ? t('workflow.status.active', 'Active') : 
-                       status === 'draft' ? t('workflow.status.draft', 'Draft') : 
+                      {status === 'active' ? t('workflow.status.active', 'Active') :
+                       status === 'draft' ? t('workflow.status.draft', 'Draft') :
                        t('workflow.status.archived', 'Archived')}
                     </button>
                   ))}
@@ -276,40 +268,37 @@ const WorkflowEditorPage: React.FC = () => {
               </div>
 
               {/* Tags */}
-              <div className="space-y-2.5">
-                <label className="text-[11px] uppercase font-bold text-gray-400 tracking-widest flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-500"></div>
-                  {t('workflow.fields.tags', 'Tags')}
-                </label>
+              <div className="space-y-2">
+                <label className={settingsLabelClass}>{t('workflow.fields.tags', 'Tags')}</label>
                 <input
                   type="text"
                   value={currentWorkflow.tags.join(', ')}
-                  onChange={(e) => updateWorkflowMeta({ 
+                  onChange={(e) => updateWorkflowMeta({
                     tags: e.target.value.split(',').map(t => t.trim()).filter(Boolean)
                   })}
                   placeholder={t('workflow.tagsPlaceholder', 'Separate with commas')}
-                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none transition-all text-sm dark:text-gray-100"
+                  className={settingsInputClass}
                 />
               </div>
 
               {/* Info Box */}
-              <div className="p-6 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-3xl border border-purple-100 dark:border-purple-800/50 shadow-sm">
-                <div className="flex items-center gap-2 mb-4">
-                  <Info className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                  <span className="text-[11px] font-bold text-purple-700 dark:text-purple-300 uppercase tracking-widest">{t('workflow.fields.workflow_info', 'Workflow Info')}</span>
+              <div className="rounded-[22px] bg-ink-900 p-5 text-white dark:bg-black">
+                <div className="mb-4 flex items-center gap-2">
+                  <Info className="h-4 w-4 text-acid-400" />
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/70">{t('workflow.fields.workflow_info', 'Workflow Info')}</span>
                 </div>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">{t('workflow.fields.version', 'Version')}</span>
-                    <span className="text-xs font-mono font-bold text-gray-900 dark:text-gray-100 bg-white/50 dark:bg-gray-800/50 px-2 py-0.5 rounded-lg border border-purple-100/50 dark:border-purple-700/50">v{currentWorkflow.version}</span>
+                <div className="space-y-3 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/50">{t('workflow.fields.version', 'Version')}</span>
+                    <span className="rounded-full bg-white/10 px-2 py-0.5 font-mono">v{currentWorkflow.version}</span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">{t('workflow.fields.total_nodes', 'Total Nodes')}</span>
-                    <span className="text-xs font-mono font-bold text-gray-900 dark:text-gray-100 bg-white/50 dark:bg-gray-800/50 px-2 py-0.5 rounded-lg border border-purple-100/50 dark:border-purple-700/50">{currentWorkflow.definition.nodes.length}</span>
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/50">{t('workflow.fields.total_nodes', 'Total Nodes')}</span>
+                    <span className="rounded-full bg-acid-400 px-2 py-0.5 font-mono font-semibold text-ink-900">{currentWorkflow.definition.nodes.length}</span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">{t('common.tableCreated', 'Created')}</span>
-                    <span className="text-[10px] font-mono font-bold text-gray-700 dark:text-gray-300">{new Date(currentWorkflow.created_at).toLocaleDateString()}</span>
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/50">{t('common.tableCreated', 'Created')}</span>
+                    <span className="font-mono text-white/80">{new Date(currentWorkflow.created_at).toLocaleDateString()}</span>
                   </div>
                 </div>
               </div>

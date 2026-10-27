@@ -209,17 +209,17 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, onSuggestionClick, o
   // Visitor/AI message (left side)
   if (!isOwnMessage) {
     return (
-      <div className="flex flex-col items-start max-w-[85%]">
-        <div className="text-xs text-gray-600 dark:text-gray-400 mb-1 ml-1">
+      <div className="tgo-msg-left flex flex-col items-start max-w-[85%]">
+        <div className="text-[11px] font-medium text-gray-400 dark:text-gray-500 mb-1.5 ml-10">
           {displayName} {getPlatformIcon()}
         </div>
-        <div className="flex items-start space-x-2">
+        <div className="flex items-end space-x-2">
           <ChatAvatar
             displayName={displayName}
             displayAvatar={displayAvatar}
             colorSeed={colorSeedChannelId}
             sizePx={32} // keep existing 8x8 size
-            wrapperClassName="relative flex-shrink-0 self-start"
+            wrapperClassName="relative flex-shrink-0 self-end"
           />
           <MessageContent
             message={message}
@@ -244,7 +244,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, onSuggestionClick, o
 
   // Own message (right side)
   return (
-    <div className="flex flex-col items-end ml-auto max-w-[85%]">
+    <div className="tgo-msg-right flex flex-col items-end ml-auto max-w-[85%]">
       <div className="flex items-start flex-row-reverse mt-1">
         <MessageContent
           message={message}
@@ -273,7 +273,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, onSuggestionClick, o
           >
             <AlertCircle className="w-5 h-5" />
             {errorOpen && (
-              <div className="absolute right-full mr-2 top-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 border border-red-200 dark:border-red-800/50 text-red-700 dark:text-red-400 text-xs rounded-md py-2 px-3 shadow-lg z-50 w-fit min-w-[240px] max-w-[80vw] sm:max-w-md max-h-[60vh] overflow-auto whitespace-pre-wrap break-words">
+              <div className="absolute right-full mr-2 top-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 border border-red-200 dark:border-red-800/50 text-red-700 dark:text-red-400 text-xs rounded-xl py-2 px-3 shadow-lg z-50 w-fit min-w-[240px] max-w-[80vw] sm:max-w-md max-h-[60vh] overflow-auto whitespace-pre-wrap break-words">
                 {getSendErrorText()}
               </div>
             )}

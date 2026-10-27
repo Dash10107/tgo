@@ -83,8 +83,8 @@ const JSONRenderMessage: React.FC<JSONRenderMessageProps> = ({ message, isStaff,
     <div
       className={`json-render-message inline-block max-w-full p-3 shadow-sm overflow-hidden ${
         isStaff
-          ? 'bg-blue-500 dark:bg-blue-600 text-white rounded-lg rounded-tr-none'
-          : 'bg-white dark:bg-gray-700 rounded-lg rounded-tl-none border border-gray-100 dark:border-gray-600'
+          ? 'tgo-bubble-out'
+          : 'tgo-bubble-in'
       }`}
     >
       {hasContent ? (

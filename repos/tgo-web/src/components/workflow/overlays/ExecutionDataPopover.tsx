@@ -48,13 +48,13 @@ const ExecutionDataPopover: React.FC<ExecutionDataPopoverProps> = ({
           </div>
           <button 
             onClick={() => handleCopy(jsonString, field)}
-            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors text-gray-400 hover:text-blue-500"
+            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors text-gray-400 hover:text-ink-900 dark:hover:text-white"
           >
-            {copiedField === field ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3" />}
+            {copiedField === field ? <Check className="w-3 h-3 text-acid-600" /> : <Copy className="w-3 h-3" />}
           </button>
         </div>
         <div className="bg-gray-900 dark:bg-black rounded-xl p-3 border border-gray-800 overflow-x-auto max-h-48 custom-scrollbar">
-          <pre className="text-[11px] font-mono leading-relaxed text-blue-400">
+          <pre className="text-[11px] font-mono leading-relaxed text-acid-300">
             {jsonString}
           </pre>
         </div>
@@ -64,13 +64,13 @@ const ExecutionDataPopover: React.FC<ExecutionDataPopoverProps> = ({
 
   return (
     <div 
-      className="nodrag nowheel cursor-default absolute top-0 left-full ml-4 w-80 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 z-[110] flex flex-col overflow-hidden wf-fade-in"
+      className="nodrag nowheel cursor-default absolute top-0 left-full ml-4 w-80 bg-white dark:bg-gray-900 rounded-[22px] shadow-2xl border border-gray-100 dark:border-gray-800 z-[110] flex flex-col overflow-hidden wf-fade-in"
       onClick={(e) => e.stopPropagation()}
     >
       {/* Header */}
       <div className="px-4 py-3 border-b border-gray-50 dark:border-gray-800 flex items-center justify-between bg-gray-50/50 dark:bg-gray-800/50">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">
+          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-acid-300 text-ink-900">
             <ArrowRightLeft className="w-3.5 h-3.5" />
           </div>
           <span className="text-xs font-bold text-gray-700 dark:text-gray-200 truncate max-w-[180px]">
@@ -79,7 +79,7 @@ const ExecutionDataPopover: React.FC<ExecutionDataPopoverProps> = ({
         </div>
         <button 
           onClick={onClose}
-          className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors text-gray-400"
+          className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors text-gray-400"
         >
           <X className="w-4 h-4" />
         </button>

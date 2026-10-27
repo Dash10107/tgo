@@ -25,8 +25,10 @@ import { nodeTypes as importedNodeTypes } from './nodes';
 import { edgeTypes as importedEdgeTypes } from './edges';
 import type { WorkflowNodeType } from '@/types/workflow';
 import RunStatusBar from './overlays/RunStatusBar';
-import { getEdgeRunState, type EdgeRunState } from './overlays/runState';
+import { getEdgeRunState, getEdgePalette } from './overlays/runState';
 import { computeLayeredLayout } from './utils/autoLayout';
+import { getNodeAccent } from './nodes/nodeTheme';
+import { useIsDarkTheme } from '@/hooks/useIsDarkTheme';
 
 // Define stable objects outside the component to prevent unnecessary re-renders
 // and React Flow warnings about unstable references.
@@ -40,13 +42,6 @@ const DEFAULT_EDGE_OPTIONS = {
 const FIT_VIEW_OPTIONS = { padding: 0.18, maxZoom: 1 };
 const LAYOUT_ANIMATION_MS = 550;
 
-const EDGE_MARKER_COLORS: Record<EdgeRunState, string> = {
-  idle: '#a5b4c8',
-  active: '#3b82f6',
-  traversed: '#10b981',
-  inactive: '#cbd5e1',
-};
-
 interface WorkflowEditorProps {
   readOnly?: boolean;
 }
@@ -57,6 +52,9 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ readOnly = false }
   const [isArranging, setIsArranging] = useState(false);
   const { showToast } = useToast();
   const { t } = useTranslation();
+  const isDark = useIsDarkTheme();
+  const edgePalette = getEdgePalette(isDark);
+  const connectionLineStyle = useMemo(() => ({ stroke: edgePalette.connection, strokeWidth: 2 }), [edgePalette]);
 
   const {
     currentWorkflow,
@@ -91,6 +89,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ readOnly = false }
   const rawEdges = useMemo(() => currentWorkflow?.definition?.edges || [], [currentWorkflow?.definition?.edges]);
 
   const hasRun = isExecuting || currentExecution !== null || Object.keys(nodeExecutionMap).length > 0;
+  const isRunComplete = !isExecuting && currentExecution?.status === 'completed';
 
   // Display-only edges: rendered by CustomEdge so the run can be animated along the path taken
   const edges = useMemo(() => {
@@ -100,14 +99,15 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ readOnly = false }
         ...edge,
         type: 'custom',
         animated: false,
-        markerEnd: { type: MarkerType.ArrowClosed, width: 16, height: 16, color: EDGE_MARKER_COLORS[runState] },
+        markerEnd: { type: MarkerType.ArrowClosed, width: 16, height: 16, color: edgePalette.stroke[runState] },
         data: {
           ...edge.data,
           runState,
+          isDark,
         }
       };
     });
-  }, [rawEdges, nodeExecutionMap, isExecuting, hasRun]);
+  }, [rawEdges, nodeExecutionMap, isExecuting, hasRun, edgePalette, isDark]);
 
   // Show the whole graph when a run starts (the debug panel narrows the canvas)
   useEffect(() => {
@@ -309,26 +309,12 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ readOnly = false }
   );
 
   // MiniMap node color
-  const nodeColor = useCallback((node: any) => {
-    const colors: Record<string, string> = {
-      input: '#22c55e',
-      timer: '#22c55e',
-      webhook: '#22c55e',
-      event: '#22c55e',
-      answer: '#3b82f6',
-      agent: '#3b82f6',
-      tool: '#f97316',
-      condition: '#a855f7',
-      llm: '#06b6d4',
-      parallel: '#6366f1',
-    };
-    return colors[node.type] || '#64748b';
-  }, []);
+  const nodeColor = useCallback((node: { type?: string }) => getNodeAccent(node.type).hex, []);
 
   if (!currentWorkflow) {
     return (
-      <div className="flex items-center justify-center h-full bg-gray-50 dark:bg-gray-900">
-        <p className="text-gray-500 dark:text-gray-400">{t('workflow.selectModal.searchPlaceholder', 'Search workflows...')}</p>
+      <div className="wf-space flex h-full items-center justify-center">
+        <p className="relative text-sm text-gray-400 dark:text-white/50">{t('workflow.selectModal.searchPlaceholder', 'Search workflows...')}</p>
       </div>
     );
   }
@@ -338,7 +324,15 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ readOnly = false }
       {/* Main Editor Area */}
       <div className="flex-1 flex flex-col relative">
         {/* Canvas */}
-        <div ref={reactFlowWrapper} className={`flex-1 w-full h-full relative ${isArranging ? 'wf-animate-layout' : ''}`}>
+        <div ref={reactFlowWrapper} className={`wf-canvas flex-1 w-full h-full relative ${isArranging ? 'wf-animate-layout' : ''} ${isExecuting ? 'wf-canvas--running' : ''} ${isRunComplete ? 'wf-canvas--done' : ''}`}>
+          {/* Deep-space backdrop: nebula glow, slowly drifting starfield and the odd shooting star */}
+          <div className="wf-space" aria-hidden="true">
+            <div className="wf-space-stars" />
+            <div className="wf-space-stars wf-space-stars--far" />
+            <div className="wf-shooting-star" />
+            <div className="wf-shooting-star wf-shooting-star--late" />
+          </div>
+
           <ReactFlow
             nodes={nodes}
             edges={edges as any}
@@ -353,6 +347,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ readOnly = false }
             nodeTypes={NODE_TYPES}
             edgeTypes={EDGE_TYPES}
             defaultEdgeOptions={DEFAULT_EDGE_OPTIONS}
+            connectionLineStyle={connectionLineStyle}
             fitView
             fitViewOptions={FIT_VIEW_OPTIONS}
             snapToGrid
@@ -364,32 +359,32 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ readOnly = false }
             zoomOnScroll
             minZoom={0.1}
             maxZoom={1.5}
-            className="bg-gray-50/50 dark:bg-gray-950/50"
+            className="!bg-transparent"
           >
-            <Background 
-              variant={BackgroundVariant.Dots} 
-              gap={24} 
-              size={1.5} 
-              color="#e2e8f0" 
-              className="dark:!bg-gray-950" 
+            <Background
+              variant={BackgroundVariant.Dots}
+              gap={22}
+              size={1.3}
+              color={isDark ? 'rgba(255, 255, 255, 0.16)' : 'rgba(15, 16, 18, 0.18)'}
             />
-            <Controls 
-              className="!bg-white dark:!bg-gray-900 !border-gray-100 dark:!border-gray-800 !shadow-xl !rounded-xl !overflow-hidden !flex !flex-col !gap-0"
+            <Controls
+              className="wf-controls"
               showZoom
               showFitView
               showInteractive={!readOnly}
             />
             <MiniMap
               nodeColor={nodeColor}
-              maskColor="rgba(0, 0, 0, 0.05)"
-              className="!bg-white/80 dark:!bg-gray-900/80 !backdrop-blur-md !border-gray-100 dark:!border-gray-800 !rounded-2xl !shadow-2xl"
-              style={{ height: 96, width: 144 }}
+              nodeBorderRadius={8}
+              maskColor={isDark ? 'rgba(8, 9, 10, 0.55)' : 'rgba(239, 239, 241, 0.6)'}
+              className="wf-minimap"
+              style={{ height: 104, width: 156 }}
               zoomable
               pannable
             />
 
             {/* Live run status */}
-            <Panel position="top-center">
+            <Panel position="top-left">
               <RunStatusBar />
             </Panel>
 
@@ -399,10 +394,12 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ readOnly = false }
                   type="button"
                   onClick={handleAutoArrange}
                   disabled={isExecuting}
-                  className="flex items-center gap-2 h-9 px-3.5 rounded-xl bg-white/95 dark:bg-gray-900/95 border border-gray-200 dark:border-gray-700 shadow-sm text-xs font-semibold text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed backdrop-blur"
+                  className="group flex h-10 items-center gap-2 rounded-full bg-white/90 pl-1.5 pr-4 text-xs font-medium text-gray-700 shadow-sm ring-1 ring-black/[0.08] backdrop-blur-md transition-all duration-200 hover:bg-white hover:text-ink-900 dark:bg-white/10 dark:text-white/80 dark:shadow-none dark:ring-white/10 dark:hover:bg-white/15 dark:hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
                   title={t('workflow.actions.auto_arrange_hint', 'Arrange nodes neatly from top to bottom')}
                 >
-                  <Wand2 className="w-4 h-4" />
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-acid-400 text-ink-900 transition-transform duration-500 group-hover:rotate-[20deg]">
+                    <Wand2 className="h-3.5 w-3.5" />
+                  </span>
                   <span>{t('workflow.actions.auto_arrange', 'Auto-arrange')}</span>
                 </button>
               </Panel>
@@ -428,18 +425,21 @@ const ValidationErrorsPanel: React.FC = () => {
 
   return (
     <Panel position="bottom-center">
-      <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-3 max-w-md">
-        <h4 className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">
-          {t('workflow.messages.validateFailed', 'Validation Failed')} ({validationErrors.length})
+      <div className="tgo-pop max-w-md rounded-[20px] bg-ink-900/90 p-4 text-white shadow-2xl ring-1 ring-rose-400/40 backdrop-blur-md">
+        <h4 className="mb-2 flex items-center gap-2 text-sm font-medium">
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-rose-500 text-[11px] font-semibold tabular-nums">
+            {validationErrors.length}
+          </span>
+          {t('workflow.messages.validateFailed', 'Validation Failed')}
         </h4>
-        <ul className="space-y-1">
+        <ul className="space-y-1 pl-8">
           {validationErrors.slice(0, 3).map((error, index) => (
-            <li key={index} className="text-xs text-red-600 dark:text-red-300">
-              • {error.message}
+            <li key={index} className="text-xs text-white/70">
+              {error.message}
             </li>
           ))}
           {validationErrors.length > 3 && (
-            <li className="text-xs text-red-500 dark:text-red-400">
+            <li className="text-xs text-white/50">
               ... {t('common.more_errors', `and {{count}} more errors`, { count: validationErrors.length - 3 })}
             </li>
           )}

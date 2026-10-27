@@ -416,14 +416,14 @@ const MessagesListComponent: React.FC<MessagesListProps> = ({
   if (isWuKongIMChat) {
     return (
       <div
-        className="h-full overflow-y-auto p-6 space-y-6"
+        className="h-full overflow-y-auto px-6 py-6 space-y-5"
         onScroll={handleScroll}
         ref={messagesContainerRef}
       >
         {/* Local highlight animation styles */}
         <style>{`
-          @keyframes targetFlash { from { background-color: rgba(254, 240, 138, 0.85); } to { background-color: transparent; } }
-          .target-highlight { animation: targetFlash 2.6s ease-out forwards; border-radius: 0.5rem; box-shadow: inset 0 0 0 1px rgba(250, 204, 21, 0.45); }
+          @keyframes targetFlash { from { background-color: rgba(205, 238, 85, 0.55); } to { background-color: transparent; } }
+          .target-highlight { animation: targetFlash 2.6s ease-out forwards; border-radius: 0.5rem; box-shadow: inset 0 0 0 1px rgba(143, 179, 30, 0.45); }
         `}</style>
         {/* Load More Button */}
         <LoadingStates
@@ -512,8 +512,12 @@ const MessagesListComponent: React.FC<MessagesListProps> = ({
               return (
                 <React.Fragment key={key}>
                   {showTimeSeparator && timeSeparatorText && (
-                    <div className="text-center text-xs text-gray-400 dark:text-gray-500 py-2">
-                      {timeSeparatorText}
+                    <div className="flex items-center gap-3 py-1" role="separator">
+                      <span className="h-px flex-1 bg-gradient-to-r from-transparent to-gray-200 dark:to-gray-700" />
+                      <span className="rounded-full bg-white px-3 py-1 text-[11px] font-medium tabular-nums text-gray-400 shadow-sm ring-1 ring-gray-100 dark:bg-gray-800 dark:text-gray-500 dark:ring-gray-700">
+                        {timeSeparatorText}
+                      </span>
+                      <span className="h-px flex-1 bg-gradient-to-l from-transparent to-gray-200 dark:to-gray-700" />
                     </div>
                   )}
                   <div data-message-seq={message.messageSeq ?? undefined}>

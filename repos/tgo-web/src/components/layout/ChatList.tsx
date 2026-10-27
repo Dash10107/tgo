@@ -22,7 +22,7 @@ import { CHAT_PRIORITY, CHAT_STATUS, VISITOR_STATUS } from '@/constants';
 import { useToast } from '@/hooks/useToast';
 import { showApiError } from '@/utils/toastHelpers';
 import { PlatformType } from '@/types';
-import type { ChannelVisitorExtra, ChannelInfo } from '@/types';
+import type { ChannelVisitorExtra, ChannelInfo, InboxSummary } from '@/types';
 
 // ============================================================================
 // Main Component
@@ -44,6 +44,8 @@ interface ChatListProps {
   refreshTrigger?: number;
   /** Channel info of the deleted chat (to remove from local state) */
   deletedChatChannel?: { channelId: string; channelType: number } | null;
+  /** Reports inbox totals whenever they change (used by the workspace overview) */
+  onSummaryChange?: (summary: InboxSummary) => void;
 }
 
 /**
@@ -103,6 +105,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
   onTabChange: controlledOnTabChange,
   refreshTrigger,
   deletedChatChannel,
+  onSummaryChange,
 }) => {
   const { t } = useTranslation();
   
@@ -850,6 +853,15 @@ const ChatListComponent: React.FC<ChatListProps> = ({
     };
   }, [mergedMyChats.length, unassignedCount]);
 
+  // Publish inbox totals for the workspace overview
+  const unreadTotal = useMemo(
+    () => mergedMyChats.reduce((sum, chat) => sum + (chat.unreadCount || 0), 0),
+    [mergedMyChats]
+  );
+  useEffect(() => {
+    onSummaryChange?.({ conversations: mergedMyChats.length, unread: unreadTotal, waiting: unassignedCount });
+  }, [onSummaryChange, mergedMyChats.length, unreadTotal, unassignedCount]);
+
   // Get chats for current tab
   const tabChats = getChatsForTab();
   
@@ -1047,16 +1059,17 @@ const ChatListComponent: React.FC<ChatListProps> = ({
   }, [activeTab, isLoadingMore, hasMore, loadMoreUnassignedConversations, loadMoreAllConversations, loadMoreManualConversations, loadMoreRecentVisitors]);
 
   return (
-    <div className="w-72 bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg border-r border-gray-200/60 dark:border-gray-700/60 flex flex-col">
+    <div className="tgo-surface w-[300px] shrink-0 flex flex-col overflow-hidden">
       {/* Header with search */}
       <ChatListHeader
         searchQuery={searchQuery}
         onSearchChange={handleSearchChange}
+        count={activeTab === 'recent' ? filteredRecentVisitors.length : filteredChats.length}
       />
 
       {/* Connection Status Banner */}
       {!isConnected && (
-        <div className={`px-4 py-2 flex items-center gap-2 ${isConnecting ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400' : 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400'} border-b border-gray-200/60 dark:border-gray-700/60`}>
+        <div className={`tgo-fade-in mx-3 mb-2 px-3 py-2 rounded-full flex items-center gap-2 ${isConnecting ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400' : 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400'}`}>
           <div className="w-4 h-4 flex-shrink-0 flex items-center justify-center">
             {isConnecting ? (
               <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
@@ -1087,7 +1100,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
 
       {/* "Mine" tab tag filter */}
       {activeTab === 'mine' && (
-        <div className="px-4 py-2 border-b border-gray-200/60 dark:border-gray-700/60 bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg">
+        <div className="px-4 pt-3 pb-1">
           <div ref={tagFilterRef} className="relative z-40">
             <div className="flex flex-wrap items-center gap-1.5">
               {/* Display of selected tags (compact chips) */}
@@ -1100,7 +1113,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
                 return (
                   <span
                     key={id}
-                    className={`inline-flex items-center gap-1 rounded-md px-1 py-0.5 text-[10px] leading-none ${
+                    className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10.5px] font-medium leading-none ${
                       isEditingMineTags ? 'bg-gray-100 dark:bg-gray-700/60 text-gray-700 dark:text-gray-200' : ''
                     }`}
                     style={
@@ -1149,7 +1162,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
                   setIsEditingMineTags(false);
                   setIsTagFilterOpen(v => !v);
                 }}
-                className="inline-flex items-center justify-center p-0.5 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700/60 transition"
+                className="inline-flex items-center justify-center w-6 h-6 rounded-full text-gray-400 ring-1 ring-gray-200 dark:ring-gray-700 hover:text-ink-900 hover:bg-acid-300 hover:ring-transparent dark:hover:text-ink-900 transition"
               >
                 <Plus className="w-4 h-4" />
               </button>
@@ -1164,7 +1177,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
                   setIsTagFilterOpen(false);
                   setIsEditingMineTags(v => !v); // Clicking repeatedly toggles edit / non-edit
                 }}
-                className={`inline-flex items-center justify-center p-0.5 rounded transition ${
+                className={`inline-flex items-center justify-center w-6 h-6 rounded-full transition ${
                   mineTagIds.length === 0
                     ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
                     : isEditingMineTags
@@ -1185,7 +1198,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
           {createPortal(
             <div
               ref={tagPickerRef}
-              className="fixed z-[99999] rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-2xl overflow-hidden"
+              className="tgo-pop fixed z-[99999] rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-2xl overflow-hidden"
               style={{ top: tagPickerPos.top, left: tagPickerPos.left, width: tagPickerPos.width }}
             >
               {/* Header */}
@@ -1261,7 +1274,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
       {/* Chat list */}
       <div 
         ref={scrollContainerRef}
-        className="flex-grow overflow-y-auto p-2 space-y-1" 
+        className="flex-grow overflow-y-auto px-2.5 pt-2 pb-3 space-y-1" 
         style={{ height: 0 }}
         onScroll={handleScroll}
       >
@@ -1281,7 +1294,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
               {/* Load-more hint */}
               {isLoadingMore && (
                 <div className="flex items-center justify-center py-3">
-                  <div className="w-4 h-4 border-2 border-gray-300 dark:border-gray-600 border-t-blue-500 rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-gray-300 dark:border-gray-600 border-t-acid-500 rounded-full animate-spin" />
                   <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">{t('common.loadingMore')}</span>
                 </div>
               )}
@@ -1317,7 +1330,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
             {/* Load-more hint */}
             {isLoadingMore && (
               <div className="flex items-center justify-center py-3">
-                <div className="w-4 h-4 border-2 border-gray-300 dark:border-gray-600 border-t-blue-500 rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-gray-300 dark:border-gray-600 border-t-acid-500 rounded-full animate-spin" />
                 <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">{t('common.loadingMore')}</span>
               </div>
             )}

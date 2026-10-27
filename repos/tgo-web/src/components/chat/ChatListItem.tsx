@@ -81,8 +81,10 @@ export const ChatListItem: React.FC<ChatListItemProps> = React.memo(({ chat, isA
   return (
     <div
       className={`
-        flex items-center p-3 rounded-lg cursor-pointer transition-colors duration-150
-        ${isActive ? 'bg-blue-500 dark:bg-blue-600 text-white shadow-sm' : 'hover:bg-gray-100/70 dark:hover:bg-gray-700/70'}
+        group relative flex items-center p-3 rounded-[20px] cursor-pointer transition-all duration-300 ease-out
+        ${isActive
+          ? 'bg-ink-900 text-white shadow-[0_14px_30px_-16px_rgba(15,16,18,0.75)] dark:bg-gray-800 dark:ring-1 dark:ring-acid-400/30'
+          : 'hover:bg-gray-50 dark:hover:bg-gray-800/60'}
       `}
       onClick={handleClick}
     >
@@ -96,25 +98,25 @@ export const ChatListItem: React.FC<ChatListItemProps> = React.memo(({ chat, isA
 
       <div className="flex-grow overflow-hidden">
         <div className="flex justify-between items-center">
-          <h3 className={`text-sm font-semibold truncate flex items-center ${isActive ? 'text-white' : 'text-gray-800 dark:text-gray-200'}`}>
+          <h3 className={`text-sm font-semibold truncate flex items-center ${isActive ? 'text-white [&_svg]:!text-acid-200' : 'text-gray-800 dark:text-gray-200'}`}>
             <span className="truncate">{displayName}</span>
             {isAgentChat ? (
-              <Bot className={`w-3.5 h-3.5 ml-1 flex-shrink-0 ${isActive ? 'text-blue-100' : 'text-purple-500 dark:text-purple-400'}`} />
+              <Bot className={`w-3.5 h-3.5 ml-1 flex-shrink-0 ${isActive ? 'text-acid-200' : 'text-purple-500 dark:text-purple-400'}`} />
             ) : (
               <ChatPlatformIcon platformType={(extra as any)?.platform_type ?? toPlatformType(chat.platform)} />
             )}
           </h3>
-          <span className={`text-xs flex-shrink-0 ml-2 ${isActive ? 'text-blue-100' : 'text-gray-400 dark:text-gray-500'}`}>
+          <span className={`text-xs flex-shrink-0 ml-2 ${isActive ? 'text-acid-200' : 'text-gray-400 dark:text-gray-500'}`}>
             {formatWeChatConversationTime(chat.timestamp)}
           </span>
         </div>
 
         <div className="flex justify-between items-center mt-1">
-          <p className={`text-xs truncate flex-1 ${isActive ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'}`}>
+          <p className={`text-xs truncate flex-1 ${isActive ? 'text-acid-200' : 'text-gray-500 dark:text-gray-400'}`}>
             {formatChatLastMessage(chat, t)}
           </p>
           {(chat.unreadCount > 0 || fadeOut) && (
-            <div className={`min-w-[16px] h-4 bg-red-500 text-white text-[10px] font-medium rounded-full flex items-center justify-center px-1 flex-shrink-0 ml-2 transition-opacity duration-200 ${fadeOut && chat.unreadCount === 0 ? 'opacity-0' : 'opacity-100'}`}>
+            <div className={`min-w-[18px] h-[18px] bg-acid-400 text-ink-900 text-[10px] font-semibold rounded-full tabular-nums flex items-center justify-center px-1 flex-shrink-0 ml-2 transition-opacity duration-200 ${fadeOut && chat.unreadCount === 0 ? 'opacity-0' : 'opacity-100'}`}>
               {unreadToDisplay > 99 ? '99+' : unreadToDisplay}
             </div>
           )}

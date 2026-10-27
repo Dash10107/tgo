@@ -1537,6 +1537,13 @@
     "tagsPlaceholder": "स्वल्पविरामाने वेगळे करा",
     "config": {
       "unlimited": "∞ अमर्याद"
+    },
+    "kicker": {
+      "trigger": "ट्रिगर",
+      "ai": "AI",
+      "logic": "लॉजिक",
+      "external": "इंटिग्रेशन",
+      "output": "आउटपुट"
     }
   },
   "ai": {

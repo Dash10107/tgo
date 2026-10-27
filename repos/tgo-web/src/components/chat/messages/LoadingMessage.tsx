@@ -41,12 +41,12 @@ const LoadingMessage: React.FC<LoadingMessageProps> = ({ isStaff }) => {
   const label = t(phase.labelKey, phase.fallback);
 
   const bubbleClass = isStaff
-    ? 'bg-blue-500 dark:bg-blue-600 text-white rounded-lg rounded-tr-none'
-    : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg rounded-tl-none border border-gray-100 dark:border-gray-600';
+    ? 'tgo-bubble-out'
+    : 'tgo-bubble-in text-gray-600 dark:text-gray-300';
 
   return (
     <div
-      className={`${bubbleClass} py-2 pl-2 pr-4 shadow-sm overflow-hidden max-w-full`}
+      className={`${bubbleClass} py-2 pl-2 pr-4 overflow-hidden max-w-full`}
       role="status"
       aria-live="polite"
     >

@@ -49,7 +49,7 @@ const WorkflowToolbar: React.FC = () => {
     try {
       await saveWorkflow();
       showToast('success', t('workflow.messages.saveSuccess', 'Saved'), t('workflow.messages.saveSuccessDesc', 'Workflow saved successfully'));
-    } catch (error) {
+    } catch {
       showToast('error', t('workflow.messages.saveFailed', 'Save Failed'), t('workflow.messages.saveFailedDesc', 'An error occurred while saving'));
     } finally {
       setIsSaving(false);
@@ -75,87 +75,78 @@ const WorkflowToolbar: React.FC = () => {
   if (!currentWorkflow) return null;
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-2">
       {/* Undo/Redo Group */}
-      <div className="flex items-center bg-gray-100/50 dark:bg-gray-800/50 rounded-2xl p-1 border border-gray-200/50 dark:border-gray-700/50 shadow-sm transition-all hover:bg-gray-100/80 dark:hover:bg-gray-800/80">
+      <div className="flex items-center rounded-full bg-gray-100 p-1 dark:bg-gray-800">
         <button
           onClick={undo}
           disabled={!canUndo}
-          className="p-2 text-gray-500 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-white dark:hover:bg-gray-700 rounded-xl disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-90"
+          className="flex h-8 w-8 items-center justify-center rounded-full text-gray-500 transition-all duration-200 hover:bg-white hover:text-ink-900 hover:shadow-sm active:scale-90 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:shadow-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
           title={t('workflow.actions.undo', 'Undo')}
+          aria-label={t('workflow.actions.undo', 'Undo')}
         >
-          <Undo2 className="w-4.5 h-4.5" />
+          <Undo2 className="h-4 w-4" />
         </button>
-        <div className="w-px h-5 bg-gray-200/80 dark:bg-gray-700/80 mx-1" />
         <button
           onClick={redo}
           disabled={!canRedo}
-          className="p-2 text-gray-500 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-white dark:hover:bg-gray-700 rounded-xl disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-90"
+          className="flex h-8 w-8 items-center justify-center rounded-full text-gray-500 transition-all duration-200 hover:bg-white hover:text-ink-900 hover:shadow-sm active:scale-90 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:shadow-none dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
           title={t('workflow.actions.redo', 'Redo')}
+          aria-label={t('workflow.actions.redo', 'Redo')}
         >
-          <Redo2 className="w-4.5 h-4.5" />
+          <Redo2 className="h-4 w-4" />
         </button>
       </div>
 
-      <div className="h-8 w-px bg-gray-200/50 dark:bg-gray-800/50 mx-1" />
+      {/* Validate */}
+      <button
+        onClick={handleValidate}
+        disabled={isValidating}
+        className="tgo-pill h-10 px-4 disabled:opacity-50"
+        title={t('workflow.actions.validate', 'Validate')}
+      >
+        {isValidating ? (
+          <Loader2 className="h-4 w-4 animate-spin text-acid-600" />
+        ) : (
+          <CheckCircle className="h-4 w-4" />
+        )}
+        <span className="hidden lg:inline">{t('workflow.actions.validate', 'Validate')}</span>
+      </button>
 
-      {/* Action Buttons Group */}
-      <div className="flex items-center gap-3">
-        {/* Debug */}
-        <button
-          onClick={() => setDebugPanelOpen(!isDebugPanelOpen)}
-          className={`flex items-center gap-2 px-5 h-10 text-[11px] font-bold uppercase tracking-widest rounded-2xl transition-all shadow-sm border active:scale-95 ${
-            isDebugPanelOpen 
-              ? 'bg-orange-500 text-white border-orange-500 shadow-lg shadow-orange-200 dark:shadow-none' 
-              : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-orange-500 hover:text-orange-600 dark:hover:text-orange-400'
-          }`}
-        >
-          {isExecuting ? (
-            <Loader2 className={`w-4 h-4 animate-spin ${isDebugPanelOpen ? 'text-white' : 'text-orange-500'}`} />
-          ) : (
-            <Bug className="w-4 h-4" />
-          )}
-          <span className="hidden lg:inline">{t('workflow.actions.debug', 'Debug')}</span>
-        </button>
+      {/* Debug run */}
+      <button
+        onClick={() => setDebugPanelOpen(!isDebugPanelOpen)}
+        className={`inline-flex h-10 items-center gap-2 rounded-full pl-1.5 pr-4 text-sm font-medium transition-all duration-300 active:scale-95 ${
+          isDebugPanelOpen
+            ? 'bg-acid-400 text-ink-900 shadow-[0_10px_24px_-12px_rgba(143,179,30,0.9)]'
+            : 'bg-acid-300 text-ink-900 hover:bg-acid-400'
+        }`}
+        title={t('workflow.actions.debug', 'Debug')}
+      >
+        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-ink-900 text-acid-400">
+          {isExecuting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Bug className="h-3.5 w-3.5" />}
+        </span>
+        <span className="hidden lg:inline">{t('workflow.actions.debug', 'Debug')}</span>
+      </button>
 
-        {/* Validate */}
-        <button
-          onClick={handleValidate}
-          disabled={isValidating}
-          className="flex items-center gap-2 px-5 h-10 text-[11px] font-bold uppercase tracking-widest text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 rounded-2xl transition-all disabled:opacity-50 shadow-sm active:scale-95"
-        >
-          {isValidating ? (
-            <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
-          ) : (
-            <CheckCircle className="w-4 h-4" />
-          )}
-          <span className="hidden lg:inline">{t('workflow.actions.validate', 'Validate')}</span>
-        </button>
-
-        {/* Save */}
-        <button
-          onClick={handleSave}
-          disabled={!isDirty || isSaving}
-          className={`flex items-center gap-2 px-6 h-10 text-[11px] font-bold uppercase tracking-widest text-white transition-all rounded-2xl shadow-lg active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 ${
-            isDirty 
-              ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/30 dark:shadow-none' 
-              : 'bg-gray-400 dark:bg-gray-700 shadow-none'
-          }`}
-        >
-          {isSaving ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Save className="w-4 h-4" />
-          )}
-          <span>{t('workflow.actions.save', 'Save')}</span>
-          {isDirty && (
-            <span className="flex h-2 w-2 relative ml-1">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-            </span>
-          )}
-        </button>
-      </div>
+      {/* Save */}
+      <button
+        onClick={handleSave}
+        disabled={!isDirty || isSaving}
+        className="tgo-btn-ink h-10 pl-1.5 pr-4"
+        data-icon-motion="nudge"
+      >
+        <span className="tgo-btn-icon h-7 w-7">
+          {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+        </span>
+        <span>{t('workflow.actions.save', 'Save')}</span>
+        {isDirty && !isSaving && (
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-acid-400 opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-acid-400" />
+          </span>
+        )}
+      </button>
     </div>
   );
 };

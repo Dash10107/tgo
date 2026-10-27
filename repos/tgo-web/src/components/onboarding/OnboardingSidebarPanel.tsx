@@ -3,20 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   Check,
-  ChevronDown,
   ChevronUp,
-  ChevronRight,
+  ArrowUpRight,
   Rocket,
   Cpu,
   Settings2,
   BookOpen,
   Bot,
   MessageCircle,
-  X
 } from 'lucide-react';
 import { useOnboardingStore } from '@/stores/onboardingStore';
 import type { OnboardingStepStatus } from '@/services/onboardingApi';
 import OnboardingMarkdownModal from './OnboardingMarkdownModal';
+import ProgressRing from './ProgressRing';
 
 /**
  * Check if language is Chinese
@@ -55,14 +54,15 @@ const STEP_ICONS: Record<number, React.ComponentType<{ className?: string }>> = 
 };
 
 /**
- * Individual step item in the sidebar panel
+ * Individual step item on the dark timeline
  */
 const StepItem: React.FC<{
   step: OnboardingStepStatus;
   isActive: boolean;
+  isLast: boolean;
   onClick: () => void;
   language: string;
-}> = ({ step, isActive, onClick, language }) => {
+}> = ({ step, isActive, isLast, onClick, language }) => {
   const { t } = useTranslation();
   const Icon = STEP_ICONS[step.step_number] || Rocket;
   const localizedTitle = getLocalizedTitle(step, language);
@@ -72,50 +72,58 @@ const StepItem: React.FC<{
       onClick={onClick}
       disabled={step.is_completed}
       className={`
-        w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 text-left
-        ${step.is_completed
-          ? 'bg-green-50 dark:bg-green-900/20 cursor-default'
-          : isActive
-            ? 'bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/40'
-            : 'hover:bg-gray-100 dark:hover:bg-gray-700/50'
-        }
+        group relative flex w-full items-center gap-3 rounded-2xl px-2.5 py-2 text-left transition-colors duration-200
+        ${step.is_completed ? 'cursor-default' : isActive ? 'bg-white/[0.07]' : 'hover:bg-white/[0.05]'}
       `}
     >
+      {/* Timeline connector */}
+      {!isLast && (
+        <span
+          aria-hidden="true"
+          className={`absolute left-[23px] top-[38px] h-[calc(100%-24px)] w-px ${step.is_completed ? 'bg-acid-400/50' : 'bg-white/10'}`}
+        />
+      )}
+
       {/* Step indicator */}
-      <div className={`
-        w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-all
+      <span className={`
+        relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-all duration-300
         ${step.is_completed
-          ? 'bg-green-500 text-white'
+          ? 'bg-acid-400 text-ink-900'
           : isActive
-            ? 'bg-blue-500 text-white'
-            : 'bg-gray-200 dark:bg-gray-600 text-gray-500 dark:text-gray-400'
+            ? 'bg-white text-ink-900 tgo-pulse-ring'
+            : 'bg-white/10 text-white/50'
         }
       `}>
         {step.is_completed ? (
-          <Check className="w-4 h-4" strokeWidth={3} />
+          <Check className="h-3.5 w-3.5" strokeWidth={3} />
         ) : (
-          <Icon className="w-4 h-4" />
+          <Icon className="h-3.5 w-3.5" />
         )}
-      </div>
+      </span>
 
       {/* Step content */}
-      <div className="flex-1 min-w-0">
-        <div className={`
-          text-sm font-medium truncate
-          ${step.is_completed
-            ? 'text-green-700 dark:text-green-400'
-            : isActive
-              ? 'text-blue-700 dark:text-blue-400'
-              : 'text-gray-700 dark:text-gray-300'
-          }
-        `}>
-          {t(`onboarding.steps.${step.step_name}.title`, localizedTitle)}
-        </div>
-      </div>
+      <span className={`
+        min-w-0 flex-1 truncate text-[13px]
+        ${step.is_completed
+          ? 'text-white/40 line-through decoration-white/20'
+          : isActive
+            ? 'font-medium text-white'
+            : 'text-white/70'
+        }
+      `}>
+        {t(`onboarding.steps.${step.step_name}.title`, localizedTitle)}
+      </span>
 
       {/* Action indicator */}
-      {!step.is_completed && isActive && (
-        <ChevronRight className="w-4 h-4 text-blue-500 shrink-0" />
+      {!step.is_completed && (
+        <span className={`
+          flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition-all duration-300
+          ${isActive
+            ? 'bg-acid-400 text-ink-900'
+            : 'text-white/0 group-hover:bg-white/10 group-hover:text-white/70'}
+        `}>
+          <ArrowUpRight className="h-3.5 w-3.5" />
+        </span>
       )}
     </button>
   );
@@ -123,7 +131,7 @@ const StepItem: React.FC<{
 
 /**
  * OnboardingSidebarPanel Component
- * Displays onboarding progress in the sidebar
+ * Compact dark "quick start" card shown at the bottom of section sidebars
  */
 const OnboardingSidebarPanel: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -190,90 +198,66 @@ const OnboardingSidebarPanel: React.FC = () => {
   };
 
   return (
-    <div className="border-t border-gray-200/60 dark:border-gray-700/60 bg-gray-50/50 dark:bg-gray-800/50">
+    <div className="m-3 shrink-0 overflow-hidden rounded-[22px] bg-ink-900 text-white shadow-[0_18px_40px_-20px_rgba(15,16,18,0.8)] ring-1 ring-white/5 dark:bg-black">
       {/* Header - always visible */}
       <button
         onClick={togglePanelExpanded}
-        className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors"
+        aria-expanded={isPanelExpanded}
+        className="flex w-full items-center gap-3 px-3.5 py-3 text-left transition-colors hover:bg-white/[0.03]"
       >
-        <div className="flex items-center gap-2">
-          <Rocket className="w-4 h-4 text-blue-500" />
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        <ProgressRing value={progressPercentage} size={38} />
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-sm font-medium">
             {t('onboarding.panel.title', 'Quick Start')}
           </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500 dark:text-gray-400">
-            {completedCount}/{steps.length}
+          <span className="block text-[11px] text-white/50">
+            {t('onboarding.panel.stepsDone', '{{done}} of {{total}} done', { done: completedCount, total: steps.length })}
           </span>
-          {isPanelExpanded ? (
-            <ChevronDown className="w-4 h-4 text-gray-400" />
-          ) : (
-            <ChevronUp className="w-4 h-4 text-gray-400" />
-          )}
-        </div>
+        </span>
+        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-white/80">
+          <ChevronUp className={`h-4 w-4 transition-transform duration-300 ${isPanelExpanded ? 'rotate-180' : ''}`} />
+        </span>
       </button>
 
-      {/* Progress bar - collapsed view */}
-      {!isPanelExpanded && (
-        <div className="px-4 pb-3">
-          <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-500"
-              style={{ width: `${progressPercentage}%` }}
-            />
+      {/* Expanded content: grid-rows transition gives a smooth height animation */}
+      <div
+        className="grid transition-[grid-template-rows] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+        style={{ gridTemplateRows: isPanelExpanded ? '1fr' : '0fr' }}
+      >
+        <div className="min-h-0 overflow-hidden">
+          <div className={`px-1.5 pb-2 transition-opacity duration-300 ${isPanelExpanded ? 'opacity-100' : 'opacity-0'}`}>
+            {/* Step list */}
+            <div className="space-y-0.5">
+              {steps.map((step, index) => (
+                <StepItem
+                  key={step.step_number}
+                  step={step}
+                  isActive={step.step_number === currentStep}
+                  isLast={index === steps.length - 1}
+                  onClick={() => handleStepClick(step)}
+                  language={i18n.language}
+                />
+              ))}
+            </div>
+
+            {/* Actions */}
+            <div className="mt-2 flex items-center justify-between border-t border-white/10 px-2 pt-2.5 pb-1">
+              <button
+                onClick={handleSkip}
+                className="text-xs text-white/40 transition-colors hover:text-white/80"
+              >
+                {t('onboarding.panel.skip', 'Skip')}
+              </button>
+              <button
+                onClick={handleShowWelcome}
+                className="rounded-full bg-acid-400 px-3 py-1 text-xs font-semibold text-ink-900 transition-transform duration-200 hover:scale-105 active:scale-95"
+              >
+                {t('onboarding.panel.viewAll', 'View All')}
+              </button>
+            </div>
           </div>
         </div>
-      )}
-
-      {/* Expanded content */}
-      {isPanelExpanded && (
-        <div className="px-3 pb-3 space-y-2">
-          {/* Progress bar */}
-          <div className="px-1 pb-2">
-            <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
-              <span>{t('onboarding.panel.progress', 'Progress')}</span>
-              <span>{progressPercentage}%</span>
-            </div>
-            <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-500"
-                style={{ width: `${progressPercentage}%` }}
-              />
-            </div>
-          </div>
-
-          {/* Step list */}
-          <div className="space-y-1">
-            {steps.map((step) => (
-              <StepItem
-                key={step.step_number}
-                step={step}
-                isActive={step.step_number === currentStep}
-                onClick={() => handleStepClick(step)}
-                language={i18n.language}
-              />
-            ))}
-          </div>
-
-          {/* Actions */}
-          <div className="pt-2 flex items-center justify-between border-t border-gray-200/60 dark:border-gray-700/60">
-            <button
-              onClick={handleSkip}
-              className="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 transition-colors flex items-center gap-1"
-            >
-              <X className="w-3 h-3" />
-              {t('onboarding.panel.skip', 'Skip')}
-            </button>
-            <button
-              onClick={handleShowWelcome}
-              className="text-xs text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
-            >
-              {t('onboarding.panel.viewAll', 'View All')}
-            </button>
-          </div>
-        </div>
-      )}
+      </div>
 
       {/* Notify type step markdown modal */}
       <OnboardingMarkdownModal
@@ -287,4 +271,3 @@ const OnboardingSidebarPanel: React.FC = () => {
 };
 
 export default OnboardingSidebarPanel;
-

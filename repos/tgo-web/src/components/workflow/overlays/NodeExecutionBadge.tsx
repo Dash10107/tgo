@@ -29,10 +29,10 @@ const NodeExecutionBadge: React.FC<NodeExecutionBadgeProps> = ({ execution, onCl
   const duration = isRunning ? elapsed : execution.duration;
 
   const tone = isRunning
-    ? 'bg-blue-600 text-white shadow-blue-500/40'
+    ? 'bg-ink-900 text-acid-300 ring-1 ring-acid-400/60 shadow-[0_6px_20px_-6px_rgba(205,238,85,0.7)]'
     : isCompleted
-      ? 'bg-emerald-500 text-white shadow-emerald-500/40'
-      : 'bg-red-500 text-white shadow-red-500/40';
+      ? 'bg-acid-400 text-ink-900 shadow-[0_6px_18px_-8px_rgba(143,179,30,0.9)]'
+      : 'bg-rose-500 text-white shadow-[0_6px_18px_-8px_rgba(244,63,94,0.9)]';
 
   return (
     <button
@@ -61,7 +61,7 @@ const NodeExecutionBadge: React.FC<NodeExecutionBadgeProps> = ({ execution, onCl
             : t('workflow.debug.failed', 'Failed')}
       </span>
       {duration !== undefined && duration !== null && (
-        <span className="text-[10px] font-mono tabular-nums opacity-80 border-l border-white/30 pl-1.5">
+        <span className="text-[10px] font-mono tabular-nums opacity-80 border-l border-current/30 pl-1.5">
           {formatDuration(duration)}
         </span>
       )}

@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "./styles/markdown.css";
+@import "./styles/design-system.css";
+@import "./styles/workflow-canvas.css";
 /* Localized Inter font (replaces Google Fonts) */
+@import "@fontsource/inter/300.css";
 @import "@fontsource/inter/400.css";
 @import "@fontsource/inter/500.css";
 @import "@fontsource/inter/600.css";
@@ -10,12 +13,116 @@
 
 @config "../tailwind.config.js";
 
-/* Tailwind CSS v4 Theme Configuration */
+/*
+ * Tailwind CSS v4 Theme Configuration
+ *
+ * Design language: soft neutral canvas, white rounded surfaces, ink-black
+ * primary actions and an electric lime accent. The stock `blue`/`indigo`
+ * scales are remapped onto this palette so every existing screen picks up
+ * the new identity without per-component rewrites.
+ */
 @theme {
-  --font-family-sans: "Inter", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-family-sans: var(--font-sans);
 
   /* Custom backdrop blur values */
   --backdrop-blur-xs: 2px;
+
+  /* Signature accent */
+  --color-acid-50: #fafeeb;
+  --color-acid-100: #f2fbd0;
+  --color-acid-200: #e6f7a6;
+  --color-acid-300: #d9f27a;
+  --color-acid-400: #cdee55;
+  --color-acid-500: #b6db34;
+  --color-acid-600: #8fb31e;
+  --color-acid-700: #6b8817;
+  --color-acid-800: #4c6114;
+  --color-acid-900: #2f3c0f;
+  --color-acid-950: #1a2207;
+
+  /* Ink — primary actions and dark surfaces */
+  --color-ink-400: #55565d;
+  --color-ink-500: #3a3b41;
+  --color-ink-600: #2a2b30;
+  --color-ink-700: #1f2024;
+  --color-ink-800: #17181b;
+  --color-ink-900: #0f1012;
+  --color-ink-950: #08090a;
+
+  /* Neutral grays (replaces the cool default gray) */
+  --color-gray-50: #f7f7f8;
+  --color-gray-100: #efeff1;
+  --color-gray-200: #e4e4e7;
+  --color-gray-300: #d0d0d5;
+  --color-gray-400: #a1a1a9;
+  --color-gray-500: #72727a;
+  --color-gray-600: #53535b;
+  --color-gray-700: #3a3a41;
+  --color-gray-800: #222226;
+  --color-gray-900: #151517;
+  --color-gray-950: #0b0b0c;
+
+  /* Primary scale: lime tints for surfaces, ink for solid actions */
+  --color-blue-50: #f7fce6;
+  --color-blue-100: #eef9c9;
+  --color-blue-200: #ddf29b;
+  --color-blue-300: #c4e26a;
+  --color-blue-400: #9fc43a;
+  --color-blue-500: #1f2024;
+  --color-blue-600: #121316;
+  --color-blue-700: #2a2b30;
+  --color-blue-800: #44561a;
+  --color-blue-900: #2f3c0f;
+  --color-blue-950: #1a2207;
+
+  --color-indigo-50: #f7fce6;
+  --color-indigo-100: #eef9c9;
+  --color-indigo-200: #ddf29b;
+  --color-indigo-300: #c4e26a;
+  --color-indigo-400: #9fc43a;
+  --color-indigo-500: #2a2b30;
+  --color-indigo-600: #121316;
+  --color-indigo-700: #2a2b30;
+  --color-indigo-800: #44561a;
+  --color-indigo-900: #2f3c0f;
+  --color-indigo-950: #1a2207;
+
+  /* Softer, rounder geometry */
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.75rem;
+
+  /* Diffused shadows */
+  --shadow-xs: 0 1px 2px rgb(15 16 18 / 0.04);
+  --shadow-sm: 0 1px 2px rgb(15 16 18 / 0.04), 0 2px 8px -2px rgb(15 16 18 / 0.06);
+  --shadow-md: 0 2px 4px -1px rgb(15 16 18 / 0.05), 0 8px 20px -6px rgb(15 16 18 / 0.08);
+  --shadow-lg: 0 4px 8px -2px rgb(15 16 18 / 0.05), 0 16px 36px -10px rgb(15 16 18 / 0.12);
+  --shadow-xl: 0 8px 16px -6px rgb(15 16 18 / 0.06), 0 28px 56px -16px rgb(15 16 18 / 0.18);
+  --shadow-2xl: 0 12px 24px -8px rgb(15 16 18 / 0.08), 0 40px 80px -20px rgb(15 16 18 / 0.28);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+/* Dark theme: solid primaries shift to a deep olive so white labels stay legible */
+:root.dark {
+  --color-blue-400: #c6ec5c;
+  --color-blue-500: #5e7e12;
+  --color-blue-600: #4f6b0d;
+  --color-blue-700: #5e7e12;
+  --color-blue-800: #3a4a14;
+  --color-blue-900: #26310c;
+  --color-blue-950: #171e07;
+  --color-indigo-400: #c6ec5c;
+  --color-indigo-500: #5e7e12;
+  --color-indigo-600: #4f6b0d;
+  --color-indigo-700: #5e7e12;
+  --color-indigo-800: #3a4a14;
+  --color-indigo-900: #26310c;
+  --color-indigo-950: #171e07;
 }
 
 /* Dark mode color scheme */
@@ -92,16 +199,17 @@
 /* Base styles */
 body {
   margin: 0;
-  font-family: var(--font-family-sans);
+  font-family: var(--font-sans);
+  font-feature-settings: "cv11", "ss01", "ss03";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  @apply bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100;
+  @apply bg-gray-100 dark:bg-gray-950 text-gray-900 dark:text-gray-100;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Root element dark mode support */
 #root {
-  @apply bg-white dark:bg-gray-900;
+  @apply bg-gray-100 dark:bg-gray-950;
   min-height: 100vh;
 }
 
@@ -114,7 +222,8 @@ body {
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(10, 11, 13, 0.38);
+  backdrop-filter: blur(6px);
   /* Ensure modal covers entire viewport */
   width: 100vw;
   height: 100vh;
@@ -128,8 +237,8 @@ body {
 
 .modal-content {
   background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border-radius: 1.5rem;
+  box-shadow: var(--shadow-2xl);
   overflow: hidden;
   width: 100%;
   max-width: 28rem;
@@ -144,7 +253,7 @@ body {
 }
 
 .dark .modal-content {
-  background-color: rgb(31, 41, 55); /* gray-800 */
+  background-color: var(--color-gray-800);
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
 }
 
@@ -226,7 +335,11 @@ body {
   }
 }
 
-/* React Flow Node Reset - Remove default styling from custom nodes */
+/*
+ * React Flow Node Reset - Remove default styling from custom nodes.
+ * Position is left to React Flow (absolute): in production builds this file loads
+ * after React Flow's stylesheet, so overriding it here would stack every node.
+ */
 .react-flow__node {
   background: transparent !important;
   border: none !important;
@@ -234,7 +347,6 @@ body {
   box-shadow: none !important;
   width: auto !important;
   height: auto !important;
-  position: relative;
 }
 
 /* Custom Animations */
@@ -272,8 +384,8 @@ body {
 }
 
 @keyframes wf-glow-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.35), 0 0 18px 2px rgba(99, 102, 241, 0.18); }
-  50% { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0), 0 0 28px 6px rgba(99, 102, 241, 0.28); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(182, 219, 52, 0.45), 0 0 18px 2px rgba(205, 238, 85, 0.22); }
+  50% { box-shadow: 0 0 0 6px rgba(182, 219, 52, 0), 0 0 28px 6px rgba(205, 238, 85, 0.34); }
 }
 
 @keyframes wf-ring-pop {
@@ -323,7 +435,7 @@ body {
 /* Rotating gradient border around the node that is currently executing */
 .wf-run-frame--running {
   padding: 2.5px;
-  background: conic-gradient(from var(--wf-angle), #3b82f6, #8b5cf6, #06b6d4, #22c55e, #3b82f6);
+  background: conic-gradient(from var(--wf-angle), #cdee55, #1f2024, #8fb31e, #e6f7a6, #cdee55);
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
@@ -341,8 +453,8 @@ body {
 }
 
 .wf-run-frame--completed {
-  border: 2px solid rgba(16, 185, 129, 0.85);
-  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12);
+  border: 2px solid rgba(182, 219, 52, 0.95);
+  box-shadow: 0 0 0 5px rgba(205, 238, 85, 0.18), 0 0 24px 2px rgba(205, 238, 85, 0.25);
   animation: wf-ring-pop 0.45s ease-out both;
 }
 

@@ -38,13 +38,13 @@ export const ChatListTabs: React.FC<ChatListTabsProps> = ({ activeTab, onTabChan
     
     const container = containerRef.current;
     const containerWidth = container.offsetWidth;
-    const padding = 32; // Total left and right padding
-    const gap = 20; // Gap between tabs
+    const padding = 8; // Total left and right padding (p-1)
+    const gap = 4; // Gap between tabs (gap-1)
     const moreBtnWidth = 40; // Estimated width of the "More" button
     const availableWidth = containerWidth - padding;
 
     // Temporarily create a div for measuring to get each tab's width
-    const buttons = Array.from(container.querySelectorAll('button[data-tab]')) as HTMLElement[];
+    const buttons = Array.from(container.querySelectorAll('button[data-measure]')) as HTMLElement[];
     if (buttons.length === 0) return;
 
     let currentTotalWidth = 0;
@@ -93,7 +93,7 @@ export const ChatListTabs: React.FC<ChatListTabsProps> = ({ activeTab, onTabChan
         setIndicatorStyle(prev => ({ ...prev, opacity: 0 }));
       }
     }
-  }, [activeTab, visibleTabCount]);
+  }, [activeTab, visibleTabCount, allTabs]);
 
   useEffect(() => {
     updateTabVisibility();
@@ -134,19 +134,31 @@ export const ChatListTabs: React.FC<ChatListTabsProps> = ({ activeTab, onTabChan
   }, [isMoreOpen]);
 
   return (
-    <div 
+    <div
       ref={containerRef}
-      className="relative flex items-stretch px-4 gap-5 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 overflow-hidden"
+      role="tablist"
+      className="relative mx-3 mb-1 flex items-stretch gap-1 rounded-full bg-gray-100 p-1 overflow-hidden dark:bg-gray-800"
     >
       {/* Hidden measuring layer; always renders all tabs to get their widths */}
-      <div className="absolute top-0 left-0 invisible pointer-events-none flex gap-5 px-4 h-0 overflow-hidden">
+      <div className="absolute top-0 left-0 invisible pointer-events-none flex gap-1 px-1 h-0 overflow-hidden">
         {allTabs.map(tab => (
-          <button key={`measure-${tab.key}`} data-tab={tab.key} className="py-2.5 text-[13px] font-medium flex items-center gap-1.5 whitespace-nowrap">
+          <button key={`measure-${tab.key}`} data-measure={tab.key} tabIndex={-1} aria-hidden="true" className="px-3 py-1.5 text-[12.5px] font-medium flex items-center gap-1.5 whitespace-nowrap">
             <span>{tab.label}</span>
-            {tab.count !== undefined && <span className="text-[11px] tabular-nums">{tab.count}</span>}
+            {tab.count !== undefined && <span className="text-[10px] min-w-[16px] px-1 tabular-nums">{tab.count}</span>}
           </button>
         ))}
       </div>
+
+      {/* Sliding active pill */}
+      <div
+        aria-hidden="true"
+        className="absolute top-1 bottom-1 rounded-full bg-ink-900 shadow-sm transition-[left,width,opacity] duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] dark:bg-acid-400"
+        style={{
+          left: indicatorStyle.left,
+          width: indicatorStyle.width,
+          opacity: indicatorStyle.opacity,
+        }}
+      />
 
       {visibleTabs.map((tab) => {
         const isActive = activeTab === tab.key;
@@ -154,19 +166,23 @@ export const ChatListTabs: React.FC<ChatListTabsProps> = ({ activeTab, onTabChan
           <button
             key={tab.key}
             data-tab={tab.key}
+            role="tab"
+            aria-selected={isActive}
             onClick={() => onTabChange(tab.key)}
             className={`
-              relative py-2.5 text-[13px] font-medium transition-all duration-200 outline-none
+              relative z-10 px-3 py-1.5 rounded-full text-[12.5px] font-medium transition-colors duration-300 outline-none
               flex items-center gap-1.5 whitespace-nowrap
-              ${isActive 
-                ? 'text-gray-900 dark:text-white' 
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+              ${isActive
+                ? 'text-white dark:text-ink-900'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
               }
             `}
           >
             <span>{tab.label}</span>
             {tab.count !== undefined && (
-              <span className="text-[11px] tabular-nums text-gray-400 dark:text-gray-500">{tab.count}</span>
+              <span className={`text-[10px] min-w-[16px] px-1 rounded-full tabular-nums font-semibold transition-colors duration-300 ${
+                isActive ? 'bg-acid-400 text-ink-900 dark:bg-ink-900 dark:text-acid-400' : 'bg-white text-gray-600 dark:bg-gray-700 dark:text-gray-300'
+              }`}>{tab.count}</span>
             )}
           </button>
         );
@@ -177,11 +193,13 @@ export const ChatListTabs: React.FC<ChatListTabsProps> = ({ activeTab, onTabChan
           ref={moreButtonRef}
           onClick={toggleMore}
           className={`
-            relative py-2.5 text-[13px] font-medium transition-all duration-200 outline-none
+            relative z-10 px-2.5 py-1.5 rounded-full text-[12.5px] font-medium transition-colors duration-300 outline-none
             flex items-center gap-1 min-w-[40px] justify-center
-            ${isactiveInMore || isMoreOpen
-              ? 'text-gray-900 dark:text-white' 
-              : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+            ${isactiveInMore
+              ? 'text-white dark:text-ink-900'
+              : isMoreOpen
+                ? 'text-gray-900 dark:text-white'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
             }
           `}
         >
@@ -189,22 +207,11 @@ export const ChatListTabs: React.FC<ChatListTabsProps> = ({ activeTab, onTabChan
           <ChevronDown size={14} className={`transition-transform duration-200 ${isMoreOpen ? 'rotate-180' : ''}`} />
         </button>
       )}
-      
-      {/* Animated indicator line */}
-      <div
-        className="absolute bottom-0 h-0.5 bg-blue-500 dark:bg-blue-400 rounded-full transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
-        style={{
-          left: indicatorStyle.left,
-          width: indicatorStyle.width,
-          opacity: indicatorStyle.opacity,
-          transform: 'translateZ(0)',
-        }}
-      />
 
       {/* Dropdown Menu */}
       {isMoreOpen && createPortal(
         <div 
-          className="fixed z-[1000] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl py-1 min-w-[120px] animate-in fade-in zoom-in-95 duration-100"
+          className="fixed z-[1000] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl p-1 min-w-[150px] animate-in fade-in zoom-in-95 slide-in-from-top-1"
           style={{ 
             top: dropdownPos.top + 4,
             right: dropdownPos.right
@@ -219,7 +226,7 @@ export const ChatListTabs: React.FC<ChatListTabsProps> = ({ activeTab, onTabChan
                 setIsMoreOpen(false);
               }}
               className={`
-                w-full px-4 py-2 text-left text-[13px] flex items-center justify-between
+                w-full px-3 py-2 rounded-xl text-left text-[13px] flex items-center justify-between
                 transition-colors duration-150
                 ${activeTab === tab.key 
                   ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' 

@@ -17,7 +17,7 @@ export const ChatTags: React.FC<ChatTagsProps> = memo(({ tags, isActive }) => {
       {tags.slice(0, 4).map((tag, index) => {
         if (isActive) {
           return (
-            <span key={index} className="inline-flex items-center rounded-md px-1 py-0.5 text-[10px] leading-none bg-white/20 text-white">
+            <span key={index} className="inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium leading-none bg-white/20 text-white">
               {tag.display_name}
             </span>
           );
@@ -25,13 +25,13 @@ export const ChatTags: React.FC<ChatTagsProps> = memo(({ tags, isActive }) => {
         const hex = normalizeTagHex(tag.color);
         const style = { color: hex, backgroundColor: hexToRgba(hex, 0.12) } as React.CSSProperties;
         return (
-          <span key={index} className="inline-flex items-center rounded-md px-1 py-0.5 text-[10px] leading-none" style={style}>
+          <span key={index} className="inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium leading-none" style={style}>
             {tag.display_name}
           </span>
         );
       })}
       {tags.length > 4 && (
-        <span className={`text-[10px] ${isActive ? 'text-blue-100' : 'text-gray-400'}`}>+{tags.length - 4}</span>
+        <span className={`text-[10px] ${isActive ? 'text-acid-200' : 'text-gray-400'}`}>+{tags.length - 4}</span>
       )}
     </div>
   );

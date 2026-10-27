@@ -12,6 +12,7 @@ import { useChannelStore } from '@/stores/channelStore';
 import { useChannelDisplay } from '@/hooks/useChannelDisplay';
 import { useAuthStore } from '@/stores/authStore';
 import { useChatStore } from '@/stores/chatStore';
+import { ChatAvatar } from './ChatAvatar';
 import { chatMessagesApiService } from '@/services/chatMessagesApi';
 
 /**
@@ -50,7 +51,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = React.memo(({ activeChat, onEndCha
   const isAIChat = isAgentChat;
   
   // Use the useChannelDisplay hook to get channel display info
-  const { name: channelName, extra } = useChannelDisplay({
+  const { name: channelName, avatar: channelAvatar, extra } = useChannelDisplay({
     channelId: activeChat.channelId,
     channelType: activeChat.channelType,
     skipFetch: false, 
@@ -209,10 +210,19 @@ const ChatHeader: React.FC<ChatHeaderProps> = React.memo(({ activeChat, onEndCha
   }, [showTransferMenu]);
   
   return (
-    <header className="px-6 py-3 border-b border-gray-200/80 dark:border-gray-700/80 flex justify-between items-center bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg sticky top-0 z-10">
-      <div>
-        <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
-          <span>{displayName}</span>
+    <header className="relative z-10 flex items-center justify-between gap-4 border-b border-gray-100 bg-white/85 px-5 py-3.5 backdrop-blur-lg dark:border-gray-800 dark:bg-gray-900/85">
+      <div className="flex min-w-0 items-center gap-3">
+        <ChatAvatar
+          displayName={displayName}
+          displayAvatar={channelAvatar}
+          colorSeed={activeChat.channelId}
+          sizePx={42}
+          wrapperClassName="relative flex-shrink-0"
+          visitorStatus={isAgentChat ? undefined : (visitorExtra?.is_online ? 'online' : undefined)}
+        />
+        <div className="min-w-0">
+        <h2 className="flex items-center text-[17px] font-semibold tracking-tight text-gray-900 dark:text-gray-100">
+          <span className="truncate">{displayName}</span>
           {isAgentChat ? (
             <span title={t('chat.header.agentTooltip', 'AI Employee Chat')}>
               <Bot className="w-4 h-4 inline-block ml-1.5 -mt-0.5 text-purple-500 dark:text-purple-400" />
@@ -231,16 +241,38 @@ const ChatHeader: React.FC<ChatHeaderProps> = React.memo(({ activeChat, onEndCha
             })()
           )}
         </h2>
+        <p className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500">
+          {isAgentChat ? (
+            <>
+              <span className="h-1.5 w-1.5 rounded-full bg-acid-500" />
+              {t('chat.header.agentSubtitle', 'AI agent · replies instantly')}
+            </>
+          ) : visitorExtra?.is_online ? (
+            <>
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-green-500" />
+              </span>
+              {t('time.lastSeen.online', 'Online')}
+            </>
+          ) : (
+            <>
+              <span className="h-1.5 w-1.5 rounded-full bg-gray-300 dark:bg-gray-600" />
+              {t('chat.header.offline', 'Offline')}
+            </>
+          )}
+        </p>
+        </div>
       </div>
       {/* Action buttons - only shown for visitor conversations */}
       {showEndChatButton && (
-        <div className="flex items-center gap-1">
+        <div className="flex shrink-0 items-center gap-2">
           {/* Transfer button */}
           <div className="relative" ref={transferMenuRef}>
             <button
               onClick={handleTransferClick}
               disabled={isTransferring}
-              className="flex items-center gap-1 px-2 py-1 text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="tgo-pill h-9 px-3.5 text-xs disabled:opacity-50 disabled:cursor-not-allowed"
               title={t('chat.header.transferTooltip', 'Transfer to another agent')}
             >
               {isTransferring ? (
@@ -253,7 +285,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = React.memo(({ activeChat, onEndCha
             </button>
             {/* Agent selection dropdown */}
             {showTransferMenu && (
-              <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-20 py-1 max-h-60 overflow-y-auto">
+              <div className="animate-in fade-in zoom-in-95 slide-in-from-top-1 absolute right-0 top-full mt-2 w-56 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-xl z-20 p-1 max-h-64 overflow-y-auto">
                 {isLoadingStaff ? (
                   <div className="flex items-center justify-center py-3">
                     <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
@@ -267,12 +299,12 @@ const ChatHeader: React.FC<ChatHeaderProps> = React.memo(({ activeChat, onEndCha
                     <button
                       key={staff.id}
                       onClick={() => handleTransferToStaff(staff.id, staff.nickname || staff.username)}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-[13px] text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                     >
                       {staff.avatar_url ? (
-                        <img src={staff.avatar_url} alt="" className="w-5 h-5 rounded-full object-cover" />
+                        <img src={staff.avatar_url} alt="" className="w-6 h-6 rounded-full object-cover" />
                       ) : (
-                        <User className="w-5 h-5 text-gray-400" />
+                        <span className="flex w-6 h-6 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700"><User className="w-3.5 h-3.5 text-gray-500" /></span>
                       )}
                       <span className="truncate">{staff.nickname || staff.username}</span>
                     </button>
@@ -285,7 +317,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = React.memo(({ activeChat, onEndCha
           <button
             onClick={handleEndChat}
             disabled={isClosing}
-            className="flex items-center gap-1 px-2 py-1 text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex h-9 items-center gap-1.5 rounded-full bg-ink-900 px-3.5 text-xs font-medium text-white transition-all duration-200 hover:bg-red-600 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:hover:bg-red-600"
             title={t('chat.header.endChatTooltip', 'End the current chat')}
           >
             {isClosing ? (
@@ -299,11 +331,11 @@ const ChatHeader: React.FC<ChatHeaderProps> = React.memo(({ activeChat, onEndCha
       )}
       {/* Action buttons - AI conversations show clear memory */}
       {isAIChat && (
-        <div className="flex items-center gap-1">
+        <div className="flex shrink-0 items-center gap-2">
           <button
             onClick={handleClearMemory}
             disabled={isClearingMemory}
-            className="flex items-center gap-1 px-2 py-1 text-xs text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="tgo-pill h-9 px-3.5 text-xs disabled:opacity-50 disabled:cursor-not-allowed"
             title={t('chat.header.clearMemoryTooltip', 'Clear AI conversation memory and restart')}
           >
             {isClearingMemory ? (

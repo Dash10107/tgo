@@ -36,11 +36,11 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   
   const confirmButtonClass = isDanger
     ? 'bg-red-600 hover:bg-red-700 shadow-red-200 dark:shadow-none'
-    : 'bg-blue-600 hover:bg-blue-700 shadow-blue-200 dark:shadow-none';
+    : 'bg-ink-900 hover:bg-ink-700 shadow-gray-300 dark:bg-acid-400 dark:text-ink-900 dark:shadow-none';
 
   const iconBgClass = isDanger
     ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-red-100 dark:border-red-800/50'
-    : 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-blue-100 dark:border-blue-800/50';
+    : 'bg-acid-200 dark:bg-acid-400/15 text-ink-900 dark:text-acid-400 border-acid-300 dark:border-acid-400/30';
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
@@ -54,12 +54,12 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
       <div className="relative bg-white dark:bg-gray-900 rounded-[2rem] shadow-2xl max-w-md w-full overflow-hidden animate-in fade-in zoom-in-95 duration-300 border border-gray-100 dark:border-gray-800">
         {/* Header */}
         <div className="px-8 pt-8 pb-0 flex items-start justify-between">
-          <div className={`p-3 rounded-2xl border shadow-sm ${iconBgClass}`}>
+          <div className={`p-3 rounded-full border ${iconBgClass}`}>
             <AlertTriangle className="w-6 h-6" />
           </div>
           <button
             onClick={onCancel}
-            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl transition-all active:scale-90"
+            className="tgo-icon-btn"
             disabled={isLoading}
           >
             <X className="w-5 h-5" />
@@ -68,26 +68,26 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 
         {/* Content */}
         <div className="px-8 pt-6 pb-8">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2 tracking-tight">
+          <h3 className="text-2xl font-medium text-gray-900 dark:text-gray-100 mb-2 tracking-tight">
             {title}
           </h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
+          <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
             {message}
           </p>
         </div>
 
         {/* Footer */}
-        <div className="px-8 py-6 bg-gray-50/50 dark:bg-gray-800/30 border-t border-gray-100 dark:border-gray-800 flex flex-col sm:flex-row gap-3">
+        <div className="px-8 pb-8 flex flex-col sm:flex-row gap-3">
           <button
             onClick={onCancel}
-            className="flex-1 px-6 py-2.5 text-sm font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all active:scale-95 disabled:opacity-50"
+            className="tgo-pill flex-1 h-11 justify-center px-6 text-sm disabled:opacity-50"
             disabled={isLoading}
           >
             {cancelText || t('common.cancel', 'Cancel')}
           </button>
           <button
             onClick={onConfirm}
-            className={`flex-[1.5] px-6 py-2.5 text-sm font-bold text-white rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 ${confirmButtonClass}`}
+            className={`flex-[1.5] h-11 px-6 text-sm font-medium text-white rounded-full shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 ${confirmButtonClass}`}
             disabled={isLoading}
           >
             {isLoading ? (

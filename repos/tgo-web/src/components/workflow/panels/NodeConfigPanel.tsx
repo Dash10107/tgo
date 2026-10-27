@@ -23,7 +23,9 @@ import {
   LayoutGrid,
   Zap,
   XCircle,
+  Sparkles,
 } from 'lucide-react';
+import { getNodeAccent } from '../nodes/nodeTheme';
 import { useWorkflowStore } from '@/stores/workflowStore';
 import { useAIStore, useKnowledgeStore } from '@/stores';
 import { useProjectToolsStore } from '@/stores/projectToolsStore';
@@ -45,7 +47,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   agent: Bot,
   tool: Wrench,
   condition: GitBranch,
-  llm: MessageSquare,
+  llm: Sparkles,
   parallel: GitMerge,
   api: Globe,
   classifier: LayoutGrid,
@@ -130,68 +132,52 @@ const NodeConfigPanel: React.FC<NodeConfigPanelProps> = ({ node }) => {
   const nodeType = node.type as string;
   const Icon = iconMap[nodeType] || Play;
 
-  const colorMap: Record<string, { text: string; bg: string }> = {
-    input: { text: 'text-green-600 dark:text-green-400', bg: 'bg-green-50 dark:bg-green-900/20' },
-    timer: { text: 'text-green-600 dark:text-green-400', bg: 'bg-green-50 dark:bg-green-900/20' },
-    webhook: { text: 'text-green-600 dark:text-green-400', bg: 'bg-green-50 dark:bg-green-900/20' },
-    event: { text: 'text-green-600 dark:text-green-400', bg: 'bg-green-50 dark:bg-green-900/20' },
-    answer: { text: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-900/20' },
-    agent: { text: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-900/20' },
-    tool: { text: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-50 dark:bg-orange-900/20' },
-    condition: { text: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-50 dark:bg-purple-900/20' },
-    llm: { text: 'text-cyan-600 dark:text-cyan-400', bg: 'bg-cyan-50 dark:bg-cyan-900/20' },
-    parallel: { text: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-50 dark:bg-indigo-900/20' },
-    api: { text: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-900/20' },
-    classifier: { text: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-50 dark:bg-orange-900/20' },
-  };
-
-  const colors = colorMap[nodeType] || colorMap.llm;
+  const accent = getNodeAccent(nodeType);
 
   return (
-    <div className="w-[22rem] bg-white dark:bg-gray-900 border-l border-gray-200/50 dark:border-gray-800/50 flex flex-col z-20 shadow-2xl transition-all animate-in slide-in-from-right duration-300">
+    <div className="tgo-surface wf-slide-in-right z-20 flex w-[23rem] shrink-0 flex-col overflow-hidden">
       {/* Header */}
-      <div className="px-8 py-6 border-b border-gray-100/50 dark:border-gray-800 flex items-center justify-between bg-white/80 dark:bg-gray-900/80 backdrop-blur-md sticky top-0 z-10 shadow-sm">
-        <div className="flex items-center gap-4">
-          <div className={`p-2.5 rounded-2xl ${colors.bg} ${colors.text} shadow-sm border border-white dark:border-gray-700`}>
-            <Icon className="w-6 h-6" />
-          </div>
-          <div className="flex flex-col">
-            <h3 className="font-bold text-gray-900 dark:text-gray-100 text-sm tracking-tight">
-              {t('workflow.panel.nodeConfig', 'Node Configuration')}
-            </h3>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{t(`workflow.node_types.${nodeType}.label`, nodeType)}</span>
+      <div className="flex items-center justify-between gap-3 px-5 pb-4 pt-5">
+        <div className="flex min-w-0 items-center gap-3">
+          <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${accent.icon}`}>
+            <Icon className="h-5 w-5" />
+          </span>
+          <div className="min-w-0">
+            <p className="tgo-eyebrow">{t('workflow.panel.nodeConfig', 'Node Configuration')}</p>
+            <div className="mt-0.5 flex min-w-0 items-center gap-2">
+              <h3 className="truncate text-[15px] font-semibold tracking-tight text-gray-900 dark:text-gray-100">
+                {t(`workflow.node_types.${nodeType}.label`, nodeType)}
+              </h3>
               {localData.reference_key && (
-                <>
-                  <span className="text-gray-300 dark:text-gray-600 font-bold">·</span>
-                  <span className="text-[10px] text-blue-500 font-mono font-bold bg-blue-50 dark:bg-blue-900/20 px-1.5 py-0.5 rounded-md border border-blue-100 dark:border-blue-800/50">{localData.reference_key}</span>
-                </>
+                <span className={`shrink-0 rounded-full px-2 py-0.5 font-mono text-[10.5px] font-semibold ${accent.chip}`}>
+                  {localData.reference_key}
+                </span>
               )}
             </div>
           </div>
         </div>
         <button
           onClick={handleClose}
-          className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all active:scale-90"
+          className="tgo-icon-btn"
+          aria-label={t('common.close', 'Close')}
         >
-          <X className="w-5 h-5" />
+          <X className="h-4 w-4" />
         </button>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-8 space-y-10 bg-white dark:bg-gray-900 custom-scrollbar">
+      <div className="wf-form flex-1 space-y-8 overflow-y-auto px-5 pb-6 pt-1">
         {/* Common Fields Section */}
         <div className="space-y-4">
           <div className="space-y-2.5">
-            <label className="text-[11px] uppercase font-bold text-gray-400 tracking-widest flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-sm"></div>
+            <label className="tgo-eyebrow flex items-center gap-2">
               {t('workflow.fields.label', 'Node Name')}
             </label>
             <input
               type="text"
               value={localData.label || ''}
               onChange={(e) => handleUpdate({ label: e.target.value })}
-              className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-bold dark:text-gray-100 shadow-sm focus:bg-white dark:focus:bg-gray-800"
+              className="w-full rounded-2xl bg-gray-100 px-4 py-3 text-sm font-medium text-gray-900 outline-none transition-all duration-200 focus:bg-white focus:shadow-[inset_0_0_0_2px_var(--color-acid-400)] dark:bg-gray-800 dark:text-gray-100 dark:focus:bg-gray-900"
             />
           </div>
         </div>
@@ -200,8 +186,10 @@ const NodeConfigPanel: React.FC<NodeConfigPanelProps> = ({ node }) => {
 
         {/* Type-specific fields Section */}
         <div className="space-y-8">
-          <h4 className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.25em] mb-4 flex items-center gap-2">
-            <Settings className="w-3.5 h-3.5" />
+          <h4 className="mb-4 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-900 dark:text-gray-100">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-acid-300 text-ink-900">
+              <Settings className="h-3.5 w-3.5" />
+            </span>
             {t('workflow.panel.properties', 'Properties')}
           </h4>
           
@@ -307,10 +295,10 @@ const NodeConfigPanel: React.FC<NodeConfigPanelProps> = ({ node }) => {
       {/* Footer - Delete Button */}
       {/* Trigger nodes cannot be deleted, a label is required, but the node itself can be deleted unless it is the only entry point of the whole flow?
           Deletion is allowed uniformly here, except that one manual trigger may need to be kept.*/}
-      <div className="p-6 border-t border-gray-50 dark:border-gray-800 bg-gray-50/30 dark:bg-gray-900/30">
+      <div className="border-t border-gray-100 p-4 dark:border-gray-800">
         <button
           onClick={handleDelete}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-red-500 hover:text-white dark:text-red-400 hover:bg-red-500 dark:hover:bg-red-600 bg-white dark:bg-gray-800 border border-red-100 dark:border-red-900/30 rounded-xl transition-all font-bold text-xs uppercase tracking-widest shadow-sm"
+          className="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-rose-50 text-sm font-medium text-rose-600 transition-all duration-200 hover:bg-rose-500 hover:text-white active:scale-[0.98] dark:bg-rose-500/10 dark:text-rose-400 dark:hover:bg-rose-500 dark:hover:text-white"
         >
           <Trash2 className="w-4 h-4" />
           <span>{t('workflow.actions.deleteNode', 'Delete Node')}</span>

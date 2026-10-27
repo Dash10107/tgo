@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { LuBot, LuWrench, LuGitBranch, LuSparkles,LuMonitorSmartphone, LuZap } from 'react-icons/lu';
+import { LuBot, LuWrench, LuGitBranch, LuSparkles, LuMonitorSmartphone, LuZap } from 'react-icons/lu';
 import { AI_MENU_ITEMS } from '@/utils/constants';
 import type { NavigationItem } from '@/types';
 import OnboardingSidebarPanel from '@/components/onboarding/OnboardingSidebarPanel';
@@ -12,11 +12,11 @@ interface AIMenuItemProps {
 
 // Icon mapping for AI menu items using react-icons
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
-  'Bot': LuBot,
-  'Wrench': LuWrench,
-  'Zap': LuZap,
-  'GitBranch': LuGitBranch,
-  'Monitor': LuMonitorSmartphone
+  Bot: LuBot,
+  Wrench: LuWrench,
+  Zap: LuZap,
+  GitBranch: LuGitBranch,
+  Monitor: LuMonitorSmartphone
 };
 
 /**
@@ -30,32 +30,26 @@ const AIMenuItem: React.FC<AIMenuItemProps> = ({ item }) => {
     <NavLink
       to={item.path}
       className={({ isActive }) => `
-        group flex items-center px-4 py-3 rounded-2xl text-sm transition-all duration-300 w-full text-left mb-1
+        group flex w-full items-center gap-3 rounded-full py-1.5 pl-1.5 pr-4 text-left text-sm transition-all duration-300
         ${isActive
-          ? 'bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 font-bold shadow-sm border border-gray-100 dark:border-gray-700'
-          : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100/50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-200 border border-transparent'
+          ? 'bg-ink-900 text-white shadow-[0_12px_26px_-14px_rgba(15,16,18,0.75)] dark:bg-acid-400 dark:text-ink-900'
+          : 'text-gray-600 hover:bg-white hover:text-gray-900 hover:shadow-sm dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100'
         }
       `}
     >
-      {/* Icon Container - using render prop pattern for isActive */}
       {({ isActive }) => (
         <>
-          <div className={`
-            p-2 rounded-xl transition-all duration-300 mr-3
-            ${isActive 
-              ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 shadow-inner' 
-              : 'bg-transparent text-gray-400 group-hover:bg-gray-100 dark:group-hover:bg-gray-700 group-hover:text-gray-600'
+          <span className={`
+            flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-all duration-300
+            ${isActive
+              ? 'bg-acid-400 text-ink-900 dark:bg-ink-900 dark:text-acid-400'
+              : 'bg-white text-gray-500 ring-1 ring-gray-200 group-hover:ring-transparent group-hover:bg-gray-100 group-hover:text-gray-800 dark:bg-gray-800 dark:text-gray-400 dark:ring-gray-700 dark:group-hover:bg-gray-700'
             }
           `}>
-            {IconComponent && <IconComponent className="w-4.5 h-4.5" />}
-          </div>
-          <span className="flex-1 truncate">{t(item.title)}</span>
-          
-          {/* Active Indicator Dot */}
-          <div className={`
-            w-1.5 h-1.5 rounded-full bg-blue-500 shadow-sm transition-all duration-300
-            ${isActive ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}
-          `} />
+            {IconComponent && <IconComponent className="h-4 w-4" />}
+          </span>
+          <span className={`flex-1 truncate ${isActive ? 'font-medium' : ''}`}>{t(item.title)}</span>
+          <span className={`h-1.5 w-1.5 rounded-full bg-acid-400 transition-all duration-300 dark:bg-ink-900 ${isActive ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} />
         </>
       )}
     </NavLink>
@@ -68,24 +62,20 @@ const AIMenuItem: React.FC<AIMenuItemProps> = ({ item }) => {
 const AIMenu: React.FC = () => {
   const { t } = useTranslation();
   return (
-    <aside className="w-64 bg-[#f8fafc] dark:bg-gray-950 border-r border-gray-200/50 dark:border-gray-800/50 flex flex-col shrink-0">
+    <aside className="flex w-64 shrink-0 flex-col border-r border-gray-200/60 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
       {/* Header */}
-      <div className="px-6 py-8">
-        <div className="flex items-center gap-3 mb-1">
-          <div className="p-2 bg-blue-600 rounded-xl text-white shadow-lg shadow-blue-200 dark:shadow-none">
-            <LuSparkles className="w-5 h-5" />
-          </div>
-          <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
-            {t('ai.menu.title', 'AI Features')}
-          </h3>
+      <div className="px-6 pb-6 pt-7">
+        <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-acid-400 text-ink-900">
+          <LuSparkles className="h-4 w-4" />
         </div>
-        <p className="text-[11px] text-gray-400 font-bold uppercase tracking-[0.2em] pl-11">
-          Features
-        </p>
+        <h3 className="tgo-display text-[30px] text-gray-900 dark:text-white">
+          {t('ai.menu.title', 'AI Features')}
+        </h3>
+        <p className="tgo-eyebrow mt-2">{t('ai.menu.subtitle', 'Build & automate')}</p>
       </div>
 
       {/* Menu Navigation */}
-      <nav className="flex-grow overflow-y-auto px-4 space-y-1 custom-scrollbar">
+      <nav className="flex-grow space-y-1.5 overflow-y-auto px-3">
         {AI_MENU_ITEMS.map((item) => (
           <AIMenuItem
             key={item.id}
@@ -95,7 +85,7 @@ const AIMenu: React.FC = () => {
       </nav>
 
       {/* Onboarding Panel */}
-      <div className="p-4 mt-auto">
+      <div className="mt-auto">
         <OnboardingSidebarPanel />
       </div>
     </aside>

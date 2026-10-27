@@ -10,6 +10,51 @@ import type { NodeExecution } from '@/types/workflow';
 export type NodeRunState = 'idle' | 'pending' | 'running' | 'completed' | 'failed' | 'skipped';
 export type EdgeRunState = 'idle' | 'active' | 'traversed' | 'inactive';
 
+export interface EdgePalette {
+  /** Edge stroke per run state */
+  stroke: Record<EdgeRunState, string>;
+  selected: string;
+  /** Dashed overlay on the edge feeding the running node */
+  flow: string;
+  /** Soft glow and bright core of the sparks travelling along an active edge */
+  sparkGlow: string;
+  sparkCore: string;
+  /** Line drawn while the user drags out a new connection */
+  connection: string;
+}
+
+/** Edge colors for each canvas theme */
+export const EDGE_PALETTES: Record<'light' | 'dark', EdgePalette> = {
+  light: {
+    stroke: {
+      idle: '#b4b4bc',
+      active: '#8fb31e',
+      traversed: '#8fb31e',
+      inactive: '#e4e4e7',
+    },
+    selected: '#0f1012',
+    flow: '#ffffff',
+    sparkGlow: '#b6db34',
+    sparkCore: '#1f2024',
+    connection: '#8fb31e',
+  },
+  dark: {
+    stroke: {
+      idle: '#5d6068',
+      active: '#cdee55',
+      traversed: '#b6db34',
+      inactive: '#3a3c42',
+    },
+    selected: '#f4f4f5',
+    flow: '#f4fbd6',
+    sparkGlow: '#cdee55',
+    sparkCore: '#f7fde0',
+    connection: '#cdee55',
+  },
+};
+
+export const getEdgePalette = (isDark: boolean): EdgePalette => EDGE_PALETTES[isDark ? 'dark' : 'light'];
+
 /** Whether there is a run to visualize (in progress, finished, or failed to start) */
 export const useHasRun = (): boolean =>
   useWorkflowStore(state =>

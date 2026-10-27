@@ -159,8 +159,10 @@ export const UnassignedChatListItem: React.FC<UnassignedChatListItemProps> = Rea
   return (
     <div
       className={`
-        flex items-center p-3 rounded-lg cursor-pointer transition-colors duration-150
-        ${isActive ? 'bg-blue-500 dark:bg-blue-600 text-white shadow-sm' : 'hover:bg-gray-100/70 dark:hover:bg-gray-700/70'}
+        group relative flex items-center p-3 rounded-[20px] cursor-pointer transition-all duration-300 ease-out
+        ${isActive
+          ? 'bg-ink-900 text-white shadow-[0_14px_30px_-16px_rgba(15,16,18,0.75)] dark:bg-gray-800 dark:ring-1 dark:ring-acid-400/30'
+          : 'hover:bg-gray-50 dark:hover:bg-gray-800/60'}
       `}
       onClick={handleClick}
     >
@@ -175,7 +177,7 @@ export const UnassignedChatListItem: React.FC<UnassignedChatListItemProps> = Rea
       <div className="flex-grow overflow-hidden">
         {/* First row: Name and Platform Icon */}
         <div className="flex justify-between items-center">
-          <h3 className={`text-sm font-semibold truncate flex items-center ${isActive ? 'text-white' : 'text-gray-800 dark:text-gray-200'}`}>
+          <h3 className={`text-sm font-semibold truncate flex items-center ${isActive ? 'text-white [&_svg]:!text-acid-200' : 'text-gray-800 dark:text-gray-200'}`}>
             <span className="truncate">{displayName}</span>
             <ChatPlatformIcon platformType={(() => {
               const extraObj: any = extra;
@@ -196,7 +198,7 @@ export const UnassignedChatListItem: React.FC<UnassignedChatListItemProps> = Rea
 
         {/* Second row: Last message preview + "Waiting" badge (in place of unread count) */}
         <div className="flex justify-between items-center mt-1">
-          <p className={`text-xs truncate flex-1 ${isActive ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'}`}>
+          <p className={`text-xs truncate flex-1 ${isActive ? 'text-acid-200' : 'text-gray-500 dark:text-gray-400'}`}>
             {formatChatLastMessage(chat, t)}
           </p>
           {/* Status indicator - in place of unread badge */}

@@ -81,7 +81,7 @@ const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
       await saveWorkflow();
       showToast('success', t('workflow.messages.saveSuccess', 'Saved'), '');
       onSave?.();
-    } catch (error) {
+    } catch {
       showToast('error', t('workflow.messages.saveFailed', 'Save Failed'), '');
     } finally {
       setIsSaving(false);

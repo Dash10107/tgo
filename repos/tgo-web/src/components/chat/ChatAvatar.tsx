@@ -90,14 +90,14 @@ export const ChatAvatar: React.FC<ChatAvatarProps> = React.memo(({
         <img
           src={displayAvatar}
           alt={`${displayName} Avatar`}
-          className={`rounded-md object-cover bg-gray-200 ${!sizePx ? 'w-10 h-10' : ''} ${imageClassName ?? ''}`}
+          className={`rounded-full object-cover bg-gray-200 ${!sizePx ? 'w-10 h-10' : ''} ${imageClassName ?? ''}`}
           style={sizeStyle}
           onError={handleImageError}
         />
       ) : null}
 
       <div
-        className={`${!sizePx ? 'w-10 h-10' : ''} rounded-md flex items-center justify-center text-white font-bold ${letterClassName ?? 'text-sm'} ${hasValidAvatarUrl ? 'hidden' : ''} ${defaultAvatar?.colorClass || 'bg-gradient-to-br from-gray-400 to-gray-500'} ${fallbackClassName ?? ''}`}
+        className={`${!sizePx ? 'w-10 h-10' : ''} rounded-full flex items-center justify-center text-white font-bold ${letterClassName ?? 'text-sm'} ${hasValidAvatarUrl ? 'hidden' : ''} ${defaultAvatar?.colorClass || 'bg-gradient-to-br from-gray-400 to-gray-500'} ${fallbackClassName ?? ''}`}
         style={{ ...(sizeStyle ?? {}), display: hasValidAvatarUrl ? 'none' : 'flex' }}
       >
         <span className={letterClassName ?? 'text-sm'}>{defaultAvatar?.letter || '?'}</span>

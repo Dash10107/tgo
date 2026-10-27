@@ -932,11 +932,11 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
 
   const containerClasses = variant === 'drawer'
     ? `w-full h-full bg-white dark:bg-gray-800 flex flex-col ${className}`
-    : `${widthClass} bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-l border-gray-200/60 dark:border-gray-700/60 flex flex-col shrink-0 font-sans antialiased ${className}`;
+    : `${widthClass} bg-white dark:bg-gray-900 flex flex-col shrink-0 font-sans antialiased ${className}`;
 
   const emptyContainerClasses = variant === 'drawer'
     ? `w-full h-full bg-white dark:bg-gray-800 flex items-center justify-center ${className}`
-    : `${widthClass} bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-l border-gray-200/60 dark:border-gray-700/60 flex items-center justify-center shrink-0 font-sans antialiased ${className}`;
+    : `${widthClass} bg-white dark:bg-gray-900 flex items-center justify-center shrink-0 font-sans antialiased ${className}`;
 
   // Render the empty or error state
   if (!visitor) {
@@ -977,7 +977,7 @@ const VisitorDetailPanel: React.FC<VisitorDetailPanelProps> = ({
   return (
     <div className={containerClasses} style={style}>
       {/* Panel Header */}
-      <div className="p-4 border-b border-gray-200/60 dark:border-gray-700/60 sticky top-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg z-10">
+      <div className="px-5 pt-5 pb-4 border-b border-gray-100 dark:border-gray-800 sticky top-0 bg-white/85 dark:bg-gray-900/85 backdrop-blur-lg z-10">
         {showCloseButton && onClose && (
           <div className="flex justify-end mb-2">
             <button

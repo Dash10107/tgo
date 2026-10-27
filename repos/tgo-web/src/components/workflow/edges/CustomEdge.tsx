@@ -10,19 +10,17 @@ import {
   EdgeLabelRenderer,
   BaseEdge,
 } from 'reactflow';
-import type { EdgeRunState } from '../overlays/runState';
+import { getEdgePalette, type EdgeRunState } from '../overlays/runState';
 
 export interface CustomEdgeData {
   label?: string;
   runState?: EdgeRunState;
+  /** Canvas theme, so strokes and sparks stay visible on both backgrounds */
+  isDark?: boolean;
 }
 
-const STROKE: Record<EdgeRunState, string> = {
-  idle: '#a5b4c8',
-  active: '#3b82f6',
-  traversed: '#10b981',
-  inactive: '#cbd5e1',
-};
+// Three sparks travel along an active edge, evenly spaced in time
+const SPARK_OFFSETS = ['0s', '-0.4s', '-0.8s'];
 
 const CustomEdge: React.FC<EdgeProps<CustomEdgeData>> = ({
   id,
@@ -43,22 +41,23 @@ const CustomEdge: React.FC<EdgeProps<CustomEdgeData>> = ({
     targetX,
     targetY,
     targetPosition,
-    borderRadius: 16,
+    borderRadius: 18,
   });
 
   const getLabelColor = () => {
     if (data?.label === 'true' || data?.label === 'yes' || data?.label === '是') { // '是' is the legacy Chinese "yes" label
-      return 'bg-green-100 text-green-700 border-green-300 dark:bg-green-900/50 dark:text-green-300 dark:border-green-700';
+      return 'bg-acid-400 text-ink-900';
     }
     if (data?.label === 'false' || data?.label === 'no' || data?.label === '否') { // '否' is the legacy Chinese "no" label
-      return 'bg-red-100 text-red-700 border-red-300 dark:bg-red-900/50 dark:text-red-300 dark:border-red-700';
+      return 'bg-rose-500 text-white';
     }
-    return 'bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600';
+    return 'bg-ink-700 text-gray-200 ring-1 ring-white/10';
   };
 
   const runState: EdgeRunState = data?.runState ?? 'idle';
   const isActive = runState === 'active';
   const isHighlighted = isActive || runState === 'traversed';
+  const palette = getEdgePalette(data?.isDark ?? true);
 
   return (
     <>
@@ -67,24 +66,37 @@ const CustomEdge: React.FC<EdgeProps<CustomEdgeData>> = ({
         path={edgePath}
         markerEnd={markerEnd}
         style={{
-          strokeWidth: selected || isHighlighted ? 2.5 : 1.75,
-          stroke: selected ? '#6366f1' : STROKE[runState],
-          opacity: runState === 'inactive' ? 0.45 : 1,
+          strokeWidth: selected ? 2.5 : 1.75,
+          stroke: selected ? palette.selected : palette.stroke[runState === 'traversed' || isActive ? 'idle' : runState],
+          opacity: runState === 'inactive' ? 0.5 : 1,
           transition: 'stroke 0.4s, stroke-width 0.4s, opacity 0.4s',
         }}
       />
 
-      {/* Soft glow under the taken path */}
+      {/* Taken path: a soft halo plus a bright line that draws itself from source to target */}
       {isHighlighted && (
-        <path
-          d={edgePath}
-          fill="none"
-          stroke={STROKE[runState]}
-          strokeWidth={8}
-          strokeOpacity={0.15}
-          strokeLinecap="round"
-          pointerEvents="none"
-        />
+        <>
+          <path
+            d={edgePath}
+            fill="none"
+            stroke={palette.stroke[runState]}
+            strokeWidth={10}
+            strokeOpacity={0.14}
+            strokeLinecap="round"
+            pointerEvents="none"
+            className="wf-edge-halo"
+          />
+          <path
+            d={edgePath}
+            fill="none"
+            stroke={palette.stroke[runState]}
+            strokeWidth={2.5}
+            strokeLinecap="round"
+            pathLength={1}
+            pointerEvents="none"
+            className="wf-edge-draw"
+          />
+        </>
       )}
 
       {/* Data flowing into the node that is running right now */}
@@ -93,14 +105,22 @@ const CustomEdge: React.FC<EdgeProps<CustomEdgeData>> = ({
           <path
             d={edgePath}
             fill="none"
-            stroke="#93c5fd"
-            strokeWidth={2.5}
+            stroke={palette.flow}
+            strokeWidth={1.5}
+            strokeOpacity={0.8}
             className="wf-edge-flow"
             pointerEvents="none"
           />
-          <circle r={4.5} fill="#3b82f6" stroke="#fff" strokeWidth={1.5} pointerEvents="none">
-            <animateMotion dur="1.1s" repeatCount="indefinite" path={edgePath} />
-          </circle>
+          {SPARK_OFFSETS.map(begin => (
+            <g key={begin} pointerEvents="none">
+              <circle r={7} fill={palette.sparkGlow} fillOpacity={0.22}>
+                <animateMotion dur="1.2s" begin={begin} repeatCount="indefinite" path={edgePath} />
+              </circle>
+              <circle r={3} fill={palette.sparkCore}>
+                <animateMotion dur="1.2s" begin={begin} repeatCount="indefinite" path={edgePath} />
+              </circle>
+            </g>
+          ))}
         </>
       )}
 
@@ -112,10 +132,7 @@ const CustomEdge: React.FC<EdgeProps<CustomEdgeData>> = ({
               transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
               pointerEvents: 'all',
             }}
-            className={`
-              px-2 py-0.5 text-xs font-medium rounded border
-              ${getLabelColor()}
-            `}
+            className={`nodrag nopan rounded-full px-2.5 py-0.5 text-[10.5px] font-semibold shadow-lg ${getLabelColor()}`}
           >
             {data.label}
           </div>

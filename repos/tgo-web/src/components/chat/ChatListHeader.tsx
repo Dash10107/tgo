@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
 
@@ -8,18 +8,19 @@ import SearchPanel from '@/components/chat/SearchPanel';
 export interface ChatListHeaderProps {
   searchQuery: string;
   onSearchChange: (value: string) => void;
+  /** Number of conversations currently listed */
+  count?: number;
 }
 
+const isMacPlatform = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform);
+
 /**
- * Chat list header with search input and action buttons.
+ * Chat list header: section title, conversation count and the global search trigger.
+ * Search opens the full SearchPanel (also reachable with Ctrl/⌘ + K).
  */
-export const ChatListHeader: React.FC<ChatListHeaderProps> = React.memo(({ searchQuery, onSearchChange }) => {
+export const ChatListHeader: React.FC<ChatListHeaderProps> = React.memo(({ count }) => {
   const [searchOpen, setSearchOpen] = useState(false);
   const { t } = useTranslation();
-
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    onSearchChange(e.target.value);
-  }, [onSearchChange]);
 
   const openSearch = useCallback(() => {
     setSearchOpen(true);
@@ -27,22 +28,44 @@ export const ChatListHeader: React.FC<ChatListHeaderProps> = React.memo(({ searc
 
   const closeSearch = useCallback(() => setSearchOpen(false), []);
 
+  // Ctrl/⌘ + K opens search from anywhere on the chat page
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+
   return (
-    <div className="px-4 py-3 border-b border-gray-200/60 dark:border-gray-700/60 flex items-center justify-between sticky top-0 bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg z-10">
-      <div className="relative flex-grow mr-2">
-        <input
-          type="text"
-          placeholder={t('chat.list.searchPlaceholder', 'Search')}
-          aria-label={t('chat.list.searchAria', 'Search conversations')}
-          value={searchQuery}
-          readOnly
-          onClick={openSearch}
-          onFocus={openSearch}
-          onChange={handleSearchChange}
-          className="w-full pl-8 pr-2 py-1.5 text-sm border border-gray-300/70 dark:border-gray-600/70 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-gray-100/70 dark:bg-gray-700/70 dark:text-gray-200 cursor-text"
-        />
-        <Icon name="Search" size={16} className="w-4 h-4 absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" />
+    <div className="px-5 pt-5 pb-3">
+      <div className="flex items-end justify-between gap-3">
+        <h2 className="tgo-display text-[32px] text-gray-900 dark:text-white">
+          {t('chat.list.title', 'Inbox')}
+        </h2>
+        {typeof count === 'number' && (
+          <span className="tgo-count mb-0.5">
+            <b key={count} className="tgo-pop tabular-nums">{count}</b>
+            {t('chat.list.countLabel', 'chats')}
+          </span>
+        )}
       </div>
+
+      <button
+        type="button"
+        onClick={openSearch}
+        aria-label={t('chat.list.searchAria', 'Search conversations')}
+        className="group mt-4 flex h-10 w-full items-center gap-2.5 rounded-full bg-gray-100 pl-3.5 pr-2 text-left text-sm text-gray-400 ring-1 ring-transparent transition-all duration-200 hover:bg-white hover:ring-gray-200 dark:bg-gray-800 dark:text-gray-500 dark:hover:bg-gray-800/70 dark:hover:ring-gray-700"
+      >
+        <Icon name="Search" size={16} className="h-4 w-4 text-gray-400 transition-colors group-hover:text-gray-700 dark:group-hover:text-gray-200" />
+        <span className="flex-1 truncate">{t('chat.list.searchPlaceholder', 'Search')}</span>
+        <kbd className="rounded-full bg-white px-2 py-0.5 font-sans text-[10.5px] font-medium text-gray-500 shadow-sm ring-1 ring-gray-200 dark:bg-gray-900 dark:text-gray-400 dark:ring-gray-700">
+          {isMacPlatform ? '⌘K' : 'Ctrl K'}
+        </kbd>
+      </button>
 
       {searchOpen && <SearchPanel open={searchOpen} onClose={closeSearch} />}
     </div>
@@ -50,4 +73,3 @@ export const ChatListHeader: React.FC<ChatListHeaderProps> = React.memo(({ searc
 });
 
 ChatListHeader.displayName = 'ChatListHeader';
-

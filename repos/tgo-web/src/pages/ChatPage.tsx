@@ -7,7 +7,7 @@ import { useChatStore, chatSelectors } from '@/stores';
 import { useChannelStore } from '@/stores/channelStore';
 import { getChannelKey } from '@/utils/channelUtils';
 import type { ChatTabType } from '@/components/chat/ChatListTabs';
-import type { ChannelVisitorExtra } from '@/types';
+import type { ChannelVisitorExtra, InboxSummary } from '@/types';
 
 /**
  * Chat page component - contains the original chat interface
@@ -26,6 +26,9 @@ const ChatPage: React.FC = () => {
   
   // Tab state management
   const [activeTab, setActiveTab] = useState<ChatTabType>('mine');
+
+  // Inbox totals reported by ChatList, shown on the workspace overview
+  const [inboxSummary, setInboxSummary] = useState<InboxSummary | null>(null);
   
   // Refresh trigger for ChatList (increment to trigger refresh)
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -214,7 +217,7 @@ const ChatPage: React.FC = () => {
   const isAIChat = isAgentChat;
 
   return (
-    <div className="flex h-full w-full bg-gray-50 dark:bg-gray-900">
+    <div className="flex h-full w-full min-w-0 gap-3">
       {/* Chat List */}
       <ChatList
         activeChat={activeChat ?? undefined}
@@ -223,6 +226,7 @@ const ChatPage: React.FC = () => {
         onTabChange={setActiveTab}
         refreshTrigger={refreshTrigger}
         deletedChatChannel={deletedChatChannel}
+        onSummaryChange={setInboxSummary}
       />
 
       {/* Main Chat Window */}
@@ -231,10 +235,11 @@ const ChatPage: React.FC = () => {
         activeChat={activeChat ?? undefined}
         onAcceptVisitor={handleAcceptVisitor}
         onEndChatSuccess={handleEndChatSuccess}
+        inboxSummary={inboxSummary}
       />
 
-      {/* Visitor Info Panel - only shown for non-AI (non-agent) conversations */}
-      {!isAIChat && <VisitorPanel activeChat={activeChat ?? undefined} />}
+      {/* Visitor Info Panel - only shown for an open, non-AI (non-agent) conversation */}
+      {activeChat && !isAIChat && <VisitorPanel activeChat={activeChat} />}
     </div>
   );
 };

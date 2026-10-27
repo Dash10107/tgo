@@ -37,54 +37,61 @@ const Toast: React.FC<ToastProps> = ({
   const getIcon = () => {
     switch (type) {
       case 'success':
-        return <CheckCircle className="w-5 h-5 text-green-600" />;
+        return <CheckCircle className="w-4 h-4" />;
       case 'error':
-        return <XCircle className="w-5 h-5 text-red-600" />;
+        return <XCircle className="w-4 h-4" />;
       case 'warning':
-        return <AlertCircle className="w-5 h-5 text-yellow-600" />;
+        return <AlertCircle className="w-4 h-4" />;
       case 'info':
-        return <Info className="w-5 h-5 text-blue-600" />;
       default:
-        return <Info className="w-5 h-5 text-blue-600" />;
+        return <Info className="w-4 h-4" />;
     }
   };
 
-  const getBackgroundColor = () => {
+  const getIconColor = () => {
     switch (type) {
       case 'success':
-        return 'bg-green-50 border-green-200';
+        return 'bg-acid-400 text-ink-900';
       case 'error':
-        return 'bg-red-50 border-red-200';
+        return 'bg-red-500 text-white';
       case 'warning':
-        return 'bg-yellow-50 border-yellow-200';
+        return 'bg-amber-400 text-ink-900';
       case 'info':
-        return 'bg-blue-50 border-blue-200';
       default:
-        return 'bg-blue-50 border-blue-200';
+        return 'bg-white/15 text-white';
     }
   };
 
   return (
-    <div className={`min-w-80 max-w-md w-auto border rounded-lg shadow-lg p-4 ${getBackgroundColor()}`}>
-      <div className="flex items-start space-x-3">
-        <div className="flex-shrink-0">
+    <div
+      role={type === 'error' ? 'alert' : 'status'}
+      className="tgo-toast relative min-w-80 max-w-md w-auto overflow-hidden rounded-[20px] bg-ink-900 p-3 pr-2 text-white shadow-[0_20px_44px_-18px_rgba(15,16,18,0.75)] ring-1 ring-white/10 dark:bg-gray-800"
+    >
+      <div className="flex items-start gap-3">
+        <span className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full ${getIconColor()}`}>
           {getIcon()}
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis">{title}</p>
+        </span>
+        <div className="min-w-0 flex-1 pt-1.5">
+          <p className="truncate text-sm font-medium">{title}</p>
           {message && (
-            <p className="mt-1 text-sm text-gray-600 break-words">{message}</p>
+            <p className="mt-1 break-words text-[13px] leading-relaxed text-white/60">{message}</p>
           )}
         </div>
-        <div className="flex-shrink-0">
-          <button
-            onClick={() => onClose(id)}
-            className="inline-flex text-gray-400 hover:text-gray-600 focus:outline-none transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
+        <button
+          onClick={() => onClose(id)}
+          aria-label="Close"
+          className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-white/40 transition-colors hover:bg-white/10 hover:text-white focus:outline-none"
+        >
+          <X className="w-4 h-4" />
+        </button>
       </div>
+      {duration > 0 && (
+        <span
+          aria-hidden="true"
+          className="tgo-toast-timer absolute bottom-0 left-0 h-0.5 w-full origin-left bg-acid-400/70"
+          style={{ animationDuration: `${duration}ms` }}
+        />
+      )}
     </div>
   );
 };

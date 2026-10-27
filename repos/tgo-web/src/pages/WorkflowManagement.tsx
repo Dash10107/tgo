@@ -3,26 +3,24 @@
  * List and manage AI Agent workflows
  */
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
   Plus,
   GitBranch,
-  MoreVertical,
+  MoreHorizontal,
   Pencil,
   Copy,
   Trash2,
   RefreshCw,
-  Eye,
   Search,
-  ChevronLeft,
-  ChevronRight,
-  Sparkles,
+  ArrowUpRight,
   Headphones,
   Target,
   ShieldAlert,
   Loader2,
+  AlertTriangle,
   type LucideIcon,
 } from 'lucide-react';
 import { useWorkflowStore } from '@/stores/workflowStore';
@@ -38,11 +36,39 @@ const TEMPLATE_ICONS: Record<WorkflowTemplateId, LucideIcon> = {
   agent_escalation: ShieldAlert,
 };
 
+type StatusFilter = WorkflowStatus | 'all';
+
+const STATUS_FILTERS: StatusFilter[] = ['all', 'active', 'draft', 'archived'];
+
+interface StatusStyle {
+  dot: string;
+  label: string;
+}
+
+const useStatusStyle = () => {
+  const { t } = useTranslation();
+  return (status: WorkflowStatus): StatusStyle => {
+    switch (status) {
+      case 'active':
+        return { dot: 'bg-acid-500', label: t('workflow.status.active', 'Active') };
+      case 'draft':
+        return { dot: 'bg-amber-400', label: t('workflow.status.draft', 'Draft') };
+      case 'inactive':
+        return { dot: 'bg-gray-300', label: t('workflow.status.inactive', 'Inactive') };
+      case 'archived':
+        return { dot: 'bg-gray-400', label: t('workflow.status.archived', 'Archived') };
+      default:
+        return { dot: 'bg-gray-400', label: status };
+    }
+  };
+};
+
 /**
  * Workflow Template Card Component
  */
 interface WorkflowTemplateCardProps {
   template: WorkflowTemplate;
+  isFeatured: boolean;
   isCreating: boolean;
   disabled: boolean;
   onUse: (id: WorkflowTemplateId) => void;
@@ -50,6 +76,7 @@ interface WorkflowTemplateCardProps {
 
 const WorkflowTemplateCard: React.FC<WorkflowTemplateCardProps> = ({
   template,
+  isFeatured,
   isCreating,
   disabled,
   onUse,
@@ -58,33 +85,63 @@ const WorkflowTemplateCard: React.FC<WorkflowTemplateCardProps> = ({
   const Icon = TEMPLATE_ICONS[template.id];
 
   return (
-    <div className="group relative bg-white dark:bg-gray-800 rounded-2xl p-5 flex flex-col justify-between shadow-sm hover:shadow-lg transition-all duration-300 border border-dashed border-purple-200 dark:border-purple-800/60">
-      <div>
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400 shrink-0">
-            <Icon className="w-5 h-5" />
-          </div>
-          <div className="min-w-0">
-            <h4 className="font-bold text-gray-900 dark:text-gray-100 truncate" title={t(template.name)}>
-              {t(template.name)}
-            </h4>
-            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-              {t('workflow.templates.nodesCount', '{{count}} nodes', { count: template.nodes.length })}
-            </span>
-          </div>
+    <div className="group relative h-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1">
+      {/* Notched background layer (masked separately so content and popovers are never clipped) */}
+      <div
+        aria-hidden="true"
+        className={`tgo-notch absolute inset-0 rounded-[28px] transition-shadow duration-500 ${
+          isFeatured ? 'bg-acid-300 dark:bg-acid-400' : 'bg-white dark:bg-gray-800'
+        }`}
+      />
+      <div
+        className={`relative flex h-full flex-col justify-between p-6 ${
+          isFeatured ? 'text-ink-900' : 'text-gray-900 dark:text-gray-100'
+        }`}
+      >
+        <div>
+          <span className={`flex h-12 w-12 items-center justify-center rounded-full ${
+            isFeatured ? 'bg-ink-900 text-acid-400' : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200'
+          }`}>
+            <Icon className="h-5 w-5" />
+          </span>
+          <h4 className="mt-6 pr-6 text-xl font-medium tracking-tight" title={t(template.name)}>
+            {t(template.name)}
+          </h4>
+          <p className={`mt-2 line-clamp-3 text-sm leading-relaxed ${isFeatured ? 'text-ink-900/70' : 'text-gray-500 dark:text-gray-400'}`}>
+            {t(template.description)}
+          </p>
         </div>
-        <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-4">
-          {t(template.description)}
-        </p>
+
+        <div className="mt-6 flex items-center justify-between gap-3">
+          <span className={`inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium ${
+            isFeatured ? 'bg-white/60 text-ink-900' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
+          }`}>
+            <GitBranch className="h-3.5 w-3.5" />
+            {t('workflow.templates.nodesCount', '{{count}} nodes', { count: template.nodes.length })}
+          </span>
+          <button
+            onClick={() => onUse(template.id)}
+            disabled={disabled}
+            className={`inline-flex h-10 items-center gap-2 rounded-full px-4 text-xs font-semibold transition-all duration-200 active:scale-95 disabled:pointer-events-none disabled:opacity-50 ${
+              isFeatured
+                ? 'bg-ink-900 text-white hover:bg-ink-700'
+                : 'bg-ink-900 text-white hover:bg-ink-700 dark:bg-acid-400 dark:text-ink-900'
+            }`}
+          >
+            {isCreating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
+            {isCreating ? t('workflow.templates.creating', 'Creating...') : t('workflow.templates.use', 'Use Template')}
+          </button>
+        </div>
       </div>
 
+      {/* Button cradled in the card's notch */}
       <button
         onClick={() => onUse(template.id)}
         disabled={disabled}
-        className="mt-4 w-full flex items-center justify-center gap-2 py-2 px-4 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-600 hover:text-white text-purple-700 dark:text-purple-300 text-xs font-bold rounded-xl border border-purple-100 dark:border-purple-800 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
+        aria-label={t('workflow.templates.use', 'Use Template')}
+        className="tgo-icon-btn absolute right-1 top-1 h-9 w-9 group-hover:rotate-45"
       >
-        {isCreating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
-        {isCreating ? t('workflow.templates.creating', 'Creating...') : t('workflow.templates.use', 'Use Template')}
+        <ArrowUpRight className="h-4 w-4" />
       </button>
     </div>
   );
@@ -106,165 +163,123 @@ const WorkflowCard: React.FC<WorkflowCardProps> = ({
   onDuplicate,
   onDelete,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const getStatusStyle = useStatusStyle();
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Close menu when clicking outside
   useEffect(() => {
+    if (!showMenu) return undefined;
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setShowMenu(false);
       }
     };
-    if (showMenu) {
-      document.addEventListener('mousedown', handleClickOutside);
-    } else {
-      document.removeEventListener('mousedown', handleClickOutside);
-    }
+    document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showMenu]);
 
-  const getStatusIndicator = (status: WorkflowStatus) => {
-    switch (status) {
-      case 'active':
-        return { 
-          color: 'bg-green-500', 
-          textColor: 'text-green-600 dark:text-green-400',
-          bgColor: 'bg-green-50 dark:bg-green-900/20',
-          borderColor: 'border-green-200 dark:border-green-800',
-          title: t('workflow.status.active', 'Active') 
-        };
-      case 'draft':
-        return { 
-          color: 'bg-yellow-500', 
-          textColor: 'text-yellow-600 dark:text-yellow-400',
-          bgColor: 'bg-yellow-50 dark:bg-yellow-900/20',
-          borderColor: 'border-yellow-200 dark:border-yellow-800',
-          title: t('workflow.status.draft', 'Draft') 
-        };
-      case 'archived':
-        return { 
-          color: 'bg-gray-400', 
-          textColor: 'text-gray-500 dark:text-gray-400',
-          bgColor: 'bg-gray-50 dark:bg-gray-700/30',
-          borderColor: 'border-gray-200 dark:border-gray-700',
-          title: t('workflow.status.archived', 'Archived') 
-        };
-      default:
-        return { 
-          color: 'bg-gray-400', 
-          textColor: 'text-gray-500 dark:text-gray-400',
-          bgColor: 'bg-gray-50 dark:bg-gray-700/30',
-          borderColor: 'border-gray-200 dark:border-gray-700',
-          title: status 
-        };
-    }
-  };
-
-  const status = getStatusIndicator(workflow.status);
+  const status = getStatusStyle(workflow.status);
+  const updatedLabel = new Date(workflow.updated_at).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short', year: 'numeric' });
 
   return (
-    <div className="group relative bg-white dark:bg-gray-800 rounded-2xl p-5 flex flex-col justify-between shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 dark:border-gray-700 overflow-hidden">
-      {/* Background decoration */}
-      <div className={`absolute -right-8 -top-8 w-24 h-24 rounded-full opacity-[0.03] dark:opacity-[0.05] ${status.color}`}></div>
-      
-      <div>
-        <div className="flex justify-between items-start mb-4">
-          <div className="flex items-center space-x-4">
-            <div className="relative group/icon">
-              <div className={`absolute -inset-1 rounded-xl opacity-20 group-hover/icon:opacity-40 transition-opacity duration-300 ${status.color}`}></div>
-              <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white border-2 border-white dark:border-gray-700 shadow-sm">
-                <GitBranch className="w-6 h-6" />
-              </div>
-              <div className={`absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-gray-800 ${status.color}`}></div>
-            </div>
-            <div className="min-w-0">
-              <h3 className="font-bold text-gray-900 dark:text-gray-100 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-200 truncate pr-2" title={workflow.name}>
-                {workflow.name}
-              </h3>
-              <div className="flex items-center mt-0.5">
-                <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-medium border ${status.bgColor} ${status.textColor} ${status.borderColor}`}>
-                  {status.title}
-                </span>
-                <span className="mx-1.5 text-gray-300 dark:text-gray-600">•</span>
-                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">v{workflow.version}</span>
-              </div>
-            </div>
+    <div className={`group relative h-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 ${showMenu ? 'z-20' : ''}`}>
+      {/* Notched background layer */}
+      <div aria-hidden="true" className="tgo-notch absolute inset-0 rounded-[28px] bg-white dark:bg-gray-800" />
+      <div className="relative flex h-full flex-col p-5">
+        <div className="flex items-center gap-3 pr-10">
+          <span className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-ink-900 text-acid-400">
+            <GitBranch className="h-5 w-5" />
+            <span className={`absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-white dark:border-gray-800 ${status.dot}`} />
+          </span>
+          <div className="min-w-0">
+            <p className="text-[11px] font-medium uppercase tracking-wider text-gray-400 dark:text-gray-500">
+              v{workflow.version}
+            </p>
+            <p className="truncate text-xs text-gray-500 dark:text-gray-400">
+              {t('workflow.lastUpdated', 'Updated')} {updatedLabel}
+            </p>
           </div>
-          
-          <div className="relative" ref={menuRef}>
-            <button 
-              onClick={() => setShowMenu(!showMenu)}
-              className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              <MoreVertical className="w-5 h-5" />
-            </button>
-            
-            {showMenu && (
-              <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-1 z-20 animate-in fade-in zoom-in-95 duration-200">
-                <button onClick={() => { onEdit(workflow.id); setShowMenu(false); }} className="w-full flex items-center px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                  <Pencil className="w-4 h-4 mr-2" /> {t('common.edit', 'Edit')}
-                </button>
-                <button onClick={() => { onDuplicate(workflow.id); setShowMenu(false); }} className="w-full flex items-center px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                  <Copy className="w-4 h-4 mr-2" /> {t('common.duplicate', 'Duplicate')}
-                </button>
-                <div className="h-px bg-gray-100 dark:bg-gray-700 my-1"></div>
-                <button onClick={() => { onDelete(workflow.id); setShowMenu(false); }} className="w-full flex items-center px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
-                  <Trash2 className="w-4 h-4 mr-2" /> {t('common.delete', 'Delete')}
-                </button>
-              </div>
+        </div>
+
+        <button onClick={() => onEdit(workflow.id)} className="mt-5 text-left">
+          <h3 className="line-clamp-1 text-xl font-medium tracking-tight text-gray-900 transition-colors dark:text-gray-100" title={workflow.name}>
+            {workflow.name}
+          </h3>
+          <p className="mt-1.5 line-clamp-2 min-h-10 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
+            {workflow.description || t('workflow.noDescription', 'No description')}
+          </p>
+        </button>
+
+        {/* Tags */}
+        {workflow.tags.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {workflow.tags.slice(0, 3).map((tag) => (
+              <span key={tag} className="rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-medium text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                {tag}
+              </span>
+            ))}
+            {workflow.tags.length > 3 && (
+              <span className="self-center text-[11px] font-medium text-gray-400">+{workflow.tags.length - 3}</span>
             )}
           </div>
-        </div>
+        )}
 
-        <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4 line-clamp-2 h-10 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
-          {workflow.description || t('workflow.noDescription', 'No description')}
-        </p>
+        <div className="mt-auto pt-5">
+          <p className="mb-1.5 text-[11px] text-gray-400 dark:text-gray-500">{t('workflow.statusLabel', 'Status')}</p>
+          <div className="flex items-center gap-2">
+            <span className="inline-flex h-10 flex-1 items-center gap-2 rounded-full px-4 text-sm text-gray-700 ring-1 ring-gray-200 dark:text-gray-200 dark:ring-gray-700">
+              <span className={`h-2 w-2 rounded-full ${status.dot}`} />
+              {status.label}
+            </span>
 
-        <div className="space-y-3">
-          {/* Tags */}
-          {workflow.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 min-h-[24px]">
-              {workflow.tags.slice(0, 3).map((tag) => (
-                <span
-                  key={tag}
-                  className="px-2 py-0.5 text-[10px] bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 rounded-md font-medium border border-purple-100 dark:border-purple-800"
-                >
-                  {tag}
-                </span>
-              ))}
-              {workflow.tags.length > 3 && (
-                <span className="text-[10px] text-gray-400 font-medium self-center">
-                  +{workflow.tags.length - 3}
-                </span>
+            <div className="relative" ref={menuRef}>
+              <button
+                onClick={() => setShowMenu(v => !v)}
+                aria-haspopup="menu"
+                aria-expanded={showMenu}
+                aria-label={t('common.more', 'More')}
+                className="tgo-icon-btn h-10 w-10"
+              >
+                <MoreHorizontal className="h-4 w-4" />
+              </button>
+
+              {showMenu && (
+                <div role="menu" className="animate-in fade-in zoom-in-95 slide-in-from-bottom-1 absolute bottom-full right-0 z-20 mb-2 w-44 rounded-2xl border border-gray-100 bg-white p-1 shadow-xl dark:border-gray-700 dark:bg-gray-800">
+                  <button role="menuitem" onClick={() => { onEdit(workflow.id); setShowMenu(false); }} className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">
+                    <Pencil className="h-4 w-4" /> {t('common.edit', 'Edit')}
+                  </button>
+                  <button role="menuitem" onClick={() => { onDuplicate(workflow.id); setShowMenu(false); }} className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">
+                    <Copy className="h-4 w-4" /> {t('common.duplicate', 'Duplicate')}
+                  </button>
+                  <div className="my-1 h-px bg-gray-100 dark:bg-gray-700" />
+                  <button role="menuitem" onClick={() => { onDelete(workflow.id); setShowMenu(false); }} className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20">
+                    <Trash2 className="h-4 w-4" /> {t('common.delete', 'Delete')}
+                  </button>
+                </div>
               )}
             </div>
-          )}
-          
-          <div className="flex items-center text-[11px] text-gray-500 dark:text-gray-500 bg-gray-50 dark:bg-gray-800/50 px-2 py-1.5 rounded-lg border border-gray-100/50 dark:border-gray-700/50">
-            <RefreshCw className="w-3.5 h-3.5 mr-2 opacity-70" />
-            <span>{t('workflow.lastUpdated', 'Updated')} {new Date(workflow.updated_at).toLocaleDateString()}</span>
+
+            <button
+              onClick={() => onEdit(workflow.id)}
+              aria-label={t('common.edit', 'Edit')}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink-900 text-white transition-transform duration-200 hover:scale-105 active:scale-95 dark:bg-acid-400 dark:text-ink-900"
+            >
+              <Pencil className="h-4 w-4" />
+            </button>
           </div>
         </div>
       </div>
 
-      <div className="mt-5 flex items-center gap-2">
-        <button
-          onClick={() => onEdit(workflow.id)}
-          className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-purple-200 dark:shadow-none transition-all duration-200 active:scale-95"
-        >
-          <Eye className="w-3.5 h-3.5" />
-          {t('workflow.viewWorkflow', 'View Workflow')}
-        </button>
-        <button
-          onClick={() => onEdit(workflow.id)}
-          className="p-2 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 rounded-xl border border-gray-100 dark:border-gray-600 transition-all duration-200 hover:bg-purple-50 dark:hover:bg-purple-900/30"
-          title={t('common.edit', 'Edit')}
-        >
-          <Pencil className="w-4 h-4" />
-        </button>
-      </div>
+      {/* Open button cradled in the notch */}
+      <button
+        onClick={() => onEdit(workflow.id)}
+        aria-label={t('workflow.viewWorkflow', 'View Workflow')}
+        className="tgo-icon-btn absolute right-1 top-1 h-9 w-9 group-hover:rotate-45"
+      >
+        <ArrowUpRight className="h-4 w-4" />
+      </button>
     </div>
   );
 };
@@ -276,7 +291,7 @@ const WorkflowManagement: React.FC = () => {
   const { t } = useTranslation();
   const { showToast } = useToast();
   const navigate = useNavigate();
-  
+
   const {
     workflows,
     isLoadingWorkflows,
@@ -290,7 +305,7 @@ const WorkflowManagement: React.FC = () => {
 
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearch = useDebouncedValue(searchQuery, 300);
-  const [statusFilter, setStatusFilter] = useState<WorkflowStatus | 'all'>('all');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
 
   // Delete confirmation
   const [deleteTarget, setDeleteTarget] = useState<WorkflowSummary | null>(null);
@@ -304,8 +319,17 @@ const WorkflowManagement: React.FC = () => {
   const [isCreating, setIsCreating] = useState(false);
   const [creatingTemplateId, setCreatingTemplateId] = useState<WorkflowTemplateId | null>(null);
 
+  // Per-status counts for the header figures and filter pills
+  const statusCounts = useMemo(() => {
+    const counts: Record<StatusFilter, number> = { all: workflows.length, active: 0, draft: 0, inactive: 0, archived: 0 };
+    workflows.forEach(wf => {
+      if (wf.status in counts) counts[wf.status] += 1;
+    });
+    return counts;
+  }, [workflows]);
+
   // Filter workflows
-  const { filteredWorkflows, totalPages, currentPage } = React.useMemo(() => {
+  const filteredWorkflows = useMemo(() => {
     let filtered = workflows;
 
     // Status filter
@@ -322,17 +346,7 @@ const WorkflowManagement: React.FC = () => {
       );
     }
 
-    // For now, simple pagination matching AgentManagement
-    const pageSize = 12;
-    const total = Math.ceil(filtered.length / pageSize);
-    const paginated = filtered.slice(0, pageSize); // Simplified pagination for now
-
-    return { 
-      filteredWorkflows: filtered, 
-      paginatedWorkflows: paginated, 
-      totalPages: total, 
-      currentPage: 1 
-    };
+    return filtered;
   }, [workflows, statusFilter, debouncedSearch]);
 
   // Handlers
@@ -409,164 +423,175 @@ const WorkflowManagement: React.FC = () => {
     loadWorkflows();
   };
 
-  return (
-    <main className="flex-grow flex flex-col bg-[#f8fafc] dark:bg-gray-950 overflow-hidden">
-      {/* Header */}
-      <header className="px-8 py-5 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-800/50 flex flex-col md:flex-row md:items-center justify-between gap-4 sticky top-0 z-30">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <GitBranch className="w-7 h-7 text-purple-600" />
-            {t('workflow.management.title', 'Workflow Management')}
-          </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            {t('workflow.management.subtitle', 'Orchestrate complex AI task flows')}
-          </p>
-        </div>
-        
-        <div className="flex items-center gap-3">
-          <div className="relative group hidden sm:block">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-purple-500 transition-colors" />
-            <input 
-              type="text"
-              placeholder={t('common.search', 'Search')}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-4 py-2 w-64 bg-gray-100/50 dark:bg-gray-800/50 border-transparent focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 rounded-xl text-sm transition-all outline-none"
-            />
-          </div>
-          
-          <div className="h-8 w-px bg-gray-200 dark:border-gray-800 mx-1 hidden sm:block"></div>
-          
-          <div className="flex items-center gap-2">
-            <button
-              className="p-2 text-gray-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-xl transition-all"
-              onClick={handleRefresh}
-              disabled={isLoadingWorkflows}
-              title={t('common.refresh', 'Refresh')}
-            >
-              <RefreshCw className={`w-5 h-5 ${isLoadingWorkflows ? 'animate-spin' : ''}`} />
-            </button>
-            <button
-              className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-purple-200 dark:shadow-none transition-all active:scale-95"
-              onClick={handleCreate}
-              disabled={isCreating}
-            >
-              {isCreating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-              <span className="hidden sm:inline">{t('workflow.actions.create', 'Create Workflow')}</span>
-            </button>
-          </div>
-        </div>
-      </header>
+  const filterLabel = (status: StatusFilter): string => {
+    switch (status) {
+      case 'all': return t('common.all', 'All');
+      case 'active': return t('workflow.status.active', 'Active');
+      case 'draft': return t('workflow.status.draft', 'Draft');
+      default: return t('workflow.status.archived', 'Archived');
+    }
+  };
 
-      {/* Content Area */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
-        <div className="max-w-[1600px] mx-auto p-8 space-y-8">
-          
-          {/* Quick Actions / Info Banner */}
-          <div className="bg-gradient-to-r from-purple-600 to-indigo-700 rounded-3xl p-6 text-white shadow-xl shadow-purple-200 dark:shadow-none flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
-            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-            <div className="relative z-10">
-              <h3 className="text-xl font-bold flex items-center gap-2">
-                <GitBranch className="w-6 h-6" />
-                {t('workflow.banner.title', 'Automated Workflows')}
-              </h3>
-              <p className="text-purple-100 text-sm mt-1 opacity-90 max-w-xl">
-                {t('workflow.banner.description', 'Orchestrate AI nodes, conditional branches, and custom tools through a graphical interface to achieve automated processing from simple conversations to complex business logic.')}
-              </p>
+  const headerStats: { key: WorkflowStatus; badge: string }[] = [
+    { key: 'active', badge: 'bg-acid-300 text-ink-900' },
+    { key: 'draft', badge: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' },
+    { key: 'archived', badge: 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300' },
+  ];
+
+  const hasActiveFilters = Boolean(searchQuery) || statusFilter !== 'all';
+
+  return (
+    <main className="flex min-w-0 flex-grow flex-col overflow-hidden bg-gray-50 dark:bg-gray-950">
+      <div className="flex-1 overflow-y-auto">
+        <div className="mx-auto max-w-[1600px] space-y-12 px-6 py-8 md:px-10">
+
+          {/* Header */}
+          <header className="tgo-fade-up flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
+            <div className="flex flex-wrap items-center gap-5">
+              <h2 className="tgo-display text-[44px] uppercase text-gray-900 md:text-[52px] dark:text-white">
+                {t('workflow.management.titleShort', 'Workflows')}
+              </h2>
+              <button onClick={handleCreate} disabled={isCreating} className="tgo-btn-ink">
+                <span className="tgo-btn-icon">
+                  {isCreating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                </span>
+                {t('workflow.actions.create', 'Create Workflow')}
+              </button>
             </div>
-            <div className="flex items-center gap-2 relative z-10">
-              {(['all', 'active', 'draft', 'archived'] as const).map((status) => (
-                <button
-                  key={status}
-                  onClick={() => setStatusFilter(status)}
-                  className={`px-4 py-2 rounded-xl text-sm font-bold transition-all backdrop-blur-md border ${
-                    statusFilter === status
-                      ? 'bg-white text-purple-600 border-white shadow-lg'
-                      : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
-                  }`}
-                >
-                  {status === 'all' ? t('common.all', 'All') :
-                   status === 'active' ? t('workflow.status.active', 'Active') :
-                   status === 'draft' ? t('workflow.status.draft', 'Draft') :
-                   t('workflow.status.archived', 'Archived')}
-                </button>
+
+            <div className="flex items-end gap-8 md:gap-12">
+              {headerStats.map(stat => (
+                <div key={stat.key} className="flex items-end gap-2">
+                  <span key={statusCounts[stat.key]} className="tgo-pop tgo-display text-[44px] tabular-nums text-gray-900 dark:text-white">
+                    {statusCounts[stat.key]}
+                  </span>
+                  <span className="mb-1 flex flex-col items-start gap-1">
+                    <span className={`rounded-full px-1.5 text-[10px] font-semibold leading-4 ${stat.badge}`}>
+                      {statusCounts.all > 0 ? Math.round((statusCounts[stat.key] / statusCounts.all) * 100) : 0}%
+                    </span>
+                    <span className="text-sm text-gray-400 dark:text-gray-500">{filterLabel(stat.key).toLowerCase()}</span>
+                  </span>
+                </div>
               ))}
             </div>
-          </div>
+          </header>
 
           {/* Templates */}
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-purple-600" />
+          <section className="space-y-5">
+            <div className="flex flex-wrap items-center gap-4">
+              <h3 className="text-2xl font-light tracking-tight text-gray-900 dark:text-gray-100">
                 {t('workflow.templates.title', 'Start from a template')}
               </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                {t('workflow.templates.subtitle', 'Ready-to-run workflows. Create one, adjust the agent, model or prompts if you like, and it is ready to go.')}
-              </p>
+              <span className="tgo-count"><b>{WORKFLOW_TEMPLATES.length}</b>{t('workflow.templates.countLabel', 'templates')}</span>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {WORKFLOW_TEMPLATES.map((template) => (
+            <p className="-mt-2 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
+              {t('workflow.templates.subtitle', 'Ready-to-run workflows. Create one, adjust the agent, model or prompts if you like, and it is ready to go.')}
+            </p>
+            <div className="tgo-stagger grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {WORKFLOW_TEMPLATES.map((template, index) => (
                 <WorkflowTemplateCard
                   key={template.id}
                   template={template}
+                  isFeatured={index === 0}
                   isCreating={creatingTemplateId === template.id}
                   disabled={creatingTemplateId !== null || isCreating}
                   onUse={handleUseTemplate}
                 />
               ))}
             </div>
-          </div>
+          </section>
 
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t('workflow.listTitle', 'Workflow List')}</h3>
+          {/* Workflow list */}
+          <section className="space-y-5">
+            <div className="flex flex-wrap items-center gap-3">
+              <h3 className="mr-1 text-2xl font-light tracking-tight text-gray-900 dark:text-gray-100">
+                {t('workflow.listTitle', 'Workflow List')}
+              </h3>
+              <span className="tgo-count mr-3"><b>{filteredWorkflows.length}</b>{t('workflow.countLabel', 'workflows')}</span>
+
+              <label className="group relative flex h-9 items-center">
+                <Search className="pointer-events-none absolute left-3 h-4 w-4 text-gray-400 transition-colors group-focus-within:text-ink-900 dark:group-focus-within:text-white" />
+                <input
+                  type="text"
+                  placeholder={t('common.search', 'Search')}
+                  aria-label={t('common.search', 'Search')}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="h-9 w-40 rounded-full bg-white pl-9 pr-4 text-sm text-gray-900 shadow-[inset_0_0_0_1px_var(--color-gray-200)] outline-none transition-all duration-300 placeholder:text-gray-400 focus:w-56 focus:shadow-[inset_0_0_0_2px_var(--color-acid-400)] dark:bg-gray-900 dark:text-gray-100 dark:shadow-[inset_0_0_0_1px_var(--color-gray-800)]"
+                />
+              </label>
+
+              <button
+                className="tgo-icon-btn"
+                onClick={handleRefresh}
+                disabled={isLoadingWorkflows}
+                aria-label={t('common.refresh', 'Refresh')}
+                title={t('common.refresh', 'Refresh')}
+              >
+                <RefreshCw className={`h-4 w-4 ${isLoadingWorkflows ? 'animate-spin' : ''}`} />
+              </button>
+
+              <div className="flex flex-wrap items-center gap-2" role="tablist">
+                {STATUS_FILTERS.map((status) => (
+                  <button
+                    key={status}
+                    role="tab"
+                    aria-selected={statusFilter === status}
+                    data-active={statusFilter === status}
+                    onClick={() => setStatusFilter(status)}
+                    className="tgo-pill"
+                  >
+                    {status !== 'all' && <span className={`h-1.5 w-1.5 rounded-full ${status === 'active' ? 'bg-acid-500' : status === 'draft' ? 'bg-amber-400' : 'bg-gray-400'}`} />}
+                    {filterLabel(status)}
+                    <span className="text-[11px] tabular-nums opacity-60">{statusCounts[status]}</span>
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Error State */}
             {workflowsError ? (
-              <div className="flex flex-col items-center justify-center py-12 bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
-                <div className="w-16 h-16 bg-red-50 dark:bg-red-900/20 rounded-2xl flex items-center justify-center text-red-500 mb-4">
-                  <Trash2 className="w-8 h-8" />
-                </div>
-                <p className="text-gray-900 dark:text-gray-100 font-bold mb-2">{t('common.error', 'Error')}</p>
-                <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">{workflowsError}</p>
-                <button
-                  onClick={handleRefresh}
-                  className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl transition-all"
-                >
+              <div className="tgo-surface flex flex-col items-center justify-center py-14 text-center">
+                <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-red-500 dark:bg-red-900/20">
+                  <AlertTriangle className="h-6 w-6" />
+                </span>
+                <p className="mb-1 font-medium text-gray-900 dark:text-gray-100">{t('common.error', 'Error')}</p>
+                <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">{workflowsError}</p>
+                <button onClick={handleRefresh} className="tgo-btn-ink" data-icon-motion="nudge">
+                  <span className="tgo-btn-icon"><RefreshCw className="h-4 w-4" /></span>
                   {t('common.retry', 'Retry')}
                 </button>
               </div>
             ) : isLoadingWorkflows && workflows.length === 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
                 {[...Array(8)].map((_, i) => (
-                  <div key={i} className="h-64 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 animate-pulse" />
+                  <div key={i} className="tgo-skeleton h-72 rounded-[28px]" style={{ opacity: 1 - i * 0.08 }} />
                 ))}
               </div>
             ) : filteredWorkflows.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
-                <div className="w-20 h-20 bg-gray-50 dark:bg-gray-800 rounded-3xl flex items-center justify-center text-gray-300 dark:text-gray-600 mb-6">
-                  <GitBranch className="w-10 h-10" />
+              <div className="tgo-surface tgo-fade-up flex flex-col items-center justify-center px-6 py-16 text-center">
+                <div className="relative mb-6 flex h-24 w-24 items-center justify-center">
+                  <span className="absolute inset-0 rounded-full bg-acid-200/60 dark:bg-acid-400/10" />
+                  <span className="absolute inset-4 rounded-full bg-acid-300/70 dark:bg-acid-400/20" />
+                  <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-ink-900 text-acid-400 shadow-lg">
+                    <GitBranch className="h-5 w-5" />
+                  </span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                  {searchQuery || statusFilter !== 'all' ? t('workflow.empty.noResults', 'No matching workflows found') : t('workflow.empty.title', 'No Workflows')}
+                <h3 className="mb-2 text-xl font-medium tracking-tight text-gray-900 dark:text-gray-100">
+                  {hasActiveFilters ? t('workflow.empty.noResults', 'No matching workflows found') : t('workflow.empty.title', 'No Workflows')}
                 </h3>
-                <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-sm text-center">
-                  {searchQuery || statusFilter !== 'all' ? t('workflow.empty.noResultsDesc', 'Try adjusting your search keywords or filters') : t('workflow.empty.description', 'Click the "Create Workflow" button to build your first automated process')}
+                <p className="mb-8 max-w-sm text-sm text-gray-500 dark:text-gray-400">
+                  {hasActiveFilters ? t('workflow.empty.noResultsDesc', 'Try adjusting your search keywords or filters') : t('workflow.empty.description', 'Click the "Create Workflow" button to build your first automated process')}
                 </p>
-                {!searchQuery && statusFilter === 'all' && (
-                  <button
-                    onClick={handleCreate}
-                    className="inline-flex items-center px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl shadow-lg shadow-purple-200 dark:shadow-none transition-all active:scale-95"
-                  >
-                    <Plus className="w-5 h-5 mr-2" />
+                {!hasActiveFilters && (
+                  <button onClick={handleCreate} disabled={isCreating} className="tgo-btn-ink">
+                    <span className="tgo-btn-icon"><Plus className="h-4 w-4" /></span>
                     {t('workflow.actions.create', 'Create Workflow')}
                   </button>
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="tgo-stagger grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
                 {filteredWorkflows.map((workflow) => (
                   <WorkflowCard
                     key={workflow.id}
@@ -578,35 +603,7 @@ const WorkflowManagement: React.FC = () => {
                 ))}
               </div>
             )}
-          </div>
-
-          {/* Pagination Placeholder matching AgentManagement style */}
-          {totalPages > 1 && (
-            <div className="flex justify-center pt-4 pb-12">
-              <nav className="flex items-center gap-1 p-1.5 bg-white dark:bg-gray-900 border border-gray-200/50 dark:border-gray-800 rounded-2xl shadow-sm">
-                <button className="p-2 rounded-xl text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-30 transition-all">
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-                <div className="flex items-center gap-1 px-2">
-                  {[...Array(totalPages)].map((_, i) => (
-                    <button
-                      key={i}
-                      className={`min-w-[36px] h-9 flex items-center justify-center rounded-xl text-sm font-bold transition-all ${
-                        i + 1 === currentPage
-                          ? 'bg-purple-600 text-white shadow-md shadow-purple-200 dark:shadow-none scale-105'
-                          : 'text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800'
-                      }`}
-                    >
-                      {i + 1}
-                    </button>
-                  ))}
-                </div>
-                <button className="p-2 rounded-xl text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-30 transition-all">
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </nav>
-            </div>
-          )}
+          </section>
         </div>
       </div>
 

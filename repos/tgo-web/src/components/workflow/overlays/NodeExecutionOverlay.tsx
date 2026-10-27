@@ -29,6 +29,14 @@ const NodeExecutionOverlay: React.FC<NodeExecutionOverlayProps> = ({ nodeId, lab
     <>
       {FRAME_CLASS[state] && <div className={FRAME_CLASS[state]} aria-hidden="true" />}
 
+      {/* Light sweep across the card while it runs; a one-shot flash when it completes */}
+      {state === 'running' && (
+        <div className="wf-run-scan" aria-hidden="true">
+          <span />
+        </div>
+      )}
+      {state === 'completed' && <div className="wf-run-flash" aria-hidden="true" />}
+
       {(state === 'pending' || state === 'skipped') && (
         <div
           className={`wf-run-veil ${state === 'skipped' ? 'wf-run-veil--skipped' : ''}`}

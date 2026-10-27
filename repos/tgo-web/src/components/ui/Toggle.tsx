@@ -56,10 +56,10 @@ const Toggle: React.FC<ToggleProps> = ({
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       className={`
-        relative inline-flex items-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800
+        relative inline-flex shrink-0 items-center rounded-full transition-colors duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800
         ${currentSize.container}
         ${checked 
-          ? 'bg-blue-600 dark:bg-blue-500' 
+          ? 'bg-ink-900 dark:bg-acid-400' 
           : 'bg-gray-300 dark:bg-gray-600'
         }
         ${disabled 
@@ -73,7 +73,7 @@ const Toggle: React.FC<ToggleProps> = ({
       <span className="sr-only">{ariaLabel || 'Toggle'}</span>
       <span
         className={`
-          inline-block bg-white rounded-full shadow-sm transform transition-transform duration-200 ease-in-out
+          inline-block bg-white rounded-full shadow-[0_1px_3px_rgba(15,16,18,0.3)] transform transition-transform duration-300 ease-[cubic-bezier(0.34,1.4,0.64,1)] dark:bg-gray-900
           ${currentSize.thumb}
           ${currentSize.translate}
         `}

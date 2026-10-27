@@ -67,11 +67,11 @@ const VisitorHeader: React.FC<VisitorHeaderProps> = ({
         overlay={
           onAvatarClick ? (
             isUploading ? (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-md">
+              <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full">
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
               </div>
             ) : (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-md opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
                 <Camera className="w-5 h-5 text-white" />
               </div>
             )
