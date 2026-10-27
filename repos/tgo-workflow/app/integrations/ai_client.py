@@ -4,6 +4,21 @@ from app.config import settings
 from app.core.logging import logger
 from app.integrations.http_client import HttpClient
 
+def _upstream_error_message(response: httpx.Response) -> str:
+    """Extract the human-readable error message from an AI service error response."""
+    try:
+        body = response.json()
+    except ValueError:
+        return response.text[:500]
+    if isinstance(body, dict):
+        error = body.get("error")
+        if isinstance(error, dict) and error.get("message"):
+            return str(error["message"])
+        if body.get("detail"):
+            return str(body["detail"])
+    return response.text[:500]
+
+
 class AIClient:
     @staticmethod
     async def chat_completions(
@@ -28,7 +43,7 @@ class AIClient:
             
             if response.status_code != 200:
                 logger.error(f"AI Service chat completions error: {response.status_code} - {response.text}")
-                raise Exception(f"AI Service chat completions failed with status {response.status_code}")
+                raise Exception(f"AI Service chat completions failed with status {response.status_code}: {_upstream_error_message(response)}")
                 
             return response.json()
         except Exception as e:
@@ -58,7 +73,7 @@ class AIClient:
             
             if response.status_code != 200:
                 logger.error(f"AI Service Agent Run error: {response.status_code} - {response.text}")
-                raise Exception(f"AI Service Agent Run failed with status {response.status_code}")
+                raise Exception(f"AI Service Agent Run failed with status {response.status_code}: {_upstream_error_message(response)}")
                 
             return response.json()
         except Exception as e:
@@ -88,7 +103,7 @@ class AIClient:
             
             if response.status_code != 202:
                 logger.error(f"AI Service Agent Cancel error: {response.status_code} - {response.text}")
-                raise Exception(f"AI Service Agent Cancel failed with status {response.status_code}")
+                raise Exception(f"AI Service Agent Cancel failed with status {response.status_code}: {_upstream_error_message(response)}")
                 
             return response.json()
         except Exception as e:
@@ -115,7 +130,7 @@ class AIClient:
             
             if response.status_code != 200:
                 logger.error(f"AI Service Get Tool error: {response.status_code} - {response.text}")
-                raise Exception(f"AI Service Get Tool failed with status {response.status_code}")
+                raise Exception(f"AI Service Get Tool failed with status {response.status_code}: {_upstream_error_message(response)}")
                 
             return response.json()
         except Exception as e:
@@ -146,7 +161,7 @@ class AIClient:
             
             if response.status_code != 200:
                 logger.error(f"AI Service Execute Tool error: {response.status_code} - {response.text}")
-                raise Exception(f"AI Service Execute Tool failed with status {response.status_code}")
+                raise Exception(f"AI Service Execute Tool failed with status {response.status_code}: {_upstream_error_message(response)}")
                 
             return response.json()
         except Exception as e:
