@@ -3187,7 +3187,8 @@
       "toast": {
         "createSuccessTitle": "Created Successfully",
         "createSuccessMessage": "Platform \"{{name}}\" has been created"
-      }
+      },
+      "summary": "{{total}} channels · {{live}} live"
     },
     "typeSelector": {
       "title": "Select Platform Type",
@@ -3195,7 +3196,8 @@
       "loadError": "Failed to load platform types, please try again later",
       "loadFailed": "Load Failed",
       "emptyTypes": "No available platform types",
-      "unsupported": "Not Supported"
+      "unsupported": "Not Supported",
+      "subtitle": "Pick where your customers reach you. You can fine-tune credentials right after."
     },
     "config": {
       "basic": {
@@ -3305,7 +3307,9 @@
         "apiKeyHint": "Authentication identifier for website integration script, please keep it safe.",
         "uploadLogo": "Upload Logo",
         "uploading": "Uploading…",
-        "noApiKey": "No API Key yet"
+        "noApiKey": "No API Key yet",
+        "appearance": "Appearance",
+        "appearanceDesc": "How the chat widget looks to your visitors."
       },
       "embed": {
         "title": "Website Integration Code",
@@ -3359,6 +3363,11 @@
         "cropperFailed": "Unable to open the cropper",
         "removeLogoFailed": "Removing the logo is not supported yet; upload a new image to replace it",
         "uploadFailed": "Upload failed, please try again"
+      },
+      "preview": {
+        "title": "Live preview",
+        "live": "Updates as you type",
+        "loading": "Loading preview…"
       }
     },
     "wechat": {
@@ -3826,7 +3835,10 @@
         "smtpPasswordPlaceholder": "Enter SMTP password",
         "smtpPasswordSame": "Using IMAP password",
         "smtpUseSsl": "Use SSL (Port 465)",
-        "smtpUseTls": "Use TLS/STARTTLS (Port 587, Recommended)"
+        "smtpUseTls": "Use TLS/STARTTLS (Port 587, Recommended)",
+        "mailbox": "Mailbox",
+        "mailboxDesc": "Sign in with the address customers write to. Common providers are set up automatically.",
+        "smtpSecurity": "Encryption"
       },
       "guide": {
         "title": "Email Platform Configuration Guide (IMAP Receiving + SMTP Sending)",
@@ -4027,7 +4039,8 @@
         "responseRequirement": "Response Requirement",
         "responseRequirementDesc": "Please ensure the callback URL is publicly accessible and returns HTTP 200 status code to indicate successful receipt.",
         "codeExamples": "Code Examples"
-      }
+      },
+      "regenerateTitle": "Regenerate API key?"
     },
     "aiSettings": {
       "title": "AI Settings",
@@ -4049,7 +4062,8 @@
       "timeoutPlaceholder": "e.g., 60",
       "timeoutHint": "Time in seconds before AI takes over when there's no reply. Set to 0 to prevent AI takeover.",
       "saveSuccess": "AI settings saved",
-      "saveButton": "Save AI Settings"
+      "saveButton": "Save AI Settings",
+      "defaultAgent": "Default agent"
     },
     "wecomBot": {
       "messages": {
@@ -4123,6 +4137,35 @@
       "connected": "Connected",
       "disabled": "Disabled",
       "connectionFailed": "Connection failed"
+    },
+    "common": {
+      "unsavedChanges": "You have unsaved changes",
+      "setupGuide": "Setup guide",
+      "sections": {
+        "general": "General",
+        "generalDesc": "How this channel is named inside Pelatis.",
+        "credentials": "Credentials",
+        "credentialsDesc": "Keys from the provider's developer console.",
+        "callback": "Webhook",
+        "callbackDesc": "Messages from the provider arrive at this address."
+      }
+    },
+    "overview": {
+      "nav": "Overview",
+      "live": "Live",
+      "off": "Off",
+      "bannerEyebrow": "One inbox, every channel",
+      "bannerTitle": "Meet customers where they already are",
+      "bannerDesc": "Connect your website, email and messaging apps. Every conversation lands in one inbox, and your AI agents answer around the clock.",
+      "connect": "Connect a channel",
+      "listTitle": "Your channels",
+      "countLabel": "channels",
+      "noResults": "No channels match your search",
+      "emptyDesc": "Add your first channel to start receiving conversations.",
+      "open": "Open settings",
+      "aiMode": "AI · {{mode}}",
+      "cardHint": "Credentials, webhook and AI routing for this channel.",
+      "addHint": "Website, email, Telegram, Slack and more"
     }
   },
   "setup": {
@@ -4656,7 +4699,8 @@
     "preview": "Preview (1:1)",
     "previewAlt": "Preview",
     "none": "None",
-    "recommendedSize": "Recommended size: 72x72 pixels"
+    "recommendedSize": "Recommended size: 72x72 pixels",
+    "title": "Crop Image"
   },
   "toolsList": {
     "linkedTools": "Linked tools",

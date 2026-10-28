@@ -1,428 +1,82 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Webhook, Copy, Eye, EyeOff, RefreshCw, Settings, Pencil } from 'lucide-react';
+import { Hourglass } from 'lucide-react';
 import PlatformAISettings from '@/components/platforms/PlatformAISettings';
-import type { Platform, PlatformConfig as PlatformConfigType, PlatformAIMode } from '@/types';
+import {
+  ConfigCard,
+  GeneralCard,
+  PlatformConfigShell,
+  usePlatformActions,
+  usePlatformAISettings,
+  usePlatformName,
+} from '@/components/platforms/PlatformKit';
+import type { Platform } from '@/types';
 import { usePlatformStore } from '@/stores/platformStore';
 import { useToast } from '@/hooks/useToast';
 import { showApiError, showSuccess } from '@/utils/toastHelpers';
 
-interface BasicSettingsProps {
-  platform: Platform;
-  onUpdate?: (platform: Platform) => void;
-}
-
-/**
- * Basic settings section component
- */
-const BasicSettings: React.FC<BasicSettingsProps> = ({ platform, onUpdate }) => {
-  const { t } = useTranslation();
-  const [name, setName] = useState<string>(platform?.name || '');
-  const [description, setDescription] = useState<string>(platform?.description || '');
-
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const newName = e.target.value;
-    setName(newName);
-    onUpdate?.({ ...platform, name: newName });
-  };
-
-  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
-    const newDescription = e.target.value;
-    setDescription(newDescription);
-    onUpdate?.({ ...platform, description: newDescription });
-  };
-
-  return (
-    <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-5 rounded-lg shadow-sm border border-gray-200/60 dark:border-gray-700/60 w-full">
-      <h3 className="text-md font-semibold text-gray-700 dark:text-gray-200 mb-4">
-        {t('platforms.config.basic.title', 'Basic Settings')}
-      </h3>
-      <div className="space-y-4">
-        <div>
-          <label htmlFor="platform-name" className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
-            {t('platforms.config.basic.platformName', 'Platform Name')}
-          </label>
-          <input
-            type="text"
-            id="platform-name"
-            value={name}
-            onChange={handleNameChange}
-            className="w-full text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-700/50 dark:text-gray-200"
-          />
-        </div>
-        <div>
-          <label htmlFor="platform-desc" className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
-            {t('platforms.config.basic.platformDesc', 'Platform Description (Optional)')}
-          </label>
-          <textarea
-            id="platform-desc"
-            rows={2}
-            value={description}
-            onChange={handleDescriptionChange}
-            placeholder={t('platforms.config.basic.descPlaceholder', 'Describe the purpose of this platform')}
-            className="w-full text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-700/50 dark:text-gray-200 resize-none"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
-            {t('platforms.config.basic.platformIcon', 'Platform Icon')}
-          </label>
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 p-1.5 rounded border border-gray-300/80 dark:border-gray-600/80 bg-gray-100/50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400 flex items-center justify-center">
-              <Webhook className="w-4 h-4" />
-            </div>
-            <button className="text-xs text-blue-600 dark:text-blue-400 hover:underline">
-              {t('platforms.config.basic.selectUploadIcon', 'Select/Upload Icon')}
-            </button>
-          </div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            {t('platforms.config.basic.iconHint', 'Choose an icon to display in the platform list.')}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-interface WebhookIncomingProps {
-  config: PlatformConfigType;
-  onUpdate?: (config: PlatformConfigType) => void;
-}
-
-/**
- * Webhook incoming section component
- */
-const WebhookIncoming: React.FC<WebhookIncomingProps> = ({ config, onUpdate }) => {
-  const { t } = useTranslation();
-  const [showSecret, setShowSecret] = useState<boolean>(false);
-  
-  const webhookUrl = config?.webhookUrl || 'https://api.example.com/webhook/ch_abc123xyz';
-  const secretKey = config?.secretKey || 'sk_test_1234567890abcdef';
-
-  const handleCopy = (text: string): void => {
-    navigator.clipboard.writeText(text);
-    // TODO: Show toast notification
-    console.log('Copied to clipboard:', text);
-  };
-
-  const handleRegenerateSecret = (): void => {
-    const newSecret = `sk_test_${Math.random().toString(36).substring(2, 15)}`;
-    onUpdate?.({ ...config, secretKey: newSecret });
-    console.log('Secret regenerated');
-  };
-
-  return (
-    <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-5 rounded-lg shadow-sm border border-gray-200/60 dark:border-gray-700/60 w-full">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-md font-semibold text-gray-700 dark:text-gray-200">
-          {t('platforms.config.webhookIncoming.title', 'Webhook Integration (Receive Messages)')}
-        </h3>
-        <button className="text-xs text-blue-600 dark:text-blue-400 hover:underline">
-          {t('platforms.config.webhookIncoming.viewDocs', 'View Integration Docs')}
-        </button>
-      </div>
-      <div className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Webhook URL</label>
-          <div className="flex items-center space-x-2">
-            <input
-              type="text"
-              readOnly
-              value={webhookUrl}
-              className="flex-grow text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md bg-gray-100/70 dark:bg-gray-700/50 dark:text-gray-200 focus:outline-none font-mono"
-            />
-            <button
-              className="p-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-200/70 dark:hover:bg-gray-700/70 rounded-md"
-              title={t('platforms.config.webhookIncoming.copyUrl', 'Copy URL')}
-              onClick={() => handleCopy(webhookUrl)}
-            >
-              <Copy className="w-4 h-4" />
-            </button>
-          </div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            {t('platforms.config.webhookIncoming.urlHint', 'Configure this URL in your system to receive messages from your system.')}
-          </p>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Secret Key</label>
-          <div className="flex items-center space-x-2">
-            <input
-              type={showSecret ? 'text' : 'password'}
-              readOnly
-              value={showSecret ? secretKey : '**********'}
-              className="flex-grow text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md bg-gray-100/70 dark:bg-gray-700/50 dark:text-gray-200 focus:outline-none font-mono"
-            />
-            <button
-              className="p-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-200/70 dark:hover:bg-gray-700/70 rounded-md"
-              title={t('platforms.config.webhookIncoming.toggleSecret', 'Show/Hide Secret')}
-              onClick={() => setShowSecret(!showSecret)}
-            >
-              {showSecret ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
-            <button
-              className="p-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-200/70 dark:hover:bg-gray-700/70 rounded-md"
-              title={t('platforms.config.webhookIncoming.copySecret', 'Copy Secret')}
-              onClick={() => handleCopy(secretKey)}
-            >
-              <Copy className="w-4 h-4" />
-            </button>
-            <button
-              className="p-1.5 text-red-500 dark:text-red-400 hover:bg-red-100/70 dark:hover:bg-red-900/30 rounded-md"
-              title={t('platforms.config.webhookIncoming.regenerateSecret', 'Regenerate Secret')}
-              onClick={handleRegenerateSecret}
-            >
-              <RefreshCw className="w-4 h-4" />
-            </button>
-          </div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            {t('platforms.config.webhookIncoming.secretHint', 'Used to verify the signature of incoming requests for security.')}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-interface WebhookOutgoingProps {
-  config: PlatformConfigType;
-  onUpdate?: (config: PlatformConfigType) => void;
-}
-
-/**
- * Webhook outgoing section component
- */
-const WebhookOutgoing: React.FC<WebhookOutgoingProps> = ({ config, onUpdate }) => {
-  const { t } = useTranslation();
-  const [outgoingUrl, setOutgoingUrl] = useState<string>(config?.outgoingUrl || '');
-  const [outgoingToken, setOutgoingToken] = useState<string>(config?.outgoingToken || '');
-
-  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const newUrl = e.target.value;
-    setOutgoingUrl(newUrl);
-    onUpdate?.({ ...config, outgoingUrl: newUrl });
-  };
-
-  const handleTokenChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const newToken = e.target.value;
-    setOutgoingToken(newToken);
-    onUpdate?.({ ...config, outgoingToken: newToken });
-  };
-
-  return (
-    <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-5 rounded-lg shadow-sm border border-gray-200/60 dark:border-gray-700/60 w-full">
-      <h3 className="text-md font-semibold text-gray-700 dark:text-gray-200 mb-4">
-        {t('platforms.config.webhookOutgoing.title', 'Webhook Push (Send Messages)')}
-      </h3>
-      <div className="space-y-4">
-        <div>
-          <label htmlFor="outgoing-url" className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
-            {t('platforms.config.webhookOutgoing.yourUrl', 'Your Receiving URL')}
-          </label>
-          <input
-            type="url"
-            id="outgoing-url"
-            value={outgoingUrl}
-            onChange={handleUrlChange}
-            placeholder="https://your.system.com/receive_message"
-            className="w-full text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-700/50 dark:text-gray-200"
-          />
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            {t('platforms.config.webhookOutgoing.urlHint', 'When customer service replies, we will POST the message to this URL.')}
-          </p>
-        </div>
-        <div>
-          <label htmlFor="outgoing-token" className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
-            {t('platforms.config.webhookOutgoing.authToken', 'Authentication Token (Optional)')}
-          </label>
-          <input
-            type="text"
-            id="outgoing-token"
-            value={outgoingToken}
-            onChange={handleTokenChange}
-            placeholder={t('platforms.config.webhookOutgoing.tokenPlaceholder', 'e.g., Bearer your_secret_token')}
-            className="w-full text-sm p-1.5 border border-gray-300/80 dark:border-gray-600/80 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 bg-white/90 dark:bg-gray-700/50 dark:text-gray-200"
-          />
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            {t('platforms.config.webhookOutgoing.tokenHint', 'If your receiving URL requires authentication, fill in here (e.g., Authorization Header value).')}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-/**
- * API access section component (placeholder)
- */
-const ApiAccess: React.FC = () => {
-  const { t } = useTranslation();
-  return (
-    <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-5 rounded-lg shadow-sm border border-gray-200/60 dark:border-gray-700/60 opacity-60 w-full">
-      <h3 className="text-md font-semibold text-gray-700 dark:text-gray-200 mb-4">
-        {t('platforms.config.apiAccess.title', 'API Access (Optional)')}
-      </h3>
-      <div className="text-sm text-gray-500 dark:text-gray-400">
-        <p>{t('platforms.config.apiAccess.placeholder', '[API Key/Secret management and documentation link placeholder]')}</p>
-        <p className="mt-2">
-          {t('platforms.config.apiAccess.description', 'Alternatively, you can send and receive messages by calling our open API. Please refer to the developer documentation for details.')}
-        </p>
-      </div>
-    </div>
-  );
-};
-
 interface PlatformConfigProps {
-  platform?: Platform;
-  onUpdate?: (platform: Platform) => void;
-  onToggle?: (platform: Platform) => void;
+  platform: Platform;
 }
 
 /**
- * Platform configuration main component
+ * Fallback configuration for platform types without a dedicated screen:
+ * name, lifecycle and AI settings only.
  */
-const PlatformConfig: React.FC<PlatformConfigProps> = ({ platform, onUpdate, onToggle }) => {
+const PlatformConfig: React.FC<PlatformConfigProps> = ({ platform }) => {
   const { t } = useTranslation();
   const { showToast } = useToast();
   const updatePlatform = usePlatformStore(s => s.updatePlatform);
+  const isUpdating = usePlatformStore(s => s.isUpdating);
 
-  // AI Settings state
-  const [aiAgentIds, setAiAgentIds] = useState<string[]>(platform?.agent_id ? [platform.agent_id] : []);
-  const [aiMode, setAiMode] = useState<PlatformAIMode>(platform?.ai_mode ?? 'auto');
-  const [fallbackTimeout, setFallbackTimeout] = useState<number | null>(platform?.fallback_to_ai_timeout ?? null);
+  const actions = usePlatformActions(platform, {
+    enabled: t('platforms.website.messages.enabled', 'Platform enabled'),
+    disabled: t('platforms.website.messages.disabled', 'Platform disabled'),
+    deleted: t('platforms.website.messages.deleteSuccess', 'Platform Deleted'),
+  });
+  const name = usePlatformName(platform);
+  const ai = usePlatformAISettings(platform);
+  const canSave = name.changed || ai.changed;
 
-  useEffect(() => {
-    if (platform) {
-      setAiAgentIds(platform.agent_id ? [platform.agent_id] : []);
-      setAiMode(platform.ai_mode ?? 'auto');
-      setFallbackTimeout(platform.fallback_to_ai_timeout ?? null);
-    }
-  }, [platform, platform?.agent_id, platform?.ai_mode, platform?.fallback_to_ai_timeout]);
-
-  const hasAISettingsChanged = useMemo(() => {
-    if (!platform) return false;
-    const origAgentIds = platform.agent_id ? [platform.agent_id] : [];
-    const origMode = platform.ai_mode ?? 'auto';
-    const origTimeout = platform.fallback_to_ai_timeout ?? null;
-    const agentIdsChanged = JSON.stringify(aiAgentIds.sort()) !== JSON.stringify([...origAgentIds].sort());
-    const modeChanged = aiMode !== origMode;
-    const timeoutChanged = fallbackTimeout !== origTimeout;
-    return agentIdsChanged || modeChanged || timeoutChanged;
-  }, [aiAgentIds, aiMode, fallbackTimeout, platform]);
-
-  const handleSaveAISettings = async () => {
-    if (!platform) return;
+  const handleSave = async () => {
     try {
-      await updatePlatform(platform.id, {
-        agent_id: aiAgentIds[0] ?? null,
-        ai_mode: aiMode,
-        fallback_to_ai_timeout: aiMode === 'assist' ? fallbackTimeout : null,
-      });
-      showSuccess(showToast, t('platforms.config.aiSettings.saveSuccess', 'AI settings saved'));
+      const updates: Partial<Platform> = {};
+      if (name.changed) updates.name = name.name.trim();
+      if (ai.changed) Object.assign(updates, ai.updates());
+      await updatePlatform(platform.id, updates);
+      showSuccess(showToast, t('platforms.config.aiSettings.saveSuccess', 'Settings saved'));
     } catch (e) {
       showApiError(showToast, e);
     }
   };
 
-  if (!platform) {
-    return (
-      <main className="flex-grow flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-        <div className="text-center text-gray-500 dark:text-gray-400">
-          <Settings className="mx-auto mb-4 w-12 h-12 text-gray-300 dark:text-gray-600" />
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-200 mb-2">
-            {t('platforms.config.placeholder.title', 'Select Platform')}
-          </h3>
-          <p>{t('platforms.config.placeholder.description', 'Please select a platform from the left list to configure')}</p>
-        </div>
-      </main>
-    );
-  }
-
-  const isEnabled = platform.status === 'connected';
-
-  const displayName = platform.display_name || platform.name;
-
   return (
-    <main className="flex-grow flex flex-col bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      {/* Header */}
-      <header className="px-6 py-4 border-b border-gray-200/80 dark:border-gray-700/80 flex justify-between items-center bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg sticky top-0 z-10">
-        <div className="flex items-center space-x-3">
-          <Webhook className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-            {t('platforms.config.header.title', '{{name}} Configuration', { name: displayName })}
-          </h2>
-        </div>
-        <div className="flex items-center space-x-3">
-          <button className="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 flex items-center">
-            <Pencil className="w-4 h-4 mr-1" />
-            {t('common.edit', 'Edit')}
-          </button>
-          {/* Toggle Switch */}
-          <button
-            role="switch"
-            aria-checked={isEnabled}
-            className={`relative inline-flex items-center h-6 rounded-full w-11 transition-colors ${
-              isEnabled ? 'bg-blue-500 dark:bg-blue-600' : 'bg-gray-300 dark:bg-gray-600'
-            }`}
-            onClick={() => onToggle?.(platform)}
-          >
-            <span className="sr-only">{t('platforms.config.header.enablePlatform', 'Enable Platform')}</span>
-            <span className={`inline-block w-4 h-4 transform bg-white rounded-full transition-transform ${
-              isEnabled ? 'translate-x-6' : 'translate-x-1'
-            }`}></span>
-          </button>
-        </div>
-      </header>
-
-      {/* Content Area */}
-      <div className="flex-grow overflow-y-auto p-6 space-y-6" style={{ height: 0 }}>
-        <BasicSettings platform={platform} onUpdate={onUpdate} />
-
-        {platform.type === 'custom' && (
-          <>
-            <WebhookIncoming config={platform.config} onUpdate={(config) => onUpdate?.({ ...platform, config })} />
-            <WebhookOutgoing config={platform.config} onUpdate={(config) => onUpdate?.({ ...platform, config })} />
-            <ApiAccess />
-          </>
-        )}
-
-        {platform.type !== 'custom' && (
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-5 rounded-lg shadow-sm border border-gray-200/60 dark:border-gray-700/60 w-full">
-            <h3 className="text-md font-semibold text-gray-700 dark:text-gray-200 mb-4">
-              {t('platforms.config.generic.title', 'Platform Configuration')}
-            </h3>
-            <div className="text-sm text-gray-500 dark:text-gray-400">
-              <p>{t('platforms.config.generic.comingSoon', 'Specific configuration options for this platform will be provided in future versions.')}</p>
-              <p className="mt-2">
-                {t('platforms.config.generic.currentStatus', 'Current Status: {{status}}', { status: platform.statusText })}
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* AI Settings */}
-        <div className="w-full">
-          <PlatformAISettings
-            platform={platform}
-            agentIds={aiAgentIds}
-            aiMode={aiMode}
-            fallbackTimeout={fallbackTimeout}
-            onAgentIdsChange={setAiAgentIds}
-            onAIModeChange={setAiMode}
-            onFallbackTimeoutChange={setFallbackTimeout}
-          />
-          {hasAISettingsChanged && (
-            <div className="mt-3 flex justify-end">
-              <button
-                onClick={handleSaveAISettings}
-                className="px-4 py-1.5 text-sm rounded-md bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600"
-              >
-                {t('platforms.config.aiSettings.saveButton', 'Save AI Settings')}
-              </button>
-            </div>
-          )}
-        </div>
+    <PlatformConfigShell
+      platform={platform}
+      actions={actions}
+      deleteDialog={{
+        title: t('platforms.website.confirm.deleteTitle', 'Delete Platform'),
+        message: t('platforms.website.confirm.deleteMessage', 'Are you sure you want to delete this platform?'),
+      }}
+      canSave={canSave}
+      isSaving={isUpdating}
+      onSave={handleSave}
+    >
+      <div className="grid gap-6 xl:grid-cols-2">
+        <GeneralCard
+          name={name.name}
+          onNameChange={name.setName}
+          label={t('platforms.config.basic.platformName', 'Platform Name')}
+        />
+        <ConfigCard
+          icon={Hourglass}
+          iconTone="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300"
+          title={t('platforms.config.generic.title', 'Platform Configuration')}
+          description={t('platforms.config.generic.comingSoon', 'Specific configuration options for this platform will be provided in future versions.')}
+        />
       </div>
-    </main>
+      <PlatformAISettings {...ai.props} />
+    </PlatformConfigShell>
   );
 };
 

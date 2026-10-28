@@ -15,19 +15,7 @@ import WorkflowEditorPage from '../pages/WorkflowEditorPage';
 import { LoginPage, RegisterPage } from 'auth-pages';
 import SetupWizard from '../pages/SetupWizard';
 
-import { useTranslation } from 'react-i18next';
-
-// Placeholder component for platforms index that uses i18n
-const PlatformPlaceholder: React.FC = () => {
-  const { t } = useTranslation();
-  return (
-    <div className="flex-1 flex items-center justify-center p-6 text-gray-500">
-      <div className="text-center">
-        <p className="text-sm">{t('channels.placeholder.selectOrCreate', 'Please select a platform from the left, or click "+" to create a new one.')}</p>
-      </div>
-    </div>
-  );
-};
+import PlatformOverview from '../components/platforms/PlatformOverview';
 import KnowledgeBase from '../pages/KnowledgeBase';
 import KnowledgeBaseDetail from '../pages/KnowledgeBaseDetail';
 import WebsiteKnowledgeBaseDetail from '../pages/WebsiteKnowledgeBaseDetail';
@@ -188,9 +176,7 @@ export const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: (
-              <PlatformPlaceholder />
-            )
+            element: <PlatformOverview />
           },
           {
             path: ':platformId',

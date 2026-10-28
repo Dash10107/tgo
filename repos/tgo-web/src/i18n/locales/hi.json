@@ -86,7 +86,9 @@
     "noData": "कोई डेटा नहीं",
     "processing": "प्रोसेस हो रहा है...",
     "tableCreated": "बनाया गया",
-    "lastUpdated": "अंतिम अपडेट"
+    "lastUpdated": "अंतिम अपडेट",
+    "show": "दिखाएँ",
+    "hide": "छिपाएँ"
   },
   "config": {
     "respondDirectly": "सीधे उत्तर दें",
@@ -3053,7 +3055,8 @@
       "toast": {
         "createSuccessTitle": "Created Successfully",
         "createSuccessMessage": "Platform \"{{name}}\" has been created"
-      }
+      },
+      "summary": "{{total}} चैनल · {{live}} लाइव"
     },
     "typeSelector": {
       "title": "Select Platform Type",
@@ -3061,7 +3064,8 @@
       "loadError": "Failed to load platform types, please try again later",
       "loadFailed": "Load Failed",
       "emptyTypes": "No available platform types",
-      "unsupported": "Not Supported"
+      "unsupported": "Not Supported",
+      "subtitle": "चुनें कि ग्राहक आप तक कहाँ पहुँचते हैं। क्रेडेंशियल्स बाद में सेट करें।"
     },
     "config": {
       "basic": {
@@ -3171,7 +3175,9 @@
         "apiKeyHint": "Authentication identifier for website integration script, please keep it safe.",
         "uploadLogo": "Upload Logo",
         "uploading": "Uploading…",
-        "noApiKey": "No API Key yet"
+        "noApiKey": "No API Key yet",
+        "appearance": "रूप-रंग",
+        "appearanceDesc": "आगंतुकों को चैट विजेट कैसा दिखता है।"
       },
       "embed": {
         "title": "Website Integration Code",
@@ -3225,6 +3231,11 @@
         "cropperFailed": "Unable to open the cropper",
         "removeLogoFailed": "Removing the logo is not supported yet; upload a new image to replace it",
         "uploadFailed": "Upload failed, please try again"
+      },
+      "preview": {
+        "title": "लाइव प्रीव्यू",
+        "live": "टाइप करते ही अपडेट",
+        "loading": "प्रीव्यू लोड हो रहा है…"
       }
     },
     "wechat": {
@@ -3692,7 +3703,10 @@
         "smtpPasswordPlaceholder": "Enter SMTP password",
         "smtpPasswordSame": "Using IMAP password",
         "smtpUseSsl": "Use SSL (Port 465)",
-        "smtpUseTls": "Use TLS/STARTTLS (Port 587, Recommended)"
+        "smtpUseTls": "Use TLS/STARTTLS (Port 587, Recommended)",
+        "mailbox": "मेलबॉक्स",
+        "mailboxDesc": "उस पते से साइन इन करें जिस पर ग्राहक लिखते हैं। सामान्य प्रदाता अपने आप सेट हो जाते हैं।",
+        "smtpSecurity": "एन्क्रिप्शन"
       },
       "guide": {
         "title": "Email Platform Configuration Guide (IMAP Receiving + SMTP Sending)",
@@ -3893,7 +3907,8 @@
         "responseRequirement": "Response Requirement",
         "responseRequirementDesc": "Please ensure the callback URL is publicly accessible and returns HTTP 200 status code to indicate successful receipt.",
         "codeExamples": "Code Examples"
-      }
+      },
+      "regenerateTitle": "API कुंजी फिर से बनाएँ?"
     },
     "aiSettings": {
       "title": "AI Settings",
@@ -3915,7 +3930,8 @@
       "timeoutPlaceholder": "e.g., 60",
       "timeoutHint": "Time in seconds before AI takes over when there's no reply. Set to 0 to prevent AI takeover.",
       "saveSuccess": "AI settings saved",
-      "saveButton": "Save AI Settings"
+      "saveButton": "Save AI Settings",
+      "defaultAgent": "डिफ़ॉल्ट एजेंट"
     },
     "wecomBot": {
       "messages": {
@@ -3989,6 +4005,35 @@
       "connected": "Connected",
       "disabled": "Disabled",
       "connectionFailed": "Connection failed"
+    },
+    "common": {
+      "unsavedChanges": "आपके बदलाव सहेजे नहीं गए हैं",
+      "setupGuide": "सेटअप गाइड",
+      "sections": {
+        "general": "सामान्य",
+        "generalDesc": "Pelatis में इस चैनल का नाम।",
+        "credentials": "क्रेडेंशियल्स",
+        "credentialsDesc": "प्रदाता के डेवलपर कंसोल से मिली कुंजियाँ।",
+        "callback": "वेबहुक",
+        "callbackDesc": "प्रदाता के संदेश इसी पते पर आते हैं।"
+      }
+    },
+    "overview": {
+      "nav": "अवलोकन",
+      "live": "लाइव",
+      "off": "बंद",
+      "bannerEyebrow": "एक इनबॉक्स, हर चैनल",
+      "bannerTitle": "ग्राहकों से वहीं मिलें जहाँ वे पहले से हैं",
+      "bannerDesc": "अपनी वेबसाइट, ईमेल और मैसेजिंग ऐप्स जोड़ें। हर बातचीत एक इनबॉक्स में आती है और AI एजेंट चौबीसों घंटे जवाब देते हैं।",
+      "connect": "चैनल जोड़ें",
+      "listTitle": "आपके चैनल",
+      "countLabel": "चैनल",
+      "noResults": "कोई चैनल मेल नहीं खाता",
+      "emptyDesc": "बातचीत प्राप्त करना शुरू करने के लिए अपना पहला चैनल जोड़ें।",
+      "open": "सेटिंग्स खोलें",
+      "aiMode": "AI · {{mode}}",
+      "cardHint": "इस चैनल के क्रेडेंशियल्स, वेबहुक और AI रूटिंग।",
+      "addHint": "वेबसाइट, ईमेल, Telegram, Slack और भी"
     }
   },
   "setup": {
@@ -4503,7 +4548,8 @@
     "preview": "Preview (1:1)",
     "previewAlt": "Preview",
     "none": "None",
-    "recommendedSize": "Recommended size: 72x72 pixels"
+    "recommendedSize": "Recommended size: 72x72 pixels",
+    "title": "इमेज क्रॉप करें"
   },
   "toolsList": {
     "linkedTools": "Linked tools",

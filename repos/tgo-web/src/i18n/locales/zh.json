@@ -87,7 +87,9 @@
     "processing": "处理中...",
     "tableCreated": "创建时间",
     "lastUpdated": "更新时间",
-    "pagination": "分页"
+    "pagination": "分页",
+    "show": "显示",
+    "hide": "隐藏"
   },
   "config": {
     "respondDirectly": "直接响应",
@@ -1906,7 +1908,8 @@
       "toast": {
         "createSuccessTitle": "创建成功",
         "createSuccessMessage": "平台 \"{{name}}\" 已创建"
-      }
+      },
+      "summary": "{{total}} 个渠道 · {{live}} 个已上线"
     },
     "typeSelector": {
       "title": "选择接入平台类型",
@@ -1914,7 +1917,8 @@
       "loadError": "加载平台类型失败，请稍后重试",
       "loadFailed": "加载失败",
       "emptyTypes": "暂无可用平台类型",
-      "unsupported": "暂不支持"
+      "unsupported": "暂不支持",
+      "subtitle": "选择客户联系您的渠道，创建后即可配置凭证。"
     },
     "config": {
       "basic": {
@@ -2024,7 +2028,9 @@
         "apiKeyHint": "用于网站集成脚本的鉴权标识，请妥善保管。",
         "uploadLogo": "上传 Logo",
         "uploading": "上传中…",
-        "noApiKey": "暂无 API Key"
+        "noApiKey": "暂无 API Key",
+        "appearance": "外观",
+        "appearanceDesc": "访客看到的聊天窗口样式。"
       },
       "embed": {
         "title": "网站集成代码",
@@ -2078,6 +2084,11 @@
         "cropperFailed": "无法打开裁剪器",
         "removeLogoFailed": "暂不支持移除 Logo，请上传新的图片覆盖",
         "uploadFailed": "上传失败，请重试"
+      },
+      "preview": {
+        "title": "实时预览",
+        "live": "输入即更新",
+        "loading": "正在加载预览…"
       }
     },
     "wechat": {
@@ -2206,7 +2217,10 @@
         "smtpPasswordPlaceholder": "请输入 SMTP 密码",
         "smtpPasswordSame": "使用 IMAP 密码",
         "smtpUseSsl": "使用 SSL（端口 465）",
-        "smtpUseTls": "使用 TLS/STARTTLS（端口 587，推荐）"
+        "smtpUseTls": "使用 TLS/STARTTLS（端口 587，推荐）",
+        "mailbox": "邮箱账号",
+        "mailboxDesc": "使用客户来信的邮箱登录，常见服务商将自动配置。",
+        "smtpSecurity": "加密方式"
       },
       "guide": {
         "title": "邮件平台配置指南 (IMAP 接收 + SMTP 发送)",
@@ -2501,7 +2515,8 @@
         "responseRequirement": "响应要求",
         "responseRequirementDesc": "请确保回调 URL 可以从公网访问，并返回 HTTP 200 状态码以表示接收成功。",
         "codeExamples": "代码示例"
-      }
+      },
+      "regenerateTitle": "重新生成 API 密钥？"
     },
     "wecom": {
       "label": "企业微信",
@@ -2767,7 +2782,8 @@
       "timeoutPlaceholder": "例如：60",
       "timeoutHint": "消息多少秒无回复后 AI 自动接管。设置为 0 表示 AI 不会接管。",
       "saveSuccess": "AI 设置已保存",
-      "saveButton": "保存 AI 设置"
+      "saveButton": "保存 AI 设置",
+      "defaultAgent": "默认智能体"
     },
     "wecomBot": {
       "messages": {
@@ -2828,6 +2844,38 @@
         "cancel": "取消"
       },
       "label": "企业微信机器人"
+    },
+    "status": {
+      "disabled": "已禁用"
+    },
+    "common": {
+      "unsavedChanges": "有未保存的更改",
+      "setupGuide": "配置指南",
+      "sections": {
+        "general": "基本信息",
+        "generalDesc": "此渠道在 Pelatis 中的名称。",
+        "credentials": "凭证",
+        "credentialsDesc": "来自服务商开发者后台的密钥。",
+        "callback": "Webhook",
+        "callbackDesc": "服务商的消息将发送到此地址。"
+      }
+    },
+    "overview": {
+      "nav": "概览",
+      "live": "已上线",
+      "off": "已关闭",
+      "bannerEyebrow": "一个收件箱，覆盖所有渠道",
+      "bannerTitle": "在客户所在的地方与他们相遇",
+      "bannerDesc": "连接网站、邮箱和即时通讯应用。所有会话汇入同一个收件箱，AI 智能体全天候应答。",
+      "connect": "接入渠道",
+      "listTitle": "我的渠道",
+      "countLabel": "个渠道",
+      "noResults": "没有匹配的渠道",
+      "emptyDesc": "添加第一个渠道，开始接收会话。",
+      "open": "打开设置",
+      "aiMode": "AI · {{mode}}",
+      "cardHint": "此渠道的凭证、Webhook 与 AI 路由。",
+      "addHint": "网站、邮箱、Telegram、Slack 等"
     }
   },
   "ai": {
@@ -4297,5 +4345,8 @@
       "loading": "正在加载插件...",
       "title": "扩展功能"
     }
+  },
+  "imageCrop": {
+    "title": "裁剪图片"
   }
 }

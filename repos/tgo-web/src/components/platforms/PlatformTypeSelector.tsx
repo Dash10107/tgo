@@ -1,33 +1,23 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import platformsApiService, { PlatformTypeDefinitionResponse } from '@/services/platformsApi';
-import { getPlatformColor, getPlatformIconComponent, toPlatformType } from '@/utils/platformUtils';
+import { AlertTriangle, ArrowUpRight, Loader2, Plug, RefreshCw, Search } from 'lucide-react';
+import platformsApiService, { type PlatformTypeDefinitionResponse } from '@/services/platformsApi';
+import { Modal, SecondaryButton } from '@/components/ui/ModalKit';
+import { PlatformIcon } from './PlatformKit';
 
 interface PlatformTypeSelectorProps {
   open: boolean;
   onClose: () => void;
-  onSelect: (type: { type: string; name: string }) => void;
+  /** Creates the platform; the dialog shows progress until the promise settles */
+  onSelect: (type: { type: string; name: string }) => void | Promise<void>;
 }
 
-const Loading: React.FC = () => {
-  const { t } = useTranslation();
-  return (
-    <div className="flex items-center justify-center py-10 text-sm text-gray-500 dark:text-gray-400">
-      {t('platforms.typeSelector.loading', 'Loading available platform types...')}
-    </div>
-  );
-};
-
-const ErrorState: React.FC<{ message: string; onRetry: () => void }> = ({ message, onRetry }) => {
-  const { t } = useTranslation();
-  return (
-    <div className="flex flex-col items-center justify-center py-10 text-sm text-red-600 dark:text-red-400">
-      <p className="mb-3">{message || t('platforms.typeSelector.loadError', 'Failed to load platform types, please try again later')}</p>
-      <button onClick={onRetry} className="px-3 py-1.5 text-white bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 rounded-md">
-        {t('common.retry', 'Retry')}
-      </button>
-    </div>
-  );
+const errorMessage = (e: unknown, fallback: string): string => {
+  if (e && typeof e === 'object') {
+    const err = e as { getUserMessage?: () => string; message?: string };
+    return err.getUserMessage?.() || err.message || fallback;
+  }
+  return fallback;
 };
 
 const PlatformTypeSelector: React.FC<PlatformTypeSelectorProps> = ({ open, onClose, onSelect }) => {
@@ -35,128 +25,134 @@ const PlatformTypeSelector: React.FC<PlatformTypeSelectorProps> = ({ open, onClo
   const [types, setTypes] = useState<PlatformTypeDefinitionResponse[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
+  const [query, setQuery] = useState('');
+  const [pendingType, setPendingType] = useState<string | null>(null);
 
-  // Fetch when open
+  const fetchTypes = useCallback(async (force: boolean, isCancelled: () => boolean = () => false) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await platformsApiService.listPlatformTypes(force);
+      if (!isCancelled()) setTypes(data);
+    } catch (e) {
+      if (!isCancelled()) setError(errorMessage(e, t('platforms.typeSelector.loadFailed', 'Load Failed')));
+    } finally {
+      if (!isCancelled()) setIsLoading(false);
+    }
+  }, [t]);
+
+  // Fetch when opened; reset search each time
   useEffect(() => {
-    if (!open) return;
+    if (!open) return undefined;
     let cancelled = false;
-
-    const fetchTypes = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const data = await platformsApiService.listPlatformTypes();
-        if (!cancelled) setTypes(data);
-      } catch (e: any) {
-        const message = e?.getUserMessage?.() || e?.message || t('platforms.typeSelector.loadFailed', 'Load Failed');
-        if (!cancelled) setError(message);
-      } finally {
-        if (!cancelled) setIsLoading(false);
-      }
-    };
-
-    fetchTypes();
+    setQuery('');
+    void fetchTypes(false, () => cancelled);
     return () => { cancelled = true; };
-  }, [open]);
+  }, [open, fetchTypes]);
 
-  // Close on ESC
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [open, onClose]);
+  const supported = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return (types ?? [])
+      .filter(pt => pt.is_supported !== false)
+      .filter(pt => !q || (pt.display_name || pt.name).toLowerCase().includes(q) || pt.type.toLowerCase().includes(q));
+  }, [types, query]);
 
-  // Close on outside click
-  useEffect(() => {
-    if (!open) return;
-    const onClick = (e: MouseEvent) => {
-      if (dialogRef.current && !dialogRef.current.contains(e.target as Node)) {
-        onClose();
-      }
-    };
-    document.addEventListener('mousedown', onClick);
-    return () => document.removeEventListener('mousedown', onClick);
-  }, [open, onClose]);
-
-  if (!open) return null;
+  const handleSelect = async (pt: PlatformTypeDefinitionResponse) => {
+    if (pendingType) return;
+    setPendingType(pt.type);
+    try {
+      await onSelect({ type: pt.type, name: pt.name });
+    } finally {
+      setPendingType(null);
+    }
+  };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/30 dark:bg-black/50" />
-      <div ref={dialogRef} className="relative bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-[560px] max-w-[90vw]">
-        {/* Header */}
-        <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
-          <h3 className="text-base font-semibold text-gray-800 dark:text-gray-100">
-            {t('platforms.typeSelector.title', 'Select Platform Type')}
-          </h3>
-          <button onClick={onClose} className="p-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">✕</button>
+    <Modal
+      isOpen={open}
+      onClose={onClose}
+      title={t('platforms.typeSelector.title', 'Select Platform Type')}
+      subtitle={t('platforms.typeSelector.subtitle', 'Pick where your customers reach you. You can fine-tune credentials right after.')}
+      icon={Plug}
+      size="lg"
+      preventClose={Boolean(pendingType)}
+      footer={
+        <SecondaryButton onClick={onClose} disabled={Boolean(pendingType)}>
+          {t('common.cancel', 'Cancel')}
+        </SecondaryButton>
+      }
+    >
+      <label className="group relative flex items-center">
+        <Search className="pointer-events-none absolute left-4 h-4 w-4 text-gray-400 transition-colors group-focus-within:text-ink-900 dark:group-focus-within:text-white" />
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={t('common.search', 'Search')}
+          aria-label={t('common.search', 'Search')}
+          className="tgo-input pl-11"
+          autoFocus
+        />
+      </label>
+
+      {isLoading && (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2" aria-label={t('platforms.typeSelector.loading', 'Loading available platform types...')}>
+          {Array.from({ length: 6 }, (_, i) => (
+            <div key={i} className="tgo-skeleton h-[68px] rounded-[1.25rem]" style={{ opacity: 1 - i * 0.12 }} />
+          ))}
         </div>
+      )}
 
-        {/* Body */}
-        <div className="p-4">
-          {isLoading && <Loading />}
-          {!isLoading && error && <ErrorState message={error} onRetry={() => { setError(null); setIsLoading(true); platformsApiService.listPlatformTypes(true).then(setTypes).catch((e:any)=> setError(e?.getUserMessage?.()||e?.message||t('platforms.typeSelector.loadFailed', 'Load Failed'))).finally(()=> setIsLoading(false)); }} />}
-
-          {!isLoading && !error && (
-            <div className="grid grid-cols-2 gap-3">
-              {types
-                ?.filter((platformType) => platformType.is_supported !== false) // Only show supported types
-                .map((platformType) => {
-                  const displayName = platformType.display_name || platformType.name;
-
-                  return (
-                    <button
-                      key={platformType.id}
-                      onClick={() => {
-                        onSelect({ type: platformType.type, name: platformType.name });
-                      }}
-                      className="p-3 border border-gray-200 dark:border-gray-600 rounded-lg transition flex items-start gap-3 text-left hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/30 cursor-pointer"
-                    >
-                      {/* Icon based on platform type (react-icons) */}
-                      {(() => {
-                        const type = toPlatformType(platformType.type as any);
-                        const IconComp = getPlatformIconComponent(type);
-                        return (
-                          <span className="w-8 h-8 rounded flex items-center justify-center bg-gray-50 dark:bg-gray-700">
-                            <IconComp
-                              size={20}
-                              className={getPlatformColor(type)}
-                            />
-                          </span>
-                        );
-                      })()}
-                      <div>
-                        <div className="text-sm font-medium text-gray-800 dark:text-gray-100">
-                          {displayName}
-                        </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">{platformType.type}</div>
-                      </div>
-                    </button>
-                  );
-                })}
-              {!types?.filter((platformType) => platformType.is_supported !== false).length && (
-                <div className="col-span-2 text-center text-gray-500 dark:text-gray-400 py-8 text-sm">
-                  {t('platforms.typeSelector.emptyTypes', 'No available platform types')}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="px-5 py-3 border-t border-gray-100 dark:border-gray-700 flex justify-end">
-          <button onClick={onClose} className="px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700">
-            {t('common.cancel', 'Cancel')}
+      {!isLoading && error && (
+        <div className="tgo-well flex flex-col items-center px-6 py-10 text-center">
+          <span className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-red-50 text-red-500 dark:bg-red-900/20">
+            <AlertTriangle className="h-5 w-5" />
+          </span>
+          <p className="mb-4 max-w-sm text-sm text-gray-600 dark:text-gray-300">
+            {error || t('platforms.typeSelector.loadError', 'Failed to load platform types, please try again later')}
+          </p>
+          <button type="button" onClick={() => { void fetchTypes(true); }} className="tgo-btn-ink" data-icon-motion="nudge">
+            <span className="tgo-btn-icon"><RefreshCw className="h-4 w-4" /></span>
+            {t('common.retry', 'Retry')}
           </button>
         </div>
-      </div>
-    </div>
+      )}
+
+      {!isLoading && !error && (
+        supported.length > 0 ? (
+          <div className="tgo-stagger grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {supported.map(pt => {
+              const isPending = pendingType === pt.type;
+              return (
+                <button
+                  key={pt.id}
+                  type="button"
+                  onClick={() => handleSelect(pt)}
+                  disabled={Boolean(pendingType) && !isPending}
+                  aria-busy={isPending}
+                  data-active={isPending}
+                  className="tgo-option group"
+                >
+                  <PlatformIcon type={pt.type} size="md" />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-medium text-gray-900 dark:text-gray-100">{pt.display_name || pt.name}</span>
+                    <span className="block truncate font-mono text-[11px] text-gray-400">{pt.type}</span>
+                  </span>
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition-all duration-300 group-hover:rotate-45 group-hover:bg-acid-300 group-hover:text-ink-900 dark:bg-gray-700 dark:text-gray-300">
+                    {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUpRight className="h-4 w-4" />}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="tgo-well px-6 py-10 text-center text-sm text-gray-500 dark:text-gray-400">
+            {t('platforms.typeSelector.emptyTypes', 'No available platform types')}
+          </div>
+        )
+      )}
+    </Modal>
   );
 };
 
 export default PlatformTypeSelector;
-

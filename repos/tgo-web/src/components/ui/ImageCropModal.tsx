@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Cropper, { Area } from 'react-easy-crop';
+import { Check, Crop, ZoomIn, ZoomOut } from 'lucide-react';
+import { Modal, PrimaryButton, SecondaryButton } from './ModalKit';
 
 import { useTranslation } from 'react-i18next';
 interface ImageCropModalProps {
@@ -91,7 +93,7 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({
       workingRef.current = true;
       const { dataUrl } = await cropImageToBlob(imageSrc, cropped, mimeType);
       setPreviewDataUrl(dataUrl);
-    } catch (err) {
+    } catch {
       // Silent preview failure; final confirm will show proper errors if any
     } finally {
       workingRef.current = false;
@@ -106,70 +108,78 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({
     } catch (err) {
       alert((err as Error)?.message || t('imageCrop.failed', 'Crop failed, please try again'));
     }
-  }, [croppedAreaPixels, imageSrc, mimeType, onConfirm]);
+  }, [croppedAreaPixels, imageSrc, mimeType, onConfirm, t]);
 
   if (!isOpen) return null;
   if (typeof document === 'undefined') return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[10000] bg-black/50 flex items-center justify-center p-4" onClick={onCancel}>
-      <div
-        className="bg-white dark:bg-gray-800 w-full max-w-2xl rounded-lg shadow-xl overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex items-center justify-between">
-          <h3 className="text-base font-semibold text-gray-800 dark:text-gray-100">{title}</h3>
-          <button onClick={onCancel} className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-sm">{t('common.cancel', 'Cancel')}</button>
+    <Modal
+      isOpen={isOpen}
+      onClose={onCancel}
+      title={title === 'Crop Image' ? t('imageCrop.title', 'Crop Image') : title}
+      icon={Crop}
+      size="lg"
+      zIndex="z-[10000]"
+      footer={
+        <>
+          <SecondaryButton onClick={onCancel}>{t('common.cancel', 'Cancel')}</SecondaryButton>
+          <PrimaryButton type="button" onClick={handleConfirm} icon={<Check className="h-4 w-4" />}>
+            {t('common.confirm', 'Confirm')}
+          </PrimaryButton>
+        </>
+      }
+    >
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-[minmax(0,1fr)_11rem]">
+        <div className="relative h-[300px] overflow-hidden rounded-3xl bg-gray-900 ring-1 ring-black/10 dark:ring-white/10">
+          <Cropper
+            image={imageSrc}
+            crop={crop}
+            zoom={zoom}
+            aspect={aspect}
+            onCropChange={setCrop}
+            onZoomChange={setZoom}
+            onCropComplete={onCropComplete}
+            cropShape="rect"
+            showGrid={false}
+            restrictPosition
+          />
         </div>
-
-        <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4" style={{ minHeight: 360 }}>
-          <div className="md:col-span-2 relative rounded-md overflow-hidden bg-black/5 dark:bg-black/20" style={{ height: 300 }}>
-            <Cropper
-              image={imageSrc}
-              crop={crop}
-              zoom={zoom}
-              aspect={aspect}
-              onCropChange={setCrop}
-              onZoomChange={setZoom}
-              onCropComplete={onCropComplete}
-              cropShape="rect"
-              showGrid={false}
-              restrictPosition
-            />
-          </div>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">{t('imageCrop.zoom', 'Zoom')}</label>
+        <div className="space-y-5">
+          <div>
+            <div className="mb-2 flex items-center justify-between">
+              <label htmlFor="image-crop-zoom" className="tgo-label !mb-0">{t('imageCrop.zoom', 'Zoom')}</label>
+              <span className="text-[11px] tabular-nums text-gray-400">{zoom.toFixed(1)}×</span>
+            </div>
+            <div className="flex items-center gap-2 text-gray-400">
+              <ZoomOut className="h-3.5 w-3.5 shrink-0" />
               <input
+                id="image-crop-zoom"
                 type="range"
                 min={1}
                 max={3}
                 step={0.01}
                 value={zoom}
                 onChange={(e) => setZoom(parseFloat(e.target.value))}
-                className="w-full"
+                className="w-full cursor-pointer accent-ink-900 dark:accent-acid-400"
               />
-            </div>
-            <div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('imageCrop.preview', 'Preview (1:1)')}</div>
-              <div className="w-24 h-24 border dark:border-gray-600 rounded-md overflow-hidden bg-gray-50 dark:bg-gray-700 flex items-center justify-center">
-                {previewDataUrl ? (
-                  <img src={previewDataUrl} alt={t('imageCrop.previewAlt', 'Preview')} className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-gray-400 dark:text-gray-500 text-xs">{t('imageCrop.none', 'None')}</span>
-                )}
-              </div>
-              <div className="text-[10px] text-gray-400 dark:text-gray-500 mt-2">{t('imageCrop.recommendedSize', 'Recommended size: 72x72 pixels')}</div>
+              <ZoomIn className="h-3.5 w-3.5 shrink-0" />
             </div>
           </div>
-        </div>
-
-        <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex justify-end gap-2">
-          <button onClick={onCancel} className="px-3 py-1.5 text-sm rounded-md bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200">{t('common.cancel', 'Cancel')}</button>
-          <button onClick={handleConfirm} className="px-3 py-1.5 text-sm rounded-md bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 text-white">{t('common.confirm', 'Confirm')}</button>
+          <div>
+            <p className="tgo-label">{t('imageCrop.preview', 'Preview (1:1)')}</p>
+            <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-3xl bg-gray-50 ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700">
+              {previewDataUrl ? (
+                <img src={previewDataUrl} alt={t('imageCrop.previewAlt', 'Preview')} className="h-full w-full object-cover" />
+              ) : (
+                <span className="text-xs text-gray-400">{t('imageCrop.none', 'None')}</span>
+              )}
+            </div>
+            <p className="tgo-hint">{t('imageCrop.recommendedSize', 'Recommended size: 72x72 pixels')}</p>
+          </div>
         </div>
       </div>
-    </div>,
+    </Modal>,
     document.body
   );
 };

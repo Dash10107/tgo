@@ -58,6 +58,8 @@ export interface PlatformUpdateRequest {
   agent_id?: string | null;
   ai_mode?: PlatformAIMode | null;
   fallback_to_ai_timeout?: number | null;
+  // Only `null` is meaningful here: clears the uploaded logo
+  logo_url?: null;
 }
 
 

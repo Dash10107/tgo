@@ -22,6 +22,8 @@ interface PlatformState {
   isDeleting: boolean;
   loadError: string | null;
   isLoadingDetail: boolean;
+  /** True once the platform list has been fetched (successfully or not) */
+  hasLoadedList: boolean;
   detailLoadError: string | null;
 
   // Configuration state
@@ -87,6 +89,7 @@ export const usePlatformStore = create<PlatformState>()(
         isDeleting: false,
         loadError: null,
         isLoadingDetail: false,
+        hasLoadedList: false,
         detailLoadError: null,
         configChanges: {},
         hasUnsavedChanges: false,
@@ -617,10 +620,10 @@ export const usePlatformStore = create<PlatformState>()(
               }
             }
 
-            set({ platforms: all, isLoading: false, loadError: null }, false, 'initializeStoreSuccess');
+            set({ platforms: all, isLoading: false, loadError: null, hasLoadedList: true }, false, 'initializeStoreSuccess');
           } catch (error) {
             console.error('Failed to load platform list:', error);
-            set({ isLoading: false, loadError: error instanceof Error ? error.message : i18n.t('common.loadFailed', 'Failed to load') }, false, 'initializeStoreError');
+            set({ isLoading: false, hasLoadedList: true, loadError: error instanceof Error ? error.message : i18n.t('common.loadFailed', 'Failed to load') }, false, 'initializeStoreError');
           }
         }
       }),

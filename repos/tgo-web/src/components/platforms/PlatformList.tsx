@@ -1,75 +1,32 @@
-import React, { useState, useCallback } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { CirclePlus, Inbox, RefreshCw } from 'lucide-react';
+import React, { useCallback, useMemo, useState } from 'react';
+import { NavLink } from 'react-router-dom';
+import { LayoutGrid, Plus, RefreshCw, Search, Radio, AlertTriangle, Inbox } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { usePlatformStore, platformSelectors } from '@/stores';
+import { usePlatformStore } from '@/stores';
 import type { Platform } from '@/types';
-import { PlatformType } from '@/types';
-import PlatformTypeSelector from './PlatformTypeSelector';
-import { useToast } from '@/hooks/useToast';
-import { showApiError, showSuccess } from '@/utils/toastHelpers';
-import { getPlatformColor, getPlatformIconComponent, getPlatformLabel, toPlatformType } from '@/utils/platformUtils';
+import { getPlatformLabel, toPlatformType } from '@/utils/platformUtils';
 import OnboardingSidebarPanel from '@/components/onboarding/OnboardingSidebarPanel';
-
-interface PlatformListItemProps {
-  platform: Platform;
-}
+import { PlatformIcon, useStatusMeta } from './PlatformKit';
 
 /**
- * Platform list item component
+ * Single platform row: brand icon with status dot, name and type/status line
  */
-
-const PlatformListItem: React.FC<PlatformListItemProps> = ({ platform }) => {
+const PlatformListItem: React.FC<{ platform: Platform }> = ({ platform }) => {
   const { t } = useTranslation();
-
-  const getStatusConfig = (status: string) => {
-    switch (status) {
-      case 'connected':
-        return { color: 'bg-green-500', text: t('platforms.list.status.connected', 'Connected'), textColor: 'text-gray-500' };
-      case 'error':
-        return { color: 'bg-red-500', text: t('platforms.list.status.error', 'Connection Failed'), textColor: 'text-red-600' };
-      case 'pending':
-        return { color: 'bg-yellow-400', text: t('platforms.list.status.pending', 'Pending Configuration'), textColor: 'text-gray-500' };
-      default:
-        return { color: 'bg-gray-400', text: t('platforms.list.status.notConfigured', 'Not Configured'), textColor: 'text-gray-500' };
-    }
-  };
-
-  const statusConfig = getStatusConfig(platform.status);
-  const isSupported = platform.is_supported !== false; // default to true if not specified
+  const getStatusMeta = useStatusMeta();
+  const status = getStatusMeta(platform.status);
   const displayName = platform.display_name || platform.name;
+  const typeLabel = getPlatformLabel(toPlatformType(platform.type));
 
-  const renderIcon = () => {
-    const type = toPlatformType(platform.type as any);
-    const IconComp = getPlatformIconComponent(type);
-    const label = getPlatformLabel(type);
+  // Unsupported platform types render as a disabled row
+  if (platform.is_supported === false) {
     return (
-      <span title={label}>
-        <IconComp size={20} className={`w-6 h-6 mr-3 flex-shrink-0 ${getPlatformColor(type)} ${!isSupported ? 'opacity-50' : ''}`} />
-      </span>
-    );
-  };
-
-  // If platform type is not supported, render as disabled (non-clickable)
-  if (!isSupported) {
-    return (
-      <div
-        className="flex items-center p-3 rounded-lg opacity-60 cursor-not-allowed bg-gray-50 dark:bg-gray-800"
-      >
-        <div className="text-gray-500 dark:text-gray-400">
-          {renderIcon()}
-        </div>
-        <div className="flex-grow overflow-hidden">
-          <p className="text-sm font-medium truncate text-gray-500 dark:text-gray-400">
-            {displayName}
-          </p>
-          <div className="flex items-center mt-1">
-            <span className={`w-2 h-2 ${statusConfig.color} rounded-full mr-1.5 flex-shrink-0 opacity-50`}></span>
-            <span className="text-xs text-gray-400 dark:text-gray-500">
-              {t('platforms.list.status.unsupported', 'Coming Soon')}
-            </span>
-          </div>
-        </div>
+      <div className="flex cursor-not-allowed items-center gap-3 rounded-[22px] py-1.5 pl-1.5 pr-4 opacity-55" aria-disabled="true">
+        <PlatformIcon type={platform.type} size="sm" className="grayscale" />
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-sm text-gray-500 dark:text-gray-400">{displayName}</span>
+          <span className="block truncate text-[11px] text-gray-400">{t('platforms.list.status.unsupported', 'Coming Soon')}</span>
+        </span>
       </div>
     );
   }
@@ -77,56 +34,49 @@ const PlatformListItem: React.FC<PlatformListItemProps> = ({ platform }) => {
   return (
     <NavLink
       to={`/platforms/${platform.id}`}
-      className={({ isActive }) => `
-        flex items-center p-3 rounded-lg transition-colors duration-150
-        ${isActive
-          ? 'bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100/70 dark:hover:bg-blue-900/40 border border-blue-200/80 dark:border-blue-700/80'
-          : 'hover:bg-gray-100/70 dark:hover:bg-gray-700/50'
-        }
-      `}
+      title={`${displayName} · ${typeLabel}`}
+      className={({ isActive }) => `group flex w-full items-center gap-3 rounded-[22px] py-1.5 pl-1.5 pr-4 text-left transition-all duration-300 ${
+        isActive
+          ? 'bg-ink-900 text-white shadow-[0_12px_26px_-14px_rgba(15,16,18,0.75)] dark:bg-acid-400 dark:text-ink-900'
+          : 'text-gray-700 hover:bg-white hover:text-gray-900 hover:shadow-sm dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100'
+      }`}
     >
       {({ isActive }) => (
         <>
-          <div className="text-gray-700 dark:text-gray-300">
-            {renderIcon()}
-          </div>
-          <div className="flex-grow overflow-hidden">
-            <p className={`text-sm font-medium truncate ${
-              isActive ? 'text-blue-800 dark:text-blue-300' : 'text-gray-800 dark:text-gray-200'
-            }`}>
-              {displayName}
-            </p>
-            <div className="flex items-center mt-1">
-              <span className={`w-2 h-2 ${statusConfig.color} rounded-full mr-1.5 flex-shrink-0`}></span>
-              <span className={`text-xs ${statusConfig.textColor} dark:text-gray-400`}>
-                {statusConfig.text}
-              </span>
-            </div>
-          </div>
+          <PlatformIcon
+            type={platform.type}
+            size="sm"
+            dot={status.dot}
+            dotRing={isActive ? 'ring-ink-900 dark:ring-acid-400' : 'ring-gray-50 group-hover:ring-white dark:ring-gray-900 dark:group-hover:ring-gray-800'}
+          />
+          <span className="min-w-0 flex-1">
+            <span className={`block truncate text-sm ${isActive ? 'font-medium' : ''}`}>{displayName}</span>
+            <span className={`block truncate text-[11px] ${isActive ? 'text-white/60 dark:text-ink-900/60' : 'text-gray-400 dark:text-gray-500'}`}>
+              {typeLabel} · {status.label}
+            </span>
+          </span>
+          <span className={`h-1.5 w-1.5 shrink-0 rounded-full bg-acid-400 transition-all duration-300 dark:bg-ink-900 ${isActive ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} />
         </>
       )}
     </NavLink>
   );
 };
 
+interface PlatformListProps {
+  onAdd: () => void;
+}
+
 /**
  * Platform list sidebar component
  */
-const PlatformList: React.FC = () => {
+const PlatformList: React.FC<PlatformListProps> = ({ onAdd }) => {
   const { t } = useTranslation();
-  const platforms = usePlatformStore(platformSelectors.platforms);
-  const isLoading = usePlatformStore(platformSelectors.isLoading);
-  const loadError = usePlatformStore(state => state.loadError);
-  const createPlatform = usePlatformStore(state => state.createPlatform);
-  const initializeStore = usePlatformStore(state => state.initializeStore);
-  const navigate = useNavigate();
-  const { showToast } = useToast();
-  const [showTypeSelector, setShowTypeSelector] = useState(false);
+  const platforms = usePlatformStore(s => s.platforms);
+  const isLoading = usePlatformStore(s => s.isLoading);
+  const loadError = usePlatformStore(s => s.loadError);
+  const initializeStore = usePlatformStore(s => s.initializeStore);
   const [isRetrying, setIsRetrying] = useState(false);
-
-  const handleAddPlatform = (): void => {
-    setShowTypeSelector(true);
-  };
+  const [query, setQuery] = useState('');
 
   const handleRetry = useCallback(async () => {
     setIsRetrying(true);
@@ -138,101 +88,142 @@ const PlatformList: React.FC = () => {
     } finally {
       setIsRetrying(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty deps - initializeStore is a stable store function
+  }, [initializeStore]);
 
-  const handleTypeSelect = useCallback(async ({ type, name }: { type: string; name: string }) => {
-    try {
-      const selectedType: PlatformType = type as PlatformType;
-      const created = await createPlatform({
-        name: name || t('platforms.list.defaultName', 'New Platform'),
-        type: selectedType,
-      });
-      setShowTypeSelector(false); // close only on success
-      showSuccess(
-        showToast,
-        t('platforms.list.toast.createSuccessTitle', 'Created Successfully'),
-        t('platforms.list.toast.createSuccessMessage', {
-          defaultValue: `Platform "{{name}}" has been created`,
-          name: created.name,
-        })
-      );
-      navigate(`/platforms/${created.id}`);
-    } catch (e) {
-      // Keep modal open on failure; show error toast
-      showApiError(showToast, e);
-    }
-  }, [createPlatform, navigate, showToast, t]);
+  const liveCount = useMemo(() => platforms.filter(p => p.status === 'connected').length, [platforms]);
+
+  const visible = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return platforms;
+    return platforms.filter(p =>
+      (p.display_name || p.name).toLowerCase().includes(q)
+      || getPlatformLabel(toPlatformType(p.type)).toLowerCase().includes(q)
+    );
+  }, [platforms, query]);
+
+  const showSkeleton = isLoading && platforms.length === 0;
 
   return (
-    <>
-      <aside className="w-72 bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg border-r border-gray-200/60 dark:border-gray-700/60 flex flex-col shrink-0">
+    <aside className="flex w-72 shrink-0 flex-col border-r border-gray-200/60 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200/60 dark:border-gray-700/60 sticky top-0 bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg z-10 flex justify-between items-center">
-        <h3 className="text-md font-semibold text-gray-800 dark:text-gray-200">
+      <div className="px-6 pb-5 pt-7">
+        <div className="mb-3 flex items-center justify-between">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-acid-400 text-ink-900">
+            <Radio className="h-4 w-4" />
+          </span>
+          <button
+            type="button"
+            onClick={onAdd}
+            title={t('platforms.list.addPlatform', 'Add Platform')}
+            aria-label={t('platforms.list.addPlatform', 'Add Platform')}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-ink-900 text-acid-400 shadow-[0_10px_22px_-12px_rgb(15_16_18/0.8)] transition-transform duration-300 hover:rotate-90 hover:scale-105 active:scale-95 dark:bg-acid-400 dark:text-ink-900"
+          >
+            <Plus className="h-4 w-4" />
+          </button>
+        </div>
+        <h3 className="tgo-display text-[30px] text-gray-900 dark:text-white">
           {t('platforms.list.title', 'Platforms')}
         </h3>
-        <button
-          className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-100/70 dark:hover:bg-blue-900/30 rounded-md transition-colors duration-200"
-          title={t('platforms.list.addPlatform', 'Add Platform')}
-          onClick={handleAddPlatform}
-        >
-          <CirclePlus className="w-5 h-5" />
-        </button>
+        <p className="tgo-eyebrow mt-2">
+          {t('platforms.list.summary', '{{total}} channels · {{live}} live', { total: platforms.length, live: liveCount })}
+        </p>
+
+        <label className="group relative mt-5 flex items-center">
+          <Search className="pointer-events-none absolute left-3.5 h-4 w-4 text-gray-400 transition-colors group-focus-within:text-ink-900 dark:group-focus-within:text-white" />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t('common.search', 'Search')}
+            aria-label={t('common.search', 'Search')}
+            className="h-10 w-full rounded-full bg-white pl-10 pr-4 text-sm text-gray-900 shadow-[inset_0_0_0_1px_var(--color-gray-200)] outline-none transition-all duration-300 placeholder:text-gray-400 focus:shadow-[inset_0_0_0_2px_var(--color-acid-400)] dark:bg-gray-800 dark:text-gray-100 dark:shadow-[inset_0_0_0_1px_var(--color-gray-700)]"
+          />
+        </label>
       </div>
 
-      {/* Platform List */}
-      <nav className="flex-grow overflow-y-auto p-3 space-y-1">
-        {isLoading && (
-          <div className="text-center text-gray-500 dark:text-gray-400 py-8 animate-pulse">
-            <Inbox className="mx-auto mb-4 w-12 h-12 text-gray-300 dark:text-gray-600" />
-            <p className="text-sm">{t('platforms.list.loading', 'Loading platform list...')}</p>
+      {/* Platform list */}
+      <nav className="custom-scrollbar flex-grow space-y-1 overflow-y-auto px-3 pb-3">
+        <NavLink
+          to="/platforms"
+          end
+          className={({ isActive }) => `group mb-2 flex w-full items-center gap-3 rounded-full py-1.5 pl-1.5 pr-4 text-sm transition-all duration-300 ${
+            isActive
+              ? 'bg-ink-900 font-medium text-white shadow-[0_12px_26px_-14px_rgba(15,16,18,0.75)] dark:bg-acid-400 dark:text-ink-900'
+              : 'text-gray-600 hover:bg-white hover:text-gray-900 hover:shadow-sm dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100'
+          }`}
+        >
+          {({ isActive }) => (
+            <>
+              <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors duration-300 ${
+                isActive ? 'bg-acid-400 text-ink-900 dark:bg-ink-900 dark:text-acid-400' : 'bg-white text-gray-500 ring-1 ring-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:ring-gray-700'
+              }`}>
+                <LayoutGrid className="h-4 w-4" />
+              </span>
+              <span className="flex-1 truncate">{t('platforms.overview.nav', 'Overview')}</span>
+            </>
+          )}
+        </NavLink>
+
+        {showSkeleton && (
+          <div className="space-y-2 px-1 pt-1">
+            {[0, 1, 2, 3].map(i => (
+              <div key={i} className="flex items-center gap-3" style={{ opacity: 1 - i * 0.2 }}>
+                <span className="tgo-skeleton h-9 w-9 shrink-0 rounded-full" />
+                <span className="flex-1 space-y-1.5">
+                  <span className="tgo-skeleton block h-3 w-3/4 rounded-full" />
+                  <span className="tgo-skeleton block h-2.5 w-1/2 rounded-full" />
+                </span>
+              </div>
+            ))}
           </div>
         )}
 
-        {!isLoading && loadError && (
-          <div className="text-center text-red-600 dark:text-red-400 py-8 px-4">
-            <Inbox className="mx-auto mb-4 w-12 h-12 text-red-300 dark:text-red-500" />
-            <p className="text-sm font-medium">{t('platforms.list.loadFailedTitle', 'Load Failed')}</p>
-            <p className="text-xs mt-1 text-red-500 dark:text-red-400">{loadError}</p>
+        {!showSkeleton && loadError && (
+          <div className="mx-1 rounded-3xl bg-white p-5 text-center shadow-sm ring-1 ring-black/5 dark:bg-gray-800 dark:ring-white/5">
+            <span className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-red-50 text-red-500 dark:bg-red-900/20">
+              <AlertTriangle className="h-4 w-4" />
+            </span>
+            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{t('platforms.list.loadFailedTitle', 'Load Failed')}</p>
+            <p className="mt-1 break-words text-xs text-gray-500 dark:text-gray-400">{loadError}</p>
             <button
+              type="button"
               onClick={handleRetry}
               disabled={isRetrying}
-              className="mt-4 px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white text-sm rounded-md hover:bg-blue-700 dark:hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200 flex items-center gap-2 mx-auto"
+              className="mt-4 inline-flex h-9 items-center gap-2 rounded-full bg-ink-900 px-4 text-xs font-medium text-white transition-transform active:scale-95 disabled:opacity-60 dark:bg-acid-400 dark:text-ink-900"
             >
-              <RefreshCw className={`w-4 h-4 ${isRetrying ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-3.5 w-3.5 ${isRetrying ? 'animate-spin' : ''}`} />
               {isRetrying ? t('platforms.list.retrying', 'Retrying...') : t('platforms.list.retry', 'Retry')}
             </button>
           </div>
         )}
 
-        {!isLoading && !loadError && platforms.map((platform: Platform) => (
-          <PlatformListItem
-            key={platform.id}
-            platform={platform}
-          />
+        {!showSkeleton && !loadError && visible.map(platform => (
+          <PlatformListItem key={platform.id} platform={platform} />
         ))}
 
-        {!isLoading && !loadError && platforms.length === 0 && (
-          <div className="text-center text-gray-500 dark:text-gray-400 py-8">
-            <Inbox className="mx-auto mb-4 w-12 h-12 text-gray-300 dark:text-gray-600" />
-            <p className="text-sm">{t('platforms.list.emptyTitle', 'No Platforms')}</p>
-            <p className="text-xs mt-1">{t('platforms.list.emptyDescription', 'Click the button above to add a platform')}</p>
-          </div>
+        {!showSkeleton && !loadError && platforms.length > 0 && visible.length === 0 && (
+          <p className="px-4 py-6 text-center text-xs text-gray-400">{t('platforms.overview.noResults', 'No channels match your search')}</p>
+        )}
+
+        {!showSkeleton && !loadError && platforms.length === 0 && (
+          <button
+            type="button"
+            onClick={onAdd}
+            className="mx-1 flex w-[calc(100%-0.5rem)] flex-col items-center rounded-3xl border border-dashed border-gray-300 px-4 py-6 text-center transition-colors hover:border-acid-500 hover:bg-white dark:border-gray-700 dark:hover:bg-gray-800"
+          >
+            <Inbox className="mb-2 h-5 w-5 text-gray-400" />
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{t('platforms.list.emptyTitle', 'No Platforms')}</span>
+            <span className="mt-0.5 text-xs text-gray-400">{t('platforms.list.emptyDescription', 'Click the button above to add a platform')}</span>
+          </button>
         )}
       </nav>
 
       {/* Onboarding Panel */}
-      <OnboardingSidebarPanel />
+      <div className="mt-auto">
+        <OnboardingSidebarPanel />
+      </div>
     </aside>
-    <PlatformTypeSelector
-      open={showTypeSelector}
-      onClose={() => setShowTypeSelector(false)}
-      onSelect={handleTypeSelect}
-    />
-    </>
   );
 };
 
 export default PlatformList;
-
