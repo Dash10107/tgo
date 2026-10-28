@@ -7,6 +7,7 @@ import MessageInput from './components/MessageInput'
 import { ImagePreviewProvider } from './components/ImagePreview'
 import { useChatStore, usePlatformStore } from './store'
 import { resolveApiKey, resolveMode } from './utils/url'
+import { resolveApiBase } from './utils/network'
 import { recordVisitorActivity } from './services/visitorActivity'
 import { ThemeProvider } from './contexts/ThemeContext'
 import i18n from './i18n'
@@ -112,10 +113,9 @@ export default function App(){
       undefined
     ) as string | undefined
 
-    // Handle relative URL: starts with "/" but not "//"
-    if (apiBase && apiBase.startsWith('/') && !apiBase.startsWith('//')) {
-      apiBase = window.location.origin + apiBase
-    }
+    // Resolve relative paths against the current origin, and swap a loopback host
+    // (e.g. http://localhost:8000) for the widget's own host when opened from another device
+    apiBase = resolveApiBase(apiBase)
 
     return { apiBase }
   }, [])

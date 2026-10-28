@@ -536,7 +536,14 @@ export const useChatStore = create<ChatState>((set, get) => ({
           console.error('[Chat] Custom event handler error:', err)
         }
       })
-      await IMService.connect()
+      try {
+        await IMService.connect()
+      } catch (connErr: any) {
+        // Not fatal: the IM service keeps retrying in the background and sends reconnect on demand.
+        // History is fetched over HTTP, so still load it below.
+        console.warn('[Chat] IM connect failed, will retry:', connErr?.message || connErr)
+        set({ online: false })
+      }
       // initial history load (latest N)
       await get().loadInitialHistory(20)
     } catch (e: any) {
@@ -589,6 +596,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
         }
       }
 
+      // sendText reconnects the socket first if it dropped
       console.log('[Chat] WebSocket sending...')
       const result = await IMService.sendText(v, { clientMsgNo })
       console.log('[Chat] WebSocket send result:', result)
@@ -793,6 +801,13 @@ export const useChatStore = create<ChatState>((set, get) => ({
     const state = get()
     const msg = state.messages.find(m => m.id === messageId)
     if (!msg || msg.role !== 'user') return
+    // Text messages go through the full send flow so the AI completion is triggered again
+    if (msg.payload?.type === 1) {
+      const content = msg.payload.content
+      set(s => ({ messages: s.messages.filter(m => m.id !== messageId) }))
+      await get().sendMessage(content)
+      return
+    }
     // set to sending
     set(s => ({ messages: s.messages.map(m => m.id === messageId ? { ...m, status: 'sending', reasonCode: undefined } : m) }))
     try {
