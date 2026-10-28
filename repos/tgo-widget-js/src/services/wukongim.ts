@@ -3,6 +3,7 @@
 // If you prefer to use the base SDK (wukongimjssdk) later, we can swap the internals without changing callers.
 
 import { RecvMessage, WKIM, WKIMChannelType, WKIMEvent } from 'easyjssdk'
+import { normalizeWsUrl } from '../utils/network'
 
 export type IMInitOptions = {
   apiBase: string
@@ -39,7 +40,13 @@ export class WuKongIMService {
   private _statusListeners = new Set<(s: IMStatus, info?: any) => void>()
   private _customListeners = new Set<(e: any) => void>()
 
+  private _connecting: Promise<void> | null = null
+  private _retryTimer: ReturnType<typeof setTimeout> | null = null
+  private _retryAttempt = 0
+  private _netListenersBound = false
+
   get isReady() { return this._inited && !!this._im && !!this._cfg }
+  get isConnected() { return !!(this._im as any)?.isConnected }
   get uid() { return this._uid }
 
   async init(opts: IMInitOptions) {
@@ -51,6 +58,8 @@ export class WuKongIMService {
       // avoid duplicate bindings on re-init (e.g., React StrictMode double effects)
       try { this._unbindInternalEvents() } catch {}
     }
+    this._clearRetry()
+    this._retryAttempt = 0
     this._im = WKIM.init(wsAddr, { uid: opts.uid, token: opts.token || '' })
     this._bindInternalEvents()
     this._inited = true
@@ -59,9 +68,17 @@ export class WuKongIMService {
   private _bindInternalEvents() {
     if (!this._im || this._bound) return
 
-    this._hConnect = (result: any) => { this._emitStatus('connected', result) }
+    this._hConnect = (result: any) => {
+      this._retryAttempt = 0
+      this._clearRetry()
+      this._emitStatus('connected', result)
+    }
     this._hDisconnect = (info: any) => { this._emitStatus('disconnected', info) }
-    this._hError = (err: any) => { this._emitStatus('error', err) }
+    this._hError = (err: any) => {
+      // The SDK emits "Reconnection failed." after its own retries give up; take over from there.
+      if (/reconnection failed/i.test(String(err?.message || ''))) this._scheduleRetry()
+      this._emitStatus('error', err)
+    }
     this._hMessage = (message: any) => { this._emitMessage(message as RecvMessage) }
     this._hCustom = (ev: any) => { this._emitCustom(ev) }
 
@@ -94,12 +111,98 @@ export class WuKongIMService {
 
   async connect() {
     if (!this._im) throw new Error('WuKongIMService not initialized')
+    this._bindNetworkListeners()
+    if (this.isConnected) return
+    // Share one in-flight attempt: calling the SDK's connect() twice while connecting
+    // replaces the first caller's promise handlers and leaves it hanging forever.
+    if (this._connecting) return this._connecting
+    // The SDK may be mid-reconnect on its own; wait for that instead of racing it.
+    if (this._sdkConnecting()) return this._waitForConnect(10000)
+    this._clearRetry()
     this._emitStatus('connecting')
-    // EasyJSSDK connect returns a promise
-    return this._im.connect()
+    const im = this._im
+    this._connecting = (async () => {
+      try {
+        await im.connect()
+      } catch (e) {
+        // The SDK only auto-reconnects after a successful first connection,
+        // so keep retrying in the background ourselves.
+        this._emitStatus('error', e)
+        this._scheduleRetry()
+        throw e
+      } finally {
+        this._connecting = null
+      }
+    })()
+    return this._connecting
+  }
+
+  /** Make sure the socket is connected before sending; reconnects if needed. */
+  async ensureConnected(timeoutMs = 10000): Promise<void> {
+    if (!this._im) throw new Error('WuKongIMService not initialized')
+    if (this.isConnected) return
+    const attempt = this.connect()
+    attempt.catch(() => { /* surfaced via the race below or retried in background */ })
+    let timer: ReturnType<typeof setTimeout> | null = null
+    const timeout = new Promise<never>((_, reject) => {
+      timer = setTimeout(() => reject(new Error('IM connection timeout')), timeoutMs)
+    })
+    try {
+      await Promise.race([attempt, timeout])
+    } finally {
+      if (timer) clearTimeout(timer)
+    }
+    if (!this.isConnected) throw new Error('IM not connected')
+  }
+
+  private _sdkConnecting(): boolean {
+    // Socket opening (0), or open (1) but still authenticating
+    const im = this._im as any
+    const state = im?.ws?.readyState
+    return state === 0 || (state === 1 && !im?.isConnected)
+  }
+
+  private _waitForConnect(timeoutMs: number): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => { off(); reject(new Error('IM connection timeout')) }, timeoutMs)
+      const off = this.onStatus((s) => {
+        if (s === 'connected') { clearTimeout(timer); off(); resolve() }
+      })
+    })
+  }
+
+  private _scheduleRetry() {
+    if (this._retryTimer || !this._im) return
+    const delay = Math.min(30000, 1000 * Math.pow(2, this._retryAttempt))
+    this._retryAttempt++
+    this._retryTimer = setTimeout(() => {
+      this._retryTimer = null
+      if (this.isConnected) return
+      this.connect().catch(() => { /* next retry already scheduled */ })
+    }, delay)
+  }
+
+  private _clearRetry() {
+    if (this._retryTimer) { clearTimeout(this._retryTimer); this._retryTimer = null }
+  }
+
+  private _bindNetworkListeners() {
+    if (this._netListenersBound || typeof window === 'undefined') return
+    this._netListenersBound = true
+    const kick = () => {
+      if (!this._im || this.isConnected) return
+      this._retryAttempt = 0
+      this._clearRetry()
+      this.connect().catch(() => {})
+    }
+    window.addEventListener('online', kick)
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') kick()
+    })
   }
 
   async disconnect() {
+    this._clearRetry()
     if (!this._im) return
     if (typeof this._im.disconnect === 'function') {
       try { await this._im.disconnect() } catch {}
@@ -125,7 +228,8 @@ export class WuKongIMService {
 
       // Priority 1: Use wss_addr if present and non-empty (highest priority)
       if (data?.wss_addr && typeof data.wss_addr === 'string' && data.wss_addr.trim()) {
-        return data.wss_addr.trim()
+        const wss = data.wss_addr.trim()
+        return normalizeWsUrl(wss.includes('://') ? wss : `wss://${wss}`, apiBase)
       }
 
       // Priority 2: Fallback to existing logic
@@ -133,9 +237,8 @@ export class WuKongIMService {
       let addr: any = data?.ws_addr ?? data?.ws ?? data?.ws_url ?? data?.wsAddr ?? data?.websocket
       if (!addr && isHttps) addr = data?.wss ?? data?.ws_addr_tls
       if (!addr || typeof addr !== 'string') throw new Error('missing ws address')
-      let wsAddr = String(addr)
-      if (/^http(s)?:/i.test(wsAddr)) wsAddr = wsAddr.replace(/^http/i, 'ws')
-      return wsAddr
+      // Route may return a bare "host:port" (no scheme); WebSocket requires a full ws(s):// URL
+      return normalizeWsUrl(addr, apiBase)
     } catch (e: any) {
       const msg = e?.message ? String(e.message) : String(e)
       throw new Error(`[WuKongIM] route fetch failed: ${msg}`)
@@ -150,6 +253,7 @@ export class WuKongIMService {
 
   async sendText(text: string, opts?: { to?: string; channelType?: 251; clientMsgNo?: string; header?: any }) {
     if (!this._im || !this._cfg) throw new Error('WuKongIMService not ready')
+    await this.ensureConnected()
     const to = opts?.to ?? this._cfg.target
     const payload = { type: 1, content: text }
     return this._im.send(to, opts?.channelType ?? 251, payload, { clientMsgNo: opts?.clientMsgNo, header: opts?.header })
@@ -157,6 +261,7 @@ export class WuKongIMService {
 
   async sendPayload(payload: any, opts?: { to?: string; channelType?: 251; clientMsgNo?: string; header?: any }) {
     if (!this._im || !this._cfg) throw new Error('WuKongIMService not ready')
+    await this.ensureConnected()
     const to = opts?.to ?? this._cfg.target
     return this._im.send(to, opts?.channelType ?? 251, payload, { clientMsgNo: opts?.clientMsgNo, header: opts?.header })
   }

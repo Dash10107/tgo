@@ -122,7 +122,7 @@ export const usePlatformStore = create<PlatformState>((set, get) => ({
       }))
 
       // Apply display_mode: if set, use it as default (unless user has explicitly toggled before)
-      const cachedExpandedRaw = localStorage.getItem(EXPANDED_KEY(apiBase, platformApiKey))
+      const cachedExpandedRaw = getJSON<boolean>(EXPANDED_KEY(apiBase, platformApiKey))
       const hasUserToggled = cachedExpandedRaw !== null
       console.log('[Platform] display_mode:', cfg.display_mode, 'cachedExpandedRaw:', cachedExpandedRaw, 'hasUserToggled:', hasUserToggled)
 
