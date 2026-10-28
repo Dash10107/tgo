@@ -4,7 +4,7 @@ import IMService from '../services/wukongim'
 import type { ChatMessage, MessagePayload, MixedPart, JSONRenderPatchPart } from '../types/chat'
 import { isSystemMessageType } from '../types/chat'
 import { loadCachedVisitor, registerVisitor, saveCachedVisitor } from '../services/visitor'
-import { resolveApiKey } from '../utils/url'
+import { resolveApiKey, resolvePreview } from '../utils/url'
 import { ReasonCode } from 'easyjssdk'
 import { syncVisitorMessages, type WuKongIMMessage } from '../services/messageHistory'
 import { fetchChannelInfo, type ChannelInfo } from '../services/channel'
@@ -299,6 +299,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
           platformApiKey,
           extra: {
             ...(sys ? { system_info: sys } : {}),
+            // Lets staff tell admin preview chats apart from real visitors
+            ...(resolvePreview() ? { nickname: 'Live preview' } : {}),
             timezone,
           },
         })

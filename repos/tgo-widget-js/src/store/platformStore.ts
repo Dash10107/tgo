@@ -14,11 +14,14 @@ export type PlatformState = {
   }
   init: (apiBase: string, platformApiKey: string) => Promise<void>
   setConfig: (cfg: Partial<PlatformConfig>) => void
+  // Unsaved config pushed by the tgo-web live preview; wins over the fetched platform config
+  previewOverrides: Partial<PlatformState['config']>
+  applyPreviewConfig: (cfg: Partial<PlatformState['config']>) => void
   updateThemeColor: (color: string) => void
   // expanded window state
   isExpanded: boolean
   toggleExpanded: () => void
-  setExpanded: (v: boolean) => void
+  setExpanded: (v: boolean, persist?: boolean) => void
   // visibility state (open/closed)
   isVisible: boolean
   setVisible: (v: boolean) => void
@@ -47,12 +50,24 @@ export const usePlatformStore = create<PlatformState>((set, get) => ({
   isExpanded: false,
   isVisible: false,
   welcomeInjected: false,
+  previewOverrides: {},
   _apiBase: undefined,
   _platformApiKey: undefined,
 
   setConfig: (cfg) => {
     const current = get().config
     set({ config: { ...current, ...cfg } as PlatformState['config'] })
+  },
+
+  applyPreviewConfig: (cfg) => {
+    set(s => ({
+      config: { ...s.config, ...cfg },
+      previewOverrides: { ...s.previewOverrides, ...cfg },
+    }))
+    if (cfg.display_mode === 'big' || cfg.display_mode === 'small') {
+      // Preview-only: don't persist, so it never leaks into the visitor's real expanded state
+      get().setExpanded(cfg.display_mode === 'big', false)
+    }
   },
 
   updateThemeColor: (color: string) => {
@@ -69,10 +84,11 @@ export const usePlatformStore = create<PlatformState>((set, get) => ({
     set(s => ({ config: { ...s.config, theme_color: c }}))
   },
 
-  setExpanded: (v: boolean) => {
+  setExpanded: (v: boolean, persist = true) => {
     set({ isExpanded: !!v })
     // Update CSS variable for responsive bubble width
     applyExpandedLayout(!!v)
+    if (!persist) return
     try {
       const apiBase = get()._apiBase
       const apiKey = get()._platformApiKey
@@ -118,8 +134,10 @@ export const usePlatformStore = create<PlatformState>((set, get) => ({
       const cfg = (info?.config ?? {}) as PlatformConfig
       console.log('[Platform] Loaded config:', cfg)
       set(s => ({
-        config: { ...s.config, ...cfg },
+        // Re-apply preview overrides so a late fetch doesn't clobber unsaved preview values
+        config: { ...s.config, ...cfg, ...s.previewOverrides },
       }))
+      if (get().previewOverrides.display_mode) return
 
       // Apply display_mode: if set, use it as default (unless user has explicitly toggled before)
       const cachedExpandedRaw = getJSON<boolean>(EXPANDED_KEY(apiBase, platformApiKey))

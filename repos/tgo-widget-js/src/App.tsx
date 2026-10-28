@@ -6,10 +6,10 @@ import MessageList from './components/MessageList'
 import MessageInput from './components/MessageInput'
 import { ImagePreviewProvider } from './components/ImagePreview'
 import { useChatStore, usePlatformStore } from './store'
-import { resolveApiKey, resolveMode } from './utils/url'
+import { resolveApiKey, resolveMode, resolvePreview } from './utils/url'
 import { resolveApiBase } from './utils/network'
 import { recordVisitorActivity } from './services/visitorActivity'
-import { ThemeProvider } from './contexts/ThemeContext'
+import { ThemeProvider, getTargetDocument } from './contexts/ThemeContext'
 import i18n from './i18n'
 
 
@@ -21,6 +21,9 @@ const WidgetWrap = styled.div`
 `
 
 const Grow = styled.div`flex: 1; min-height: 0; display: flex; flex-direction: column;`
+
+// Running inside the tgo-web live preview (fixed for the app's lifetime)
+const isPreview = resolvePreview()
 
 export default function App(){
   const messages = useChatStore(s => s.messages)
@@ -135,10 +138,14 @@ export default function App(){
     void initIM({ apiBase: cfg.apiBase! })
   }, [])
 
-  // Insert welcome message once after platform config available
+  // Insert welcome message once after platform config available.
+  // In the live preview, always show it and follow edits without persisting "already shown".
   useEffect(()=>{
     const welcome = pConfig?.welcome_message
-    if (welcome && !welcomeInjected) {
+    if (!welcome) return
+    if (isPreview) {
+      ensureWelcomeMessage(welcome)
+    } else if (!welcomeInjected) {
       ensureWelcomeMessage(welcome)
       markWelcomeInjected()
     }
@@ -164,9 +171,9 @@ export default function App(){
     return (p==='bottom-right'||p==='bottom-left'||p==='top-right'||p==='top-left') ? p : 'bottom-right'
   }, [pConfig?.position])
 
-  // Apply theme color to CSS variable --primary inside the iframe + notify host
+  // Apply theme color to CSS variable --primary in the rendered (UI iframe) document + notify host
   useEffect(()=>{
-    try { document.documentElement?.style?.setProperty('--primary', theme) } catch {}
+    try { getTargetDocument().documentElement?.style?.setProperty('--primary', theme) } catch {}
     try { window.parent?.postMessage?.({ type: 'TGO_WIDGET_CONFIG', payload: { theme_color: theme } }, '*') } catch {}
   }, [theme])
 
@@ -396,7 +403,11 @@ export default function App(){
         }
         if (typeof p.position === 'string') patch.position = p.position
         if (typeof p.logoUrl === 'string') patch.logo_url = p.logoUrl
-        try { usePlatformStore.getState().setConfig(patch as any) } catch {}
+        if (p.displayMode === 'big' || p.displayMode === 'small') patch.display_mode = p.displayMode
+        try { usePlatformStore.getState().applyPreviewConfig(patch) } catch {}
+        if (typeof p.lang === 'string' && p.lang && p.lang !== i18n.language) {
+          void i18n.changeLanguage(p.lang)
+        }
       } else if (d?.type === 'TGO_WIDGET_SHOWN') {
         try { useChatStore.getState().clearUnreadCount() } catch {}
       } else if (d?.type === 'TGO_TRACK_EVENT' && d.payload) {
@@ -427,6 +438,9 @@ export default function App(){
     }
 
     window.addEventListener('message', onMsg)
+
+    // Tell the host (e.g. preview.html) we can receive CONFIG_UPDATE now
+    try { window.parent?.postMessage?.({ type: 'TGO_WIDGET_READY' }, '*') } catch {}
 
     if (useChatStore.getState().myUid || myUid) {
       try { window.parent?.postMessage?.({ type: 'TGO_REQUEST_PAGE_INFO' }, '*') } catch {}

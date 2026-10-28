@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Widget Preview</title>
+    <!--
+      Live preview host used by tgo-web (Platforms → Website).
+      Embeds the real SDK exactly like a customer site would (launcher + floating panel),
+      opens the widget, and relays CONFIG_UPDATE from tgo-web to the controller iframe.
+      Query: ?apiKey=...&mode=light|dark&lang=en
+    -->
+    <style>
+      :root { --page:#f4f5f7; --block:#e3e6eb; --block-soft:#eceef2; --card:#ffffff; }
+      html.dark { --page:#0d0e10; --block:#1f2125; --block-soft:#17181b; --card:#141518; }
+      html, body { height: 100%; }
+      body { margin: 0; background: var(--page); overflow: hidden; font: 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; }
+      .site { padding: 20px 24px; display: flex; flex-direction: column; gap: 28px; pointer-events: none; user-select: none; }
+      .nav { display: flex; align-items: center; gap: 14px; }
+      .b { background: var(--block); border-radius: 999px; height: 10px; }
+      .logo { width: 28px; height: 28px; border-radius: 8px; }
+      .grow { flex: 1; }
+      .hero { display: flex; flex-direction: column; gap: 12px; max-width: 460px; }
+      .h1 { height: 22px; border-radius: 8px; }
+      .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+      .card { background: var(--card); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+      .thumb { height: 72px; border-radius: 10px; background: var(--block-soft); }
+    </style>
+    <script>
+      (function () {
+        var q = new URLSearchParams(location.search);
+        if (q.get('mode') === 'dark') document.documentElement.classList.add('dark');
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="site" aria-hidden="true">
+      <div class="nav">
+        <div class="b logo"></div>
+        <div class="b" style="width:72px"></div>
+        <div class="grow"></div>
+        <div class="b" style="width:44px"></div>
+        <div class="b" style="width:44px"></div>
+        <div class="b" style="width:44px"></div>
+      </div>
+      <div class="hero">
+        <div class="b h1" style="width:85%"></div>
+        <div class="b h1" style="width:60%"></div>
+        <div class="b" style="width:95%"></div>
+        <div class="b" style="width:80%"></div>
+      </div>
+      <div class="cards">
+        <div class="card"><div class="thumb"></div><div class="b" style="width:70%"></div><div class="b" style="width:45%"></div></div>
+        <div class="card"><div class="thumb"></div><div class="b" style="width:60%"></div><div class="b" style="width:50%"></div></div>
+        <div class="card"><div class="thumb"></div><div class="b" style="width:75%"></div><div class="b" style="width:40%"></div></div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        var CTRL_IFRAME_NAME = 'tgo-controller-frame';
+        var q = new URLSearchParams(location.search);
+        var apiKey = q.get('apiKey') || q.get('api_key') || '';
+        var lastConfig = null;
+
+        function ctrlWindow() {
+          try { return window.frames[CTRL_IFRAME_NAME] || null; } catch (e) { return null; }
+        }
+
+        function forwardConfig() {
+          var w = ctrlWindow();
+          if (w && lastConfig) {
+            try { w.postMessage(lastConfig, location.origin); } catch (e) { /* noop */ }
+          }
+        }
+
+        window.addEventListener('message', function (e) {
+          var d = e.data || {};
+          // Config from the tgo-web editor (our parent frame)
+          if (e.source === window.parent && d.type === 'CONFIG_UPDATE' && d.payload) {
+            lastConfig = d;
+            forwardConfig();
+            return;
+          }
+          // Widget app mounted inside the controller: replay the latest unsaved config
+          if (d.type === 'TGO_WIDGET_READY' && e.source === ctrlWindow()) {
+            forwardConfig();
+            // Re-sync open state; the initial show() may have fired before the app was listening
+            try { if (window.TGOWidget && window.TGOWidget.show) window.TGOWidget.show(); } catch (err) { /* noop */ }
+          }
+        });
+
+        if (!apiKey) {
+          console.warn('[Widget Preview] Missing ?apiKey=...');
+          return;
+        }
+
+        var s = document.createElement('script');
+        s.src = './tgo-widget-sdk.js?api_key=' + encodeURIComponent(apiKey) + '&preview=1';
+        s.onload = function () {
+          // Show the panel open by default so the preview is immediately usable
+          try { window.TGOWidget && window.TGOWidget.show && window.TGOWidget.show(); } catch (e) { /* noop */ }
+        };
+        document.body.appendChild(s);
+      })();
+    </script>
+  </body>
+</html>

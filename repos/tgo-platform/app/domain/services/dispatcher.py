@@ -218,14 +218,14 @@ async def process_message(
                     # Debug: print all event types and data
                     # print(f"[DISPATCH DEBUG] event={ev.event} type={et} payload={payload}")
                     
-                    if et in {"team_run_content", "agent_run_content", "workflow_content", "workflow_run_content"}:
-                        data = payload.get("data", {})
-                        # Try flat content first, then nested data.content (level 3)
-                        text = data.get("content") or data.get("text")
+                    if et in {"agent_content_chunk", "team_run_content", "agent_run_content", "workflow_content", "workflow_run_content"}:
+                        data = payload.get("data") or {}
+                        # Try flat content first, then nested data.content (level 3, e.g. fallback reply)
+                        text = data.get("content_chunk") or data.get("content") or data.get("text")
                         if not text and isinstance(data, dict):
                             inner_data = data.get("data", {})
                             if isinstance(inner_data, dict):
-                                text = inner_data.get("content") or inner_data.get("text")
+                                text = inner_data.get("content_chunk") or inner_data.get("content") or inner_data.get("text")
                         
                         if text:
                             chunks.append(text)

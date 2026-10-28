@@ -87,3 +87,12 @@ export function resolveMode(): ThemeMode {
   return 'light'
 }
 
+
+/**
+ * Whether this app runs inside the tgo-web live preview (?preview=1 on the control iframe URL,
+ * set by the SDK when loaded from preview.html). Only the current window is checked so a host
+ * page's own query string can't switch a real widget into preview mode.
+ */
+export function resolvePreview(): boolean {
+  return tryGetSearchParamFrom(window, 'preview') === '1'
+}

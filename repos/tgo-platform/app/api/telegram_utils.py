@@ -11,7 +11,9 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import html
 import logging
+import re
 from typing import Any
 
 import httpx
@@ -22,6 +24,95 @@ logger = logging.getLogger(__name__)
 
 # Telegram Bot API base URL
 TELEGRAM_API_BASE = "https://api.telegram.org"
+
+# Telegram text limit
+TELEGRAM_TEXT_LIMIT = 4096
+
+_CODE_BLOCK_RE = re.compile(r"```[^\n`]*\n?(.*?)```", re.DOTALL)
+_INLINE_CODE_RE = re.compile(r"`([^`\n]+)`")
+_LINK_RE = re.compile(r"\[([^\]\n]+)\]\((https?://[^)\s]+)\)")
+_BOLD_RE = re.compile(r"\*\*(.+?)\*\*|__(.+?)__")
+_ITALIC_RE = re.compile(r"(?<![\w*])\*(?!\s)([^*\n]+?)(?<!\s)\*(?![\w*])")
+_STRIKE_RE = re.compile(r"~~(.+?)~~")
+_HEADING_RE = re.compile(r"^[ \t]{0,3}#{1,6}[ \t]+(.+?)[ \t]*#*[ \t]*$", re.MULTILINE)
+_BULLET_RE = re.compile(r"^([ \t]*)[-*+][ \t]+", re.MULTILINE)
+_HR_RE = re.compile(r"^[ \t]*([-*_])([ \t]*\1){2,}[ \t]*$", re.MULTILINE)
+
+
+def markdown_to_telegram_html(text: str) -> str:
+    """Convert common Markdown (as produced by LLMs) to Telegram-supported HTML.
+
+    Supports code blocks, inline code, links, bold, italic, strikethrough,
+    headings (rendered bold) and bullet lists (rendered as "•").
+    """
+    placeholders: list[str] = []
+
+    def _stash(html: str) -> str:
+        placeholders.append(html)
+        return f"\x00{len(placeholders) - 1}\x00"
+
+    # Code first so its content is not touched by other rules
+    text = _CODE_BLOCK_RE.sub(lambda m: _stash(f"<pre>{html.escape(m.group(1).rstrip())}</pre>"), text)
+    text = _INLINE_CODE_RE.sub(lambda m: _stash(f"<code>{html.escape(m.group(1))}</code>"), text)
+    text = _LINK_RE.sub(
+        lambda m: _stash(f'<a href="{html.escape(m.group(2), quote=True)}">{html.escape(m.group(1))}</a>'),
+        text,
+    )
+
+    text = html.escape(text, quote=False)
+    text = _HR_RE.sub("", text)
+    text = _HEADING_RE.sub(r"<b>\1</b>", text)
+    text = _BULLET_RE.sub(r"\1• ", text)
+    text = _BOLD_RE.sub(lambda m: f"<b>{m.group(1) or m.group(2)}</b>", text)
+    text = _ITALIC_RE.sub(r"<i>\1</i>", text)
+    text = _STRIKE_RE.sub(r"<s>\1</s>", text)
+    # Collapse trailing spaces (Markdown hard breaks) and excess blank lines
+    text = re.sub(r"[ \t]+\n", "\n", text)
+    text = re.sub(r"\n{3,}", "\n\n", text).strip()
+
+    return re.sub(r"\x00(\d+)\x00", lambda m: placeholders[int(m.group(1))], text)
+
+
+def strip_markdown(text: str) -> str:
+    """Remove common Markdown syntax for plain-text delivery."""
+    text = _CODE_BLOCK_RE.sub(lambda m: m.group(1).rstrip(), text)
+    text = _INLINE_CODE_RE.sub(r"\1", text)
+    text = _LINK_RE.sub(r"\1 (\2)", text)
+    text = _HR_RE.sub("", text)
+    text = _HEADING_RE.sub(r"\1", text)
+    text = _BULLET_RE.sub(r"\1• ", text)
+    text = _BOLD_RE.sub(lambda m: m.group(1) or m.group(2), text)
+    text = _ITALIC_RE.sub(r"\1", text)
+    text = _STRIKE_RE.sub(r"\1", text)
+    text = re.sub(r"[ \t]+\n", "\n", text)
+    return re.sub(r"\n{3,}", "\n\n", text).strip()
+
+
+async def telegram_send_rich_text(
+    bot_token: str,
+    chat_id: str,
+    text: str,
+    timeout: int | None = None,
+) -> dict[str, Any]:
+    """Send Markdown text rendered as Telegram HTML, falling back to plain text.
+
+    Falls back when the HTML is rejected by Telegram (e.g. malformed entities)
+    or exceeds the message length limit.
+    """
+    rich = markdown_to_telegram_html(text)
+    if len(rich) <= TELEGRAM_TEXT_LIMIT:
+        try:
+            result = await telegram_send_text(
+                bot_token=bot_token, chat_id=chat_id, text=rich, parse_mode="HTML", timeout=timeout
+            )
+            if result.get("ok"):
+                return result
+        except httpx.HTTPStatusError as e:
+            logger.warning("[TELEGRAM] HTML sendMessage rejected, falling back to plain text: %s", e.response.text)
+
+    return await telegram_send_text(
+        bot_token=bot_token, chat_id=chat_id, text=strip_markdown(text), timeout=timeout
+    )
 
 
 async def telegram_send_text(

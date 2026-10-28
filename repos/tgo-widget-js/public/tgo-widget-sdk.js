@@ -250,6 +250,8 @@
     try {
       const ctrlUrl = new URL('./index.html', baseUrl);
       if (opts && opts.apiKey) ctrlUrl.searchParams.set('apiKey', String(opts.apiKey));
+      // Admin live preview: the app uses a throwaway visitor instead of the persisted one
+      if (opts && opts.preview) ctrlUrl.searchParams.set('preview', '1');
       ctrl.src = ctrlUrl.toString();
     } catch (e) {
       console.error('[Pelatis SDK] Failed to create controller iframe', e);
@@ -682,7 +684,8 @@
       const apiKey = url.searchParams.get('api_key') || url.searchParams.get('apiKey') || url.searchParams.get('platform_api_key');
       if (apiKey) {
         // Avoid duplicate injection; init() now returns existing instance if already created
-        try { window[SDK_NAME].init({ apiKey: String(apiKey) }); } catch(e) { /* ignore */ }
+        const preview = url.searchParams.get('preview') === '1';
+        try { window[SDK_NAME].init({ apiKey: String(apiKey), preview }); } catch(e) { /* ignore */ }
       }
     } catch (e) { /* ignore */ }
   })();

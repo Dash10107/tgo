@@ -14,6 +14,22 @@ import { SiTiktok } from 'react-icons/si';
 export type IconComponent = ComponentType<{ size?: number | string; className?: string }>;
 
 /**
+ * China-only channel types hidden from the platforms UI (list, counts, overview, type picker)
+ */
+const HIDDEN_PLATFORM_TYPES = new Set<string>([
+  PlatformType.WECHAT,
+  PlatformType.DOUYIN,
+  PlatformType.WECOM,
+  PlatformType.WECOM_BOT,
+  PlatformType.FEISHU_BOT,
+  PlatformType.DINGTALK_BOT,
+]);
+
+export function isHiddenPlatformType(type: string | null | undefined): boolean {
+  return HIDDEN_PLATFORM_TYPES.has(String(type || '').toLowerCase());
+}
+
+/**
  * Coerce a raw string to a PlatformType enum (fallback to WEBSITE)
  */
 export function toPlatformType(input: string | null | undefined): PlatformType {

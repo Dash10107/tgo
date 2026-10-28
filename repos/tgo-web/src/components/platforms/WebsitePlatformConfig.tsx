@@ -49,10 +49,21 @@ const THEME_PRESETS = ['#1E40AF', '#0F1012', '#7C3AED', '#DB2777', '#EA580C', '#
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 const POSITIONS: WidgetPosition[] = ['top-left', 'top-right', 'bottom-left', 'bottom-right'];
 
+// Resolve the widget's preview host page (preview.html), which embeds the real SDK
+// (launcher + floating panel) instead of stretching the bare widget app over the panel.
+// Accepts a widget base like "/widget", "http://localhost:5174" or ".../dist/index.html".
+const toWidgetPreviewPage = (base: string): string => {
+  const [path, query = ''] = base.split('?');
+  const page = /\.html?$/i.test(path)
+    ? path.replace(/[^/]*$/, 'preview.html')
+    : `${path.replace(/\/+$/, '')}/preview.html`;
+  return query ? `${page}?${query}` : page;
+};
+
 // Widget preview URL and origin (configurable via runtime config)
 const getWidgetPreviewUrlWithFallback = (apiKey?: string, mode?: 'light' | 'dark', lang?: string): string => {
   const url = getWidgetPreviewUrl();
-  const baseUrl = url || 'http://127.0.0.1:5500/tgo-widget-js/dist/index.html';
+  const baseUrl = toWidgetPreviewPage(url || 'http://127.0.0.1:5500/tgo-widget-js/dist/index.html');
 
   const params = new URLSearchParams();
   if (apiKey) params.set('apiKey', apiKey);
@@ -428,7 +439,7 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
           {t('platforms.website.preview.live', 'Updates as you type')}
         </span>
       </div>
-      <div className="relative h-[600px] overflow-hidden rounded-[1.4rem] bg-gray-100 ring-1 ring-black/5 2xl:h-[calc(100vh-8rem)] dark:bg-gray-950 dark:ring-white/5">
+      <div className="relative h-[720px] overflow-hidden rounded-[1.4rem] bg-gray-100 ring-1 ring-black/5 2xl:h-[calc(100vh-8rem)] dark:bg-gray-950 dark:ring-white/5">
         {!previewLoaded && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-sm text-gray-400">
             <span className="flex h-12 w-12 items-center justify-center rounded-full bg-ink-900 text-acid-400 dark:bg-acid-400 dark:text-ink-900">
@@ -442,7 +453,8 @@ const WebsitePlatformConfig: React.FC<WebsitePlatformConfigProps> = ({ platform 
           src={previewUrl}
           onLoad={() => setPreviewLoaded(true)}
           title="Widget Preview"
-          sandbox="allow-scripts allow-same-origin"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
+          allow="clipboard-read; clipboard-write"
           className={`relative h-full w-full transition-opacity duration-500 ${previewLoaded ? 'opacity-100' : 'opacity-0'}`}
         />
       </div>

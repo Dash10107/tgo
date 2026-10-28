@@ -8,7 +8,7 @@ from app.domain.entities import StreamEvent
 from app.domain.services.adapters.base import BasePlatformAdapter
 from app.core.config import settings
 
-from app.api.telegram_utils import telegram_send_text
+from app.api.telegram_utils import telegram_send_rich_text, telegram_send_text
 
 
 class TelegramAdapter(BasePlatformAdapter):
@@ -73,11 +73,20 @@ class TelegramAdapter(BasePlatformAdapter):
         print(f"[TELEGRAM ADAPTER] Sending to chat_id={self.chat_id}: {text[:100]}...")
         
         # Send text message via Telegram Bot API
-        result = await telegram_send_text(
-            bot_token=self.bot_token,
-            chat_id=self.chat_id,
-            text=text[:4096],  # Telegram text limit
-            parse_mode=self.parse_mode,
-            timeout=self.http_timeout,
-        )
+        if self.parse_mode:
+            result = await telegram_send_text(
+                bot_token=self.bot_token,
+                chat_id=self.chat_id,
+                text=text[:4096],  # Telegram text limit
+                parse_mode=self.parse_mode,
+                timeout=self.http_timeout,
+            )
+        else:
+            # AI replies are Markdown; render them as Telegram HTML
+            result = await telegram_send_rich_text(
+                bot_token=self.bot_token,
+                chat_id=self.chat_id,
+                text=text,
+                timeout=self.http_timeout,
+            )
         print(f"[TELEGRAM ADAPTER] Send result: {result}")

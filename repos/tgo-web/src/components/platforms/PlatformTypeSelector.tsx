@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { AlertTriangle, ArrowUpRight, Loader2, Plug, RefreshCw, Search } from 'lucide-react';
 import platformsApiService, { type PlatformTypeDefinitionResponse } from '@/services/platformsApi';
 import { Modal, SecondaryButton } from '@/components/ui/ModalKit';
+import { isHiddenPlatformType } from '@/utils/platformUtils';
 import { PlatformIcon } from './PlatformKit';
 
 interface PlatformTypeSelectorProps {
@@ -53,7 +54,7 @@ const PlatformTypeSelector: React.FC<PlatformTypeSelectorProps> = ({ open, onClo
   const supported = useMemo(() => {
     const q = query.trim().toLowerCase();
     return (types ?? [])
-      .filter(pt => pt.is_supported !== false)
+      .filter(pt => pt.is_supported !== false && !isHiddenPlatformType(pt.type))
       .filter(pt => !q || (pt.display_name || pt.name).toLowerCase().includes(q) || pt.type.toLowerCase().includes(q));
   }, [types, query]);
 

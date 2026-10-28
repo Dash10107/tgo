@@ -1,9 +1,28 @@
 import { getJSON, setJSON } from '../utils/storage'
+import { resolvePreview } from '../utils/url'
 import type { VisitorRegisterRequest, VisitorRegisterResponse, CachedVisitor } from '../types/api'
 
 const VISITOR_CACHE_KEY = (apiBase: string, platformApiKey: string) => `tgo:visitor:${apiBase}:${platformApiKey}`
+const PREVIEW_VISITOR_CACHE_KEY = (apiBase: string, platformApiKey: string) => `tgo:preview-visitor:${apiBase}:${platformApiKey}`
+
+// The tgo-web live preview must not reuse the visitor persisted for this origin: that one may be
+// an old test conversation a staff member took over (AI disabled, routed to a human). Keep a
+// separate preview visitor in sessionStorage so it lives for the admin's tab only.
+function loadPreviewVisitor(key: string): CachedVisitor | null {
+  try {
+    const raw = window.sessionStorage.getItem(key)
+    return raw ? (JSON.parse(raw) as CachedVisitor) : null
+  } catch {
+    return null
+  }
+}
+
+function savePreviewVisitor(key: string, cached: CachedVisitor) {
+  try { window.sessionStorage.setItem(key, JSON.stringify(cached)) } catch {}
+}
 
 export function loadCachedVisitor(apiBase: string, platformApiKey: string): CachedVisitor | null {
+  if (resolvePreview()) return loadPreviewVisitor(PREVIEW_VISITOR_CACHE_KEY(apiBase, platformApiKey))
   return getJSON<CachedVisitor>(VISITOR_CACHE_KEY(apiBase, platformApiKey))
 }
 
@@ -21,6 +40,10 @@ export function saveCachedVisitor(apiBase: string, platformApiKey: string, v: Vi
     created_at: v.created_at,
     updated_at: v.updated_at,
     expires_at: expiresAtMs,
+  }
+  if (resolvePreview()) {
+    savePreviewVisitor(PREVIEW_VISITOR_CACHE_KEY(apiBase, platformApiKey), cached)
+    return
   }
   setJSON(VISITOR_CACHE_KEY(apiBase, platformApiKey), cached)
 }

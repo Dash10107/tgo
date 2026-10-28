@@ -2,7 +2,7 @@ import React, { createContext, useContext, useMemo, useState, useCallback, useEf
 import type { ThemeMode } from '../utils/url'
 
 // Get the target document (UI iframe's document when running in controller iframe)
-function getTargetDocument(): Document {
+export function getTargetDocument(): Document {
   try {
     const isController = window.name === 'tgo-controller-frame'
     if (isController && window.parent && 'frames' in window.parent) {

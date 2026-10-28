@@ -5,6 +5,7 @@ import platformsApiService, { type PlatformResponse, type PlatformUpdateRequest 
 import { useOnboardingStore } from './onboardingStore';
 
 import i18n from '@/i18n';
+import { isHiddenPlatformType } from '@/utils/platformUtils';
 interface PlatformState {
   // Platform data
   platforms: Platform[];
@@ -620,7 +621,7 @@ export const usePlatformStore = create<PlatformState>()(
               }
             }
 
-            set({ platforms: all, isLoading: false, loadError: null, hasLoadedList: true }, false, 'initializeStoreSuccess');
+            set({ platforms: all.filter(p => !isHiddenPlatformType(p.type)), isLoading: false, loadError: null, hasLoadedList: true }, false, 'initializeStoreSuccess');
           } catch (error) {
             console.error('Failed to load platform list:', error);
             set({ isLoading: false, hasLoadedList: true, loadError: error instanceof Error ? error.message : i18n.t('common.loadFailed', 'Failed to load') }, false, 'initializeStoreError');
